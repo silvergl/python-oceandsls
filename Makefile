@@ -6,7 +6,7 @@ PACKAGE = Declaration
 VER = $(strip $(shell cat version))
 PYVERDIR = $(PACKAGE)-$(VER)
 PYBUILDDIR = build/$(PYVERDIR)
-SRCDIR = antlr4_make/build
+SRCDIR = build
 GRAMMAR = $(PACKAGE).g4
 
 all: clean build-python build-java

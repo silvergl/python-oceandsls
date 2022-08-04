@@ -3,11 +3,19 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/venv" />
-      <excludeFolder url="file://$MODULE_DIR$/venv_intellij" />
-      <excludeFolder url="file://$MODULE_DIR$/venv_make" />
+      <sourceFolder url="file://$MODULE_DIR$/build-python" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/build-python/Configuration" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/build-python/Declaration" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/build-python/Expression" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/build-python/Terminals" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/venv_antlr4-python" />
+      <excludeFolder url="file://$MODULE_DIR$/build-java" />
+      <excludeFolder url="file://$MODULE_DIR$/build-java/Configuration" />
+      <excludeFolder url="file://$MODULE_DIR$/build-java/Declaration" />
+      <excludeFolder url="file://$MODULE_DIR$/build-java/Expression" />
+      <excludeFolder url="file://$MODULE_DIR$/build-java/Terminals" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (venv_antlr4-python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

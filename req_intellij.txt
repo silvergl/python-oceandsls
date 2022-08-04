@@ -1,0 +1,6 @@
+# virtualenv --no-site-packages --distribute venv_intellij && source venv_intellij/bin/activate && pip install -r req_intellij.txt
+antlr4-python3-runtime
+# https://github.com/WindSoilder/lsp
+lsp
+# deprecated as grammar via jedi
+#python-lsp-server[all]

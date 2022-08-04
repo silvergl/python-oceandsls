@@ -9,13 +9,13 @@ PYBUILDDIR = build/$(PYVERDIR)
 SRCDIR = build
 GRAMMAR = $(PACKAGE).g4
 
-all: clean build-python build-java
+all: clean build-python/$(PACKAGE) build-java/$(PACKAGE)
 	javac $(SRCDIR)-java/$(PACKAGE)/*.java
 
-build-python: $(GRAMMAR)
+build-python/$(PACKAGE): $(GRAMMAR)
 	$(antlr4) $(GRAMMAR) -o $(SRCDIR)-python/$(PACKAGE) -visitor -Dlanguage=Python3
 
-build-java: $(GRAMMAR)
+build-java/$(PACKAGE): $(GRAMMAR)
 	$(antlr4) $(GRAMMAR) -o $(SRCDIR)-java/$(PACKAGE)
 
 $(GRAMMAR).tar.gz: $(SRCDIR)-python/$(PACKAGE)
@@ -31,4 +31,4 @@ release: $(GRAMMAR).tar.gz
 
 .PHONY: clean
 clean:
-	rm -rf $(SRCDIR)-python $(SRCDIR)-java build release
+	rm -rf $(SRCDIR)-python/$(PACKAGE) $(SRCDIR)-java/$(PACKAGE) build/

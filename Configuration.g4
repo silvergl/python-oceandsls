@@ -7,6 +7,8 @@
 grammar Configuration; //
 import Expression;   // include all rules from Expression.g4
 
+//TODO generate Metamodel PyCore
+
 //TODO add DeclarationModel reference for declaration = ID
 configurationModel          :   'configuration' name=ID ':' declarationModel=ID
                                 includes+=include*

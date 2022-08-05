@@ -6,6 +6,8 @@
  *******************************************************************************/
 lexer grammar Terminals;    // note "lexer grammar"
 
+//TODO generate Metamodel PyCore
+
 /** Lexer rules (start uppercase)*/
 ID          : '^'? ( [a-zA-Z] | '_' ) ( [a-zA-Z] | '_' | [0-9] )* ; // match identifiers
 // TODO ecore::EInt

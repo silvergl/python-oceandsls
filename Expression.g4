@@ -7,6 +7,8 @@
 grammar Expression; //
 import Terminals;   // include all rules from Terminals.g4
 
+//TODO generate Metamodel PyCore
+
 /** Parser rules (start lowercase)*/
 //TODO optional add expression type
 

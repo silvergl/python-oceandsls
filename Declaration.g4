@@ -7,6 +7,8 @@
 grammar Declaration; //
 import Expression;   // include all rules from Expression.g4
 
+//TODO generate Metamodel PyCore
+
 //TODO {DeclarationModel} enforce Type and return object of DeclarationModel
 declarationModel            :   'model' name=ID
                                 ('types' types+=declaredType* )?

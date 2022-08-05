@@ -1,22 +1,31 @@
 # enable ANTLR support
-antlr4 := java -jar /usr/local/lib/antlr-4.10-complete.jar
+antlr4 := java -jar /usr/local/lib/antlr-4.10.1-complete.jar
+
+PKGTARGETS = Terminals Expression Configuration Declaration 
 
 # Release version used by release targets
-PACKAGE = Declaration
+PACKAGE = Terminals
 VER = $(strip $(shell cat version))
 PYVERDIR = $(PACKAGE)-$(VER)
 PYBUILDDIR = build/$(PYVERDIR)
 SRCDIR = build
 GRAMMAR = $(PACKAGE).g4
 
-all: clean build-python/$(PACKAGE) build-java/$(PACKAGE)
+all: clean $(SRCDIR)-python/$(PACKAGE) $(SRCDIR)-java/$(PACKAGE)
 	javac $(SRCDIR)-java/$(PACKAGE)/*.java
 
-build-python/$(PACKAGE): $(GRAMMAR)
-	$(antlr4) $(GRAMMAR) -o $(SRCDIR)-python/$(PACKAGE) -visitor -Dlanguage=Python3
+all_pkg: $(PKGTARGETS)
 
-build-java/$(PACKAGE): $(GRAMMAR)
-	$(antlr4) $(GRAMMAR) -o $(SRCDIR)-java/$(PACKAGE)
+$(PKGTARGETS): %: %.g4
+	$(antlr4) $< -o $(SRCDIR)-python/$@ -visitor -Dlanguage=Python3
+	$(antlr4) $< -o $(SRCDIR)-java/$@
+	# javac $(SRCDIR)-java/$@/*.java
+
+$(SRCDIR)-python/$(PACKAGE): $(GRAMMAR)
+	$(antlr4) $< -o $(SRCDIR)-python/$(PACKAGE) -visitor -Dlanguage=Python3
+
+$(SRCDIR)-java/$(PACKAGE): $(GRAMMAR)
+	$(antlr4) $< -o $(SRCDIR)-java/$(PACKAGE)
 
 $(GRAMMAR).tar.gz: $(SRCDIR)-python/$(PACKAGE)
 	mkdir -p $(PYBUILDDIR)
@@ -32,3 +41,6 @@ release: $(GRAMMAR).tar.gz
 .PHONY: clean
 clean:
 	rm -rf $(SRCDIR)-python/$(PACKAGE) $(SRCDIR)-java/$(PACKAGE) build/
+
+dist-clean:
+	rm -rf $(SRCDIR)-python $(SRCDIR)-java build release

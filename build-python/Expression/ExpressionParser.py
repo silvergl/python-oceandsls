@@ -1,4 +1,4 @@
-# Generated from Expression.g4 by ANTLR 4.10
+# Generated from Expression.g4 by ANTLR 4.10.1
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -103,7 +103,7 @@ class ExpressionParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.10")
+        self.checkVersion("4.10.1")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 

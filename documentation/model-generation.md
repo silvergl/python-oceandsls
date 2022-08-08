@@ -22,6 +22,10 @@ pip install pyecoregen
 Running:
 pyecoregen -e your_ecore_file.ecore -o your_output_path
 
+Alternative:
+Download the script /models/ecoreExp.py
+run i.e.: `python ecoreEcp.py file1.ecore file2.ecore outputFolder/`
+
 ## Mapping AST to Model
 
 - How to map AST to model?

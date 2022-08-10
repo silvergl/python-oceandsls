@@ -43,6 +43,26 @@
           <option name="language" value="Python3" />
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/ArrayInit.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="ArrayInit" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/TestGrammar.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="TestGrammar" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
       </list>
     </option>
   </component>

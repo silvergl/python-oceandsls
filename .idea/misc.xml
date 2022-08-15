@@ -63,6 +63,16 @@
           <option name="language" value="Python3" />
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/Expr.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="Expr" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
       </list>
     </option>
   </component>

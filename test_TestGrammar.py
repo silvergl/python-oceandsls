@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+__author__ = 'sgu'
+
 import sys
 from antlr4 import *
-from antlr4_intelij.TestGrammarLexer import TestGrammarLexer
-from antlr4_intelij.TestGrammarParser import TestGrammarParser
-from antlr4_intelij.TestGrammarVisitor import TestGrammarVisitor
+from TestGrammar.TestGrammarLexer import TestGrammarLexer
+from TestGrammar.TestGrammarParser import TestGrammarParser
+from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
 
 
 def get_username():

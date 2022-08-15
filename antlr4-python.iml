@@ -14,15 +14,4 @@
     <orderEntry type="jdk" jdkName="Python 3.8 (venv_antlr4-python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
-  <component name="PyNamespacePackagesService">
-    <option name="namespacePackageFolders">
-      <list>
-        <option value="$MODULE_DIR$/build-python/Configuration" />
-        <option value="$MODULE_DIR$/build-python/Declaration" />
-        <option value="$MODULE_DIR$/build-python/Expression" />
-        <option value="$MODULE_DIR$/build-python/Terminals" />
-        <option value="$MODULE_DIR$/build-python/ArrayInit" />
-      </list>
-    </option>
-  </component>
 </module>

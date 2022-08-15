@@ -1,7 +1,7 @@
 # enable ANTLR support
 antlr4 := java -jar /usr/local/lib/antlr-4.10.1-complete.jar
 
-PKGTARGETS = Terminals Expression Configuration Declaration 
+PKGTARGETS = Terminals Expression Configuration Declaration Expr TestGrammar
 
 # Release version used by release targets
 PACKAGE = Terminals
@@ -18,14 +18,14 @@ all_pkg: $(PKGTARGETS)
 
 $(PKGTARGETS): %: %.g4
 	$(antlr4) $< -o $(SRCDIR)-python/$@ -visitor -Dlanguage=Python3
-	$(antlr4) $< -o $(SRCDIR)-java/$@
+	$(antlr4) $< -o $(SRCDIR)-java/$@ -visitor
 	# javac $(SRCDIR)-java/$@/*.java
 
 $(SRCDIR)-python/$(PACKAGE): $(GRAMMAR)
 	$(antlr4) $< -o $(SRCDIR)-python/$(PACKAGE) -visitor -Dlanguage=Python3
 
 $(SRCDIR)-java/$(PACKAGE): $(GRAMMAR)
-	$(antlr4) $< -o $(SRCDIR)-java/$(PACKAGE)
+	$(antlr4) $< -o $(SRCDIR)-java/$(PACKAGE) -visitor
 
 $(GRAMMAR).tar.gz: $(SRCDIR)-python/$(PACKAGE)
 	mkdir -p $(PYBUILDDIR)
@@ -43,4 +43,4 @@ clean:
 	rm -rf $(SRCDIR)-python/$(PACKAGE) $(SRCDIR)-java/$(PACKAGE) build/
 
 dist-clean:
-	rm -rf $(SRCDIR)-python $(SRCDIR)-java build release
+	rm -rf $(SRCDIR)-python $(SRCDIR)-java build release __pycache__

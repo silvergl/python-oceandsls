@@ -1,7 +1,7 @@
 /** Grammars always start with a grammar header. This grammar is called
- *  Expr and must match the filename: Expr.g4
+ *  TestExpr and must match the filename: TestExpr.g4
  */
-grammar Expr;
+grammar TestExpr;
 
 import CommonLexerRules; // includes all rules from CommonLexerRules.g4
 

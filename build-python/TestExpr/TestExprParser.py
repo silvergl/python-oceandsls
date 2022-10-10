@@ -1,4 +1,4 @@
-# Generated from Expr.g4 by ANTLR 4.10.1
+# Generated from /home/sgu/IdeaProjects/antlr4-python/grammars/dev/TestExpr.g4 by ANTLR 4.10.1
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -26,9 +26,9 @@ def serializedATN():
         0,40,5,1,0,0,0,41,39,1,0,0,0,5,9,20,29,37,39
     ]
 
-class ExprParser ( Parser ):
+class TestExprParser ( Parser ):
 
-    grammarFileName = "Expr.g4"
+    grammarFileName = "TestExpr.g4"
 
     atn = ATNDeserializer().deserialize(serializedATN())
 
@@ -80,13 +80,13 @@ class ExprParser ( Parser ):
 
         def stat(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(ExprParser.StatContext)
+                return self.getTypedRuleContexts(TestExprParser.StatContext)
             else:
-                return self.getTypedRuleContext(ExprParser.StatContext,i)
+                return self.getTypedRuleContext(TestExprParser.StatContext,i)
 
 
         def getRuleIndex(self):
-            return ExprParser.RULE_prog
+            return TestExprParser.RULE_prog
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterProg" ):
@@ -107,7 +107,7 @@ class ExprParser ( Parser ):
 
     def prog(self):
 
-        localctx = ExprParser.ProgContext(self, self._ctx, self.state)
+        localctx = TestExprParser.ProgContext(self, self._ctx, self.state)
         self.enterRule(localctx, 0, self.RULE_prog)
         self._la = 0 # Token type
         try:
@@ -121,7 +121,7 @@ class ExprParser ( Parser ):
                 self.state = 9 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << ExprParser.T__1) | (1 << ExprParser.ID) | (1 << ExprParser.INT) | (1 << ExprParser.NEWLINE))) != 0)):
+                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << TestExprParser.T__1) | (1 << TestExprParser.ID) | (1 << TestExprParser.INT) | (1 << TestExprParser.NEWLINE))) != 0)):
                     break
 
         except RecognitionException as re:
@@ -142,7 +142,7 @@ class ExprParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return ExprParser.RULE_stat
+            return TestExprParser.RULE_stat
 
      
         def copyFrom(self, ctx:ParserRuleContext):
@@ -152,12 +152,12 @@ class ExprParser ( Parser ):
 
     class BlankContext(StatContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a ExprParser.StatContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestExprParser.StatContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def NEWLINE(self):
-            return self.getToken(ExprParser.NEWLINE, 0)
+            return self.getToken(TestExprParser.NEWLINE, 0)
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterBlank" ):
@@ -176,15 +176,15 @@ class ExprParser ( Parser ):
 
     class PrintExprContext(StatContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a ExprParser.StatContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestExprParser.StatContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def expr(self):
-            return self.getTypedRuleContext(ExprParser.ExprContext,0)
+            return self.getTypedRuleContext(TestExprParser.ExprContext,0)
 
         def NEWLINE(self):
-            return self.getToken(ExprParser.NEWLINE, 0)
+            return self.getToken(TestExprParser.NEWLINE, 0)
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterPrintExpr" ):
@@ -203,17 +203,17 @@ class ExprParser ( Parser ):
 
     class AssignContext(StatContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a ExprParser.StatContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestExprParser.StatContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def ID(self):
-            return self.getToken(ExprParser.ID, 0)
+            return self.getToken(TestExprParser.ID, 0)
         def expr(self):
-            return self.getTypedRuleContext(ExprParser.ExprContext,0)
+            return self.getTypedRuleContext(TestExprParser.ExprContext,0)
 
         def NEWLINE(self):
-            return self.getToken(ExprParser.NEWLINE, 0)
+            return self.getToken(TestExprParser.NEWLINE, 0)
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterAssign" ):
@@ -233,39 +233,39 @@ class ExprParser ( Parser ):
 
     def stat(self):
 
-        localctx = ExprParser.StatContext(self, self._ctx, self.state)
+        localctx = TestExprParser.StatContext(self, self._ctx, self.state)
         self.enterRule(localctx, 2, self.RULE_stat)
         try:
             self.state = 20
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,1,self._ctx)
             if la_ == 1:
-                localctx = ExprParser.PrintExprContext(self, localctx)
+                localctx = TestExprParser.PrintExprContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 11
                 self.expr(0)
                 self.state = 12
-                self.match(ExprParser.NEWLINE)
+                self.match(TestExprParser.NEWLINE)
                 pass
 
             elif la_ == 2:
-                localctx = ExprParser.AssignContext(self, localctx)
+                localctx = TestExprParser.AssignContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 14
-                self.match(ExprParser.ID)
+                self.match(TestExprParser.ID)
                 self.state = 15
-                self.match(ExprParser.T__0)
+                self.match(TestExprParser.T__0)
                 self.state = 16
                 self.expr(0)
                 self.state = 17
-                self.match(ExprParser.NEWLINE)
+                self.match(TestExprParser.NEWLINE)
                 pass
 
             elif la_ == 3:
-                localctx = ExprParser.BlankContext(self, localctx)
+                localctx = TestExprParser.BlankContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
                 self.state = 19
-                self.match(ExprParser.NEWLINE)
+                self.match(TestExprParser.NEWLINE)
                 pass
 
 
@@ -287,7 +287,7 @@ class ExprParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return ExprParser.RULE_expr
+            return TestExprParser.RULE_expr
 
      
         def copyFrom(self, ctx:ParserRuleContext):
@@ -296,12 +296,12 @@ class ExprParser ( Parser ):
 
     class ParensContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a ExprParser.ExprContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestExprParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def expr(self):
-            return self.getTypedRuleContext(ExprParser.ExprContext,0)
+            return self.getTypedRuleContext(TestExprParser.ExprContext,0)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -321,21 +321,21 @@ class ExprParser ( Parser ):
 
     class MulDivContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a ExprParser.ExprContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestExprParser.ExprContext
             super().__init__(parser)
             self.op = None # Token
             self.copyFrom(ctx)
 
         def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(ExprParser.ExprContext)
+                return self.getTypedRuleContexts(TestExprParser.ExprContext)
             else:
-                return self.getTypedRuleContext(ExprParser.ExprContext,i)
+                return self.getTypedRuleContext(TestExprParser.ExprContext,i)
 
         def MUL(self):
-            return self.getToken(ExprParser.MUL, 0)
+            return self.getToken(TestExprParser.MUL, 0)
         def DIV(self):
-            return self.getToken(ExprParser.DIV, 0)
+            return self.getToken(TestExprParser.DIV, 0)
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterMulDiv" ):
@@ -354,21 +354,21 @@ class ExprParser ( Parser ):
 
     class AddSubContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a ExprParser.ExprContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestExprParser.ExprContext
             super().__init__(parser)
             self.op = None # Token
             self.copyFrom(ctx)
 
         def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(ExprParser.ExprContext)
+                return self.getTypedRuleContexts(TestExprParser.ExprContext)
             else:
-                return self.getTypedRuleContext(ExprParser.ExprContext,i)
+                return self.getTypedRuleContext(TestExprParser.ExprContext,i)
 
         def ADD(self):
-            return self.getToken(ExprParser.ADD, 0)
+            return self.getToken(TestExprParser.ADD, 0)
         def SUB(self):
-            return self.getToken(ExprParser.SUB, 0)
+            return self.getToken(TestExprParser.SUB, 0)
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterAddSub" ):
@@ -387,12 +387,12 @@ class ExprParser ( Parser ):
 
     class IdContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a ExprParser.ExprContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestExprParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def ID(self):
-            return self.getToken(ExprParser.ID, 0)
+            return self.getToken(TestExprParser.ID, 0)
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterId" ):
@@ -411,12 +411,12 @@ class ExprParser ( Parser ):
 
     class IntContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a ExprParser.ExprContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestExprParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def INT(self):
-            return self.getToken(ExprParser.INT, 0)
+            return self.getToken(TestExprParser.INT, 0)
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterInt" ):
@@ -437,7 +437,7 @@ class ExprParser ( Parser ):
     def expr(self, _p:int=0):
         _parentctx = self._ctx
         _parentState = self.state
-        localctx = ExprParser.ExprContext(self, self._ctx, _parentState)
+        localctx = TestExprParser.ExprContext(self, self._ctx, _parentState)
         _prevctx = localctx
         _startState = 4
         self.enterRecursionRule(localctx, 4, self.RULE_expr, _p)
@@ -447,31 +447,31 @@ class ExprParser ( Parser ):
             self.state = 29
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [ExprParser.INT]:
-                localctx = ExprParser.IntContext(self, localctx)
+            if token in [TestExprParser.INT]:
+                localctx = TestExprParser.IntContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
 
                 self.state = 23
-                self.match(ExprParser.INT)
+                self.match(TestExprParser.INT)
                 pass
-            elif token in [ExprParser.ID]:
-                localctx = ExprParser.IdContext(self, localctx)
+            elif token in [TestExprParser.ID]:
+                localctx = TestExprParser.IdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
                 self.state = 24
-                self.match(ExprParser.ID)
+                self.match(TestExprParser.ID)
                 pass
-            elif token in [ExprParser.T__1]:
-                localctx = ExprParser.ParensContext(self, localctx)
+            elif token in [TestExprParser.T__1]:
+                localctx = TestExprParser.ParensContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
                 self.state = 25
-                self.match(ExprParser.T__1)
+                self.match(TestExprParser.T__1)
                 self.state = 26
                 self.expr(0)
                 self.state = 27
-                self.match(ExprParser.T__2)
+                self.match(TestExprParser.T__2)
                 pass
             else:
                 raise NoViableAltException(self)
@@ -489,7 +489,7 @@ class ExprParser ( Parser ):
                     self._errHandler.sync(self)
                     la_ = self._interp.adaptivePredict(self._input,3,self._ctx)
                     if la_ == 1:
-                        localctx = ExprParser.MulDivContext(self, ExprParser.ExprContext(self, _parentctx, _parentState))
+                        localctx = TestExprParser.MulDivContext(self, TestExprParser.ExprContext(self, _parentctx, _parentState))
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
                         self.state = 31
                         if not self.precpred(self._ctx, 5):
@@ -498,7 +498,7 @@ class ExprParser ( Parser ):
                         self.state = 32
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not(_la==ExprParser.MUL or _la==ExprParser.DIV):
+                        if not(_la==TestExprParser.MUL or _la==TestExprParser.DIV):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
@@ -508,7 +508,7 @@ class ExprParser ( Parser ):
                         pass
 
                     elif la_ == 2:
-                        localctx = ExprParser.AddSubContext(self, ExprParser.ExprContext(self, _parentctx, _parentState))
+                        localctx = TestExprParser.AddSubContext(self, TestExprParser.ExprContext(self, _parentctx, _parentState))
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
                         self.state = 34
                         if not self.precpred(self._ctx, 4):
@@ -517,7 +517,7 @@ class ExprParser ( Parser ):
                         self.state = 35
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not(_la==ExprParser.ADD or _la==ExprParser.SUB):
+                        if not(_la==TestExprParser.ADD or _la==TestExprParser.SUB):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)

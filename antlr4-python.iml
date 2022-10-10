@@ -14,4 +14,11 @@
     <orderEntry type="jdk" jdkName="Python 3.8 (venv_antlr4-python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PyNamespacePackagesService">
+    <option name="namespacePackageFolders">
+      <list>
+        <option value="$MODULE_DIR$/build-python/antlr4-c3-pylib" />
+      </list>
+    </option>
+  </component>
 </module>

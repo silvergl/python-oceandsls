@@ -1,10 +1,10 @@
 # enable ANTLR support
 antlr4 := java -jar /usr/local/lib/antlr-4.10.1-complete.jar
 
-PKGTARGETS = Terminals Expression Configuration Declaration Expr TestGrammar
+PKGTARGETS = Terminals Expression Configuration Declaration TestExpr TestExprCore TestGrammar
 
 # Release version used by release targets
-PACKAGE = Terminals
+PACKAGE = TestExprCore
 VER = $(strip $(shell cat version))
 PYVERDIR = $(PACKAGE)-$(VER)
 PYBUILDDIR = build/$(PYVERDIR)

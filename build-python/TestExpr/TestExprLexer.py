@@ -1,4 +1,4 @@
-# Generated from Expr.g4 by ANTLR 4.10.1
+# Generated from /home/sgu/IdeaProjects/antlr4-python/grammars/dev/TestExpr.g4 by ANTLR 4.10.1
 from antlr4 import *
 from io import StringIO
 import sys
@@ -32,7 +32,7 @@ def serializedATN():
         22,1,0,0,0,5,0,40,45,48,55,1,6,0,0
     ]
 
-class ExprLexer(Lexer):
+class TestExprLexer(Lexer):
 
     atn = ATNDeserializer().deserialize(serializedATN())
 
@@ -63,7 +63,7 @@ class ExprLexer(Lexer):
     ruleNames = [ "T__0", "T__1", "T__2", "MUL", "DIV", "ADD", "SUB", "ID", 
                   "INT", "NEWLINE", "WS" ]
 
-    grammarFileName = "Expr.g4"
+    grammarFileName = "TestExpr.g4"
 
     def __init__(self, input=None, output:TextIO = sys.stdout):
         super().__init__(input, output)

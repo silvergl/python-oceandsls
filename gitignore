@@ -21,6 +21,7 @@ __pycache__/
 /build/
 /develop-eggs/
 /dist/
+/out/
 /eggs/
 /lib/
 /lib64/

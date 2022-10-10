@@ -1,7 +1,7 @@
 # enable ANTLR support
-if [ -f /usr/local/lib/antlr-4.10-complete.jar ]; then
-    export CLASSPATH=".:/usr/local/lib/antlr-4.10-complete.jar:$CLASSPATH"
-    alias antlr4='java -jar /usr/local/lib/antlr-4.10-complete.jar'
+if [ -f /usr/local/lib/antlr-4.10.1-complete.jar ]; then
+    export CLASSPATH=".:/usr/local/lib/antlr-4.10.1-complete.jar:$CLASSPATH"
+    alias antlr4='java -jar /usr/local/lib/antlr-4.10.1-complete.jar'
     alias grun='java org.antlr.v4.gui.TestRig'
 
     export GRUN_CMD='java org.antlr.v4.gui.TestRig'
@@ -13,7 +13,7 @@ if [ -f /usr/local/lib/antlr-4.10-complete.jar ]; then
       grammar="${2}"
       testfile=`readlink -f $3`
       cd "${srcdir}"/ && ${GRUN_CMD} "${grammar}" label -diagnostics < "${testfile}"
-      cd ../../..
+      cd ../..
     }
 
     #Shows GUI parse tree browser
@@ -22,7 +22,7 @@ if [ -f /usr/local/lib/antlr-4.10-complete.jar ]; then
       grammar="${2}"
       testfile=`readlink -f $3`
       cd "${srcdir}"/ && ${GRUN_CMD} "${grammar}" label -gui < "${testfile}"
-      cd ../../..
+      cd ../..
     }
 
     #Generates a PS of the parsetree
@@ -31,7 +31,7 @@ if [ -f /usr/local/lib/antlr-4.10-complete.jar ]; then
       grammar="${2}"
       testfile=`readlink -f $3`
       cd "${srcdir}"/ && ${GRUN_CMD} "${grammar}" label -ps "${testfile}".ps < "${testfile}"
-      cd ../../..
+      cd ../..
     }
 
     #Shows tokens detected by lexer
@@ -40,7 +40,7 @@ if [ -f /usr/local/lib/antlr-4.10-complete.jar ]; then
       grammar="${2}"
       testfile=`readlink -f $3`
       cd "${srcdir}"/ && ${GRUN_CMD} "${grammar}" label -tokens < "${testfile}"
-      cd ../../..
+      cd ../..
     }
 
     #Prints text tree output of parse tree
@@ -49,7 +49,7 @@ if [ -f /usr/local/lib/antlr-4.10-complete.jar ]; then
       grammar="${2}"
       testfile=`readlink -f $3`
       cd "${srcdir}"/ && ${GRUN_CMD} "${grammar}" label -tree < "${testfile}"
-      cd ../../..
+      cd ../..
     }
     
     #Shows trace information when parsing input file
@@ -58,6 +58,6 @@ if [ -f /usr/local/lib/antlr-4.10-complete.jar ]; then
       grammar="${2}"
       testfile=`readlink -f $3`
       cd "${srcdir}"/ && ${GRUN_CMD} "${grammar}" label -trace < "${testfile}"
-      cd ../../..
+      cd ../..
     }
 fi

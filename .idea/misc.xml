@@ -4,7 +4,7 @@
     <option name="perGrammarGenerationSettings">
       <list>
         <PerGrammarGenerationSettings>
-          <option name="fileName" value="$PROJECT_DIR$/Configuration.g4" />
+          <option name="fileName" value="$PROJECT_DIR$/grammars/CP-DSL/Configuration.g4" />
           <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
@@ -14,7 +14,7 @@
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
-          <option name="fileName" value="$PROJECT_DIR$/Declaration.g4" />
+          <option name="fileName" value="$PROJECT_DIR$/grammars/CP-DSL/Declaration.g4" />
           <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
@@ -24,7 +24,7 @@
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
-          <option name="fileName" value="$PROJECT_DIR$/Expression.g4" />
+          <option name="fileName" value="$PROJECT_DIR$/grammars/CP-DSL/Expression.g4" />
           <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
@@ -34,12 +34,62 @@
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
-          <option name="fileName" value="$PROJECT_DIR$/Terminals.g4" />
+          <option name="fileName" value="$PROJECT_DIR$/grammars/CP-DSL/Terminals.g4" />
           <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
           <option name="pkg" value="Terminals" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/ArrayInit.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="ArrayInit" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/TestGrammar.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="TestGrammar" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/TestExpr.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="TestExpr" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/CommonLexerRules.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="CommonLexerRules" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/TestExprCore.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="TestExprCore" />
           <option name="language" value="Python3" />
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>

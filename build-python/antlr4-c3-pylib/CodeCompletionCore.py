@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 __author__ = 'sgu'
 
+from dataclasses import dataclass
+from typing import Deque, Set
+
 from antlr4.atn.ATNState import ATNState
 
 #
@@ -54,6 +57,23 @@ from antlr4.atn.Transition import Transition
 # import org.antlr.v4.runtime.atn.Transition
 # import org.antlr.v4.runtime.misc.IntervalSet
 
+# TODO add dataclass
+#  https://stackoverflow.com/q/48254562/
+@dataclass
+class RuleWithStartToken:
+    startTokenIndex: int
+    ruleIndex: int
+
+    # def __init__(self, startTokenIndex: int, ruleIndex: int) -> None:
+    #     self.startTokenIndex = startTokenIndex
+    #     self.ruleIndex = ruleIndex
+
+# TODO assure RuleWithStartToken objects
+#  https://stackoverflow.com/q/51944520/
+RuleWithStartTokenList = Deque['RuleWithStartToken']
+
+RuleEndStatus = Set[int]
+
 #
 #  Port of antlr-c3 javascript library to java
 #  <p>
@@ -97,10 +117,10 @@ class CodeCompletionCore(object):
     # Also depends on showDebugOutput. Enables call stack printing for each rule recursion.
     showRuleStack = True
 
-    def __init__(self, parser:Parser, preferredRules:tuple, ignoredTokens:tuple):
+    def __init__(self, parser:Parser, preferredRules:tuple=None, ignoredTokens:tuple=None):
         """ generated source for method __init__ """
         self.parser = parser
-        self.atn = parser.getATNWithBypassAlts()
+        self.atn = parser.atn
         # TODO replace Vocabulary.getDisplayName with IntervalSet.elementName()
         #  self.vocabulary = parser.getVocabulary()
         self.literalNames = parser.literalNames
@@ -235,7 +255,7 @@ class CodeCompletionCore(object):
     # Optionally you can pass in a parser rule context which limits the ATN walk to only that or called rules. This can significantly
     # speed up the retrieval process but might miss some candidates (if they are outside the given context).
     #
-    def collectCandidates(self, caretTokenIndex:int, context:ParserRuleContext):
+    def collectCandidates(self, caretTokenIndex:int, context:ParserRuleContext=None):
         """ generated source for method collectCandidates """
         self.shortcutMap.clear()
         self.candidates.rules.clear()
@@ -246,9 +266,6 @@ class CodeCompletionCore(object):
         self.tokenStartIndex = context.start.tokenIndex if context is not None else 0
         tokenStream = self.parser.getInputStream()
 
-        # TODO undo ts changes
-        currentIndex = tokenStream.index
-        tokenStream.seek(self.tokenStartIndex)
         # TODO implement LinkedList as deque()
         #  https://www.geeksforgeeks.org/python-library-for-linked-list/
         #         this.tokens = new LinkedList<>();
@@ -256,6 +273,10 @@ class CodeCompletionCore(object):
         # TODO undo ts changes
         #  offset = 0
         offset = self.tokenStartIndex
+
+        # TODO java versions
+        # currentIndex = tokenStream.index
+        # tokenStream.seek(self.tokenStartIndex)
 
         while True:
             # TODO undo ts changes
@@ -265,7 +286,7 @@ class CodeCompletionCore(object):
             if token.channel == Token.DEFAULT_CHANNEL:
                 self.tokens.append(token)
 
-                if token.getTokenIndex() >= caretTokenIndex or token.type == Token.EOF:
+                if token.tokenIndex >= caretTokenIndex or token.type == Token.EOF:
                     break
 
             # Do not check for the token index here, as we want to end with the first unhidden token on or after the caret.
@@ -276,8 +297,8 @@ class CodeCompletionCore(object):
 
         # TODO implement LinkedList as deque()
         #         LinkedList<Integer> callStack = new LinkedList<>();
-        callStack = collections.deque()
-        startRule = context.getRuleIndex() if context is not None else 0
+        callStack: RuleWithStartTokenList = collections.deque()
+        startRule = context.ruleIndex if context is not None else 0
         # TODO undo ts changes
         #  self.processRule(self.atn.ruleToStartState[startRule], 0, callStack, "\n")
         self.processRule(self.atn.ruleToStartState[startRule], 0, callStack, 0, 0)
@@ -475,7 +496,7 @@ class CodeCompletionCore(object):
     # Walks the ATN for a single rule only. It returns the token stream position for each path that could be matched in this rule.
     # The result can be empty in case we hit only non-epsilon transitions that didn't match the current input or if we
     # hit the caret position.
-    def processRule(self, startState:ATNState, tokenIndex:int, callStack:collections.deque, precedence:int, indentation:int):
+    def processRule(self, startState:ATNState, tokenIndex:int, callStack:collections.deque, precedence:int, indentation:int) -> RuleEndStatus :
 
         # Start with rule specific handling before going into the ATN walk.
 
@@ -485,7 +506,7 @@ class CodeCompletionCore(object):
             # TODO implement HashMap as dictionaries
             #  positionMap = new HashMap<>();
             positionMap ={}
-            self.shortcutMap.put(startState.ruleIndex, positionMap)
+            self.shortcutMap[startState.ruleIndex] = positionMap
         else:
             if positionMap.containsKey(tokenIndex):
                 if self.showDebugOutput:

@@ -16,8 +16,8 @@ if __name__ == "__main__":
         input_stream = FileStream(sys.argv[1])
     else:
         # TODO move parameters into file
-        # input_stream = InputStream("var c = a + b()")
-        input_stream = InputStream(sys.stdin.readline())
+        input_stream = InputStream("var c = a + b()")
+        # input_stream = InputStream(sys.stdin.readline())
 
     # create lexer and parser objects and token stream pipe between them
     lexer = TestExprCoreLexer(input_stream)
@@ -34,11 +34,11 @@ if __name__ == "__main__":
     #print(lisp_tree_str)
 
     # launch c3 core with parser:Parser, preferredRules:tuple, ignoredTokens:tuple
-    core = CodeCompletionCore(parser, None, None)
+    core = CodeCompletionCore(parser)
 
-    # candidates = core.collectCandidates(0)
-    #
-    # print(candidates)
+    candidates = core.collectCandidates(0)
+
+    print(candidates)
 
     # evaluator - walk parse tree
     # visitor = TestExprCoreVisitor

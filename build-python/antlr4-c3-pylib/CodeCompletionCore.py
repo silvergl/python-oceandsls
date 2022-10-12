@@ -19,6 +19,8 @@ __author__ = 'sgu'
 # TODO add util imports
 import collections
 import logging
+logging.basicConfig(level=logging.DEBUG)
+
 from dataclasses import dataclass, field
 from typing import Deque, Set, List, Dict
 
@@ -28,10 +30,11 @@ from typing import Deque, Set, List, Dict
 from antlr4.IntervalSet import IntervalSet
 from antlr4.Parser import Parser
 from antlr4.Token import Token
+from antlr4.BufferedTokenStream import TokenStream
 from antlr4.ParserRuleContext import ParserRuleContext
 from antlr4.atn.ATN import ATN
 from antlr4.atn.ATNState import ATNState
-from antlr4.atn.Transition import Transition
+from antlr4.atn.Transition import Transition, PredicateTransition
 
 TokenList = List[int]
 RuleList = List[int]
@@ -202,15 +205,15 @@ class CodeCompletionCore:
         self.precedenceStack = []
 
         self.tokenStartIndex = context.start.tokenListIndex if context is not None else 0
-        tokenStream = self.parser.getInputStream()
+        tokenStream: TokenStream = self.parser.getInputStream()
 
         # TODO implement LinkedList as deque()
         #  https://www.geeksforgeeks.org/python-library-for-linked-list/
         #         this.tokens = new LinkedList<>();
         self.tokens = collections.deque()
-        offset = self.tokenStartIndex
+        offset: int = self.tokenStartIndex
         while True:
-            token = tokenStream.get( offset )
+            token: Token = tokenStream.get( offset )
             offset += 1
             if token.channel == Token.DEFAULT_CHANNEL:
                 self.tokens.append( token )
@@ -226,83 +229,71 @@ class CodeCompletionCore:
         #         LinkedList<Integer> callStack = new LinkedList<>();
         callStack: RuleWithStartTokenList = collections.deque()
         startRule = context.ruleIndex if context is not None else 0
-        # TODO undo ts changes
-        #  self.processRule(self.atn.ruleToStartState[startRule], 0, callStack, "\n")
         self.processRule( self.atn.ruleToStartState[startRule], 0, callStack, 0, 0 )
 
-        # TODO undo ts changes
-        # tokenStream.seek(currentIndex)
-        # #  now post-process the rule candidates and find the last occurrences
-        # #  of each preferred rule and extract its start and end in the input stream
-        # for ruleId in self.preferredRules:
-        #     # TODO implement Map as dictionaries
-        #     #  test final
-        #     #  final Map<Integer, Set<Integer>> shortcut = shortcutMap.get(ruleId);
-        #     shortcut = self.shortcutMap.get(ruleId)
-        #     if shortcut is None or shortcut.isEmpty():
-        #         continue
-        #     #  select the right-most occurrence
-        #     # TODO final int startToken = Collections.max(shortcut.keySet());
-        #     startToken = collections.max(shortcut.keySet())
-        #     # TODO final Set<Integer> endSet = shortcut.get(startToken);
-        #     endSet = shortcut.get(startToken)
-        #     # TODO final int endToken;
-        #     if endSet.isEmpty():
-        #         endToken = len(self.tokens) - 1
-        #     else:
-        #         endToken = collections.max(shortcut.get(startToken))
-        #     # TODO final int startOffset = tokens.get(startToken).getStartIndex();
-        #     startOffset = tokens.get(startToken).getStartIndex()
-        #     # TODO final int endOffset;
-        #     if self.tokens.get(endToken).getType() == Token.EOF:
-        #         #  if last token is EOF, include trailing whitespace
-        #         endOffset = self.tokens.get(endToken).getStartIndex()
-        #     else:
-        #         #  if last token is not EOF, limit to matching tokens which excludes trailing whitespace
-        #         endOffset = self.tokens.get(endToken - 1).getStopIndex() + 1
-        #     # TODO check Arrays.asList
-        #     #  https://medium.com/swlh/collections-in-python-d8954b006bb7
-        #     #  final List<Integer> ruleStartStop = Arrays.asList(startOffset, endOffset);
-        #     ruleStartStop = [startOffset, endOffset]
-        #     self.candidates.rulePositions.put(ruleId, ruleStartStop)
-        # # TODO logger.isLoggable(Level.FINE)
-
         if self.showResult and self.logger.isEnabledFor( logging.DEBUG ):
-            # TODO StringBuilder logMessage = new StringBuilder();
+            # TODO src
             #  https://waymoot.org/home/python_string/
-            logMessage_list = ["States processed: ", self.statesProcessed, "\n\n", "Collected rules:\n"]
+            logMessage_list = ["States processed: ", str(self.statesProcessed), "\n\n", "Collected rules:\n"]
             for rule in self.candidates.rules:
                 logMessage_list.append( " " + rule.getKey() + ", path: " )
+
                 for token in rule.getValue():
                     logMessage_list.append( self.ruleNames[token] ).append( " " )
                 logMessage_list.append( "\n" )
 
             logMessage_list.append( "Collected Tokens:\n" )
-            for entry in self.candidates.tokens.entrySet():
-                # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
-                #  logMessage_list.append("  ").append(self.vocabulary.getDisplayName(entry.getKey()))
-                logMessage_list.append( " " ).append(
-                    IntervalSet.elementName( self.literalNames, self.symbolicNames, entry.getKey() ) )
+            for key, value in self.candidates.tokens.items():
+                logMessage_list.extend( [ " " , IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, key ) ] )
 
-                for following in entry.getValue():
-                    # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
-                    #  logMessage_list.append(" ").append(self.vocabulary.getDisplayName(following))
-                    logMessage_list.append( " " ).append(
-                        IntervalSet.elementName( self.literalNames, self.symbolicNames, following ) )
+                for following in value:
+                    logMessage_list.extend( [ " " , IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, following ) ] )
                 logMessage_list.append( "\n" )
-            # TODO self.logger.log(Level.FINE, logMessage_list.__str__())
+
             self.logger.debug( ''.join( logMessage_list ) )
+
         return self.candidates
 
+    #
     # Check if the predicate associated with the given transition evaluates to true.
-    def checkPredicate(self, transition):
-        """ generated source for method checkPredicate """
+    #
+    def checkPredicate(self, transition: PredicateTransition) -> bool:
         return transition.getPredicate().eval( self.parser, ParserRuleContext.EMPTY )
 
+    #
+    # Walks the rule chain upwards or downwards (depending on translateRulesTopDown) to see if that matches any of the
+    # preferred rules. If found, that rule is added to the collection candidates and true is returned.
+    #
+    def translateStackToRuleIndex(self, ruleWithStartTokenList: RuleWithStartTokenList) -> bool:
+        if not self.preferredRules:
+            return False
+
+        # Change the direction we iterate over the rule stack
+        if self.translateRulesTopDown:
+            #  Loop over the rule stack from lowest to highest rule level. This will prioritize a lower preferred rule
+            #  if it is a child of a higher one that is also a preferred rule.
+            i = ruleWithStartTokenList.length - 1
+            while i >= 0:
+                if self.translateToRuleIndex(i, ruleWithStartTokenList):
+                    return True
+                i -= 1
+        else:
+            #  Loop over the rule stack from highest to lowest rule level. This will prioritize a higher preferred rule
+            #  if it contains a lower one that is also a preferred rule.
+            i = 0
+            while i < ruleWithStartTokenList.length:
+                if self.translateToRuleIndex(i, ruleWithStartTokenList):
+                    return True
+                i += 1
+
+        return False
+
+
+    #
     # Walks the rule chain upwards to see if that matches any of the preferred rules.
     # If found, that rule is added to the collection candidates and true is returned.
-    def translateToRuleIndex(self, ruleStack):
-        """ generated source for method translateToRuleIndex """
+    #
+    def translateToRuleIndex(self, i: int, ruleStack: RuleWithStartTokenList) -> bool:
         if not self.preferredRules:
             return False
 
@@ -314,16 +305,15 @@ class CodeCompletionCore:
             if ruleStack.get( i ) in self.preferredRules:
                 # Add the rule to our candidates list along with the current rule path,
                 # but only if there isn't already an entry like that.
-                # TODO fix loop
                 # TODO implement LinkedList as deque()
                 #  List<Integer> path = new LinkedList<>(ruleStack.subList(0, i));
                 path = collections.deque( ruleStack.subList( 0, i ) )
                 addNew = True
-                for entry in self.candidates.rules.entrySet():
-                    if not entry.getKey() == ruleStack.get( i ) or entry.getValue().size() != len( path ):
+                for key, value in self.candidates.rules.items():
+                    if not key == ruleStack.get( i ) or value.size() != len( path ):
                         continue
                     # Found an entry for this rule. Same path? If so don't add a new (duplicate) entry.
-                    if path == entry.getValue():
+                    if path == value:
                         addNew = False
                         break
 
@@ -434,8 +424,7 @@ class CodeCompletionCore:
     # Walks the ATN for a single rule only. It returns the token stream position for each path that could be matched in this rule.
     # The result can be empty in case we hit only non-epsilon transitions that didn't match the current input or if we
     # hit the caret position.
-    def processRule(self, startState: ATNState, tokenListIndex: int, callStack: collections.deque, precedence: int,
-                    indentation: int) -> RuleEndStatus:
+    def processRule(self, startState: ATNState, tokenListIndex: int, callStack: collections.deque, precedence: int, indentation: int) -> RuleEndStatus:
 
         # Start with rule specific handling before going into the ATN walk.
 
@@ -509,10 +498,7 @@ class CodeCompletionCore:
                                 if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
                                     # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
                                     #  self.logger.debug("=====> collected: " + self.vocabulary.getDisplayName(symbol))
-                                    self.logger.debug(
-                                        "=====> collected: " + IntervalSet.elementName( self.literalNames,
-                                                                                        self.symbolicNames,
-                                                                                        symbol ) )
+                                    self.logger.debug( "=====> collected: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol) )
                                 if not symbol in self.candidates.tokens:
                                     self.candidates.tokens[symbol] = followSet.following
                                 else:
@@ -563,8 +549,7 @@ class CodeCompletionCore:
                     if transition.getSerializationType() == Transition.RULE:
                         # TODO as set
                         #  Set<Integer> endStatus = this.processRule(transition.target, currentEntry.tokenListIndex, callStack, indentation);
-                        endStatus = self.processRule( transition.target, currentEntry.tokenListIndex, callStack,
-                                                      indentation )
+                        endStatus = self.processRule( transition.target, currentEntry.tokenListIndex, callStack, indentation )
                         for position in endStatus:
                             statePipeline.append( self.PipelineEntry( (transition).followState, position ) )
                     elif transition.getSerializationType() == Transition.PREDICATE:
@@ -605,10 +590,7 @@ class CodeCompletionCore:
                                             if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
                                                 # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
                                                 #  self.logger.debug("=====> collected: " + self.vocabulary.getDisplayName(symbol))
-                                                self.logger.debug(
-                                                    "=====> collected: " + IntervalSet.elementName( self.literalNames,
-                                                                                                    self.symbolicNames,
-                                                                                                    symbol ) )
+                                                self.logger.debug( "=====> collected: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
                                             if addFollowing:
                                                 self.candidates.tokens[symbol] = self.getFollowingTokens( transition )
                                             else:
@@ -624,10 +606,7 @@ class CodeCompletionCore:
                                         # TODO set logger to debug
                                         # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
                                         #  self.logger.debug("=====> consumed: " + self.vocabulary.getDisplayName(currentSymbol))
-                                        self.logger.debug(
-                                            "=====> consumed: " + IntervalSet.elementName( self.literalNames,
-                                                                                           self.symbolicNames,
-                                                                                           currentSymbol ) )
+                                        self.logger.debug( "=====> consumed: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, currentSymbol ) )
                                     statePipeline.append(
                                         self.PipelineEntry( transition.target, currentEntry.tokenListIndex + 1 ) )
         callStack.removeLast()
@@ -665,16 +644,18 @@ class CodeCompletionCore:
                 if len( symbols ) > 2:
                     # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
                     #  labels_list.append(self.vocabulary.getDisplayName(symbols.get(0)) + " .. " + self.vocabulary.getDisplayName(symbols.get(len(symbols) - 1)))
-                    labels_list.append( IntervalSet.elementName( self.literalNames, self.symbolicNames,
-                                                                 symbols.get( 0 ) ) + " .. " + IntervalSet.elementName(
-                        self.literalNames, self.symbolicNames, symbols.get( len( symbols ) - 1 ) ) )
+                    labels_list.append(
+                        IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols.get( 0 ) ) +
+                        " .. " +
+                        IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols.get( len( symbols ) - 1 ) )
+                    )
                 else:
                     for symbol in symbols:
                         if 0 > len( labels_list ):
                             labels_list.append( ", " )
                         # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
                         #  labels_list.append(self.vocabulary.getDisplayName(symbol))
-                        labels_list.append( IntervalSet.elementName( self.literalNames, self.symbolicNames, symbol ) )
+                        labels_list.append( IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
                 if 0 == len( labels_list ):
                     labels_list.append( "E" )
                 transitionDescription_list.append( "\n" ).append( currentIndent ).append( "\t(" ).append(

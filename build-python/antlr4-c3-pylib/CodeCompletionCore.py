@@ -74,6 +74,17 @@ RuleWithStartTokenList = Deque['RuleWithStartToken']
 
 RuleEndStatus = Set[int]
 
+# A record for a follow set along with the path at which this set was found.
+# If there is only a single symbol in the interval set then we also collect and store tokens which follow
+# this symbol directly in its rule (i.e. there is no intermediate rule transition). Only single label transitions
+# are considered. This is useful if you have a chain of tokens which can be suggested as a whole, because there is
+# a fixed sequence in the grammar.
+@dataclass
+class FollowSetWithPath(object):
+    intervals = IntervalSet()
+    path = []
+    following = []
+
 #
 #  Port of antlr-c3 javascript library to java
 #  <p>
@@ -180,18 +191,10 @@ class CodeCompletionCore(object):
         def __str__(self):
             # TODO
             #  https://nygeek.wordpress.com/2015/07/18/simple-python-__str__self-method-for-use-during-development/
-            return str('CandidatesCollection{' + self.__dict__ + '}')
+            return str('CandidatesCollection{' + str(self.__dict__) + '}')
             # return "CandidatesCollection{" + "tokens=" + str(self.tokens) + ", rules=" + str(self.rules) + ", ruleStrings=" + str(self.rulePositions) + '}'
 
-    # A record for a follow set along with the path at which this set was found.
-    # If there is only a single symbol in the interval set then we also collect and store tokens which follow
-    # this symbol directly in its rule (i.e. there is no intermediate rule transition). Only single label transitions
-    # are considered. This is useful if you have a chain of tokens which can be suggested as a whole, because there is
-    # a fixed sequence in the grammar.
-    class FollowSetWithPath(object):
-        intervals = IntervalSet()
-        path = []
-        following = []
+
 
     # A list of follow sets (for a given state number) + all of them combined for quick hit tests.
     # This data is static in nature (because the used ATN states are part of a static struct: the ATN).
@@ -374,14 +377,15 @@ class CodeCompletionCore(object):
     # If found, that rule is added to the collection candidates and true is returned.
     def translateToRuleIndex(self, ruleStack):
         """ generated source for method translateToRuleIndex """
-        if self.preferredRules.isEmpty():
+        if not self.preferredRules:
             return False
 
         # Loop over the rule stack from highest to lowest rule level. This way we properly handle the higher rule
         # if it contains a lower one that is also a preferred rule.
         i = 0
         while i < len(ruleStack):
-            if self.preferredRules.contains(ruleStack.get(i)):
+            # if self.preferredRules.contains(ruleStack.get(i)):
+            if ruleStack.get(i) in self.preferredRules:
                 # Add the rule to our candidates list along with the current rule path,
                 # but only if there isn't already an entry like that.
                 # TODO fix loop
@@ -398,7 +402,7 @@ class CodeCompletionCore(object):
                         break
 
                 if addNew:
-                    self.candidates.rules.put(ruleStack.get(i), path)
+                    self.candidates.rules[ruleStack.get(i)] = path
                     # TODO if self.showDebugOutput and self.logger.isLoggable(Level.FINE):
                     if self.showDebugOutput and self.logger.isEnabledFor(logging.DEBUG):
                         self.logger.debug("=====> collected: " + self.ruleNames[i])
@@ -416,20 +420,20 @@ class CodeCompletionCore(object):
         seen = collections.deque()  # unused but in orig
         # LinkedList<ATNState> pipeline = new LinkedList<>();
         pipeline = collections.deque()
-        """ generated source for method getFollowingTokens """
-        pipeline.add(initialTransition.target)
-        while not pipeline.isEmpty():
-            state = pipeline.removeLast()
+        pipeline.append(initialTransition.target)
+        while pipeline:
+            # pipeline not empty
+            state = pipeline.pop()
 
-            for transition in state.getTransitions():
-                if transition.getSerializationType() == Transition.ATOM:
-                    if not transition.isEpsilon():
-                        list_ = transition.label().toList()
-                        if len(list_) == 1 and not self.ignoredTokens.contains(list_.get(0)):
-                            result.addLast(list_.get(0))
-                            pipeline.addLast(transition.target)
+            for transition in state.transitions:
+                if transition.serializationType == Transition.ATOM:
+                    if not transition.isEpsilon:
+                        list_ = list(transition.label)
+                        if len(list_) == 1 and not list_[0] in self.ignoredTokens:
+                            result.append(list_[0])
+                            pipeline.append(transition.target)
                     else:
-                        pipeline.addLast(transition.target)
+                        pipeline.append(transition.target)
         return result
 
     # Entry point for the recursive follow set collection function.
@@ -450,53 +454,61 @@ class CodeCompletionCore(object):
     # algorithm as used in the LL1Analyzer class, but here we consider predicates also and use no parser rule context.
     def collectFollowSets(self, s, stopState, followSets, seen, ruleStack):
         """ generated source for method collectFollowSets """
-        if seen.contains(s):
+        # TODO use in operator
+        #  if seen.contains(s):
+        if s in seen:
             return
 
         seen.add(s)
 
-        if s == stopState or s.getStateType() == ATNState.RULE_STOP:
-            set.intervals = IntervalSet.of(Token.EPSILON)
+        if s == stopState or s.stateType == ATNState.RULE_STOP:
+            followSet: FollowSetWithPath = FollowSetWithPath()
+            followSet.intervals = IntervalSet.of(Token.EPSILON)
             # TODO implement LinkedList as deque()
             #  set.path = new LinkedList<Integer>(ruleStack);
-            set.path = collections.deque(ruleStack)
-            followSets.addLast(set)
+            followSet.path = collections.deque(ruleStack)
+            followSets.append(followSet)
             return
 
-        for transition in s.getTransitions():
-            if transition.getSerializationType() == Transition.RULE:
+        for transition in s.transitions:
+            if transition.serializationType == Transition.RULE:
                 ruleTransition = transition
-                if ruleStack.indexOf(ruleTransition.target.ruleIndex) != -1:
+                # TODO check semantic eg skip the current iteration
+                #  if ruleStack.index(ruleTransition.target.ruleIndex) != -1:
+                if ruleTransition.target.ruleIndex in ruleStack:
                     continue
-                ruleStack.addLast(ruleTransition.target.ruleIndex)
+                ruleStack.append(ruleTransition.target.ruleIndex)
                 self.collectFollowSets(transition.target, stopState, followSets, seen, ruleStack)
-                ruleStack.removeLast()
-            elif transition.getSerializationType() == Transition.PREDICATE:
+                ruleStack.pop()
+            elif transition.serializationType == Transition.PREDICATE:
                 if self.checkPredicate(transition):
                     self.collectFollowSets(transition.target, stopState, followSets, seen, ruleStack)
-            elif transition.isEpsilon():
+            elif transition.isEpsilon:
                 self.collectFollowSets(transition.target, stopState, followSets, seen, ruleStack)
-            elif transition.getSerializationType() == Transition.WILDCARD:
-                set.intervals = IntervalSet.of(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType)
+            elif transition.serializationType == Transition.WILDCARD:
+                followSet: FollowSetWithPath = FollowSetWithPath()
+                followSet.intervals = IntervalSet.of(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType)
                 # TODO implement LinkedList as deque()
                 #  set.path = new LinkedList<Integer>(ruleStack);
-                set.path = collections.deque(ruleStack)
-                followSets.addLast(set)
+                followSet.path = collections.deque(ruleStack)
+                followSets.append(followSet)
             else:
-                if label != None and len(label) > 0:
-                    if transition.getSerializationType() == Transition.NOT_SET:
+                label = transition.label
+                if label is not None and len(label) > 0:
+                    if transition.serializationType == Transition.NOT_SET:
                         label = label.complement(IntervalSet.of(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType))
-                    set.intervals = label
+                    followSet: FollowSetWithPath = FollowSetWithPath()
+                    followSet.intervals = label
                     # TODO implement LinkedList as deque()
                     #  set.path = new LinkedList<Integer>(ruleStack);
-                    set.path = collections.deque(ruleStack)
-                    set.following = self.getFollowingTokens(transition)
-                    followSets.addLast(set)
+                    followSet.path = collections.deque(ruleStack)
+                    followSet.following = self.getFollowingTokens(transition)
+                    followSets.append(followSet)
 
     # Walks the ATN for a single rule only. It returns the token stream position for each path that could be matched in this rule.
     # The result can be empty in case we hit only non-epsilon transitions that didn't match the current input or if we
     # hit the caret position.
-    def processRule(self, startState:ATNState, tokenIndex:int, callStack:collections.deque, precedence:int, indentation:int) -> RuleEndStatus :
+    def processRule(self, startState:ATNState, tokenListIndex:int, callStack:collections.deque, precedence:int, indentation:int) -> RuleEndStatus :
 
         # Start with rule specific handling before going into the ATN walk.
 
@@ -508,15 +520,15 @@ class CodeCompletionCore(object):
             positionMap ={}
             self.shortcutMap[startState.ruleIndex] = positionMap
         else:
-            if positionMap.containsKey(tokenIndex):
+            if positionMap.containsKey(tokenListIndex):
                 if self.showDebugOutput:
                     # TODO set fine to debug
                     self.logger.debug("=====> shortcut")
-                return positionMap.get(tokenIndex)
+                return positionMap.get(tokenListIndex)
 
         # TODO implement HashSet as set()
         #  Set<Integer> result = new HashSet<>();
-        result = set()
+        result: RuleEndStatus = set()
 
         #  For rule start states we determine and cache the follow set, which gives us 3 advantages:
         #  1) We can quickly check if a symbol would be matched when we follow that rule. We can so check in advance
@@ -530,12 +542,12 @@ class CodeCompletionCore(object):
             # TODO implement HashMap as dictionaries
             #  positionMap = new HashMap<>();
             setsPerState ={}
-            self.followSetsByATN.put(self.parser.__class__.__name__, setsPerState)
+            self.followSetsByATN[self.parser.__class__.__name__] = setsPerState
 
         followSets = setsPerState.get(startState.stateNumber)
         if followSets is None:
             followSets = self.FollowSetsHolder()
-            setsPerState.put(startState.stateNumber, followSets)
+            setsPerState[startState.stateNumber] = followSets
             stop = self.atn.ruleToStopState[startState.ruleIndex]
             followSets.sets = self.determineFollowSets(startState, stop)
 
@@ -546,32 +558,40 @@ class CodeCompletionCore(object):
                 combined.addSet(followSet.intervals)
             followSets.combined = combined
 
-        callStack.append(startState.ruleIndex)
-        currentSymbol = self.tokens.get(tokenIndex).getType()
-        if tokenIndex >= len(self.tokens) - 1:
-            if self.preferredRules.contains(startState.ruleIndex):
+        # TODO next
+        # Get the token index where our rule starts from our (possibly filtered) token list
+        startTokenIndex = self.tokens[tokenListIndex].tokenIndex
+
+        callStack.append({
+            startTokenIndex,
+            startState.ruleIndex,
+        })
+
+        currentSymbol = self.tokens[tokenListIndex].type
+        if tokenListIndex >= len(self.tokens) - 1:
+            if startState.ruleIndex in self.preferredRules:
                 self.translateToRuleIndex(callStack)
             else:
-                for set in followSets.sets:
+                for followSet in followSets.sets:
                     # TODO implement LinkedList as deque()
                     #  LinkedList<Integer> fullPath = new LinkedList<>(callStack);
-                    fullPath = collections.deque()
-                    fullPath.addAll(set.path)
+                    fullPath = collections.deque(callStack)
+                    fullPath.extend(followSet.path)
                     if not self.translateToRuleIndex(fullPath):
-                        for symbol in set.intervals.toList():
-                            if not self.ignoredTokens.contains(symbol):
+                        for symbol in list(followSet.intervals):
+                            if not symbol in self.ignoredTokens:
                                 # TODO set logger to debug
                                 #  logger.isLoggable(Level.FINE)
                                 if self.showDebugOutput and self.logger.isEnabledFor(logging.DEBUG):
                                     # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
                                     #  self.logger.debug("=====> collected: " + self.vocabulary.getDisplayName(symbol))
                                     self.logger.debug("=====> collected: " + IntervalSet.elementName(self.literalNames, self.symbolicNames, symbol))
-                                if not self.candidates.tokens.containsKey(symbol):
-                                    self.candidates.tokens.put(symbol, set.following)
+                                if not symbol in self.candidates.tokens:
+                                    self.candidates.tokens[symbol] = followSet.following
                                 else:
-                                    if not self.candidates.tokens.get(symbol) == set.following:
+                                    if not self.candidates.tokens[symbol] == followSet.following:
                                         # TODO implement LinkedList as deque()
-                                        self.candidates.tokens.put(symbol, collections.deque())
+                                        self.candidates.tokens[symbol] = collections.deque()
                             else:
                                 self.logger.fine("====> collection: Ignoring token: " + symbol)
             # callStack.removeLast()
@@ -587,7 +607,7 @@ class CodeCompletionCore(object):
         #  LinkedList<PipelineEntry> statePipeline = new LinkedList<>();
         statePipeline = collections.deque()
         currentEntry = self.PipelineEntry()
-        statePipeline.add(self.PipelineEntry(startState, tokenIndex))
+        statePipeline.add(self.PipelineEntry(startState, tokenListIndex))
         while not statePipeline.isEmpty():
             currentEntry = statePipeline.removeLast()
             self.statesProcessed += 1
@@ -616,10 +636,10 @@ class CodeCompletionCore(object):
                         #  Set<Integer> endStatus = this.processRule(transition.target, currentEntry.tokenIndex, callStack, indentation);
                         endStatus = self.processRule(transition.target, currentEntry.tokenIndex, callStack, indentation)
                         for position in endStatus:
-                            statePipeline.addLast(self.PipelineEntry((transition).followState, position))
+                            statePipeline.append(self.PipelineEntry((transition).followState, position))
                     elif transition.getSerializationType() == Transition.PREDICATE:
                         if self.checkPredicate(transition):
-                            statePipeline.addLast(self.PipelineEntry(transition.target, currentEntry.tokenIndex))
+                            statePipeline.append(self.PipelineEntry(transition.target, currentEntry.tokenIndex))
                     elif transition.getSerializationType() == Transition.WILDCARD:
                         if atCaret:
                             if not self.translateToRuleIndex(callStack):
@@ -627,21 +647,21 @@ class CodeCompletionCore(object):
                                     if not self.ignoredTokens.contains(token):
                                         # TODO implement LinkedList as deque()
                                         #  this.candidates.tokens.put(token, new LinkedList<Integer>());
-                                        self.candidates.tokens.put(token, collections.deque())
+                                        self.candidates.tokens[token] = collections.deque()
                         else:
-                            statePipeline.addLast(self.PipelineEntry(transition.target, currentEntry.tokenIndex + 1))
+                            statePipeline.append(self.PipelineEntry(transition.target, currentEntry.tokenIndex + 1))
                     else:
                         if transition.isEpsilon():
-                            statePipeline.addLast(self.PipelineEntry(transition.target, currentEntry.tokenIndex))
+                            statePipeline.append(self.PipelineEntry(transition.target, currentEntry.tokenIndex))
                             continue
-                        if set != None and len(set) > 0:
+                        if followSet != None and len(followSet) > 0:
                             if transition.getSerializationType() == Transition.NOT_SET:
-                                set = set.complement(IntervalSet.of(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType))
+                                followSet = followSet.complement(IntervalSet.of(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType))
                             if atCaret:
                                 if not self.translateToRuleIndex(callStack):
                                     # TODO
                                     #  List<Integer> list = set.toList();
-                                    list_ = list(set)
+                                    list_ = list(followSet)
                                     # TODO check length of list
                                     #  boolean addFollowing = list.size() == 1;
                                     addFollowing = list.size() == 1;
@@ -654,14 +674,14 @@ class CodeCompletionCore(object):
                                                 #  self.logger.debug("=====> collected: " + self.vocabulary.getDisplayName(symbol))
                                                 self.logger.debug("=====> collected: " + IntervalSet.elementName(self.literalNames, self.symbolicNames, symbol))
                                             if addFollowing:
-                                                self.candidates.tokens.put(symbol, self.getFollowingTokens(transition))
+                                                self.candidates.tokens[symbol] = self.getFollowingTokens(transition)
                                             else:
                                                 pass
                                         else:
                                             # TODO set logger to debug
                                             self.logger.debug("====> collected: Ignoring token: " + symbol)
                             else:
-                                if set.contains(currentSymbol):
+                                if followSet.contains(currentSymbol):
                                     # TODO set logger to debug
                                     #  logger.isLoggable(Level.FINE)
                                     if self.showDebugOutput and self.logger.isEnabledFor(logging.DEBUG):
@@ -669,9 +689,9 @@ class CodeCompletionCore(object):
                                         # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
                                         #  self.logger.debug("=====> consumed: " + self.vocabulary.getDisplayName(currentSymbol))
                                         self.logger.debug("=====> consumed: " + IntervalSet.elementName(self.literalNames, self.symbolicNames, currentSymbol))
-                                    statePipeline.addLast(self.PipelineEntry(transition.target, currentEntry.tokenIndex + 1))
+                                    statePipeline.append(self.PipelineEntry(transition.target, currentEntry.tokenIndex + 1))
         callStack.removeLast()
-        positionMap.put(tokenIndex, result)
+        positionMap[tokenListIndex] = result
         return result
 
     def generateBaseDescription(self, state):

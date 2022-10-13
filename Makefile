@@ -1,35 +1,36 @@
 # enable ANTLR support
-antlr4 := java -jar /usr/local/lib/antlr-4.10.1-complete.jar
+antlr4 := java -jar /usr/local/lib/antlr-4.11.1-complete.jar
 
-PKGTARGETS = Terminals Expression Configuration Declaration TestExpr TestExprCore TestGrammar
+PKGTARGETS = Terminals Expression Configuration Declaration TestExprCore TestGrammar
 
 # Release version used by release targets
-PACKAGE = TestExprCore
+PACKAGE = TestGrammar
 VER = $(strip $(shell cat version))
 PYVERDIR = $(PACKAGE)-$(VER)
 PYBUILDDIR = build/$(PYVERDIR)
-SRCDIR = build
+OBJDIR = build
+SRCDIR = grammars/dev
 GRAMMAR = $(PACKAGE).g4
 
-all: clean $(SRCDIR)-python/$(PACKAGE) $(SRCDIR)-java/$(PACKAGE)
-	javac $(SRCDIR)-java/$(PACKAGE)/*.java
+all: clean $(OBJDIR)-python/$(PACKAGE) $(OBJDIR)-java/$(PACKAGE)
+	javac $(OBJDIR)-java/$(PACKAGE)/*.java
 
 all_pkg: $(PKGTARGETS)
 
-$(PKGTARGETS): %: %.g4
-	$(antlr4) $< -o $(SRCDIR)-python/$@ -visitor -Dlanguage=Python3
-	$(antlr4) $< -o $(SRCDIR)-java/$@ -visitor
-	# javac $(SRCDIR)-java/$@/*.java
+$(PKGTARGETS): %: $(SRCDIR)/%.g4
+	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-python/$@ -visitor -package $@ -Dlanguage=Python3
+	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-java/$@ -visitor -package $@ 
+	javac $(OBJDIR)-java/$@/*.java
 
-$(SRCDIR)-python/$(PACKAGE): $(GRAMMAR)
-	$(antlr4) $< -o $(SRCDIR)-python/$(PACKAGE) -visitor -Dlanguage=Python3
+$(OBJDIR)-python/$(PACKAGE): $(SRCDIR)/$(GRAMMAR)
+	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-python/$(PACKAGE) -visitor -Dlanguage=Python3
 
-$(SRCDIR)-java/$(PACKAGE): $(GRAMMAR)
-	$(antlr4) $< -o $(SRCDIR)-java/$(PACKAGE) -visitor
+$(OBJDIR)-java/$(PACKAGE): $(SRCDIR)/$(GRAMMAR)
+	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-java/$(PACKAGE) -visitor
 
-$(GRAMMAR).tar.gz: $(SRCDIR)-python/$(PACKAGE)
+$(GRAMMAR).tar.gz: $(OBJDIR)-python/$(PACKAGE)
 	mkdir -p $(PYBUILDDIR)
-	cp $(SRCDIR)-python/$(PACKAGE)/* $(PYBUILDDIR)
+	cp $(OBJDIR)-python/$(PACKAGE)/* $(PYBUILDDIR)
 	cp README.md $(PYBUILDDIR)/README.md
 	cp LICENSE $(PYBUILDDIR)
 	cd build; tar -czf $@ $(PYVERDIR); cd ..
@@ -38,9 +39,10 @@ release: $(GRAMMAR).tar.gz
 	mkdir -p release
 	mv build/$(GRAMMAR).tar.gz release/$(GRAMMAR)-$(VER).tar.gz
 
-.PHONY: clean
-clean:
-	rm -rf $(SRCDIR)-python/$(PACKAGE) $(SRCDIR)-java/$(PACKAGE) build/
-
-dist-clean:
-	rm -rf $(SRCDIR)-python $(SRCDIR)-java build release __pycache__
+## TODO move source code into separate directory
+#.PHONY: clean
+#clean:
+#	rm -rf $(OBJDIR)-python/$(PACKAGE) $(OBJDIR)-java/$(PACKAGE) build/
+#
+#dist-clean:
+#	rm -rf $(OBJDIR)-python $(OBJDIR)-java build release __pycache__

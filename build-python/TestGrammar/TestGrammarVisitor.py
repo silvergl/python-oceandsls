@@ -1,4 +1,4 @@
-# Generated from TestGrammar.g4 by ANTLR 4.10.1
+# Generated from TestGrammar.g4 by ANTLR 4.11.1
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .TestGrammarParser import TestGrammarParser
@@ -9,28 +9,58 @@ else:
 
 class TestGrammarVisitor(ParseTreeVisitor):
 
-    # Visit a parse tree produced by TestGrammarParser#FooExpr.
-    def visitFooExpr(self, ctx:TestGrammarParser.FooExprContext):
+    # Visit a parse tree produced by TestGrammarParser#startProg.
+    def visitStartProg(self, ctx:TestGrammarParser.StartProgContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestGrammarParser#BarExpr.
-    def visitBarExpr(self, ctx:TestGrammarParser.BarExprContext):
+    # Visit a parse tree produced by TestGrammarParser#printExprStat.
+    def visitPrintExprStat(self, ctx:TestGrammarParser.PrintExprStatContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestGrammarParser#NumberExpr.
+    # Visit a parse tree produced by TestGrammarParser#assignStat.
+    def visitAssignStat(self, ctx:TestGrammarParser.AssignStatContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestGrammarParser#blankStat.
+    def visitBlankStat(self, ctx:TestGrammarParser.BlankStatContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestGrammarParser#funcExpr.
+    def visitFuncExpr(self, ctx:TestGrammarParser.FuncExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestGrammarParser#addSubExpr.
+    def visitAddSubExpr(self, ctx:TestGrammarParser.AddSubExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestGrammarParser#numberExpr.
     def visitNumberExpr(self, ctx:TestGrammarParser.NumberExprContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestGrammarParser#ParenExpr.
-    def visitParenExpr(self, ctx:TestGrammarParser.ParenExprContext):
+    # Visit a parse tree produced by TestGrammarParser#parensExpr.
+    def visitParensExpr(self, ctx:TestGrammarParser.ParensExprContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestGrammarParser#InfixExpr.
-    def visitInfixExpr(self, ctx:TestGrammarParser.InfixExprContext):
+    # Visit a parse tree produced by TestGrammarParser#mulDivExpr.
+    def visitMulDivExpr(self, ctx:TestGrammarParser.MulDivExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestGrammarParser#idExpr.
+    def visitIdExpr(self, ctx:TestGrammarParser.IdExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestGrammarParser#argList.
+    def visitArgList(self, ctx:TestGrammarParser.ArgListContext):
         return self.visitChildren(ctx)
 
 

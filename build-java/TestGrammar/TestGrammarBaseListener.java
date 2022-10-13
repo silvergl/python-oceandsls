@@ -1,4 +1,5 @@
-// Generated from TestGrammar.g4 by ANTLR 4.10.1
+// Generated from java-escape by ANTLR 4.11.1
+package TestGrammar;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -9,31 +10,80 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
+@SuppressWarnings("CheckReturnValue")
 public class TestGrammarBaseListener implements TestGrammarListener {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFooExpr(TestGrammarParser.FooExprContext ctx) { }
+	@Override public void enterStartProg(TestGrammarParser.StartProgContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFooExpr(TestGrammarParser.FooExprContext ctx) { }
+	@Override public void exitStartProg(TestGrammarParser.StartProgContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBarExpr(TestGrammarParser.BarExprContext ctx) { }
+	@Override public void enterPrintExprStat(TestGrammarParser.PrintExprStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBarExpr(TestGrammarParser.BarExprContext ctx) { }
+	@Override public void exitPrintExprStat(TestGrammarParser.PrintExprStatContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssignStat(TestGrammarParser.AssignStatContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssignStat(TestGrammarParser.AssignStatContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBlankStat(TestGrammarParser.BlankStatContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBlankStat(TestGrammarParser.BlankStatContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFuncExpr(TestGrammarParser.FuncExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFuncExpr(TestGrammarParser.FuncExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAddSubExpr(TestGrammarParser.AddSubExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAddSubExpr(TestGrammarParser.AddSubExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -51,25 +101,49 @@ public class TestGrammarBaseListener implements TestGrammarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParenExpr(TestGrammarParser.ParenExprContext ctx) { }
+	@Override public void enterParensExpr(TestGrammarParser.ParensExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParenExpr(TestGrammarParser.ParenExprContext ctx) { }
+	@Override public void exitParensExpr(TestGrammarParser.ParensExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInfixExpr(TestGrammarParser.InfixExprContext ctx) { }
+	@Override public void enterMulDivExpr(TestGrammarParser.MulDivExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInfixExpr(TestGrammarParser.InfixExprContext ctx) { }
+	@Override public void exitMulDivExpr(TestGrammarParser.MulDivExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdExpr(TestGrammarParser.IdExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdExpr(TestGrammarParser.IdExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArgList(TestGrammarParser.ArgListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArgList(TestGrammarParser.ArgListContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

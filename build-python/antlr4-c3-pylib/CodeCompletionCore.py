@@ -17,8 +17,8 @@ __author__ = 'sgu'
 # package: com.vmware.antlr4c3
 
 # TODO add util imports
-import collections
-import logging
+import logging, itertools
+from collections import deque
 logging.basicConfig(level=logging.DEBUG)
 
 from dataclasses import dataclass, field
@@ -119,6 +119,14 @@ class PipelineEntry:
     state: ATNState
     tokenListIndex: int
 
+#
+#  Extract elements from deque without altering it.
+#
+def slice_deque(deq: deque, start: int, stop: int) -> list:
+    deq.rotate(-start)
+    slice = list(itertools.islice(deq, 0, stop-start))
+    deq.rotate(start)
+    return slice
 
 #
 #  The main class for doing the collection process.
@@ -210,7 +218,7 @@ class CodeCompletionCore:
         # TODO implement LinkedList as deque()
         #  https://www.geeksforgeeks.org/python-library-for-linked-list/
         #         this.tokens = new LinkedList<>();
-        self.tokens = collections.deque()
+        self.tokens = deque()
         offset: int = self.tokenStartIndex
         while True:
             token: Token = tokenStream.get( offset )
@@ -227,7 +235,7 @@ class CodeCompletionCore:
 
         # TODO implement LinkedList as deque()
         #         LinkedList<Integer> callStack = new LinkedList<>();
-        callStack: RuleWithStartTokenList = collections.deque()
+        callStack: RuleWithStartTokenList = deque()
         startRule = context.ruleIndex if context is not None else 0
         self.processRule( self.atn.ruleToStartState[startRule], 0, callStack, 0, 0 )
 
@@ -265,14 +273,14 @@ class CodeCompletionCore:
     # preferred rules. If found, that rule is added to the collection candidates and true is returned.
     #
     def translateStackToRuleIndex(self, ruleWithStartTokenList: RuleWithStartTokenList) -> bool:
-        if not self.preferredRules:
-            return False
+        # if not self.preferredRules:
+        #     return False
 
         # Change the direction we iterate over the rule stack
         if self.translateRulesTopDown:
             #  Loop over the rule stack from lowest to highest rule level. This will prioritize a lower preferred rule
             #  if it is a child of a higher one that is also a preferred rule.
-            i = ruleWithStartTokenList.length - 1
+            i = len( ruleWithStartTokenList ) - 1
             while i >= 0:
                 if self.translateToRuleIndex(i, ruleWithStartTokenList):
                     return True
@@ -281,19 +289,35 @@ class CodeCompletionCore:
             #  Loop over the rule stack from highest to lowest rule level. This will prioritize a higher preferred rule
             #  if it contains a lower one that is also a preferred rule.
             i = 0
-            while i < ruleWithStartTokenList.length:
+            while i < len( ruleWithStartTokenList ):
                 if self.translateToRuleIndex(i, ruleWithStartTokenList):
                     return True
                 i += 1
 
         return False
 
-
     #
     # Walks the rule chain upwards to see if that matches any of the preferred rules.
     # If found, that rule is added to the collection candidates and true is returned.
     #
     def translateToRuleIndex(self, i: int, ruleStack: RuleWithStartTokenList) -> bool:
+        ruleIndex = ruleStack[i].ruleIndex
+        startTokenIndex = ruleStack[i].startTokenIndex
+
+        if ruleIndex in self.preferredRules:
+            # Add the rule to our candidates list along with the current rule path,
+            # but only if there isn't already an entry like that.
+            tmp = slice_deque( ruleStack, 0, i)
+            path = list(map((lambda x: x.ruleIndex), slice_deque( ruleStack, 0, i)))
+            addNew = True
+            for key, value in self.candidates.rules.items():
+                if not key == ruleIndex or len( value.ruleList ) != len( path ):
+                    continue
+                # Found an entry for this rule. Same path? If so don't add a new (duplicate) entry.
+                if path == value:
+                    addNew = False
+                    break
+
         if not self.preferredRules:
             return False
 
@@ -307,7 +331,7 @@ class CodeCompletionCore:
                 # but only if there isn't already an entry like that.
                 # TODO implement LinkedList as deque()
                 #  List<Integer> path = new LinkedList<>(ruleStack.subList(0, i));
-                path = collections.deque( ruleStack.subList( 0, i ) )
+                path = deque( ruleStack.subList( 0, i ) )
                 addNew = True
                 for key, value in self.candidates.rules.items():
                     if not key == ruleStack.get( i ) or value.size() != len( path ):
@@ -331,11 +355,11 @@ class CodeCompletionCore:
     def getFollowingTokens(self, initialTransition):
         # TODO implement LinkedList as deque()
         # LinkedList<Integer> result = new LinkedList<>();
-        result = collections.deque()
+        result = deque()
         # LinkedList<ATNState> seen = new LinkedList<>(); // unused but in orig
-        seen = collections.deque()  # unused but in orig
+        seen = deque()  # unused but in orig
         # LinkedList<ATNState> pipeline = new LinkedList<>();
-        pipeline = collections.deque()
+        pipeline = deque()
         pipeline.append( initialTransition.target )
         while pipeline:
             # pipeline not empty
@@ -356,13 +380,13 @@ class CodeCompletionCore:
     def determineFollowSets(self, start, stop):
         # TODO implement LinkedList as deque()
         #  LinkedList<FollowSetWithPath> result = new LinkedList<>();
-        result = collections.deque()
+        result = deque()
         # TODO implement HashSet as set()
         #  Set<ATNState> seen = new HashSet<>();
         seen = set()
         # TODO implement LinkedList as deque()
         #  LinkedList<Integer> ruleStack = new LinkedList<>();
-        ruleStack = collections.deque()
+        ruleStack = deque()
         self.collectFollowSets( start, stop, result, seen, ruleStack )
         return result
 
@@ -382,7 +406,7 @@ class CodeCompletionCore:
             followSet.intervals = IntervalSet.of( Token.EPSILON )
             # TODO implement LinkedList as deque()
             #  set.path = new LinkedList<Integer>(ruleStack);
-            followSet.path = collections.deque( ruleStack )
+            followSet.path = deque( ruleStack )
             followSets.append( followSet )
             return
 
@@ -406,7 +430,7 @@ class CodeCompletionCore:
                 followSet.intervals = IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType )
                 # TODO implement LinkedList as deque()
                 #  set.path = new LinkedList<Integer>(ruleStack);
-                followSet.path = collections.deque( ruleStack )
+                followSet.path = deque( ruleStack )
                 followSets.append( followSet )
             else:
                 label = transition.label
@@ -417,14 +441,14 @@ class CodeCompletionCore:
                     followSet.intervals = label
                     # TODO implement LinkedList as deque()
                     #  set.path = new LinkedList<Integer>(ruleStack);
-                    followSet.path = collections.deque( ruleStack )
+                    followSet.path = deque( ruleStack )
                     followSet.following = self.getFollowingTokens( transition )
                     followSets.append( followSet )
 
     # Walks the ATN for a single rule only. It returns the token stream position for each path that could be matched in this rule.
     # The result can be empty in case we hit only non-epsilon transitions that didn't match the current input or if we
     # hit the caret position.
-    def processRule(self, startState: ATNState, tokenListIndex: int, callStack: collections.deque, precedence: int, indentation: int) -> RuleEndStatus:
+    def processRule(self, startState: ATNState, tokenListIndex: int, callStack: RuleWithStartTokenList, precedence: int, indentation: int) -> RuleEndStatus:
 
         # Start with rule specific handling before going into the ATN walk.
 
@@ -478,19 +502,22 @@ class CodeCompletionCore:
         # Get the token index where our rule starts from our (possibly filtered) token list
         startTokenIndex = self.tokens[tokenListIndex].tokenIndex
 
-        callStack.append( {startTokenIndex, startState.ruleIndex, } )
+        callStack.append( RuleWithStartToken(startTokenIndex, startState.ruleIndex) )
 
         currentSymbol = self.tokens[tokenListIndex].type
         if tokenListIndex >= len( self.tokens ) - 1:
             if startState.ruleIndex in self.preferredRules:
-                self.translateToRuleIndex( callStack )
+                # No need to go deeper when collecting entries and we reach a rule that we want to collect anyway.
+                self.translateStackToRuleIndex( callStack )
             else:
+                # Convert all follow sets to either single symbols or their associated preferred rule and add
+                # the result to our candidates list.
                 for followSet in followSets.sets:
                     # TODO implement LinkedList as deque()
                     #  LinkedList<Integer> fullPath = new LinkedList<>(callStack);
-                    fullPath = collections.deque( callStack )
+                    fullPath = deque( callStack )
                     fullPath.extend( followSet.path )
-                    if not self.translateToRuleIndex( fullPath ):
+                    if not self.translateStackToRuleIndex( fullPath ):
                         for symbol in list( followSet.intervals ):
                             if not symbol in self.ignoredTokens:
                                 # TODO set logger to debug
@@ -504,7 +531,7 @@ class CodeCompletionCore:
                                 else:
                                     if not self.candidates.tokens[symbol] == followSet.following:
                                         # TODO implement LinkedList as deque()
-                                        self.candidates.tokens[symbol] = collections.deque()
+                                        self.candidates.tokens[symbol] = deque()
                             else:
                                 self.logger.fine( "====> collection: Ignoring token: " + symbol )
             # callStack.removeLast()
@@ -518,7 +545,7 @@ class CodeCompletionCore:
 
         # TODO implement LinkedList as deque()
         #  LinkedList<PipelineEntry> statePipeline = new LinkedList<>();
-        statePipeline = collections.deque()
+        statePipeline = deque()
         currentEntry = self.PipelineEntry()
         statePipeline.add( self.PipelineEntry( startState, tokenListIndex ) )
         while not statePipeline.isEmpty():
@@ -557,13 +584,13 @@ class CodeCompletionCore:
                             statePipeline.append( self.PipelineEntry( transition.target, currentEntry.tokenListIndex ) )
                     elif transition.getSerializationType() == Transition.WILDCARD:
                         if atCaret:
-                            if not self.translateToRuleIndex( callStack ):
+                            if not self.translateStackToRuleIndex( callStack ):
                                 for token in IntervalSet.of( Token.MIN_USER_TOKEN_TYPE,
                                                              self.atn.maxTokenType ).toList():
                                     if not self.ignoredTokens.contains( token ):
                                         # TODO implement LinkedList as deque()
                                         #  this.candidates.tokens.put(token, new LinkedList<Integer>());
-                                        self.candidates.tokens[token] = collections.deque()
+                                        self.candidates.tokens[token] = deque()
                         else:
                             statePipeline.append(
                                 self.PipelineEntry( transition.target, currentEntry.tokenListIndex + 1 ) )
@@ -576,7 +603,7 @@ class CodeCompletionCore:
                                 followSet = followSet.complement(
                                     IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType ) )
                             if atCaret:
-                                if not self.translateToRuleIndex( callStack ):
+                                if not self.translateStackToRuleIndex( callStack ):
                                     # TODO
                                     #  List<Integer> list = set.toList();
                                     list_ = list( followSet )
@@ -637,10 +664,10 @@ class CodeCompletionCore:
                 # TODO implement as list of strings
                 #  StringBuilder labels = new StringBuilder();
                 labels_list = []
-                # TODO implement as collections.deque()
+                # TODO implement as deque()
                 #  List<Integer> symbols = (transition.label() != null) ? transition.label().toList() : new LinkedList<>();
                 # TODO check toList
-                symbols = transition.label().toList() if (transition.label() != None) else collections.deque()
+                symbols = transition.label().toList() if (transition.label() != None) else deque()
                 if len( symbols ) > 2:
                     # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
                     #  labels_list.append(self.vocabulary.getDisplayName(symbols.get(0)) + " .. " + self.vocabulary.getDisplayName(symbols.get(len(symbols) - 1)))

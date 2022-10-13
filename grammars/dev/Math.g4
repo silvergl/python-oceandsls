@@ -1,7 +1,7 @@
 grammar Math;
 
 compileUnit
-    :   expr EOF
+    :   variable '=' expr EOF
     ;
 
 expr
@@ -11,6 +11,11 @@ expr
     |   left=expr op=('+'|'-') right=expr    # infixExpr
     |   func=ID '(' expr ')'                 # funcExpr
     |   value=NUM                            # numberExpr
+    |   varname=ID                           # reference
+    ;
+
+variable:
+    'var' varname=ID
     ;
 
 OP_ADD: '+';

@@ -33,7 +33,7 @@ from antlr4.Token import Token
 from antlr4.BufferedTokenStream import TokenStream
 from antlr4.ParserRuleContext import ParserRuleContext
 from antlr4.atn.ATN import ATN
-from antlr4.atn.ATNState import ATNState
+from antlr4.atn.ATNState import ATNState, RuleStartState
 from antlr4.atn.Transition import Transition, PredicateTransition
 
 TokenList = List[int]
@@ -56,7 +56,7 @@ class RuleWithStartToken:
 
 # TODO assure RuleWithStartToken objects
 #  https://stackoverflow.com/q/51944520/
-RuleWithStartTokenList = Deque[RuleWithStartToken]
+RuleWithStartTokenList = List[RuleWithStartToken]
 
 
 # JDO returning information about matching tokens and rules
@@ -95,16 +95,12 @@ class FollowSetWithPath:
     path: RuleList = field( default_factory=list )
     following: TokenList = field( default_factory=list )
 
-
-FollowSetWithPathSet = Set[FollowSetWithPath]
-
-
 # A list of follow sets (for a given state number) + all of them combined for quick hit tests.
 # This data is static in nature (because the used ATN states are part of a static struct: the ATN).
 # Hence it can be shared between all C3 instances, however it depends on the actual parser class (type).
 @dataclass
 class FollowSetsHolder:
-    sets: FollowSetWithPathSet = field( default_factory=set )
+    sets: Set[FollowSetWithPath] = field( default_factory=set )
     combined: IntervalSet = IntervalSet()
 
 
@@ -132,68 +128,82 @@ def slice_deque(deq: deque, start: int, stop: int) -> list:
 #  The main class for doing the collection process.
 #
 class CodeCompletionCore:
+    # TODO implement HashSet as set()
+    #  https://stackoverflow.com/q/26724002/
+    #  Alternative use tuple to be immutable
+    #   https://www.geeksforgeeks.org/mutable-vs-immutable-objects-in-python/
+
     # TODO implement HashMap as dictionaries
     #     private final static Map<String, Map<Integer, FollowSetsHolder>> followSetsByATN = new HashMap<>();
+
+    # TODO implement HashMap as dictionaries
+    #  positionMap = new HashMap<>();
+
+    # TODO implement HashSet as set()
+    #  Set<Integer> result = new HashSet<>();
+
+    # TODO implement HashMap as dictionaries
+    #  positionMap = new HashMap<>();
+
     followSetsByATN: dict[str, FollowSetsPerState] = {}
 
-    atnStateTypeMap = ["invalid", "basic", "rule start", "block start", "plus block start", "star block start",
-                       "token start", "rule stop", "block end", "star loop back", "star loop entry", "plus loop back",
-                       "loop end"]
+    atnStateTypeMap: List[str] = ["invalid", "basic", "rule start", "block start", "plus block start", "star block start",
+                                  "token start", "rule stop", "block end", "star loop back", "star loop entry", "plus loop back",
+                                  "loop end"]
 
     # Debugging options. Print human readable ATN state and other info.
 
     # Not dependent on showDebugOutput. Prints the collected rules + tokens to terminal.
-    showResult = True
+    showResult: bool = True
     # Enables printing ATN state info to terminal.
-    showDebugOutput = True
+    showDebugOutput: bool = True
     # Only relevant when showDebugOutput is true. Enables transition printing for a state.
-    debugOutputWithTransitions = True
+    debugOutputWithTransitions: bool = True
     # Also depends on showDebugOutput. Enables call stack printing for each rule recursion.
-    showRuleStack = True
+    showRuleStack: bool = True
+
+    # Tailoring of the result:
+    # Tokens which should not appear in the candidates set.
+    ignoredTokens : Set[int]
+
+    # Rules which replace any candidate token they contain.
+    # This allows to return descriptive rules (e.g. className, instead of ID/identifier).
+    preferredRules :Set[int]
+
     # Specify if preferred rules should be translated top-down (higher index rule returns first) or
     # bottom-up (lower index rule returns first).
-    translateRulesTopDown = True
+    translateRulesTopDown: bool = True
 
-    tokenStartIndex = 0
-    statesProcessed = 0
+    parser: Parser
+    atn: ATN
+    ruleNames: List[str]
+    tokens: List[Token]
+    # TODO replace Vocabulary.getDisplayName with IntervalSet.elementName()
+    #  self.vocabulary: Vocabulary = parser.getVocabulary()
+    literalNames: List[str]
+    symbolicNames: List[str]
+    precedenceStack: List[int]
+    tokenStartIndex: int = 0
+    statesProcessed: int = 0
 
     # A mapping of rule index to token stream position to end token positions.
     # A rule which has been visited before with the same input position will always produce the same output positions.
-    # TODO implement HashMap as dictionaries
-    #     private final Map<Integer, Map<Integer, Set<Integer>>> shortcutMap = new HashMap<>();
-    shortcutMap = {}
+    shortcutMap: dict[int, dict[ int, RuleEndStatus] ] = {}
 
     # The collected candidates (rules and tokens).
-    candidates = CandidatesCollection()
+    candidates: CandidatesCollection = CandidatesCollection()
 
-    def __init__(self, parser: Parser, preferredRules: tuple = None, ignoredTokens: tuple = None):
-        self.parser: Parser = parser
-        self.atn: ATN = parser.atn
-        # TODO replace Vocabulary.getDisplayName with IntervalSet.elementName()
-        #  self.vocabulary: Vocabulary = parser.getVocabulary()
-        self.literalNames: List[str] = parser.literalNames
-        self.symbolicNames: List[str] = parser.symbolicNames
-        self.ruleNames: List[str] = parser.ruleNames
-        self.tokens: Deque[Token] = None
-        self.precedenceStack: Deque[int] = None
+    def __init__(self, parser: Parser):
+        self.parser = parser
+        self.atn = parser.atn
+        self.literalNames = parser.literalNames
+        self.symbolicNames = parser.symbolicNames
+        self.ruleNames = parser.ruleNames
+        self.ignoredTokens = set()
+        self.preferredRules = set()
 
-        # TODO implement HashSet as tuple to be immutable
-        #  https://www.geeksforgeeks.org/mutable-vs-immutable-objects-in-python/
-        #  Alternative use set()
-        #   https://stackoverflow.com/q/26724002/
-
-        # Tailoring of the result:
-        # Tokens which should not appear in the candidates set.
-        self.ignoredTokens = ignoredTokens if ignoredTokens is not None else ()
-
-        # Rules which replace any candidate token they contain.
-        # This allows to return descriptive rules (e.g. className, instead of ID/identifier).
-        self.preferredRules = preferredRules if preferredRules is not None else ()
-
-    # TODO public final static Logger logger = Logger.getLogger(CodeCompletionCore.class.getName());
+    # TODO
     #  https://www.machinelearningplus.com/python/python-logging-guide/
-    #  check name
-    #  CodeCompletionCore.logger = Logger.getLogger(CodeCompletionCore.__class__.__name__)
     logger = logging.getLogger( __name__ )
 
     # TODO remove getter setter
@@ -212,13 +222,13 @@ class CodeCompletionCore:
         self.statesProcessed = 0
         self.precedenceStack = []
 
-        self.tokenStartIndex = context.start.tokenListIndex if context is not None else 0
+        self.tokenStartIndex = context.start.tokenIndex if context is not None else 0
         tokenStream: TokenStream = self.parser.getInputStream()
 
         # TODO implement LinkedList as deque()
         #  https://www.geeksforgeeks.org/python-library-for-linked-list/
         #         this.tokens = new LinkedList<>();
-        self.tokens = deque()
+        self.tokens = []
         offset: int = self.tokenStartIndex
         while True:
             token: Token = tokenStream.get( offset )
@@ -233,30 +243,31 @@ class CodeCompletionCore:
             if token.type == Token.EOF:
                 break
 
-        # TODO implement LinkedList as deque()
-        #         LinkedList<Integer> callStack = new LinkedList<>();
-        callStack: RuleWithStartTokenList = deque()
-        startRule = context.ruleIndex if context is not None else 0
+        callStack: RuleWithStartTokenList = []
+        startRule: int = context.ruleIndex if context is not None else 0
         self.processRule( self.atn.ruleToStartState[startRule], 0, callStack, 0, 0 )
 
         if self.showResult and self.logger.isEnabledFor( logging.DEBUG ):
             # TODO src
             #  https://waymoot.org/home/python_string/
-            logMessage_list = ["States processed: ", str(self.statesProcessed), "\n\n", "Collected rules:\n"]
+            logMessage_list: List[str] = ["States processed: ", str(self.statesProcessed), "\n\n", "Collected rules:\n"]
             for rule in self.candidates.rules:
-                logMessage_list.append( " " + rule.getKey() + ", path: " )
+                logMessage_list.extend( [ self.ruleNames[rule.getKey()] , ", path: " ] )
 
-                for token in rule.getValue():
-                    logMessage_list.append( self.ruleNames[token] ).append( " " )
-                logMessage_list.append( "\n" )
+                for token in rule.getValue().ruleList:
+                    logMessage_list.extend( [ self.ruleNames[token] , " " ] )
 
-            logMessage_list.append( "Collected Tokens:\n" )
-            for key, value in self.candidates.tokens.items():
-                logMessage_list.extend( [ " " , IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, key ) ] )
+            sortedTokens: Set[str] = set()
+            for key, valueList in self.candidates.tokens.items():
+                symbol: str =  IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, key )
+                for following in valueList:
+                    symbol += " " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, following )
+                sortedTokens.add(symbol)
 
-                for following in value:
-                    logMessage_list.extend( [ " " , IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, following ) ] )
-                logMessage_list.append( "\n" )
+            logMessage_list.append( "\n\nCollected Tokens:\n" )
+            for symbol in sortedTokens:
+                logMessage_list.append(symbol)
+            logMessage_list.append("\n\n")
 
             self.logger.debug( ''.join( logMessage_list ) )
 
@@ -376,30 +387,26 @@ class CodeCompletionCore:
                         pipeline.append( transition.target )
         return result
 
+    #
     # Entry point for the recursive follow set collection function.
-    def determineFollowSets(self, start, stop):
-        # TODO implement LinkedList as deque()
-        #  LinkedList<FollowSetWithPath> result = new LinkedList<>();
-        result = deque()
-        # TODO implement HashSet as set()
-        #  Set<ATNState> seen = new HashSet<>();
-        seen = set()
-        # TODO implement LinkedList as deque()
-        #  LinkedList<Integer> ruleStack = new LinkedList<>();
-        ruleStack = deque()
-        self.collectFollowSets( start, stop, result, seen, ruleStack )
+    #
+    def determineFollowSets(self, start: ATNState, stop: ATNState) -> List[FollowSetWithPath]:
+        result: List[FollowSetWithPath] = []
+        stateStack: List[ATNState] = []
+        ruleStack: List[int] = []
+        self.collectFollowSets( start, stop, result, stateStack, ruleStack )
+
         return result
 
     # Collects possible tokens which could be matched following the given ATN state. This is essentially the same
     # algorithm as used in the LL1Analyzer class, but here we consider predicates also and use no parser rule context.
-    def collectFollowSets(self, s, stopState, followSets, seen, ruleStack):
+    def collectFollowSets(self, s: ATNState, stopState: ATNState, followSets: List[FollowSetWithPath], stateStack: List[ATNState], ruleStack: List[int]):
         """ generated source for method collectFollowSets """
-        # TODO use in operator
-        #  if seen.contains(s):
-        if s in seen:
+        # TODO check lambda function
+        if s in stateStack:
             return
 
-        seen.add( s )
+        stateStack.add( s )
 
         if s == stopState or s.stateType == ATNState.RULE_STOP:
             followSet: FollowSetWithPath = FollowSetWithPath()
@@ -445,29 +452,26 @@ class CodeCompletionCore:
                     followSet.following = self.getFollowingTokens( transition )
                     followSets.append( followSet )
 
+    #
     # Walks the ATN for a single rule only. It returns the token stream position for each path that could be matched in this rule.
     # The result can be empty in case we hit only non-epsilon transitions that didn't match the current input or if we
     # hit the caret position.
-    def processRule(self, startState: ATNState, tokenListIndex: int, callStack: RuleWithStartTokenList, precedence: int, indentation: int) -> RuleEndStatus:
+    #
+    def processRule(self, startState: RuleStartState, tokenListIndex: int, callStack: RuleWithStartTokenList, precedence: int, indentation: int) -> RuleEndStatus:
 
         # Start with rule specific handling before going into the ATN walk.
 
         # Check first if we've taken this path with the same input before.
-        positionMap = self.shortcutMap.get( startState.ruleIndex )
+        positionMap: dict[ int, RuleEndStatus] = self.shortcutMap.get( startState.ruleIndex )
         if positionMap is None:
-            # TODO implement HashMap as dictionaries
-            #  positionMap = new HashMap<>();
             positionMap = {}
             self.shortcutMap[startState.ruleIndex] = positionMap
         else:
-            if positionMap.containsKey( tokenListIndex ):
+            if tokenListIndex in positionMap:
                 if self.showDebugOutput:
-                    # TODO set fine to debug
                     self.logger.debug( "=====> shortcut" )
                 return positionMap.get( tokenListIndex )
 
-        # TODO implement HashSet as set()
-        #  Set<Integer> result = new HashSet<>();
         result: RuleEndStatus = set()
 
         #  For rule start states we determine and cache the follow set, which gives us 3 advantages:
@@ -477,18 +481,17 @@ class CodeCompletionCore:
         #  3) We get this lookup for free with any 2nd or further visit of the same rule, which often happens
         #     in non-trivial grammars, especially with (recursive) expressions and of course when invoking code
         #     completion multiple times.
-        setsPerState = self.followSetsByATN.get( self.parser.__class__.__name__ )
+        # TODO check class attribute CodeCompletionCore.followSetsByATN vs self.followSetsByATN
+        setsPerState: FollowSetsPerState = self.followSetsByATN.get( self.parser.__class__.__name__ )
         if setsPerState is None:
-            # TODO implement HashMap as dictionaries
-            #  positionMap = new HashMap<>();
             setsPerState = {}
             self.followSetsByATN[self.parser.__class__.__name__] = setsPerState
 
-        followSets = setsPerState.get( startState.stateNumber )
+        followSets: FollowSetsHolder = setsPerState.get( startState.stateNumber )
         if followSets is None:
             followSets = FollowSetsHolder()
             setsPerState[startState.stateNumber] = followSets
-            stop = self.atn.ruleToStopState[startState.ruleIndex]
+            stop: ATNState = self.atn.ruleToStopState[startState.ruleIndex]
             followSets.sets = self.determineFollowSets( startState, stop )
 
             # Sets are split by path to allow translating them to preferred rules. But for quick hit tests

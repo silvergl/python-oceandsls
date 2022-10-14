@@ -34,7 +34,7 @@ from antlr4.BufferedTokenStream import TokenStream
 from antlr4.ParserRuleContext import ParserRuleContext
 from antlr4.atn.ATN import ATN
 from antlr4.atn.ATNState import ATNState, RuleStartState
-from antlr4.atn.Transition import Transition, PredicateTransition
+from antlr4.atn.Transition import Transition, PredicateTransition, RuleTransition
 
 TokenList = List[int]
 RuleList = List[int]
@@ -125,9 +125,32 @@ def slice_deque(deq: deque, start: int, stop: int) -> list:
     return slice
 
 #
+# Return an array containing the elements represented by the current set. The
+# array is returned in ascending numerical order.
+#
+def intervalSetToArray(intervalSet: IntervalSet) -> List[int] :
+    values: List = []
+    for interval in intervalSet.intervals:
+        start: int = interval.start
+        stop: int = interval.stop
+
+        while start <= stop:
+            values.append(start)
+            start += 1
+
+    return values
+
+#
 #  The main class for doing the collection process.
 #
 class CodeCompletionCore:
+
+    # TODO implement LinkedList as deque()
+    #  LinkedList<Integer> fullPath = new LinkedList<>(callStack);
+
+    # TODO implement LinkedList as deque()
+    #  set.path = new LinkedList<Integer>(ruleStack);
+
     # TODO implement HashSet as set()
     #  https://stackoverflow.com/q/26724002/
     #  Alternative use tuple to be immutable
@@ -144,6 +167,9 @@ class CodeCompletionCore:
 
     # TODO implement HashMap as dictionaries
     #  positionMap = new HashMap<>();
+
+    # TODO implement LinkedList as deque()
+    #  set.path = new LinkedList<Integer>(ruleStack);
 
     followSetsByATN: dict[str, FollowSetsPerState] = {}
 
@@ -284,8 +310,8 @@ class CodeCompletionCore:
     # preferred rules. If found, that rule is added to the collection candidates and true is returned.
     #
     def translateStackToRuleIndex(self, ruleWithStartTokenList: RuleWithStartTokenList) -> bool:
-        # if not self.preferredRules:
-        #     return False
+        if not self.preferredRules:
+            return False
 
         # Change the direction we iterate over the rule stack
         if self.translateRulesTopDown:
@@ -401,56 +427,57 @@ class CodeCompletionCore:
     # Collects possible tokens which could be matched following the given ATN state. This is essentially the same
     # algorithm as used in the LL1Analyzer class, but here we consider predicates also and use no parser rule context.
     def collectFollowSets(self, s: ATNState, stopState: ATNState, followSets: List[FollowSetWithPath], stateStack: List[ATNState], ruleStack: List[int]):
-        """ generated source for method collectFollowSets """
         # TODO check lambda function
+        #  stateStack.find((x) => x === s)
         if s in stateStack:
             return
 
-        stateStack.add( s )
+        stateStack.append( s )
 
         if s == stopState or s.stateType == ATNState.RULE_STOP:
             followSet: FollowSetWithPath = FollowSetWithPath()
             followSet.intervals = IntervalSet.of( Token.EPSILON )
-            # TODO implement LinkedList as deque()
-            #  set.path = new LinkedList<Integer>(ruleStack);
-            followSet.path = deque( ruleStack )
+            followSet.path = ruleStack[:] # .copy()
             followSets.append( followSet )
+            stateStack.pop()
+
             return
 
         for transition in s.transitions:
             if transition.serializationType == Transition.RULE:
-                ruleTransition = transition
+                # TODO check transition as RuleTransition
+                ruleTransition: RuleTransition = transition
                 # TODO check semantic eg skip the current iteration
                 #  if ruleStack.index(ruleTransition.target.ruleIndex) != -1:
                 if ruleTransition.target.ruleIndex in ruleStack:
                     continue
                 ruleStack.append( ruleTransition.target.ruleIndex )
-                self.collectFollowSets( transition.target, stopState, followSets, seen, ruleStack )
+                self.collectFollowSets( transition.target, stopState, followSets, stateStack, ruleStack )
                 ruleStack.pop()
+
             elif transition.serializationType == Transition.PREDICATE:
+                # TODO check transition as PredicateTransition
                 if self.checkPredicate( transition ):
-                    self.collectFollowSets( transition.target, stopState, followSets, seen, ruleStack )
+                    self.collectFollowSets( transition.target, stopState, followSets, stateStack, ruleStack )
             elif transition.isEpsilon:
-                self.collectFollowSets( transition.target, stopState, followSets, seen, ruleStack )
+                self.collectFollowSets( transition.target, stopState, followSets, stateStack, ruleStack )
             elif transition.serializationType == Transition.WILDCARD:
                 followSet: FollowSetWithPath = FollowSetWithPath()
                 followSet.intervals = IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType )
-                # TODO implement LinkedList as deque()
-                #  set.path = new LinkedList<Integer>(ruleStack);
-                followSet.path = deque( ruleStack )
+                followSet.path = ruleStack[:] # .copy()
                 followSets.append( followSet )
             else:
-                label = transition.label
+                label: IntervalSet = transition.label
                 if label is not None and len( label ) > 0:
                     if transition.serializationType == Transition.NOT_SET:
                         label = label.complement( IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType ) )
                     followSet: FollowSetWithPath = FollowSetWithPath()
                     followSet.intervals = label
-                    # TODO implement LinkedList as deque()
-                    #  set.path = new LinkedList<Integer>(ruleStack);
-                    followSet.path = deque( ruleStack )
+                    followSet.path = ruleStack[:] # .copy()
                     followSet.following = self.getFollowingTokens( transition )
                     followSets.append( followSet )
+
+        stateStack.pop()
 
     #
     # Walks the ATN for a single rule only. It returns the token stream position for each path that could be matched in this rule.
@@ -496,19 +523,20 @@ class CodeCompletionCore:
 
             # Sets are split by path to allow translating them to preferred rules. But for quick hit tests
             # it is also useful to have a set with all symbols combined.
-            combined = IntervalSet()
+            combined: IntervalSet = IntervalSet()
             for followSet in followSets.sets:
                 combined.addSet( followSet.intervals )
             followSets.combined = combined
 
-        # TODO next
         # Get the token index where our rule starts from our (possibly filtered) token list
-        startTokenIndex = self.tokens[tokenListIndex].tokenIndex
+        startTokenIndex: int = self.tokens[tokenListIndex].tokenIndex
 
         callStack.append( RuleWithStartToken(startTokenIndex, startState.ruleIndex) )
 
-        currentSymbol = self.tokens[tokenListIndex].type
-        if tokenListIndex >= len( self.tokens ) - 1:
+        # TODO rm
+        #  currentSymbol = self.tokens[tokenListIndex].type
+
+        if tokenListIndex >= len( self.tokens ) - 1: # At caret?
             if startState.ruleIndex in self.preferredRules:
                 # No need to go deeper when collecting entries and we reach a rule that we want to collect anyway.
                 self.translateStackToRuleIndex( callStack )
@@ -516,12 +544,14 @@ class CodeCompletionCore:
                 # Convert all follow sets to either single symbols or their associated preferred rule and add
                 # the result to our candidates list.
                 for followSet in followSets.sets:
-                    # TODO implement LinkedList as deque()
-                    #  LinkedList<Integer> fullPath = new LinkedList<>(callStack);
-                    fullPath = deque( callStack )
-                    fullPath.extend( followSet.path )
+                    fullPath: RuleWithStartTokenList = callStack[:] # .copy()
+
+                    # Rules derived from our followSet will always start at the same token as our current rule
+                    followSetPath = list(map((lambda path: RuleWithStartToken(startTokenIndex,path)), followSet.path))
+
+                    fullPath.extend(followSetPath)
                     if not self.translateStackToRuleIndex( fullPath ):
-                        for symbol in list( followSet.intervals ):
+                        for symbol in intervalSetToArray(followSet.intervals):
                             if not symbol in self.ignoredTokens:
                                 # TODO set logger to debug
                                 #  logger.isLoggable(Level.FINE)

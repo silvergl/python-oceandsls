@@ -80,3 +80,6 @@ class dictScope:
                         raise ValueError("Variable " + name + " not found global or in given Function.")
                 else:
                     return self.dict[funcI][x][name]
+
+    def __str__(self):
+        return str(self.dict)

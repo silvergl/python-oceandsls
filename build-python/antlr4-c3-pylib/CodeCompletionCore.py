@@ -34,17 +34,15 @@ from antlr4.BufferedTokenStream import TokenStream
 from antlr4.ParserRuleContext import ParserRuleContext
 from antlr4.atn.ATN import ATN
 from antlr4.atn.ATNState import ATNState, RuleStartState
-from antlr4.atn.Transition import Transition, PredicateTransition, RuleTransition
+from antlr4.atn.Transition import Transition, PredicateTransition, RuleTransition, PrecedencePredicateTransition
 
 TokenList = List[int]
 RuleList = List[int]
-
 
 @dataclass
 class CandidateRule:
     startTokenIndex: int
     ruleList: RuleList
-
 
 # TODO add dataclass
 #  https://stackoverflow.com/q/48254562/
@@ -58,7 +56,6 @@ class RuleWithStartToken:
 #  https://stackoverflow.com/q/51944520/
 RuleWithStartTokenList = List[RuleWithStartToken]
 
-
 # JDO returning information about matching tokens and rules
 #
 # All the candidates which have been found. Tokens and rules are separated.
@@ -66,6 +63,10 @@ RuleWithStartTokenList = List[RuleWithStartToken]
 # Rule entries include the index of the starting token within the evaluated rule, along with a call stack of rules found during evaluation.
 @dataclass
 class CandidatesCollection:
+    # TODO implement HashSet as set()
+    #  https://stackoverflow.com/q/26724002/
+    #  Alternative use tuple to be immutable
+    #   https://www.geeksforgeeks.org/mutable-vs-immutable-objects-in-python/
     # TODO implement HashMap as dictionaries
     #         https://www.edureka.co/blog/hash-tables-and-hashmaps-in-python/
     #         https://stackoverflow.com/q/1540673/
@@ -97,7 +98,7 @@ class FollowSetWithPath:
 
 # A list of follow sets (for a given state number) + all of them combined for quick hit tests.
 # This data is static in nature (because the used ATN states are part of a static struct: the ATN).
-# Hence it can be shared between all C3 instances, however it depends on the actual parser class (type).
+# Hence, it can be shared between all C3 instances, however it depends on the actual parser class (type).
 @dataclass
 class FollowSetsHolder:
     sets: Set[FollowSetWithPath] = field( default_factory=set )
@@ -111,7 +112,7 @@ RuleEndStatus = Set[int]
 
 
 @dataclass
-class PipelineEntry:
+class IPipelineEntry:
     state: ATNState
     tokenListIndex: int
 
@@ -120,9 +121,9 @@ class PipelineEntry:
 #
 def slice_deque(deq: deque, start: int, stop: int) -> list:
     deq.rotate(-start)
-    slice = list(itertools.islice(deq, 0, stop-start))
+    sliceList = list(itertools.islice(deq, 0, stop-start))
     deq.rotate(start)
-    return slice
+    return sliceList
 
 #
 # Return an array containing the elements represented by the current set. The
@@ -144,33 +145,6 @@ def intervalSetToArray(intervalSet: IntervalSet) -> List[int] :
 #  The main class for doing the collection process.
 #
 class CodeCompletionCore:
-
-    # TODO implement LinkedList as deque()
-    #  LinkedList<Integer> fullPath = new LinkedList<>(callStack);
-
-    # TODO implement LinkedList as deque()
-    #  set.path = new LinkedList<Integer>(ruleStack);
-
-    # TODO implement HashSet as set()
-    #  https://stackoverflow.com/q/26724002/
-    #  Alternative use tuple to be immutable
-    #   https://www.geeksforgeeks.org/mutable-vs-immutable-objects-in-python/
-
-    # TODO implement HashMap as dictionaries
-    #     private final static Map<String, Map<Integer, FollowSetsHolder>> followSetsByATN = new HashMap<>();
-
-    # TODO implement HashMap as dictionaries
-    #  positionMap = new HashMap<>();
-
-    # TODO implement HashSet as set()
-    #  Set<Integer> result = new HashSet<>();
-
-    # TODO implement HashMap as dictionaries
-    #  positionMap = new HashMap<>();
-
-    # TODO implement LinkedList as deque()
-    #  set.path = new LinkedList<Integer>(ruleStack);
-
     followSetsByATN: dict[str, FollowSetsPerState] = {}
 
     atnStateTypeMap: List[str] = ["invalid", "basic", "rule start", "block start", "plus block start", "star block start",
@@ -251,9 +225,6 @@ class CodeCompletionCore:
         self.tokenStartIndex = context.start.tokenIndex if context is not None else 0
         tokenStream: TokenStream = self.parser.getInputStream()
 
-        # TODO implement LinkedList as deque()
-        #  https://www.geeksforgeeks.org/python-library-for-linked-list/
-        #         this.tokens = new LinkedList<>();
         self.tokens = []
         offset: int = self.tokenStartIndex
         while True:
@@ -277,10 +248,10 @@ class CodeCompletionCore:
             # TODO src
             #  https://waymoot.org/home/python_string/
             logMessage_list: List[str] = ["States processed: ", str(self.statesProcessed), "\n\n", "Collected rules:\n"]
-            for rule in self.candidates.rules:
-                logMessage_list.extend( [ self.ruleNames[rule.getKey()] , ", path: " ] )
+            for key, value in self.candidates.rules.items():
+                logMessage_list.extend( [ self.ruleNames[key] , ", path: " ] )
 
-                for token in rule.getValue().ruleList:
+                for token in value.ruleList:
                     logMessage_list.extend( [ self.ruleNames[token] , " " ] )
 
             sortedTokens: Set[str] = set()
@@ -366,8 +337,6 @@ class CodeCompletionCore:
             if ruleStack.get( i ) in self.preferredRules:
                 # Add the rule to our candidates list along with the current rule path,
                 # but only if there isn't already an entry like that.
-                # TODO implement LinkedList as deque()
-                #  List<Integer> path = new LinkedList<>(ruleStack.subList(0, i));
                 path = deque( ruleStack.subList( 0, i ) )
                 addNew = True
                 for key, value in self.candidates.rules.items():
@@ -380,37 +349,38 @@ class CodeCompletionCore:
 
                 if addNew:
                     self.candidates.rules[ruleStack.get( i )] = path
-                    # TODO if self.showDebugOutput and self.logger.isLoggable(Level.FINE):
                     if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
                         self.logger.debug( "=====> collected: " + self.ruleNames[i] )
                 return True
             i += 1
         return False
 
+    #
     # This method follows the given transition and collects all symbols within the same rule that directly follow it
     # without intermediate transitions to other rules and only if there is a single symbol for a transition.
-    def getFollowingTokens(self, initialTransition):
-        # TODO implement LinkedList as deque()
-        # LinkedList<Integer> result = new LinkedList<>();
-        result = deque()
-        # LinkedList<ATNState> seen = new LinkedList<>(); // unused but in orig
-        seen = deque()  # unused but in orig
-        # LinkedList<ATNState> pipeline = new LinkedList<>();
-        pipeline = deque()
-        pipeline.append( initialTransition.target )
-        while pipeline:
-            # pipeline not empty
-            state = pipeline.pop()
+    #
+    def getFollowingTokens(self, transition: Transition) -> List[int]:
+        result: List[int] = []
 
-            for transition in state.transitions:
-                if transition.serializationType == Transition.ATOM:
-                    if not transition.isEpsilon:
-                        list_ = list( transition.label )
-                        if len( list_ ) == 1 and not list_[0] in self.ignoredTokens:
-                            result.append( list_[0] )
-                            pipeline.append( transition.target )
-                    else:
-                        pipeline.append( transition.target )
+        pipeline: List[ATNState] = [transition.target]
+
+        # TODO check pipeline not empty via
+        #  while pipeline:
+        while len( pipeline ) > 0:
+
+            state: ATNState = pipeline.pop()
+
+            if state:
+                for outgoing in state.transitions:
+                    if outgoing.serializationType == Transition.ATOM:
+                        if not outgoing.isEpsilon:
+                            outgoingList: List[int] = intervalSetToArray( outgoing.label )
+                            if len( outgoingList ) == 1 and not outgoingList[0] in self.ignoredTokens:
+                                result.append( outgoingList[0] )
+                                pipeline.append( outgoing.target )
+                        else:
+                            pipeline.append( outgoing.target )
+
         return result
 
     #
@@ -424,8 +394,10 @@ class CodeCompletionCore:
 
         return result
 
+    #
     # Collects possible tokens which could be matched following the given ATN state. This is essentially the same
     # algorithm as used in the LL1Analyzer class, but here we consider predicates also and use no parser rule context.
+    #
     def collectFollowSets(self, s: ATNState, stopState: ATNState, followSets: List[FollowSetWithPath], stateStack: List[ATNState], ruleStack: List[int]):
         # TODO check lambda function
         #  stateStack.find((x) => x === s)
@@ -445,18 +417,17 @@ class CodeCompletionCore:
 
         for transition in s.transitions:
             if transition.serializationType == Transition.RULE:
-                # TODO check transition as RuleTransition
                 ruleTransition: RuleTransition = transition
                 # TODO check semantic eg skip the current iteration
                 #  if ruleStack.index(ruleTransition.target.ruleIndex) != -1:
                 if ruleTransition.target.ruleIndex in ruleStack:
                     continue
+
                 ruleStack.append( ruleTransition.target.ruleIndex )
                 self.collectFollowSets( transition.target, stopState, followSets, stateStack, ruleStack )
                 ruleStack.pop()
 
             elif transition.serializationType == Transition.PREDICATE:
-                # TODO check transition as PredicateTransition
                 if self.checkPredicate( transition ):
                     self.collectFollowSets( transition.target, stopState, followSets, stateStack, ruleStack )
             elif transition.isEpsilon:
@@ -495,7 +466,7 @@ class CodeCompletionCore:
             self.shortcutMap[startState.ruleIndex] = positionMap
         else:
             if tokenListIndex in positionMap:
-                if self.showDebugOutput:
+                if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
                     self.logger.debug( "=====> shortcut" )
                 return positionMap.get( tokenListIndex )
 
@@ -533,9 +504,6 @@ class CodeCompletionCore:
 
         callStack.append( RuleWithStartToken(startTokenIndex, startState.ruleIndex) )
 
-        # TODO rm
-        #  currentSymbol = self.tokens[tokenListIndex].type
-
         if tokenListIndex >= len( self.tokens ) - 1: # At caret?
             if startState.ruleIndex in self.preferredRules:
                 # No need to go deeper when collecting entries and we reach a rule that we want to collect anyway.
@@ -553,157 +521,173 @@ class CodeCompletionCore:
                     if not self.translateStackToRuleIndex( fullPath ):
                         for symbol in intervalSetToArray(followSet.intervals):
                             if not symbol in self.ignoredTokens:
-                                # TODO set logger to debug
-                                #  logger.isLoggable(Level.FINE)
                                 if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
-                                    # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
-                                    #  self.logger.debug("=====> collected: " + self.vocabulary.getDisplayName(symbol))
                                     self.logger.debug( "=====> collected: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol) )
                                 if not symbol in self.candidates.tokens:
+                                    # Following is empty if there is more than one entry in the set.
                                     self.candidates.tokens[symbol] = followSet.following
                                 else:
                                     if not self.candidates.tokens[symbol] == followSet.following:
-                                        # TODO implement LinkedList as deque()
-                                        self.candidates.tokens[symbol] = deque()
-                            else:
-                                self.logger.fine( "====> collection: Ignoring token: " + symbol )
-            # callStack.removeLast()
+                                        # More than one following list for the same symbol.
+                                        self.candidates.tokens[symbol] = {}
+
             callStack.pop()
+
             return result
+
         else:
-            if not followSets.combined.contains( Token.EPSILON ) and not followSets.combined.contains( currentSymbol ):
-                # callStack.removeLast()
+            # Process the rule if we either could pass it without consuming anything (epsilon transition)
+            # or if the current input symbol will be matched somewhere after this entry point.
+            # Otherwise, stop here.
+            currentSymbol: int = self.tokens[tokenListIndex].type
+            if not Token.EPSILON in followSets.combined or not currentSymbol in followSets.combined:
+
                 callStack.pop()
+
                 return result
 
-        # TODO implement LinkedList as deque()
-        #  LinkedList<PipelineEntry> statePipeline = new LinkedList<>();
-        statePipeline = deque()
-        currentEntry = self.PipelineEntry()
-        statePipeline.add( self.PipelineEntry( startState, tokenListIndex ) )
-        while not statePipeline.isEmpty():
-            currentEntry = statePipeline.removeLast()
-            self.statesProcessed += 1
-            currentSymbol = self.tokens.get( currentEntry.tokenListIndex ).getType()
+        if startState.isPrecedenceRule:
+            self.precedenceStack.append(precedence)
 
-            atCaret = currentEntry.tokenListIndex >= self.tokens.size() - 1
-            # TODO set logger to debug
-            #  logger.isLoggable(Level.FINE)
-            if self.logger.isEnabledFor( logging.DEBUG ):
-                self.printDescription( indentation, currentEntry.state,
-                                       self.generateBaseDescription( currentEntry.state ),
-                                       currentEntry.tokenListIndex )
+        # The current state execution pipeline contains all yet-to-be-processed ATN states in this rule.
+        # For each such state we store the token index + a list of rules that lead to it.
+        statePipeline: List[IPipelineEntry] = []
+        currentEntry: IPipelineEntry
+
+        # Bootstrap the pipeline.
+        statePipeline.append(IPipelineEntry( startState, tokenListIndex ))
+
+        while len(statePipeline) > 0:
+            currentEntry = statePipeline.pop()
+            self.statesProcessed += 1
+
+            currentSymbol: int = self.tokens[currentEntry.tokenListIndex ].type
+
+            atCaret: bool = currentEntry.tokenListIndex >= len(self.tokens) - 1
+            if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
+                self.printDescription( indentation, currentEntry.state, self.generateBaseDescription( currentEntry.state ), currentEntry.tokenListIndex )
                 if self.showRuleStack:
                     self.printRuleState( callStack )
-            if currentEntry.state.getStateType() == ATNState.RULE_START:
-                indentation += "  "
-            elif currentEntry.state.getStateType() == ATNState.RULE_STOP:
+
+            if currentEntry.state.stateType == ATNState.RULE_STOP:
+                # Record the token index we are at, to report it to the caller.
                 result.add( currentEntry.tokenListIndex )
                 continue
-            else:
-                # TODO fix default case
-                # TODO
-                #  Transition[] transitions = currentEntry.state.getTransitions();
-                transitions = currentEntry.state.getTransitions()
-                for transition in transitions:
-                    if transition.getSerializationType() == Transition.RULE:
-                        # TODO as set
-                        #  Set<Integer> endStatus = this.processRule(transition.target, currentEntry.tokenListIndex, callStack, indentation);
-                        endStatus = self.processRule( transition.target, currentEntry.tokenListIndex, callStack, indentation )
-                        for position in endStatus:
-                            statePipeline.append( self.PipelineEntry( (transition).followState, position ) )
-                    elif transition.getSerializationType() == Transition.PREDICATE:
-                        if self.checkPredicate( transition ):
-                            statePipeline.append( self.PipelineEntry( transition.target, currentEntry.tokenListIndex ) )
-                    elif transition.getSerializationType() == Transition.WILDCARD:
+
+            transitions: List[Transition] = currentEntry.state.transitions
+
+            # We simulate here the same precedence handling as the parser does, which uses hard coded values.
+            # For rules that are not left recursive this value is ignored (since there is no precedence transition).
+            for transition in transitions:
+                if transition.serializationType == Transition.RULE:
+                    ruleTransition: RuleTransition = transition
+                    endStatus: Set[int] = self.processRule( transition.target, currentEntry.tokenListIndex, ruleTransition.precedence, indentation + 1 )
+                    for position in endStatus:
+                        statePipeline.append( IPipelineEntry( transition.followState, position ) )
+
+                elif transition.serializationType == Transition.PREDICATE:
+                    if self.checkPredicate( transition ):
+                        statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex ) )
+
+                elif transition.serializationType == Transition.PRECEDENCE:
+                    predTransition: PrecedencePredicateTransition = transition
+                    if predTransition.precedence >= self.precedenceStack[len(self.precedenceStack) - 1]:
+                        statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex ) )
+
+                elif transition.serializationType == Transition.WILDCARD:
+                    if atCaret:
+                        if not self.translateStackToRuleIndex( callStack ):
+                            # TODO .of
+                            for token in intervalSetToArray(IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType )):
+                                if not token in self.ignoredTokens:
+                                    self.candidates.tokens[token] = []
+                    else:
+                        statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex + 1 ) )
+
+                else:
+                    if transition.isEpsilon:
+                        # Jump over simple states with a single outgoing epsilon transition.
+                        statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex ) )
+                        continue
+
+                    followSet: IntervalSet = transition.label
+                    if followSet is not None and len( followSet ) > 0:
+                        if transition.serializationType == Transition.NOT_SET:
+                            # TODO .of
+                            followSet = followSet.complement( IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType ) )
                         if atCaret:
                             if not self.translateStackToRuleIndex( callStack ):
-                                for token in IntervalSet.of( Token.MIN_USER_TOKEN_TYPE,
-                                                             self.atn.maxTokenType ).toList():
-                                    if not self.ignoredTokens.contains( token ):
-                                        # TODO implement LinkedList as deque()
-                                        #  this.candidates.tokens.put(token, new LinkedList<Integer>());
-                                        self.candidates.tokens[token] = deque()
-                        else:
-                            statePipeline.append(
-                                self.PipelineEntry( transition.target, currentEntry.tokenListIndex + 1 ) )
-                    else:
-                        if transition.isEpsilon():
-                            statePipeline.append( self.PipelineEntry( transition.target, currentEntry.tokenListIndex ) )
-                            continue
-                        if followSet != None and len( followSet ) > 0:
-                            if transition.getSerializationType() == Transition.NOT_SET:
-                                followSet = followSet.complement(
-                                    IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType ) )
-                            if atCaret:
-                                if not self.translateStackToRuleIndex( callStack ):
-                                    # TODO
-                                    #  List<Integer> list = set.toList();
-                                    list_ = list( followSet )
-                                    # TODO check length of list
-                                    #  boolean addFollowing = list.size() == 1;
-                                    addFollowing = list.size() == 1;
-                                    for symbol in list_:
-                                        if not self.ignoredTokens.contains( symbol ):
-                                            # TODO set logger to debug
-                                            #  logger.isLoggable(Level.FINE)
-                                            if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
-                                                # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
-                                                #  self.logger.debug("=====> collected: " + self.vocabulary.getDisplayName(symbol))
-                                                self.logger.debug( "=====> collected: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
-                                            if addFollowing:
-                                                self.candidates.tokens[symbol] = self.getFollowingTokens( transition )
-                                            else:
-                                                pass
+                                followList: List[int] = intervalSetToArray( followSet )
+                                addFollowing: bool = len(followList) == 1
+                                for symbol in followList:
+                                    if not symbol in self.ignoredTokens:
+                                        if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
+                                            self.logger.debug( "=====> collected: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
+
+                                        if addFollowing:
+                                            self.candidates.tokens[symbol] = self.getFollowingTokens( transition )
                                         else:
-                                            # TODO set logger to debug
-                                            self.logger.debug( "====> collected: Ignoring token: " + symbol )
-                            else:
-                                if followSet.contains( currentSymbol ):
-                                    # TODO set logger to debug
-                                    #  logger.isLoggable(Level.FINE)
-                                    if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
-                                        # TODO set logger to debug
-                                        # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
-                                        #  self.logger.debug("=====> consumed: " + self.vocabulary.getDisplayName(currentSymbol))
-                                        self.logger.debug( "=====> consumed: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, currentSymbol ) )
-                                    statePipeline.append(
-                                        self.PipelineEntry( transition.target, currentEntry.tokenListIndex + 1 ) )
-        callStack.removeLast()
+                                            self.candidates.tokens[symbol] = []
+                                    else:
+                                        self.logger.debug( "====> collected: Ignoring token: " + str(symbol) )
+                        else:
+                            if currentSymbol in followSet:
+                                if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
+                                    self.logger.debug( "=====> consumed: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, currentSymbol ) )
+                                statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex + 1 ) )
+
+        callStack.pop()
+        if startState.isPrecedenceRule:
+            self.precedenceStack.pop()
+
+        # Cache the result, for later lookup to avoid duplicate walks.
         positionMap[tokenListIndex] = result
+
         return result
 
-    def generateBaseDescription(self, state):
-        """ generated source for method generateBaseDescription """
-        # TODO implement Integer.toString as str()
-        stateValue = "Invalid" if (state.stateNumber == ATNState.INVALID_STATE_NUMBER) else str( state.stateNumber )
-        return "[" + stateValue + " " + self.atnStateTypeMap[state.getStateType()] + "] in " + self.ruleNames[
-            state.ruleIndex]
+    def switchCase(self, serializationType: int):
+        return {
+            Transition.RULE: lambda : self.callRULE(),
+            Transition.PREDICATE: lambda : self.callPREDICATE(),
+            Transition.PRECEDENCE: lambda : self.callPRECEDENCE(),
+            Transition.WILDCARD: lambda : self.callWILDCARD()
+        }.get(serializationType, lambda : self.callDEFAULT())    # callDEFAULT will be returned default if serializationType is not found
 
-    def printDescription(self, currentIndent, state, baseDescription, tokenIndex):
-        """ generated source for method printDescription """
-        # TODO implement as string list
-        #  StringBuilder output = new StringBuilder(currentIndent);
-        output_list = [currentIndent]
-        # TODO implement as string list
-        #  StringBuilder transitionDescription = new StringBuilder();
-        transitionDescription_list = []
-        # TODO set logger to debug
-        #  set new FINER level
-        #  check levels
+    def callRULE(self):
+        pass
+
+    def callPREDICATE(self):
+        pass
+
+    def callPRECEDENCE(self):
+        pass
+
+    def callWILDCARD(self):
+        pass
+
+    def callDEFAULT(self):
+        pass
+
+    def generateBaseDescription(self, state: ATNState) -> str:
+        stateValue: str = "Invalid" if (state.stateNumber == ATNState.INVALID_STATE_NUMBER) else str( state.stateNumber )
+
+        return "[" + stateValue + " " + self.atnStateTypeMap[state.stateType] + "] in " + self.ruleNames[state.ruleIndex]
+
+    # self, currentIndent, state, baseDescription, tokenIndex
+    def printDescription(self, indentation: int, state: ATNState, baseDescription: str, tokenIndex: int):
+        # TODO check log level
+        #  FINER level
         #  logger.isLoggable(Level.FINER)
+
+        output_list = ["  "] * indentation
+
+        transitionDescription_list = [""]
         if self.debugOutputWithTransitions and self.logger.isEnabledFor( logging.DEBUG ):
-            for transition in state.getTransitions():
-                # TODO implement as list of strings
-                #  StringBuilder labels = new StringBuilder();
+            for transition in state.transitions:
                 labels_list = []
-                # TODO implement as deque()
-                #  List<Integer> symbols = (transition.label() != null) ? transition.label().toList() : new LinkedList<>();
-                # TODO check toList
+                # TODO toList
                 symbols = transition.label().toList() if (transition.label() != None) else deque()
                 if len( symbols ) > 2:
-                    # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
-                    #  labels_list.append(self.vocabulary.getDisplayName(symbols.get(0)) + " .. " + self.vocabulary.getDisplayName(symbols.get(len(symbols) - 1)))
                     labels_list.append(
                         IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols.get( 0 ) ) +
                         " .. " +
@@ -713,12 +697,10 @@ class CodeCompletionCore:
                     for symbol in symbols:
                         if 0 > len( labels_list ):
                             labels_list.append( ", " )
-                        # TODO replace Vocabulary.getDisplayName() vs Intervalset.elementName()
-                        #  labels_list.append(self.vocabulary.getDisplayName(symbol))
                         labels_list.append( IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
                 if 0 == len( labels_list ):
                     labels_list.append( "E" )
-                transitionDescription_list.append( "\n" ).append( currentIndent ).append( "\t(" ).append(
+                transitionDescription_list.append( "\n" ).append( indentation ).append( "\t(" ).append(
                     ''.join( labels_list ) ).append( ") [" ).append( transition.target.stateNumber ).append(
                     " " ).append(
                     self.atnStateTypeMap[transition.target.getStateType()] ).append( "] in " ).append(
@@ -727,22 +709,20 @@ class CodeCompletionCore:
                 output_list.append( "<<" ).append( self.tokenStartIndex + tokenIndex ).append( ">> " )
             else:
                 output_list.append( "<" ).append( self.tokenStartIndex + tokenIndex ).append( "> " )
-            self.logger.finer(
-                ''.join( output_list ) + "Current state: " + baseDescription + ''.join( transitionDescription_list ) )
+            self.logger.finer(''.join( output_list ) + "Current state: " + baseDescription + ''.join( transitionDescription_list ) )
 
-    def printRuleState(self, stack):
-        """ generated source for method printRuleState """
-        if stack.isEmpty():
-            self.logger.fine( "<empty stack>" )
-            return
-        # TODO set logger to debug
-        #  set new FINER level
-        #  check levels
+    def printRuleState(self, stack: RuleWithStartTokenList):
+        # TODO check log level
+        #  FINER level
         #  logger.isLoggable(Level.FINER)
+
+        if len( stack ) == 0:
+            self.logger.DEBUG( "<empty stack>" )
+
+            return
+
         if self.logger.isEnabledFor( logging.DEBUG ):
-            # TODO implement as list of strings
-            #  StringBuilder sb = new StringBuilder();
             sb_list = []
             for rule in stack:
-                sb_list.append( "  " ).append( self.ruleNames[rule] ).append( "\n" )
+                sb_list.extend( [ "  " , self.ruleNames[rule.ruleIndex] , "\n" ] )
             self.logger.debug( ''.join( sb_list ) )

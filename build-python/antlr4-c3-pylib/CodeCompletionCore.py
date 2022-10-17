@@ -17,12 +17,11 @@ __author__ = 'sgu'
 # package: com.vmware.antlr4c3
 
 # TODO add util imports
-import logging, itertools
-from collections import deque
+import logging
 logging.basicConfig(level=logging.DEBUG)
 
 from dataclasses import dataclass, field
-from typing import Deque, Set, List, Dict
+from typing import Dict, Set, List
 
 # TODO add antlr imports
 # TODO check range structure
@@ -73,6 +72,8 @@ class CandidatesCollection:
     #         https://stackoverflow.com/q/17097985/
     # TODO never use class variables to set default values to object variables. Use __init__ for that.
     #   https://stackoverflow.com/q/3434581/
+    # TODO string concatenation
+    #  https://waymoot.org/home/python_string/
 
     # Collection of Token ID candidates, each with a follow-on List of subsequent tokens
     tokens: dict[int, TokenList] = field( default_factory=dict )
@@ -115,15 +116,6 @@ RuleEndStatus = Set[int]
 class IPipelineEntry:
     state: ATNState
     tokenListIndex: int
-
-#
-#  Extract elements from deque without altering it.
-#
-def slice_deque(deq: deque, start: int, stop: int) -> list:
-    deq.rotate(-start)
-    sliceList = list(itertools.islice(deq, 0, stop-start))
-    deq.rotate(start)
-    return sliceList
 
 #
 # Return an array containing the elements represented by the current set. The
@@ -245,8 +237,6 @@ class CodeCompletionCore:
         self.processRule( self.atn.ruleToStartState[startRule], 0, callStack, 0, 0 )
 
         if self.showResult and self.logger.isEnabledFor( logging.DEBUG ):
-            # TODO src
-            #  https://waymoot.org/home/python_string/
             logMessage_list: List[str] = ["States processed: ", str(self.statesProcessed), "\n\n", "Collected rules:\n"]
             for key, value in self.candidates.rules.items():
                 logMessage_list.extend( [ self.ruleNames[key] , ", path: " ] )
@@ -305,54 +295,34 @@ class CodeCompletionCore:
         return False
 
     #
-    # Walks the rule chain upwards to see if that matches any of the preferred rules.
-    # If found, that rule is added to the collection candidates and true is returned.
+    # Given the index of a rule from a rule chain, check if that matches any of the preferred rules. If it matches,
+    # that rule is added to the collection candidates and true is returned.
     #
     def translateToRuleIndex(self, i: int, ruleStack: RuleWithStartTokenList) -> bool:
-        ruleIndex = ruleStack[i].ruleIndex
-        startTokenIndex = ruleStack[i].startTokenIndex
+        ruleIndex: int = ruleStack[i].ruleIndex
+        startTokenIndex: int = ruleStack[i].startTokenIndex
 
         if ruleIndex in self.preferredRules:
             # Add the rule to our candidates list along with the current rule path,
             # but only if there isn't already an entry like that.
-            tmp = slice_deque( ruleStack, 0, i)
-            path = list(map((lambda x: x.ruleIndex), slice_deque( ruleStack, 0, i)))
-            addNew = True
+            path: List[int] = list(map((lambda x: x.ruleIndex), ruleStack[0:i] ))
+            addNew: bool = True
             for key, value in self.candidates.rules.items():
-                if not key == ruleIndex or len( value.ruleList ) != len( path ):
+                if key != ruleIndex or len( value.ruleList ) != len( path ):
                     continue
+
                 # Found an entry for this rule. Same path? If so don't add a new (duplicate) entry.
-                if path == value:
+                if path == value.ruleList[0:len(path)]:
                     addNew = False
                     break
 
-        if not self.preferredRules:
-            return False
+            if addNew:
+                self.candidates.rules[ruleIndex] = CandidateRule(startTokenIndex,path)
+                if self.showDebugOutput and self.logger.isEnabledFor(logging.DEBUG):
+                    self.logger.debug("=====> collected: ", self.ruleNames[ruleIndex])
 
-        # Loop over the rule stack from highest to lowest rule level. This way we properly handle the higher rule
-        # if it contains a lower one that is also a preferred rule.
-        i = 0
-        while i < len( ruleStack ):
-            # if self.preferredRules.contains(ruleStack.get(i)):
-            if ruleStack.get( i ) in self.preferredRules:
-                # Add the rule to our candidates list along with the current rule path,
-                # but only if there isn't already an entry like that.
-                path = deque( ruleStack.subList( 0, i ) )
-                addNew = True
-                for key, value in self.candidates.rules.items():
-                    if not key == ruleStack.get( i ) or value.size() != len( path ):
-                        continue
-                    # Found an entry for this rule. Same path? If so don't add a new (duplicate) entry.
-                    if path == value:
-                        addNew = False
-                        break
+            return True
 
-                if addNew:
-                    self.candidates.rules[ruleStack.get( i )] = path
-                    if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
-                        self.logger.debug( "=====> collected: " + self.ruleNames[i] )
-                return True
-            i += 1
         return False
 
     #
@@ -515,6 +485,7 @@ class CodeCompletionCore:
                     fullPath: RuleWithStartTokenList = callStack[:] # .copy()
 
                     # Rules derived from our followSet will always start at the same token as our current rule
+                    # TODO check map path
                     followSetPath = list(map((lambda path: RuleWithStartToken(startTokenIndex,path)), followSet.path))
 
                     fullPath.extend(followSetPath)
@@ -527,9 +498,9 @@ class CodeCompletionCore:
                                     # Following is empty if there is more than one entry in the set.
                                     self.candidates.tokens[symbol] = followSet.following
                                 else:
-                                    if not self.candidates.tokens[symbol] == followSet.following:
-                                        # More than one following list for the same symbol.
-                                        self.candidates.tokens[symbol] = {}
+                                    # More than one following list for the same symbol.
+                                    if self.candidates.tokens[symbol] != followSet.following:
+                                        self.candidates.tokens[symbol] = []
 
             callStack.pop()
 
@@ -679,37 +650,33 @@ class CodeCompletionCore:
         #  FINER level
         #  logger.isLoggable(Level.FINER)
 
-        output_list = ["  "] * indentation
+        indent: List[str] = ["  "] * indentation
+        output_list: List[str] = indent.copy()
 
         transitionDescription_list = [""]
         if self.debugOutputWithTransitions and self.logger.isEnabledFor( logging.DEBUG ):
             for transition in state.transitions:
-                labels_list = []
+                labels_list: List[str] = []
                 # TODO toList
-                symbols = transition.label().toList() if (transition.label() != None) else deque()
+                symbols: List[int] = transition.label.toList() if transition.label is not None else []
                 if len( symbols ) > 2:
-                    labels_list.append(
-                        IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols.get( 0 ) ) +
-                        " .. " +
-                        IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols.get( len( symbols ) - 1 ) )
-                    )
+                    # Only print start and end symbols to avoid large lists in debug output.
+                    labels_list.append( IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols[0] ) + " .. " +
+                                        IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols[len( symbols ) - 1] )
+                                        )
                 else:
                     for symbol in symbols:
-                        if 0 > len( labels_list ):
+                        if len( labels_list ) > 0:
                             labels_list.append( ", " )
                         labels_list.append( IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
-                if 0 == len( labels_list ):
-                    labels_list.append( "E" )
-                transitionDescription_list.append( "\n" ).append( indentation ).append( "\t(" ).append(
-                    ''.join( labels_list ) ).append( ") [" ).append( transition.target.stateNumber ).append(
-                    " " ).append(
-                    self.atnStateTypeMap[transition.target.getStateType()] ).append( "] in " ).append(
-                    self.ruleNames[transition.target.ruleIndex] )
+                if len( labels_list ) == 0:
+                    labels_list.append( "ε" )
+                transitionDescription_list.extend( [ "\n" , ''.join( indent ) , "\t(", ''.join( labels_list ) , ") [" , transition.target.stateNumber , " " , self.atnStateTypeMap[transition.target.stateType] , "] in " , self.ruleNames[transition.target.ruleIndex] ] )
             if tokenIndex >= len( self.tokens ) - 1:
-                output_list.append( "<<" ).append( self.tokenStartIndex + tokenIndex ).append( ">> " )
+                output_list.extend( [ "<<" , self.tokenStartIndex + tokenIndex , ">> " ] )
             else:
-                output_list.append( "<" ).append( self.tokenStartIndex + tokenIndex ).append( "> " )
-            self.logger.finer(''.join( output_list ) + "Current state: " + baseDescription + ''.join( transitionDescription_list ) )
+                output_list.extend( [ "<" , self.tokenStartIndex + tokenIndex , "> " ] )
+            self.logger.debug(''.join( output_list ) + "Current state: " + baseDescription + ''.join( transitionDescription_list ) )
 
     def printRuleState(self, stack: RuleWithStartTokenList):
         # TODO check log level
@@ -717,7 +684,7 @@ class CodeCompletionCore:
         #  logger.isLoggable(Level.FINER)
 
         if len( stack ) == 0:
-            self.logger.DEBUG( "<empty stack>" )
+            self.logger.debug( "<empty stack>" )
 
             return
 

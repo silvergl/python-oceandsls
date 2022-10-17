@@ -16,14 +16,14 @@ __author__ = 'sgu'
 # TODO configure module
 # package: com.vmware.antlr4c3
 
-# TODO add util imports
+# util imports
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
 from dataclasses import dataclass, field
 from typing import Dict, Set, List
 
-# TODO add antlr imports
+# antlr imports
 # TODO check range structure
 #  https://stackoverflow.com/q/57356723/
 from antlr4.IntervalSet import IntervalSet
@@ -33,7 +33,7 @@ from antlr4.BufferedTokenStream import TokenStream
 from antlr4.ParserRuleContext import ParserRuleContext
 from antlr4.atn.ATN import ATN
 from antlr4.atn.ATNState import ATNState, RuleStartState
-from antlr4.atn.Transition import Transition, PredicateTransition, RuleTransition, PrecedencePredicateTransition
+from antlr4.atn.Transition import Transition, PredicateTransition, RuleTransition, PrecedencePredicateTransition, WildcardTransition
 
 TokenList = List[int]
 RuleList = List[int]
@@ -43,16 +43,11 @@ class CandidateRule:
     startTokenIndex: int
     ruleList: RuleList
 
-# TODO add dataclass
-#  https://stackoverflow.com/q/48254562/
 @dataclass
 class RuleWithStartToken:
     startTokenIndex: int
     ruleIndex: int
 
-
-# TODO assure RuleWithStartToken objects
-#  https://stackoverflow.com/q/51944520/
 RuleWithStartTokenList = List[RuleWithStartToken]
 
 # JDO returning information about matching tokens and rules
@@ -62,18 +57,29 @@ RuleWithStartTokenList = List[RuleWithStartToken]
 # Rule entries include the index of the starting token within the evaluated rule, along with a call stack of rules found during evaluation.
 @dataclass
 class CandidatesCollection:
-    # TODO implement HashSet as set()
-    #  https://stackoverflow.com/q/26724002/
-    #  Alternative use tuple to be immutable
-    #   https://www.geeksforgeeks.org/mutable-vs-immutable-objects-in-python/
-    # TODO implement HashMap as dictionaries
+    # TODO doc src
+    #  implement HashSet as set()
+    #   https://stackoverflow.com/q/26724002/
+    #   Alternative use tuple to be immutable
+    #    https://www.geeksforgeeks.org/mutable-vs-immutable-objects-in-python/
+    #   implement HashMap as dictionaries
     #         https://www.edureka.co/blog/hash-tables-and-hashmaps-in-python/
     #         https://stackoverflow.com/q/1540673/
     #         https://stackoverflow.com/q/17097985/
-    # TODO never use class variables to set default values to object variables. Use __init__ for that.
+    #  never use class variables to set default values to object variables. Use __init__ for that.
     #   https://stackoverflow.com/q/3434581/
-    # TODO string concatenation
-    #  https://waymoot.org/home/python_string/
+    #  string concatenation
+    #   https://waymoot.org/home/python_string/
+    #  src
+    #   https://www.machinelearningplus.com/python/python-logging-guide/
+    #  src
+    #   https://nygeek.wordpress.com/2015/07/18/simple-python-__str__self-method-for-use-during-development/
+    #  assure RuleWithStartToken objects
+    #   https://stackoverflow.com/q/51944520/
+    #  add dataclass
+    #   https://stackoverflow.com/q/48254562/
+    #  replace Vocabulary.getDisplayName with IntervalSet.elementName()
+    #   self.vocabulary: Vocabulary = parser.getVocabulary()
 
     # Collection of Token ID candidates, each with a follow-on List of subsequent tokens
     tokens: dict[int, TokenList] = field( default_factory=dict )
@@ -81,8 +87,6 @@ class CandidatesCollection:
     rules: dict[int, CandidateRule] = field( default_factory=dict )
 
     def __str__(self):
-        # TODO src
-        #  https://nygeek.wordpress.com/2015/07/18/simple-python-__str__self-method-for-use-during-development/
         return str( 'CandidatesCollection{' + str( self.__dict__ ) + '}' )
 
 
@@ -121,7 +125,7 @@ class IPipelineEntry:
 # Return an array containing the elements represented by the current set. The
 # array is returned in ascending numerical order.
 #
-def intervalSetToArray(intervalSet: IntervalSet) -> List[int] :
+def intervalSetToList(intervalSet: IntervalSet) -> List[int] :
     values: List = []
     for interval in intervalSet.intervals:
         start: int = interval.start
@@ -170,8 +174,6 @@ class CodeCompletionCore:
     atn: ATN
     ruleNames: List[str]
     tokens: List[Token]
-    # TODO replace Vocabulary.getDisplayName with IntervalSet.elementName()
-    #  self.vocabulary: Vocabulary = parser.getVocabulary()
     literalNames: List[str]
     symbolicNames: List[str]
     precedenceStack: List[int]
@@ -194,12 +196,7 @@ class CodeCompletionCore:
         self.ignoredTokens = set()
         self.preferredRules = set()
 
-    # TODO
-    #  https://www.machinelearningplus.com/python/python-logging-guide/
     logger = logging.getLogger( __name__ )
-
-    # TODO remove getter setter
-    #  https://stackoverflow.com/questions/2627002/whats-the-pythonic-way-to-use-getters-and-setters
 
     #
     # This is the main entry point. The caret token index specifies the token stream index for the token which currently
@@ -239,7 +236,7 @@ class CodeCompletionCore:
         if self.showResult and self.logger.isEnabledFor( logging.DEBUG ):
             logMessage_list: List[str] = ["States processed: ", str(self.statesProcessed), "\n\n", "Collected rules:\n"]
             for key, value in self.candidates.rules.items():
-                logMessage_list.extend( [ self.ruleNames[key] , ", path: " ] )
+                logMessage_list.extend( [" / " , self.ruleNames[key] , ", path: " ] )
 
                 for token in value.ruleList:
                     logMessage_list.extend( [ self.ruleNames[token] , " " ] )
@@ -253,7 +250,7 @@ class CodeCompletionCore:
 
             logMessage_list.append( "\n\nCollected Tokens:\n" )
             for symbol in sortedTokens:
-                logMessage_list.append(symbol)
+                logMessage_list.extend([symbol , " " ])
             logMessage_list.append("\n\n")
 
             self.logger.debug( ''.join( logMessage_list ) )
@@ -344,7 +341,7 @@ class CodeCompletionCore:
                 for outgoing in state.transitions:
                     if outgoing.serializationType == Transition.ATOM:
                         if not outgoing.isEpsilon:
-                            outgoingList: List[int] = intervalSetToArray( outgoing.label )
+                            outgoingList: List[int] = intervalSetToList( outgoing.label )
                             if len( outgoingList ) == 1 and not outgoingList[0] in self.ignoredTokens:
                                 result.append( outgoingList[0] )
                                 pipeline.append( outgoing.target )
@@ -404,14 +401,14 @@ class CodeCompletionCore:
                 self.collectFollowSets( transition.target, stopState, followSets, stateStack, ruleStack )
             elif transition.serializationType == Transition.WILDCARD:
                 followSet: FollowSetWithPath = FollowSetWithPath()
-                followSet.intervals = IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType )
+                followSet.intervals.addRange(range(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1)) # +1 as stated in IntervalSet.py
                 followSet.path = ruleStack[:] # .copy()
                 followSets.append( followSet )
             else:
                 label: IntervalSet = transition.label
                 if label is not None and len( label ) > 0:
                     if transition.serializationType == Transition.NOT_SET:
-                        label = label.complement( IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType ) )
+                        label = label.complement( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType )
                     followSet: FollowSetWithPath = FollowSetWithPath()
                     followSet.intervals = label
                     followSet.path = ruleStack[:] # .copy()
@@ -485,12 +482,12 @@ class CodeCompletionCore:
                     fullPath: RuleWithStartTokenList = callStack[:] # .copy()
 
                     # Rules derived from our followSet will always start at the same token as our current rule
-                    # TODO check map path
+                    #  alternative: lambda path: RuleWithStartToken(startTokenIndex,path) for path in followSet.path
                     followSetPath = list(map((lambda path: RuleWithStartToken(startTokenIndex,path)), followSet.path))
 
                     fullPath.extend(followSetPath)
                     if not self.translateStackToRuleIndex( fullPath ):
-                        for symbol in intervalSetToArray(followSet.intervals):
+                        for symbol in intervalSetToList( followSet.intervals ):
                             if not symbol in self.ignoredTokens:
                                 if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
                                     self.logger.debug( "=====> collected: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol) )
@@ -550,26 +547,27 @@ class CodeCompletionCore:
             # We simulate here the same precedence handling as the parser does, which uses hard coded values.
             # For rules that are not left recursive this value is ignored (since there is no precedence transition).
             for transition in transitions:
-                if transition.serializationType == Transition.RULE:
+                if type(transition) == RuleTransition:
                     ruleTransition: RuleTransition = transition
                     endStatus: Set[int] = self.processRule( transition.target, currentEntry.tokenListIndex, ruleTransition.precedence, indentation + 1 )
                     for position in endStatus:
                         statePipeline.append( IPipelineEntry( transition.followState, position ) )
 
-                elif transition.serializationType == Transition.PREDICATE:
+                elif type(transition) == PredicateTransition:
                     if self.checkPredicate( transition ):
                         statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex ) )
 
-                elif transition.serializationType == Transition.PRECEDENCE:
+                elif type(transition) == PrecedencePredicateTransition:
                     predTransition: PrecedencePredicateTransition = transition
                     if predTransition.precedence >= self.precedenceStack[len(self.precedenceStack) - 1]:
                         statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex ) )
 
-                elif transition.serializationType == Transition.WILDCARD:
+                elif type(transition) == WildcardTransition:
                     if atCaret:
                         if not self.translateStackToRuleIndex( callStack ):
-                            # TODO .of
-                            for token in intervalSetToArray(IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType )):
+                            intern: IntervalSet = IntervalSet()
+                            intern.addRange(range(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1) ) # +1 as stated in IntervalSet.py
+                            for token in intervalSetToList( intern ):
                                 if not token in self.ignoredTokens:
                                     self.candidates.tokens[token] = []
                     else:
@@ -584,11 +582,10 @@ class CodeCompletionCore:
                     followSet: IntervalSet = transition.label
                     if followSet is not None and len( followSet ) > 0:
                         if transition.serializationType == Transition.NOT_SET:
-                            # TODO .of
-                            followSet = followSet.complement( IntervalSet.of( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType ) )
+                            followSet = followSet.complement( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType )
                         if atCaret:
                             if not self.translateStackToRuleIndex( callStack ):
-                                followList: List[int] = intervalSetToArray( followSet )
+                                followList: List[int] = intervalSetToList( followSet )
                                 addFollowing: bool = len(followList) == 1
                                 for symbol in followList:
                                     if not symbol in self.ignoredTokens:
@@ -616,6 +613,7 @@ class CodeCompletionCore:
 
         return result
 
+    # TODO switch case
     def switchCase(self, serializationType: int):
         return {
             Transition.RULE: lambda : self.callRULE(),
@@ -657,8 +655,7 @@ class CodeCompletionCore:
         if self.debugOutputWithTransitions and self.logger.isEnabledFor( logging.DEBUG ):
             for transition in state.transitions:
                 labels_list: List[str] = []
-                # TODO toList
-                symbols: List[int] = transition.label.toList() if transition.label is not None else []
+                symbols: List[int] = intervalSetToList( transition.label ) if transition.label is not None else []
                 if len( symbols ) > 2:
                     # Only print start and end symbols to avoid large lists in debug output.
                     labels_list.append( IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols[0] ) + " .. " +

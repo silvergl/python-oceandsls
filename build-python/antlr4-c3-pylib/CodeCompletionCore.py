@@ -228,7 +228,7 @@ class CodeCompletionCore:
 
             logMessage_list.append( "\n\nCollected Tokens:\n" )
             for symbol in sortedTokens:
-                logMessage_list.extend([symbol , " " ])
+                logMessage_list.extend([symbol , "\n" ])
             logMessage_list.append("\n\n")
 
             self.logger.debug( ''.join( logMessage_list ) )

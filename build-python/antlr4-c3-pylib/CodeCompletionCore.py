@@ -131,7 +131,8 @@ def intervalSetToList(intervalSet: IntervalSet) -> List[int] :
         start: int = interval.start
         stop: int = interval.stop
 
-        while start <= stop:
+        # range upper limit is exclusive
+        while start < stop:
             values.append(start)
             start += 1
 
@@ -401,7 +402,7 @@ class CodeCompletionCore:
                 self.collectFollowSets( transition.target, stopState, followSets, stateStack, ruleStack )
             elif transition.serializationType == Transition.WILDCARD:
                 followSet: FollowSetWithPath = FollowSetWithPath()
-                followSet.intervals.addRange(range(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1)) # +1 as stated in IntervalSet.py
+                followSet.intervals.addRange(range(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1)) # range upper limit is exclusive
                 followSet.path = ruleStack[:] # .copy()
                 followSets.append( followSet )
             else:
@@ -566,7 +567,7 @@ class CodeCompletionCore:
                     if atCaret:
                         if not self.translateStackToRuleIndex( callStack ):
                             intern: IntervalSet = IntervalSet()
-                            intern.addRange(range(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1) ) # +1 as stated in IntervalSet.py
+                            intern.addRange(range(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1) ) # range upper limit is exclusive
                             for token in intervalSetToList( intern ):
                                 if not token in self.ignoredTokens:
                                     self.candidates.tokens[token] = []

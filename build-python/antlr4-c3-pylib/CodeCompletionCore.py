@@ -57,29 +57,6 @@ RuleWithStartTokenList = List[RuleWithStartToken]
 # Rule entries include the index of the starting token within the evaluated rule, along with a call stack of rules found during evaluation.
 @dataclass
 class CandidatesCollection:
-    # TODO doc src
-    #  implement HashSet as set()
-    #   https://stackoverflow.com/q/26724002/
-    #   Alternative use tuple to be immutable
-    #    https://www.geeksforgeeks.org/mutable-vs-immutable-objects-in-python/
-    #   implement HashMap as dictionaries
-    #         https://www.edureka.co/blog/hash-tables-and-hashmaps-in-python/
-    #         https://stackoverflow.com/q/1540673/
-    #         https://stackoverflow.com/q/17097985/
-    #  never use class variables to set default values to object variables. Use __init__ for that.
-    #   https://stackoverflow.com/q/3434581/
-    #  string concatenation
-    #   https://waymoot.org/home/python_string/
-    #  src
-    #   https://www.machinelearningplus.com/python/python-logging-guide/
-    #  src
-    #   https://nygeek.wordpress.com/2015/07/18/simple-python-__str__self-method-for-use-during-development/
-    #  assure RuleWithStartToken objects
-    #   https://stackoverflow.com/q/51944520/
-    #  add dataclass
-    #   https://stackoverflow.com/q/48254562/
-    #  replace Vocabulary.getDisplayName with IntervalSet.elementName()
-    #   self.vocabulary: Vocabulary = parser.getVocabulary()
 
     # Collection of Token ID candidates, each with a follow-on List of subsequent tokens
     tokens: dict[int, TokenList] = field( default_factory=dict )

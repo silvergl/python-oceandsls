@@ -509,7 +509,7 @@ class CodeCompletionCore:
             # or if the current input symbol will be matched somewhere after this entry point.
             # Otherwise, stop here.
             currentSymbol: int = self.tokens[tokenListIndex].type
-            if not Token.EPSILON in followSets.combined or not currentSymbol in followSets.combined:
+            if not Token.EPSILON in followSets.combined and not currentSymbol in followSets.combined:
 
                 callStack.pop()
 
@@ -550,7 +550,7 @@ class CodeCompletionCore:
             for transition in transitions:
                 if type(transition) == RuleTransition:
                     ruleTransition: RuleTransition = transition
-                    endStatus: Set[int] = self.processRule( transition.target, currentEntry.tokenListIndex, ruleTransition.precedence, indentation + 1 )
+                    endStatus: Set[int] = self.processRule( transition.target, currentEntry.tokenListIndex, callStack, ruleTransition.precedence, indentation + 1 )
                     for position in endStatus:
                         statePipeline.append( IPipelineEntry( transition.followState, position ) )
 
@@ -669,11 +669,11 @@ class CodeCompletionCore:
                         labels_list.append( IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
                 if len( labels_list ) == 0:
                     labels_list.append( "ε" )
-                transitionDescription_list.extend( [ "\n" , ''.join( indent ) , "\t(", ''.join( labels_list ) , ") [" , transition.target.stateNumber , " " , self.atnStateTypeMap[transition.target.stateType] , "] in " , self.ruleNames[transition.target.ruleIndex] ] )
+                transitionDescription_list.extend( [ "\n" , ''.join( indent ) , "\t(", ''.join( labels_list ) , ") [" , str(transition.target.stateNumber) , " " , self.atnStateTypeMap[transition.target.stateType] , "] in " , self.ruleNames[transition.target.ruleIndex] ] )
             if tokenIndex >= len( self.tokens ) - 1:
-                output_list.extend( [ "<<" , self.tokenStartIndex + tokenIndex , ">> " ] )
+                output_list.extend( [ "<<" , str(self.tokenStartIndex + tokenIndex) , ">> " ] )
             else:
-                output_list.extend( [ "<" , self.tokenStartIndex + tokenIndex , "> " ] )
+                output_list.extend( [ "<" , str(self.tokenStartIndex + tokenIndex) , "> " ] )
             self.logger.debug(''.join( output_list ) + "Current state: " + baseDescription + ''.join( transitionDescription_list ) )
 
     def printRuleState(self, stack: RuleWithStartTokenList):

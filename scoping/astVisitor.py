@@ -1,3 +1,4 @@
+from asyncore import write
 from antlr_ast.ast import parse, process_tree
 import buildpython as grammar
 import ast
@@ -48,19 +49,14 @@ def getChildNodes(node):
 	return [ele for ele in result if ele != []]
 
 def writeOutList(lisT):
-	#TODO: Fix some cases where the reading out of the ast is broken: i.e. 13+11*15+1
-	res = ""
-	first_number = True
-	for i in range(len(lisT) - 1):
-		if isinstance(lisT[i], list):
-			res = res + writeOutList(lisT[i])
-		else:
-			if(first_number):
-				res = str(res) + str(lisT[i]) + str(lisT[len(lisT) - 1])
-				first_number = False
-			else:
-				res = str(res) + str(lisT[i])
-	return res
+	if isinstance(lisT[0], list) and isinstance(lisT[1], list):
+		return writeOutList(lisT[0]) + str(lisT[len(lisT) - 1]) + writeOutList(lisT[1])
+	elif isinstance(lisT[1], list) and not isinstance(lisT[0], list):
+		return str(lisT[0]) + str(lisT[len(lisT) - 1]) + writeOutList(lisT[1])
+	elif not isinstance(lisT[1], list) and isinstance(lisT[0], list):
+		return writeOutList(lisT[0]) + str(lisT[len(lisT) - 1]) + str(lisT[1])
+	else:
+		return str(lisT[0]) + str(lisT[len(lisT) - 1]) + str(lisT[1])
 
 NAMES = ["AssignStat"] #TODO: How do we know what we are seaching for?
 FILE_PATH = "/home/armin/Dokumente/antlr4/test.testGrammar"

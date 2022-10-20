@@ -1,4 +1,4 @@
-from asyncore import write
+import string
 from antlr_ast.ast import parse, process_tree
 import buildpython as grammar
 import ast
@@ -40,6 +40,7 @@ def find_function(root, node, depth):
 				last_function = nod
 	raise
 
+#reads out the child notes and export it as a list
 def getChildNodes(node):
 	result = []
 	for i in ast.iter_child_nodes(node):
@@ -47,6 +48,17 @@ def getChildNodes(node):
 			result.append(i)
 		result.append(getChildNodes(i))
 	return [ele for ele in result if ele != []]
+
+#We assume that only have two values, variables or calculations combined with one Terminal-symbol, like +, which is at the end of the list
+def writeOutListAsList(lisT):
+	if isinstance(lisT[0], list) and isinstance(lisT[1], list):
+		return [writeOutListAsList(lisT[0]), lisT[len(lisT) - 1], writeOutListAsList(lisT[1])]
+	elif isinstance(lisT[1], list) and not isinstance(lisT[0], list):
+		return [lisT[0], lisT[len(lisT) - 1], writeOutListAsList(lisT[1])]
+	elif not isinstance(lisT[1], list) and isinstance(lisT[0], list):
+		return [writeOutListAsList(lisT[0]), lisT[len(lisT) - 1], lisT[1]]
+	else:
+		return [lisT[0], lisT[len(lisT) - 1], lisT[1]]
 
 def writeOutList(lisT):
 	if isinstance(lisT[0], list) and isinstance(lisT[1], list):
@@ -58,48 +70,54 @@ def writeOutList(lisT):
 	else:
 		return str(lisT[0]) + str(lisT[len(lisT) - 1]) + str(lisT[1])
 
-NAMES = ["AssignStat"] #TODO: How do we know what we are seaching for?
-FILE_PATH = "/home/armin/Dokumente/antlr4/test.testGrammar"
-FIRST_GRAMMAR_RULE = "prog"
-scope = dictScope.dictScope()
-scope.__init__()
+def createAst(grammar, grammar_input, first_grammar_rule):
+	antlr_tree = parse(grammar, grammar_input, first_grammar_rule)
+	return process_tree(antlr_tree)
 
-with open(FILE_PATH) as file:
-	antlr_tree = parse(grammar, file.read(), FIRST_GRAMMAR_RULE)
-	simple_tree = process_tree(antlr_tree)
-	#prints out the AST in pretty print
-	print(astunparse.dump(simple_tree))
+def insertVariablesInScope(grammar, grammar_input : string, first_grammar_rule : string, track_names : list, scope : dictScope = None, id_name : string = "ID", expr_name : string = "expr"):
+	if scope is None:
+		scope = dictScope.dictScope()
+		scope.__init__()
+	simple_tree = createAst(grammar, grammar_input, first_grammar_rule)
 	for line in simple_tree:
 		astDepth = depth_ast(line)
-		prevNodeDepth = astDepth
 		for node in ast.walk(line):
 			thisNodeDepth = depth_ast(node)
-			#TODO: What are we searching for?
 			#Block Scope build: global -> funktionVar -> blocks : Means everytime -1 in the depth of the node
-			if type(node).__name__ in NAMES:
+			if type(node).__name__ in track_names:
 				if thisNodeDepth >= astDepth - 1:
-					#TODO: What do we write inside the disctScope? (Name, Value)
 					print("add Global " + type(node).__name__ + " with value: " + str(node))
 					for value in ast.iter_fields(node):
-						if(value[0] == "ID"):
+						if(value[0] == id_name):
 							node_name = value[1]
-						elif(value[0] == "expr"):
+						elif(value[0] == expr_name):
 							if depth_ast(value[1]) == 1:
 								node_value = value[1]
 							else:
-								res = writeOutList(getChildNodes(value[1]))
+								res = writeOutListAsList(getChildNodes(value[1]))
 								node_value = res
 					scope.addFunctionOrGlobalVar(str(node_name), node_value)
 				else:
 					try:
 						node_function, block = find_function(simple_tree,node,thisNodeDepth)
 						for value in ast.iter_fields(node):
-							if(value[0] == "ID"):
+							if(value[0] == id_name):
 								node_name = value[1]
-							elif(value[0] == "expr"):
+							elif(value[0] == expr_name):
 								node_value = value
 						print("Found function: " + node_function + " and add: " + type(node).__name__ + " with value: " + str(node) + " in block " + str(block))
-						scope.addLocal(str(node_name),value = node_value , funcI = node_function, block=block)
+						scope.addLocal(str(node_name),value = node_value , funcI = node_function, block = block)
 					except:
 						print("Something went wrong, the node " + astunparse.dump(node) + " could not be added to block scope")
-	print(scope)
+	return scope
+
+NAMES = ["AssignStat"] #TODO: How do we know what we are seaching for?
+FILE_PATH = "/home/armin/Dokumente/antlr4/test.testGrammar"
+FIRST_GRAMMAR_RULE = "prog"
+ID_NAME = "ID"
+EXPR_NAME = "expr"
+scope = dictScope.dictScope()
+scope.__init__()
+
+with open(FILE_PATH) as file:
+	print(insertVariablesInScope(grammar,file.read(),FIRST_GRAMMAR_RULE,NAMES,scope))

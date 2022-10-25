@@ -40,11 +40,24 @@ def find_function(root, node, depth):
 				last_function = nod
 	raise
 
+def resolve_var(scope : dictScope, varID : string):
+	return scope.getValue(varID)
+
 #reads out the child notes and export it as a list
-def getChildNodes(node):
+def getChildNodes(node, id_name):
 	result = []
 	for i in ast.iter_child_nodes(node):
-		if type(i).__name__ == "Terminal": 
+		isVariable = False
+		try:
+			if type(i).__name__ == "Terminal":
+				#check if the Terminal has an ID
+				for value in ast.iter_fields(i):
+					if value[0] == id_name:
+						result.append(resolve_var(str(value[0])))
+						isVariable = True
+		except:
+			continue
+		if not isVariable:
 			result.append(i)
 		result.append(getChildNodes(i))
 	return [ele for ele in result if ele != []]
@@ -94,8 +107,10 @@ def insertVariablesInScope(grammar, grammar_input : string, first_grammar_rule :
 							if depth_ast(value[1]) == 1:
 								node_value = value[1]
 							else:
-								res = writeOutListAsList(getChildNodes(value[1]))
+								res = writeOutListAsList(getChildNodes(value[1], id_name))
+								#obviously it is hard to differ between variables and normal strings or values so we need to make resolvements inside the childNode loop
 								node_value = res
+
 					scope.addFunctionOrGlobalVar(str(node_name), node_value)
 				else:
 					try:

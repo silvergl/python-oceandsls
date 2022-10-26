@@ -1,7 +1,3 @@
-
-from multiprocessing.sharedctypes import Value
-
-
 class dictScope:
     def __init__(self):
         self.dict = {}

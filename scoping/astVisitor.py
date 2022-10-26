@@ -1,4 +1,3 @@
-import string
 from antlr_ast.ast import parse, process_tree
 import buildpython as grammar
 import ast
@@ -40,26 +39,35 @@ def find_function(root, node, depth):
 				last_function = nod
 	raise
 
-def resolve_var(scope : dictScope, varID : string):
-	return scope.getValue(varID)
-
-#reads out the child notes and export it as a list
-def getChildNodes(node, id_name):
+def getChildNodesI(node):
 	result = []
 	for i in ast.iter_child_nodes(node):
-		isVariable = False
-		try:
-			if type(i).__name__ == "Terminal":
+		if type(i).__name__ == "Terminal": 
+			result.append(i)
+		result.append(getChildNodesI(i))
+	return [ele for ele in result if ele != []]
+
+
+#reads out the child notes and export it as a list
+def getChildNodes(scope, node, id_name, with_resolving, funcID = None, block = None):
+	result = []
+	for i in ast.iter_child_nodes(node):
+		if type(i).__name__ == "Terminal":
+			is_variable = False
+			if with_resolving:
 				#check if the Terminal has an ID
 				for value in ast.iter_fields(i):
 					if value[0] == id_name:
-						result.append(resolve_var(str(value[0])))
-						isVariable = True
-		except:
-			continue
-		if not isVariable:
-			result.append(i)
-		result.append(getChildNodes(i))
+						is_variable = True
+						if not block is None:
+							result.append(scope.getValue(str(value[0]), funcID, block))
+						elif not funcID is None:
+							result.append(scope.getValue(str(value[0]), funcID))
+						else:
+							result.append(scope.getValue(str(value[0])))
+			if not is_variable:
+				result.append(i)
+		result.append(getChildNodes(scope, i, id_name, with_resolving, funcID, block))
 	return [ele for ele in result if ele != []]
 
 #We assume that only have two values, variables or calculations combined with one Terminal-symbol, like +, which is at the end of the list
@@ -87,7 +95,7 @@ def createAst(grammar, grammar_input, first_grammar_rule):
 	antlr_tree = parse(grammar, grammar_input, first_grammar_rule)
 	return process_tree(antlr_tree)
 
-def insertVariablesInScope(grammar, grammar_input : string, first_grammar_rule : string, track_names : list, scope : dictScope = None, id_name : string = "ID", expr_name : string = "expr"):
+def insertVariablesInScope(grammar, grammar_input : str, first_grammar_rule : str, track_names : list, with_resolving : bool, scope : dictScope = None, id_name : str = "ID", expr_name : str = "expr"):
 	if scope is None:
 		scope = dictScope.dictScope()
 		scope.__init__()
@@ -107,19 +115,26 @@ def insertVariablesInScope(grammar, grammar_input : string, first_grammar_rule :
 							if depth_ast(value[1]) == 1:
 								node_value = value[1]
 							else:
-								res = writeOutListAsList(getChildNodes(value[1], id_name))
+								if with_resolving:
+									node_value = writeOutListAsList(getChildNodes(scope,value[1], id_name, True))
+								else:
+									node_value = writeOutListAsList(getChildNodes(scope, value[1], id_name, False))
 								#obviously it is hard to differ between variables and normal strings or values so we need to make resolvements inside the childNode loop
-								node_value = res
-
 					scope.addFunctionOrGlobalVar(str(node_name), node_value)
 				else:
 					try:
-						node_function, block = find_function(simple_tree,node,thisNodeDepth)
+						node_function, block = find_function(simple_tree, node, thisNodeDepth)
 						for value in ast.iter_fields(node):
 							if(value[0] == id_name):
 								node_name = value[1]
 							elif(value[0] == expr_name):
-								node_value = value
+								if depth_ast(value[1]) == 1:
+									node_value = value[1]
+								else:
+									if with_resolving:
+										node_value = writeOutListAsList(getChildNodes(scope, value[1], id_name, True, node_function, block))
+									else:
+										node_value = writeOutListAsList(getChildNodes(scope, value[1], id_name, False))
 						print("Found function: " + node_function + " and add: " + type(node).__name__ + " with value: " + str(node) + " in block " + str(block))
 						scope.addLocal(str(node_name),value = node_value , funcI = node_function, block = block)
 					except:
@@ -135,4 +150,4 @@ scope = dictScope.dictScope()
 scope.__init__()
 
 with open(FILE_PATH) as file:
-	print(insertVariablesInScope(grammar,file.read(),FIRST_GRAMMAR_RULE,NAMES,scope))
+	print(insertVariablesInScope(grammar,file.read(),FIRST_GRAMMAR_RULE,NAMES,False,scope))

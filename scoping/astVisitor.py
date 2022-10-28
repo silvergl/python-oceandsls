@@ -1,3 +1,4 @@
+import operator
 from antlr_ast.ast import parse, process_tree
 import buildpython as grammar
 import ast
@@ -81,6 +82,28 @@ def writeOutListAsList(lisT):
 	else:
 		return [lisT[0], lisT[len(lisT) - 1], lisT[1]]
 
+#We dont assume that above ;): ex [val, [val, operation], [val, val, operation], operation]
+def writeOutListAsListNew(values):
+	operators = {"+" : operator.add, "-" : operator.sub, "*" : operator.mul, "/" : operator.truediv, "%" : operator.mod, 
+				"**" : operator.pow, "<" : operator.lt, ">" : operator.gt, ">=" : operator.ge, "<=" : operator.le, 
+				"!=" : operator.ne, "//" : operator.floordiv, "==" : operator.eq, "|" : operator.or_, "&" : operator.and_}
+	res = []
+	index = 0
+	for i in values:
+		if isinstance(i, list):
+			res.append(writeOutListAsListNew(i))
+		else:
+			#last element is operation
+			if index >= len(values) - 1:
+				if str(i) in operators:
+					res.insert(0, operators[str(i)])
+				else:
+					res.insert(0,i)
+			else:
+				res.append(i)
+		index += 1
+	return res
+
 def writeOutList(lisT):
 	if isinstance(lisT[0], list) and isinstance(lisT[1], list):
 		return writeOutList(lisT[0]) + str(lisT[len(lisT) - 1]) + writeOutList(lisT[1])
@@ -118,7 +141,7 @@ def insertVariablesInScope(grammar, grammar_input : str, first_grammar_rule : st
 								if with_resolving:
 									node_value = writeOutListAsList(getChildNodes(scope,value[1], id_name, True))
 								else:
-									node_value = writeOutListAsList(getChildNodes(scope, value[1], id_name, False))
+									node_value = writeOutListAsListNew(getChildNodes(scope, value[1], id_name, False))
 								#obviously it is hard to differ between variables and normal strings or values so we need to make resolvements inside the childNode loop
 					scope.addFunctionOrGlobalVar(str(node_name), node_value)
 				else:

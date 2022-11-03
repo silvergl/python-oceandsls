@@ -1,5 +1,5 @@
 import operator
-from antlr_ast.ast import parse, process_tree
+from antlr_ast.ast import parse, process_tree, Terminal
 import buildpython as grammar
 import ast
 import astunparse
@@ -39,14 +39,6 @@ def find_function(root, node, depth):
 			if curr_depth == root_depth - 1:
 				last_function = nod
 	raise
-
-def getChildNodesI(node):
-	result = []
-	for i in ast.iter_child_nodes(node):
-		if type(i).__name__ == "Terminal": 
-			result.append(i)
-		result.append(getChildNodesI(i))
-	return [ele for ele in result if ele != []]
 
 
 #reads out the child notes and export it as a list
@@ -104,6 +96,20 @@ def writeOutListAsListNew(values):
 		index += 1
 	return res
 
+def listToEval(values):
+	for i in range(1,len(values)):
+		if isinstance(values[i], list):
+			values[i] = listToEval(values[i])
+		elif isinstance(values[i], Terminal):
+			print(values[i].children[0])
+			print(type(values[i].children[0]))
+			if str(values[i]).isdigit():
+				values[i] = float(values[i].children[0])
+			else:
+				values[i] = values[i].children[0]
+	#Does not work caused to the ast Type Terminal, but to which value can we cast here?
+	return values[0](*values[1:len(values)])
+
 def writeOutList(lisT):
 	if isinstance(lisT[0], list) and isinstance(lisT[1], list):
 		return writeOutList(lisT[0]) + str(lisT[len(lisT) - 1]) + writeOutList(lisT[1])
@@ -139,9 +145,9 @@ def insertVariablesInScope(grammar, grammar_input : str, first_grammar_rule : st
 								node_value = value[1]
 							else:
 								if with_resolving:
-									node_value = writeOutListAsList(getChildNodes(scope,value[1], id_name, True))
+									node_value = listToEval(writeOutListAsListNew(getChildNodes(scope,value[1], id_name, True)))
 								else:
-									node_value = writeOutListAsListNew(getChildNodes(scope, value[1], id_name, False))
+									node_value = listToEval(writeOutListAsListNew(getChildNodes(scope, value[1], id_name, False)))
 								#obviously it is hard to differ between variables and normal strings or values so we need to make resolvements inside the childNode loop
 					scope.addFunctionOrGlobalVar(str(node_name), node_value)
 				else:
@@ -155,9 +161,9 @@ def insertVariablesInScope(grammar, grammar_input : str, first_grammar_rule : st
 									node_value = value[1]
 								else:
 									if with_resolving:
-										node_value = writeOutListAsList(getChildNodes(scope, value[1], id_name, True, node_function, block))
+										node_value = listToEval(writeOutListAsListNew(getChildNodes(scope, value[1], id_name, True, node_function, block)))
 									else:
-										node_value = writeOutListAsList(getChildNodes(scope, value[1], id_name, False))
+										node_value = listToEval(writeOutListAsListNew(getChildNodes(scope, value[1], id_name, False, node_function, block)))
 						print("Found function: " + node_function + " and add: " + type(node).__name__ + " with value: " + str(node) + " in block " + str(block))
 						scope.addLocal(str(node_name),value = node_value , funcI = node_function, block = block)
 					except:

@@ -2,7 +2,7 @@
 __author__ = 'sgu'
 
 import sys
-sys.path.insert(0, '..')
+sys.path.insert( 0, '../../build-python' )
 from antlr4 import *
 from antlr4.InputStream import InputStream
 from TestExprCore.TestExprCoreLexer import TestExprCoreLexer
@@ -16,8 +16,7 @@ if __name__ == "__main__":
         input_stream = FileStream(sys.argv[1])
     else:
         # TODO move parameters into file
-        input_stream = InputStream("var c = a + b()")
-        # input_stream = InputStream(sys.stdin.readline())
+        input_stream = InputStream(sys.stdin.readline())
 
     # create lexer and parser objects and token stream pipe between them
     lexer = TestExprCoreLexer(input_stream)

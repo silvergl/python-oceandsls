@@ -17,7 +17,7 @@
   <component name="PyNamespacePackagesService">
     <option name="namespacePackageFolders">
       <list>
-        <option value="$MODULE_DIR$/build-python/antlr4-c3-pylib" />
+        <option value="$MODULE_DIR$/src/antlr4-c3-pylib" />
       </list>
     </option>
   </component>

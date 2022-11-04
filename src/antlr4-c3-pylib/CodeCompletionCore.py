@@ -18,7 +18,8 @@ __author__ = 'sgu'
 
 # util imports
 import logging
-logging.basicConfig(level=logging.DEBUG)
+
+logging.basicConfig( level = logging.DEBUG )
 
 from dataclasses import dataclass, field
 from typing import Dict, Set, List
@@ -38,17 +39,21 @@ from antlr4.atn.Transition import Transition, PredicateTransition, RuleTransitio
 TokenList = List[int]
 RuleList = List[int]
 
+
 @dataclass
 class CandidateRule:
     startTokenIndex: int
     ruleList: RuleList
+
 
 @dataclass
 class RuleWithStartToken:
     startTokenIndex: int
     ruleIndex: int
 
+
 RuleWithStartTokenList = List[RuleWithStartToken]
+
 
 # JDO returning information about matching tokens and rules
 #
@@ -57,13 +62,12 @@ RuleWithStartTokenList = List[RuleWithStartToken]
 # Rule entries include the index of the starting token within the evaluated rule, along with a call stack of rules found during evaluation.
 @dataclass
 class CandidatesCollection:
-
     # Collection of Token ID candidates, each with a follow-on List of subsequent tokens
-    tokens: dict[int, TokenList] = field( default_factory=dict )
+    tokens: dict[int, TokenList] = field( default_factory = dict )
     # Collection of Rule candidates, each with the callstack of rules to reach the candidate
-    rules: dict[int, CandidateRule] = field( default_factory=dict )
+    rules: dict[int, CandidateRule] = field( default_factory = dict )
 
-    def __str__(self):
+    def __str__( self ):
         return str( 'CandidatesCollection{' + str( self.__dict__ ) + '}' )
 
 
@@ -75,15 +79,16 @@ class CandidatesCollection:
 @dataclass
 class FollowSetWithPath:
     intervals: IntervalSet = IntervalSet()
-    path: RuleList = field( default_factory=list )
-    following: TokenList = field( default_factory=list )
+    path: RuleList = field( default_factory = list )
+    following: TokenList = field( default_factory = list )
+
 
 # A list of follow sets (for a given state number) + all of them combined for quick hit tests.
 # This data is static in nature (because the used ATN states are part of a static struct: the ATN).
 # Hence, it can be shared between all C3 instances, however it depends on the actual parser class (type).
 @dataclass
 class FollowSetsHolder:
-    sets: Set[FollowSetWithPath] = field( default_factory=set )
+    sets: Set[FollowSetWithPath] = field( default_factory = set )
     combined: IntervalSet = IntervalSet()
 
 
@@ -98,11 +103,12 @@ class IPipelineEntry:
     state: ATNState
     tokenListIndex: int
 
+
 #
 # Return an array containing the elements represented by the current set. The
 # array is returned in ascending numerical order.
 #
-def intervalSetToList(intervalSet: IntervalSet) -> List[int] :
+def intervalSetToList( intervalSet: IntervalSet ) -> List[int]:
     values: List = []
     for interval in intervalSet.intervals:
         start: int = interval.start
@@ -110,10 +116,11 @@ def intervalSetToList(intervalSet: IntervalSet) -> List[int] :
 
         # range upper limit is exclusive
         while start < stop:
-            values.append(start)
+            values.append( start )
             start += 1
 
     return values
+
 
 #
 #  The main class for doing the collection process.
@@ -128,21 +135,21 @@ class CodeCompletionCore:
     # Debugging options. Print human readable ATN state and other info.
 
     # Not dependent on showDebugOutput. Prints the collected rules + tokens to terminal.
-    showResult: bool = True
+    showResult: bool = False
     # Enables printing ATN state info to terminal.
-    showDebugOutput: bool = True
+    showDebugOutput: bool = False
     # Only relevant when showDebugOutput is true. Enables transition printing for a state.
-    debugOutputWithTransitions: bool = True
+    debugOutputWithTransitions: bool = False
     # Also depends on showDebugOutput. Enables call stack printing for each rule recursion.
-    showRuleStack: bool = True
+    showRuleStack: bool = False
 
     # Tailoring of the result:
     # Tokens which should not appear in the candidates set.
-    ignoredTokens : Set[int]
+    ignoredTokens: Set[int]
 
     # Rules which replace any candidate token they contain.
     # This allows to return descriptive rules (e.g. className, instead of ID/identifier).
-    preferredRules :Set[int]
+    preferredRules: Set[int]
 
     # Specify if preferred rules should be translated top-down (higher index rule returns first) or
     # bottom-up (lower index rule returns first).
@@ -160,12 +167,12 @@ class CodeCompletionCore:
 
     # A mapping of rule index to token stream position to end token positions.
     # A rule which has been visited before with the same input position will always produce the same output positions.
-    shortcutMap: dict[int, dict[ int, RuleEndStatus] ] = {}
+    shortcutMap: dict[int, dict[int, RuleEndStatus]] = {}
 
     # The collected candidates (rules and tokens).
     candidates: CandidatesCollection = CandidatesCollection()
 
-    def __init__(self, parser: Parser):
+    def __init__( self, parser: Parser ):
         self.parser = parser
         self.atn = parser.atn
         self.literalNames = parser.literalNames
@@ -182,7 +189,7 @@ class CodeCompletionCore:
     # Optionally you can pass in a parser rule context which limits the ATN walk to only that or called rules. This can significantly
     # speed up the retrieval process but might miss some candidates (if they are outside the given context).
     #
-    def collectCandidates(self, caretTokenIndex: int, context: ParserRuleContext = None) -> CandidatesCollection:
+    def collectCandidates( self, caretTokenIndex: int, context: ParserRuleContext = None ) -> CandidatesCollection:
         self.shortcutMap.clear()
         self.candidates.rules.clear()
         self.candidates.tokens.clear()
@@ -212,24 +219,24 @@ class CodeCompletionCore:
         self.processRule( self.atn.ruleToStartState[startRule], 0, callStack, 0, 0 )
 
         if self.showResult and self.logger.isEnabledFor( logging.DEBUG ):
-            logMessage_list: List[str] = ["States processed: ", str(self.statesProcessed), "\n\n", "Collected rules:\n"]
+            logMessage_list: List[str] = ["States processed: ", str( self.statesProcessed ), "\n\n", "Collected rules:\n"]
             for key, value in self.candidates.rules.items():
-                logMessage_list.extend( [" / " , self.ruleNames[key] , ", path: " ] )
+                logMessage_list.extend( [" / ", self.ruleNames[key], ", path: "] )
 
                 for token in value.ruleList:
-                    logMessage_list.extend( [ self.ruleNames[token] , " " ] )
+                    logMessage_list.extend( [self.ruleNames[token], " "] )
 
             sortedTokens: Set[str] = set()
             for key, valueList in self.candidates.tokens.items():
-                symbol: str =  IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, key )
+                symbol: str = IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, key )
                 for following in valueList:
                     symbol += " " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, following )
-                sortedTokens.add(symbol)
+                sortedTokens.add( symbol )
 
             logMessage_list.append( "\n\nCollected Tokens:\n" )
             for symbol in sortedTokens:
-                logMessage_list.extend([symbol , "\n" ])
-            logMessage_list.append("\n\n")
+                logMessage_list.extend( [symbol, "\n"] )
+            logMessage_list.append( "\n\n" )
 
             self.logger.debug( ''.join( logMessage_list ) )
 
@@ -238,14 +245,14 @@ class CodeCompletionCore:
     #
     # Check if the predicate associated with the given transition evaluates to true.
     #
-    def checkPredicate(self, transition: PredicateTransition) -> bool:
+    def checkPredicate( self, transition: PredicateTransition ) -> bool:
         return transition.getPredicate().eval( self.parser, ParserRuleContext.EMPTY )
 
     #
     # Walks the rule chain upwards or downwards (depending on translateRulesTopDown) to see if that matches any of the
     # preferred rules. If found, that rule is added to the collection candidates and true is returned.
     #
-    def translateStackToRuleIndex(self, ruleWithStartTokenList: RuleWithStartTokenList) -> bool:
+    def translateStackToRuleIndex( self, ruleWithStartTokenList: RuleWithStartTokenList ) -> bool:
         if not self.preferredRules:
             return False
 
@@ -255,7 +262,7 @@ class CodeCompletionCore:
             #  if it is a child of a higher one that is also a preferred rule.
             i = len( ruleWithStartTokenList ) - 1
             while i >= 0:
-                if self.translateToRuleIndex(i, ruleWithStartTokenList):
+                if self.translateToRuleIndex( i, ruleWithStartTokenList ):
                     return True
                 i -= 1
         else:
@@ -263,7 +270,7 @@ class CodeCompletionCore:
             #  if it contains a lower one that is also a preferred rule.
             i = 0
             while i < len( ruleWithStartTokenList ):
-                if self.translateToRuleIndex(i, ruleWithStartTokenList):
+                if self.translateToRuleIndex( i, ruleWithStartTokenList ):
                     return True
                 i += 1
 
@@ -273,28 +280,28 @@ class CodeCompletionCore:
     # Given the index of a rule from a rule chain, check if that matches any of the preferred rules. If it matches,
     # that rule is added to the collection candidates and true is returned.
     #
-    def translateToRuleIndex(self, i: int, ruleStack: RuleWithStartTokenList) -> bool:
+    def translateToRuleIndex( self, i: int, ruleStack: RuleWithStartTokenList ) -> bool:
         ruleIndex: int = ruleStack[i].ruleIndex
         startTokenIndex: int = ruleStack[i].startTokenIndex
 
         if ruleIndex in self.preferredRules:
             # Add the rule to our candidates list along with the current rule path,
             # but only if there isn't already an entry like that.
-            path: List[int] = list(map((lambda x: x.ruleIndex), ruleStack[0:i] ))
+            path: List[int] = list( map( (lambda x: x.ruleIndex), ruleStack[0:i] ) )
             addNew: bool = True
             for key, value in self.candidates.rules.items():
                 if key != ruleIndex or len( value.ruleList ) != len( path ):
                     continue
 
                 # Found an entry for this rule. Same path? If so don't add a new (duplicate) entry.
-                if path == value.ruleList[0:len(path)]:
+                if path == value.ruleList[0:len( path )]:
                     addNew = False
                     break
 
             if addNew:
-                self.candidates.rules[ruleIndex] = CandidateRule(startTokenIndex,path)
-                if self.showDebugOutput and self.logger.isEnabledFor(logging.DEBUG):
-                    self.logger.debug("=====> collected: ", self.ruleNames[ruleIndex])
+                self.candidates.rules[ruleIndex] = CandidateRule( startTokenIndex, path )
+                if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
+                    self.logger.debug( "=====> collected: ", self.ruleNames[ruleIndex] )
 
             return True
 
@@ -304,7 +311,7 @@ class CodeCompletionCore:
     # This method follows the given transition and collects all symbols within the same rule that directly follow it
     # without intermediate transitions to other rules and only if there is a single symbol for a transition.
     #
-    def getFollowingTokens(self, transition: Transition) -> List[int]:
+    def getFollowingTokens( self, transition: Transition ) -> List[int]:
         result: List[int] = []
 
         pipeline: List[ATNState] = [transition.target]
@@ -331,7 +338,7 @@ class CodeCompletionCore:
     #
     # Entry point for the recursive follow set collection function.
     #
-    def determineFollowSets(self, start: ATNState, stop: ATNState) -> List[FollowSetWithPath]:
+    def determineFollowSets( self, start: ATNState, stop: ATNState ) -> List[FollowSetWithPath]:
         result: List[FollowSetWithPath] = []
         stateStack: List[ATNState] = []
         ruleStack: List[int] = []
@@ -343,7 +350,7 @@ class CodeCompletionCore:
     # Collects possible tokens which could be matched following the given ATN state. This is essentially the same
     # algorithm as used in the LL1Analyzer class, but here we consider predicates also and use no parser rule context.
     #
-    def collectFollowSets(self, s: ATNState, stopState: ATNState, followSets: List[FollowSetWithPath], stateStack: List[ATNState], ruleStack: List[int]):
+    def collectFollowSets( self, s: ATNState, stopState: ATNState, followSets: List[FollowSetWithPath], stateStack: List[ATNState], ruleStack: List[int] ):
         # TODO check lambda function
         #  stateStack.find((x) => x === s)
         if s in stateStack:
@@ -354,7 +361,7 @@ class CodeCompletionCore:
         if s == stopState or s.stateType == ATNState.RULE_STOP:
             followSet: FollowSetWithPath = FollowSetWithPath()
             followSet.intervals = IntervalSet.of( Token.EPSILON )
-            followSet.path = ruleStack[:] # .copy()
+            followSet.path = ruleStack[:]  # .copy()
             followSets.append( followSet )
             stateStack.pop()
 
@@ -379,8 +386,8 @@ class CodeCompletionCore:
                 self.collectFollowSets( transition.target, stopState, followSets, stateStack, ruleStack )
             elif transition.serializationType == Transition.WILDCARD:
                 followSet: FollowSetWithPath = FollowSetWithPath()
-                followSet.intervals.addRange(range(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1)) # range upper limit is exclusive
-                followSet.path = ruleStack[:] # .copy()
+                followSet.intervals.addRange( range( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1 ) )  # range upper limit is exclusive
+                followSet.path = ruleStack[:]  # .copy()
                 followSets.append( followSet )
             else:
                 label: IntervalSet = transition.label
@@ -389,7 +396,7 @@ class CodeCompletionCore:
                         label = label.complement( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType )
                     followSet: FollowSetWithPath = FollowSetWithPath()
                     followSet.intervals = label
-                    followSet.path = ruleStack[:] # .copy()
+                    followSet.path = ruleStack[:]  # .copy()
                     followSet.following = self.getFollowingTokens( transition )
                     followSets.append( followSet )
 
@@ -400,12 +407,12 @@ class CodeCompletionCore:
     # The result can be empty in case we hit only non-epsilon transitions that didn't match the current input or if we
     # hit the caret position.
     #
-    def processRule(self, startState: RuleStartState, tokenListIndex: int, callStack: RuleWithStartTokenList, precedence: int, indentation: int) -> RuleEndStatus:
+    def processRule( self, startState: RuleStartState, tokenListIndex: int, callStack: RuleWithStartTokenList, precedence: int, indentation: int ) -> RuleEndStatus:
 
         # Start with rule specific handling before going into the ATN walk.
 
         # Check first if we've taken this path with the same input before.
-        positionMap: dict[ int, RuleEndStatus] = self.shortcutMap.get( startState.ruleIndex )
+        positionMap: dict[int, RuleEndStatus] = self.shortcutMap.get( startState.ruleIndex )
         if positionMap is None:
             positionMap = {}
             self.shortcutMap[startState.ruleIndex] = positionMap
@@ -447,9 +454,9 @@ class CodeCompletionCore:
         # Get the token index where our rule starts from our (possibly filtered) token list
         startTokenIndex: int = self.tokens[tokenListIndex].tokenIndex
 
-        callStack.append( RuleWithStartToken(startTokenIndex, startState.ruleIndex) )
+        callStack.append( RuleWithStartToken( startTokenIndex, startState.ruleIndex ) )
 
-        if tokenListIndex >= len( self.tokens ) - 1: # At caret?
+        if tokenListIndex >= len( self.tokens ) - 1:  # At caret?
             if startState.ruleIndex in self.preferredRules:
                 # No need to go deeper when collecting entries and we reach a rule that we want to collect anyway.
                 self.translateStackToRuleIndex( callStack )
@@ -457,18 +464,18 @@ class CodeCompletionCore:
                 # Convert all follow sets to either single symbols or their associated preferred rule and add
                 # the result to our candidates list.
                 for followSet in followSets.sets:
-                    fullPath: RuleWithStartTokenList = callStack[:] # .copy()
+                    fullPath: RuleWithStartTokenList = callStack[:]  # .copy()
 
                     # Rules derived from our followSet will always start at the same token as our current rule
                     #  alternative: lambda path: RuleWithStartToken(startTokenIndex,path) for path in followSet.path
-                    followSetPath = list(map((lambda path: RuleWithStartToken(startTokenIndex,path)), followSet.path))
+                    followSetPath = list( map( (lambda path: RuleWithStartToken( startTokenIndex, path )), followSet.path ) )
 
-                    fullPath.extend(followSetPath)
+                    fullPath.extend( followSetPath )
                     if not self.translateStackToRuleIndex( fullPath ):
                         for symbol in intervalSetToList( followSet.intervals ):
                             if not symbol in self.ignoredTokens:
                                 if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
-                                    self.logger.debug( "=====> collected: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol) )
+                                    self.logger.debug( "=====> collected: " + IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
                                 if not symbol in self.candidates.tokens:
                                     # Following is empty if there is more than one entry in the set.
                                     self.candidates.tokens[symbol] = followSet.following
@@ -493,7 +500,7 @@ class CodeCompletionCore:
                 return result
 
         if startState.isPrecedenceRule:
-            self.precedenceStack.append(precedence)
+            self.precedenceStack.append( precedence )
 
         # The current state execution pipeline contains all yet-to-be-processed ATN states in this rule.
         # For each such state we store the token index + a list of rules that lead to it.
@@ -501,15 +508,15 @@ class CodeCompletionCore:
         currentEntry: IPipelineEntry
 
         # Bootstrap the pipeline.
-        statePipeline.append(IPipelineEntry( startState, tokenListIndex ))
+        statePipeline.append( IPipelineEntry( startState, tokenListIndex ) )
 
-        while len(statePipeline) > 0:
+        while len( statePipeline ) > 0:
             currentEntry = statePipeline.pop()
             self.statesProcessed += 1
 
-            currentSymbol: int = self.tokens[currentEntry.tokenListIndex ].type
+            currentSymbol: int = self.tokens[currentEntry.tokenListIndex].type
 
-            atCaret: bool = currentEntry.tokenListIndex >= len(self.tokens) - 1
+            atCaret: bool = currentEntry.tokenListIndex >= len( self.tokens ) - 1
             if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
                 self.printDescription( indentation, currentEntry.state, self.generateBaseDescription( currentEntry.state ), currentEntry.tokenListIndex )
                 if self.showRuleStack:
@@ -525,26 +532,26 @@ class CodeCompletionCore:
             # We simulate here the same precedence handling as the parser does, which uses hard coded values.
             # For rules that are not left recursive this value is ignored (since there is no precedence transition).
             for transition in transitions:
-                if type(transition) == RuleTransition:
+                if type( transition ) == RuleTransition:
                     ruleTransition: RuleTransition = transition
                     endStatus: Set[int] = self.processRule( transition.target, currentEntry.tokenListIndex, callStack, ruleTransition.precedence, indentation + 1 )
                     for position in endStatus:
                         statePipeline.append( IPipelineEntry( transition.followState, position ) )
 
-                elif type(transition) == PredicateTransition:
+                elif type( transition ) == PredicateTransition:
                     if self.checkPredicate( transition ):
                         statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex ) )
 
-                elif type(transition) == PrecedencePredicateTransition:
+                elif type( transition ) == PrecedencePredicateTransition:
                     predTransition: PrecedencePredicateTransition = transition
-                    if predTransition.precedence >= self.precedenceStack[len(self.precedenceStack) - 1]:
+                    if predTransition.precedence >= self.precedenceStack[len( self.precedenceStack ) - 1]:
                         statePipeline.append( IPipelineEntry( transition.target, currentEntry.tokenListIndex ) )
 
-                elif type(transition) == WildcardTransition:
+                elif type( transition ) == WildcardTransition:
                     if atCaret:
                         if not self.translateStackToRuleIndex( callStack ):
                             intern: IntervalSet = IntervalSet()
-                            intern.addRange(range(Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1) ) # range upper limit is exclusive
+                            intern.addRange( range( Token.MIN_USER_TOKEN_TYPE, self.atn.maxTokenType + 1 ) )  # range upper limit is exclusive
                             for token in intervalSetToList( intern ):
                                 if not token in self.ignoredTokens:
                                     self.candidates.tokens[token] = []
@@ -564,7 +571,7 @@ class CodeCompletionCore:
                         if atCaret:
                             if not self.translateStackToRuleIndex( callStack ):
                                 followList: List[int] = intervalSetToList( followSet )
-                                addFollowing: bool = len(followList) == 1
+                                addFollowing: bool = len( followList ) == 1
                                 for symbol in followList:
                                     if not symbol in self.ignoredTokens:
                                         if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
@@ -575,7 +582,7 @@ class CodeCompletionCore:
                                         else:
                                             self.candidates.tokens[symbol] = []
                                     else:
-                                        self.logger.debug( "====> collected: Ignoring token: " + str(symbol) )
+                                        self.logger.debug( "====> collected: Ignoring token: " + str( symbol ) )
                         else:
                             if currentSymbol in followSet:
                                 if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
@@ -592,36 +599,36 @@ class CodeCompletionCore:
         return result
 
     # TODO switch case
-    def switchCase(self, serializationType: int):
+    def switchCase( self, serializationType: int ):
         return {
-            Transition.RULE: lambda : self.callRULE(),
-            Transition.PREDICATE: lambda : self.callPREDICATE(),
-            Transition.PRECEDENCE: lambda : self.callPRECEDENCE(),
-            Transition.WILDCARD: lambda : self.callWILDCARD()
-        }.get(serializationType, lambda : self.callDEFAULT())    # callDEFAULT will be returned default if serializationType is not found
+            Transition.RULE      : lambda: self.callRULE(),
+            Transition.PREDICATE : lambda: self.callPREDICATE(),
+            Transition.PRECEDENCE: lambda: self.callPRECEDENCE(),
+            Transition.WILDCARD  : lambda: self.callWILDCARD()
+        }.get( serializationType, lambda: self.callDEFAULT() )  # callDEFAULT will be returned default if serializationType is not found
 
-    def callRULE(self):
+    def callRULE( self ):
         pass
 
-    def callPREDICATE(self):
+    def callPREDICATE( self ):
         pass
 
-    def callPRECEDENCE(self):
+    def callPRECEDENCE( self ):
         pass
 
-    def callWILDCARD(self):
+    def callWILDCARD( self ):
         pass
 
-    def callDEFAULT(self):
+    def callDEFAULT( self ):
         pass
 
-    def generateBaseDescription(self, state: ATNState) -> str:
+    def generateBaseDescription( self, state: ATNState ) -> str:
         stateValue: str = "Invalid" if (state.stateNumber == ATNState.INVALID_STATE_NUMBER) else str( state.stateNumber )
 
         return "[" + stateValue + " " + self.atnStateTypeMap[state.stateType] + "] in " + self.ruleNames[state.ruleIndex]
 
     # self, currentIndent, state, baseDescription, tokenIndex
-    def printDescription(self, indentation: int, state: ATNState, baseDescription: str, tokenIndex: int):
+    def printDescription( self, indentation: int, state: ATNState, baseDescription: str, tokenIndex: int ):
         # TODO check log level
         #  FINER level
         #  logger.isLoggable(Level.FINER)
@@ -636,9 +643,10 @@ class CodeCompletionCore:
                 symbols: List[int] = intervalSetToList( transition.label ) if transition.label is not None else []
                 if len( symbols ) > 2:
                     # Only print start and end symbols to avoid large lists in debug output.
-                    labels_list.append( IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols[0] ) + " .. " +
-                                        IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols[len( symbols ) - 1] )
-                                        )
+                    labels_list.append(
+                        IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols[0] ) + " .. " +
+                        IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbols[len( symbols ) - 1] )
+                    )
                 else:
                     for symbol in symbols:
                         if len( labels_list ) > 0:
@@ -646,14 +654,17 @@ class CodeCompletionCore:
                         labels_list.append( IntervalSet.elementName( IntervalSet, self.literalNames, self.symbolicNames, symbol ) )
                 if len( labels_list ) == 0:
                     labels_list.append( "ε" )
-                transitionDescription_list.extend( [ "\n" , ''.join( indent ) , "\t(", ''.join( labels_list ) , ") [" , str(transition.target.stateNumber) , " " , self.atnStateTypeMap[transition.target.stateType] , "] in " , self.ruleNames[transition.target.ruleIndex] ] )
+                transitionDescription_list.extend(
+                    ["\n", ''.join( indent ), "\t(", ''.join( labels_list ), ") [", str( transition.target.stateNumber ), " ",
+                     self.atnStateTypeMap[transition.target.stateType], "] in ", self.ruleNames[transition.target.ruleIndex]]
+                )
             if tokenIndex >= len( self.tokens ) - 1:
-                output_list.extend( [ "<<" , str(self.tokenStartIndex + tokenIndex) , ">> " ] )
+                output_list.extend( ["<<", str( self.tokenStartIndex + tokenIndex ), ">> "] )
             else:
-                output_list.extend( [ "<" , str(self.tokenStartIndex + tokenIndex) , "> " ] )
-            self.logger.debug(''.join( output_list ) + "Current state: " + baseDescription + ''.join( transitionDescription_list ) )
+                output_list.extend( ["<", str( self.tokenStartIndex + tokenIndex ), "> "] )
+            self.logger.debug( ''.join( output_list ) + "Current state: " + baseDescription + ''.join( transitionDescription_list ) )
 
-    def printRuleState(self, stack: RuleWithStartTokenList):
+    def printRuleState( self, stack: RuleWithStartTokenList ):
         # TODO check log level
         #  FINER level
         #  logger.isLoggable(Level.FINER)
@@ -666,5 +677,5 @@ class CodeCompletionCore:
         if self.logger.isEnabledFor( logging.DEBUG ):
             sb_list = []
             for rule in stack:
-                sb_list.extend( [ "  " , self.ruleNames[rule.ruleIndex] , "\n" ] )
+                sb_list.extend( ["  ", self.ruleNames[rule.ruleIndex], "\n"] )
             self.logger.debug( ''.join( sb_list ) )

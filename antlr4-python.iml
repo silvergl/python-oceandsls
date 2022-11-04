@@ -4,6 +4,8 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/build-python" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/antlr4-c3-pylib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/antlr4-c3-pylib/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/venv_antlr4-python" />
       <excludeFolder url="file://$MODULE_DIR$/build-java" />
       <excludeFolder url="file://$MODULE_DIR$/build-java/Configuration" />

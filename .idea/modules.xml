@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/antlr4-python.iml" filepath="$PROJECT_DIR$/antlr4-python.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/antlr4-c3/CodeCompletionCore/CodeCompletionCore.iml" filepath="$PROJECT_DIR$/src/antlr4-c3/CodeCompletionCore/CodeCompletionCore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/antlr4-python.iml" filepath="$PROJECT_DIR$/.idea/antlr4-python.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/pygls/server/server.iml" filepath="$PROJECT_DIR$/src/pygls/server/server.iml" />
     </modules>
   </component>
 </project>

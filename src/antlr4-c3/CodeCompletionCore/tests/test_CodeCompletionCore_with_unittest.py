@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import sys
 
-sys.path.insert( 0, '../../../build-python' )
+sys.path.insert( 0, '../../../../build-python' )
 
 from antlr4 import InputStream, CommonTokenStream, DiagnosticErrorListener
 from TestExprCore.TestExprCoreLexer import TestExprCoreLexer

@@ -67,4 +67,10 @@ coverage.xml
 doc/_build/
 
 # vscode config file
-.vscode/*
+#.vscode/*
+out
+node_modules
+client/server
+.vscode-test
+#.vscode/settings.json
+env

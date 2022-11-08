@@ -2,7 +2,7 @@
 __author__ = 'sgu'
 
 import sys
-sys.path.insert( 0, '../../build-python' )
+sys.path.insert( 0, '../../../build-python' )
 from antlr4 import *
 from antlr4.InputStream import InputStream
 from TestExprCore.TestExprCoreLexer import TestExprCoreLexer

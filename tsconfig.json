@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2019",
+        "lib": ["ES2019"],
+        "rootDir": "src/pygls/client/src",
+        "outDir": "typescript-build/client/out",
+        "sourceMap": true
+    },
+    "include": ["src/pygls/client/src"],
+    "exclude": ["node_modules"]
+}

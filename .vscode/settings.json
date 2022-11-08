@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "/home/sgu/IdeaProjects/pygls/examples/json-extension/venv_pygls_example/bin/python",
+    "terminal.integrated.env.osx": {"PYTHONPATH": "${workspaceFolder}"}
+}

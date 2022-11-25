@@ -1,4 +1,4 @@
-# Generated from /home/sgu/IdeaProjects/antlr4-python/grammars/dev/TestExprCore.g4 by ANTLR 4.10.1
+# Generated from TestExprCore.g4 by ANTLR 4.11.1
 from antlr4 import *
 from io import StringIO
 import sys
@@ -68,7 +68,7 @@ class TestExprCoreLexer(Lexer):
 
     def __init__(self, input=None, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.10.1")
+        self.checkVersion("4.11.1")
         self._interp = LexerATNSimulator(self, self.atn, self.decisionsToDFA, PredictionContextCache())
         self._actions = None
         self._predicates = None

@@ -1,4 +1,4 @@
-# Generated from /home/sgu/IdeaProjects/antlr4-python/grammars/dev/TestExprCore.g4 by ANTLR 4.10.1
+# Generated from TestExprCore.g4 by ANTLR 4.11.1
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -68,7 +68,7 @@ class TestExprCoreParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.10.1")
+        self.checkVersion("4.11.1")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -118,12 +118,12 @@ class TestExprCoreParser ( Parser ):
             self.state = 14
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [TestExprCoreParser.VAR, TestExprCoreParser.LET]:
+            if token in [1, 2]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 12
                 self.assignment()
                 pass
-            elif token in [TestExprCoreParser.ID]:
+            elif token in [10]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 13
                 self.simpleExpression(0)
@@ -192,7 +192,7 @@ class TestExprCoreParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 16
             _la = self._input.LA(1)
-            if not(_la==TestExprCoreParser.VAR or _la==TestExprCoreParser.LET):
+            if not(_la==1 or _la==2):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -310,7 +310,7 @@ class TestExprCoreParser ( Parser ):
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
                         self.state = 27
                         _la = self._input.LA(1)
-                        if not(_la==TestExprCoreParser.PLUS or _la==TestExprCoreParser.MINUS):
+                        if not(_la==3 or _la==4):
                             self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
@@ -328,7 +328,7 @@ class TestExprCoreParser ( Parser ):
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
                         self.state = 30
                         _la = self._input.LA(1)
-                        if not(_la==TestExprCoreParser.MULTIPLY or _la==TestExprCoreParser.DIVIDE):
+                        if not(_la==5 or _la==6):
                             self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)

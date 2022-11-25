@@ -54,14 +54,16 @@ class RuleWithStartToken:
 
 RuleWithStartTokenList = List[RuleWithStartToken]
 
-
+#
 # JDO returning information about matching tokens and rules
 #
 # All the candidates which have been found. Tokens and rules are separated.
 # Token entries include a list of tokens that directly follow them (see also the "following" member in the FollowSetWithPath class).
 # Rule entries include the index of the starting token within the evaluated rule, along with a call stack of rules found during evaluation.
+#
 @dataclass
 class CandidatesCollection:
+
     # Collection of Token ID candidates, each with a follow-on List of subsequent tokens
     tokens: dict[int, TokenList] = field( default_factory = dict )
     # Collection of Rule candidates, each with the callstack of rules to reach the candidate
@@ -70,22 +72,24 @@ class CandidatesCollection:
     def __str__( self ):
         return str( 'CandidatesCollection{' + str( self.__dict__ ) + '}' )
 
-
+#
 # A record for a follow set along with the path at which this set was found.
 # If there is only a single symbol in the interval set then we also collect and store tokens which follow
 # this symbol directly in its rule (i.e. there is no intermediate rule transition). Only single label transitions
 # are considered. This is useful if you have a chain of tokens which can be suggested as a whole, because there is
 # a fixed sequence in the grammar.
+#
 @dataclass
 class FollowSetWithPath:
     intervals: IntervalSet = IntervalSet()
     path: RuleList = field( default_factory = list )
     following: TokenList = field( default_factory = list )
 
-
+#
 # A list of follow sets (for a given state number) + all of them combined for quick hit tests.
 # This data is static in nature (because the used ATN states are part of a static struct: the ATN).
 # Hence, it can be shared between all C3 instances, however it depends on the actual parser class (type).
+#
 @dataclass
 class FollowSetsHolder:
     sets: Set[FollowSetWithPath] = field( default_factory = set )

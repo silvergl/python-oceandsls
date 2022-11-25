@@ -23,10 +23,10 @@ $(PKGTARGETS): %: $(SRCDIR)/%.g4
 	javac $(OBJDIR)-java/$@/*.java
 
 $(OBJDIR)-python/$(PACKAGE): $(SRCDIR)/$(GRAMMAR)
-	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-python/$(PACKAGE) -visitor -Dlanguage=Python3
+	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-python/$(PACKAGE) -visitor -package $(PACKAGE) -Dlanguage=Python3
 
 $(OBJDIR)-java/$(PACKAGE): $(SRCDIR)/$(GRAMMAR)
-	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-java/$(PACKAGE) -visitor
+	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-java/$(PACKAGE) -visitor -package $(PACKAGE)
 
 $(GRAMMAR).tar.gz: $(OBJDIR)-python/$(PACKAGE)
 	mkdir -p $(PYBUILDDIR)

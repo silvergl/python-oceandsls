@@ -3,9 +3,12 @@ __author__ = 'sgu'
 
 import sys
 sys.path.insert( 0, '../../../build-python' )
+
+import logging
+
 from antlr4 import *
 from antlr4.InputStream import InputStream
-from TestExprCore.TestExprCoreLexer import TestExprCoreLexer
+from TestExprCore.TestExprCoreLexer import TestExprCoreLexer, ParserRuleContext
 from TestExprCore.TestExprCoreParser import TestExprCoreParser
 from TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
 from CodeCompletionCore import CodeCompletionCore
@@ -13,7 +16,8 @@ from CodeCompletionCore import CodeCompletionCore
 if __name__ == "__main__":
     # create input stream of characters for lexer
     if len(sys.argv) > 1:
-        input_stream = FileStream(sys.argv[1])
+        # input_stream = FileStream(sys.argv[1])
+        input_stream = InputStream( "var c = + b()" )
     else:
         # TODO move parameters into file
         input_stream = InputStream(sys.stdin.readline())
@@ -23,14 +27,34 @@ if __name__ == "__main__":
     tokenStream = CommonTokenStream(lexer)
     parser = TestExprCoreParser(tokenStream)
 
+    parser.removeErrorListeners()
     parser.addErrorListener(DiagnosticErrorListener)
 
+    listener = parser.getErrorListenerDispatch()
+
     # launch parser by invoking rule 'expression'
-    ast = parser.expression()
+    try:
+        ast = parser.expression()
+    except SyntaxError as syn_inst:
+        logging.exception("parser raised syntax exception")
+    except Exception as inst:
+        # print(type(inst))    # the exception instance
+        # print(inst.args)     # arguments stored in .args
+        # print(inst)          # __str__ allows args to be printed directly,
+        # but may be overridden in exception subclasses
+        # x, y = inst.args     # unpack args
+        # print('x =', x)
+        # print('y =', y)
+
+        logging.exception("parser raised exception")
+        # logging.exception("the exception instance '" + str(type(inst)) + "'")
+        # logging.exception("arguments stored in .args '" + str(inst.args) + "'")
+        # logging.exception("__str__ allows args to be printed directly '" + str(inst) + "'")
+
 
     # print parse tree
-    #lisp_tree_str = tree.toStringTree(recog=parser)
-    #print(lisp_tree_str)
+    lisp_tree_str = ast.toStringTree(recog=parser)
+    print(lisp_tree_str)
 
     # launch c3 core with parser:Parser, preferredRules:tuple, ignoredTokens:tuple
     core = CodeCompletionCore(parser)
@@ -38,6 +62,10 @@ if __name__ == "__main__":
     candidates = core.collectCandidates(0)
 
     print(candidates)
+
+    cls_list = ParserRuleContext.__subclasses__()
+
+    print(cls_list)
 
     # evaluator - walk parse tree
     # visitor = TestExprCoreVisitor

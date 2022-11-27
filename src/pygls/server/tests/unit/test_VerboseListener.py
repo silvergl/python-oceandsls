@@ -10,35 +10,6 @@ from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
 from antlr4.error.ErrorListener import ErrorListener
 from antlr4.Recognizer import Recognizer
 
-# from typing import List, Union
-import logging
-# from pygls.lsp.types import (Diagnostic, Range, Position)
-# def user_repr(error: Union[UnexpectedToken]):
-#     if isinstance(error, UnexpectedToken):
-#         expected = ', '.join(error.accepts or error.expected)
-#         return f"Unexpected token {str(error.token)!r}. Expected one of:\n{{{expected}}}"
-#     else:
-#         return str(error)
-#
-#
-# def get_diagnostics(doctext: str):
-#     diagnostics: List[Diagnostic] = []
-#
-#     def on_error(e: UnexpectedToken):
-#         diagnostics.append(Diagnostic(
-#             Range(
-#                 Position(e.line - 1, e.column - 1),
-#                 Position(e.line - 1, e.column)
-#             ),
-#             user_repr(e)))
-#         return True
-#
-#     try:
-#         lark_grammar_parser.parse(doctext, on_error=on_error)
-#     except Exception:
-#         logging.exception("parser raised exception")
-#     return diagnostics
-
 class VerboseListener(ErrorListener):
     def __init__(self):
         super().__init__()

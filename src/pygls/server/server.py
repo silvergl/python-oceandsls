@@ -54,6 +54,7 @@ class ODslLanguageServer( LanguageServer ):
     CONFIGURATION_SECTION = 'ODslServer'
 
     def __init__(self, *args):
+        self.diagnostics: Diagnostic
         super().__init__( *args )
 
 
@@ -68,7 +69,7 @@ def _validate(ls, params):
     source = text_doc.source
     diagnostics = _validate_format( source ) if source else []
 
-    ls.publish_diagnostics( text_doc.uri, diagnostics )
+    ls.publish_diagnostics( text_doc.uri, ls.diagnostics )
 
 
 def _validate_format(source):

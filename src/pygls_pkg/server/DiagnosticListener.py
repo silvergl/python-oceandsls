@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 __author__ = 'sgu'
 
+# debug logging
 import logging
 logging.basicConfig( level = logging.DEBUG )
 #antlr4

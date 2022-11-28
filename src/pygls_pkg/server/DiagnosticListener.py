@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 __author__ = 'sgu'
 
-# util imports
-import sys, os
-if not os.path.join(sys.path[0],'build-python') in sys.path:
-    sys.path.append(os.path.join(sys.path[0],'build-python'))
-# logging
 import logging
 logging.basicConfig( level = logging.DEBUG )
 #antlr4

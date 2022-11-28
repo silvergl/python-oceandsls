@@ -24,13 +24,15 @@ from typing import Optional
 import sys
 
 import sys, os
-#user
-if not os.path.join(sys.path[0],'src','pygls_pkg','server') in sys.path:
-    sys.path.append(os.path.join(sys.path[0],'src','pygls_pkg','server'))
+
+# user
+if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
+    sys.path.append( os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) )
 from DiagnosticListener import DiagnosticListener
-#antlr4
-if not os.path.join(sys.path[0],'build-python') in sys.path:
-    sys.path.append(os.path.join(sys.path[0],'build-python'))
+
+# antlr4
+if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
+    sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
 from antlr4 import InputStream, CommonTokenStream
 from TestGrammar.TestGrammarLexer import TestGrammarLexer
 from TestGrammar.TestGrammarParser import TestGrammarParser
@@ -42,21 +44,11 @@ from typing import List
 # from pprint import pprint
 # pprint(sys.path)
 
-from pygls.lsp.methods import (COMPLETION, TEXT_DOCUMENT_DID_CHANGE,
-                               TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN,
-                               TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
-from pygls.lsp.types import (CompletionItem, CompletionList, CompletionOptions,
-                             CompletionParams, ConfigurationItem,
-                             ConfigurationParams, Diagnostic,
-                             DidChangeTextDocumentParams,
-                             DidCloseTextDocumentParams,
-                             DidOpenTextDocumentParams, MessageType, Position,
-                             Range, Registration, RegistrationParams,
-                             SemanticTokens, SemanticTokensLegend, SemanticTokensParams,
-                             Unregistration, UnregistrationParams)
-from pygls.lsp.types.basic_structures import (WorkDoneProgressBegin,
-                                              WorkDoneProgressEnd,
-                                              WorkDoneProgressReport)
+from pygls.lsp.methods import (COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
+from pygls.lsp.types import (CompletionItem, CompletionList, CompletionOptions, CompletionParams, ConfigurationItem, ConfigurationParams, Diagnostic, DidChangeTextDocumentParams,
+                             DidCloseTextDocumentParams, DidOpenTextDocumentParams, MessageType, Position, Range, Registration, RegistrationParams, SemanticTokens,
+                             SemanticTokensLegend, SemanticTokensParams, Unregistration, UnregistrationParams)
+from pygls.lsp.types.basic_structures import (WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport)
 from pygls.server import LanguageServer
 
 COUNT_DOWN_START_IN_SECONDS = 10
@@ -80,22 +72,22 @@ class ODslLanguageServer( LanguageServer ):
         # set ErrorListener
         self.error_listener: DiagnosticListener = DiagnosticListener()
         # set empty input stream
-        input_stream: InputStream = InputStream(str())
+        input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: TestGrammarLexer = TestGrammarLexer(input_stream)
+        self.lexer: TestGrammarLexer = TestGrammarLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
-        self.lexer.addErrorListener(self.error_listener)
+        self.lexer.addErrorListener( self.error_listener )
 
         # set token stream pipe between lexer and parser
-        tokenStream: CommonTokenStream = CommonTokenStream(self.lexer)
+        tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: TestGrammarParser = TestGrammarParser(tokenStream)
+        self.parser: TestGrammarParser = TestGrammarParser( tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
-        self.parser.addErrorListener(self.error_listener)
+        self.parser.addErrorListener( self.error_listener )
 
 
 odsl_server = ODslLanguageServer( 'pygls-odsl-prototype', 'v0.1' )
@@ -120,9 +112,7 @@ def _validate_format(ls: ODslLanguageServer, source):
     # set the input stream and reset the lexer/parser/listener
     ls.error_listener.reset()
     ls.lexer.inputStream = input_stream
-    ls.parser.setInputStream(CommonTokenStream(ls.lexer))
-
-
+    ls.parser.setInputStream( CommonTokenStream( ls.lexer ) )
 
     try:
         # launch parser by invoking startrule
@@ -139,8 +129,7 @@ def _validate_format(ls: ODslLanguageServer, source):
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
     return CompletionList(
-        is_incomplete=False,
-        items=[
+        is_incomplete=False, items=[
             CompletionItem( label='"' ),
             CompletionItem( label='[' ),
             CompletionItem( label=']' ),
@@ -192,11 +181,7 @@ async def did_open(ls, params: DidOpenTextDocumentParams):
     _validate( ls, params )
 
 
-@odsl_server.feature(
-    TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
-    SemanticTokensLegend( token_types=["operator"], token_modifiers=[]
-                          )
-)
+@odsl_server.feature( TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, SemanticTokensLegend( token_types=["operator"], token_modifiers=[] ) )
 def semantic_tokens(ls: ODslLanguageServer, params: SemanticTokensParams):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
     for details on how semantic tokens are encoded."""
@@ -243,8 +228,7 @@ async def progress(ls: ODslLanguageServer, *args):
 @odsl_server.command( ODslLanguageServer.CMD_REGISTER_COMPLETIONS )
 async def register_completions(ls: ODslLanguageServer, *args):
     """Register completions method on the client."""
-    params = RegistrationParams( registrations=[
-        Registration( id=str( uuid.uuid4() ), method=COMPLETION, register_options={"triggerCharacters": "[':']"} )] )
+    params = RegistrationParams( registrations=[Registration( id=str( uuid.uuid4() ), method=COMPLETION, register_options={"triggerCharacters": "[':']"} )] )
     response = await ls.register_capability_async( params )
     if response is None:
         ls.show_message( 'Successfully registered completions method' )
@@ -256,8 +240,7 @@ async def register_completions(ls: ODslLanguageServer, *args):
 async def show_configuration_async(ls: ODslLanguageServer, *args):
     """Gets exampleConfiguration from the client settings using coroutines."""
     try:
-        config = await ls.get_configuration_async( ConfigurationParams(
-            items=[ConfigurationItem( scope_uri='', section=ODslLanguageServer.CONFIGURATION_SECTION )] ) )
+        config = await ls.get_configuration_async( ConfigurationParams( items=[ConfigurationItem( scope_uri='', section=ODslLanguageServer.CONFIGURATION_SECTION )] ) )
 
         example_config = config[0].get( 'exampleConfiguration' )
 
@@ -278,11 +261,9 @@ def show_configuration_callback(ls: ODslLanguageServer, *args):
             ls.show_message( f'odslServer.exampleConfiguration value: {example_config}' )
 
         except Exception as e:
-            ls.show_message_log( f'Error ocurred: {e}' )
+            ls.show_message_log( f'Error occurred: {e}' )
 
-    ls.get_configuration( ConfigurationParams(
-        items=[ConfigurationItem( scope_uri='', section=ODslLanguageServer.CONFIGURATION_SECTION )] ),
-                          _config_callback )
+    ls.get_configuration( ConfigurationParams( items=[ConfigurationItem( scope_uri='', section=ODslLanguageServer.CONFIGURATION_SECTION )] ), _config_callback )
 
 
 @odsl_server.thread()
@@ -290,8 +271,7 @@ def show_configuration_callback(ls: ODslLanguageServer, *args):
 def show_configuration_thread(ls: ODslLanguageServer, *args):
     """Gets exampleConfiguration from the client settings using thread pool."""
     try:
-        config = ls.get_configuration( ConfigurationParams(
-            items=[ConfigurationItem( scope_uri='', section=ODslLanguageServer.CONFIGURATION_SECTION )] ) ).result( 2 )
+        config = ls.get_configuration( ConfigurationParams( items=[ConfigurationItem( scope_uri='', section=ODslLanguageServer.CONFIGURATION_SECTION )] ) ).result( 2 )
 
         example_config = config[0].get( 'exampleConfiguration' )
 

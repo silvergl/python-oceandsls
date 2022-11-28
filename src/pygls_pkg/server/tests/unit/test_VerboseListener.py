@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 
 import sys
-sys.path.insert( 0, '../../../../build-python' )
+sys.path.append( '../../../../build-python' )
 
 from antlr4 import *
 from TestGrammar.TestGrammarLexer import TestGrammarLexer, ParserRuleContext

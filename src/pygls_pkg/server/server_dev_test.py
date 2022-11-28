@@ -2,12 +2,12 @@
 __author__ = 'sgu'
 
 import sys
-sys.path.insert( 0, '../../../../build-python' )
+sys.path.append( '../../../../build-python' )
 
 from antlr4 import *
-from TestGrammar.TestGrammarLexer import TestGrammarLexer, ParserRuleContext
-from TestGrammar.TestGrammarParser import TestGrammarParser
-from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
+from TestGrammarParser.TestGrammarLexer import TestGrammarLexer, ParserRuleContext
+from TestGrammarParser.TestGrammarParser import TestGrammarParser
+from TestGrammarParser.TestGrammarVisitor import TestGrammarVisitor
 from antlr4.error.ErrorListener import ErrorListener
 from antlr4.Recognizer import Recognizer
 

@@ -20,6 +20,18 @@ import time
 import uuid
 from typing import Optional
 
+# util imports
+import sys
+
+#user
+sys.path.append('src/pygls/server')
+from VerboseListener import VerboseListener
+#antlr4
+sys.path.append('build-python')
+from antlr4 import InputStream
+# pygls
+from typing import List
+
 from pygls.lsp.methods import (COMPLETION, TEXT_DOCUMENT_DID_CHANGE,
                                TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN,
                                TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
@@ -54,7 +66,7 @@ class ODslLanguageServer( LanguageServer ):
     CONFIGURATION_SECTION = 'ODslServer'
 
     def __init__(self, *args):
-        self.diagnostics: Diagnostic
+        self.diagnostics: List[Diagnostic] = []
         super().__init__( *args )
 
 
@@ -68,6 +80,28 @@ def _validate(ls, params):
 
     source = text_doc.source
     diagnostics = _validate_format( source ) if source else []
+
+    # set listener
+    error_listener = VerboseListener()
+    # create input stream of characters for lexer
+    input_stream = InputStream( "c = + b()\n" )
+    # if len(sys.argv) > 1:
+    #     pass
+    #     # input_stream = FileStream(sys.argv[1])
+    # else:
+    #     # TODO move parameters into file
+    #     input_stream = InputStream(sys.stdin.readline())
+
+    # create lexer and parser objects and token stream pipe between them
+    lexer = TestGrammarLexer(input_stream)
+    lexer.removeErrorListeners()
+    lexer.addErrorListener(error_listener)
+
+    tokenStream = CommonTokenStream(lexer)
+
+    parser = TestGrammarParser(tokenStream)
+    parser.removeErrorListeners()
+    parser.addErrorListener(error_listener)
 
     ls.publish_diagnostics( text_doc.uri, ls.diagnostics )
 

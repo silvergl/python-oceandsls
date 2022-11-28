@@ -17,7 +17,7 @@ from antlr4.error.Errors import RecognitionException
 from typing import List
 from pygls.lsp.types import (Diagnostic, Range, Position)
 
-class VerboseListener(ErrorListener):
+class DiagnosticListener( ErrorListener ):
     def __init__(self):
         self.diagnostics: List[Diagnostic] = []
         super().__init__()
@@ -25,6 +25,10 @@ class VerboseListener(ErrorListener):
     logger = logging.getLogger( __name__ )
     # Enables printing ATN state info to terminal.
     showDebugOutput: bool = False
+
+    # reset the listener's state
+    def reset(self):
+        self.diagnostics = []
 
     def syntaxError(self, recognizer:Recognizer, offendingSymbol:Token, line:int, column:int, msg:str, e:RecognitionException = None):
         self.diagnostics.append(

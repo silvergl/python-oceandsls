@@ -27,11 +27,14 @@ import sys, os
 #user
 if not os.path.join(sys.path[0],'src','pygls_pkg','server') in sys.path:
     sys.path.append(os.path.join(sys.path[0],'src','pygls_pkg','server'))
-from VerboseListener import VerboseListener
+from DiagnosticListener import DiagnosticListener
 #antlr4
 if not os.path.join(sys.path[0],'build-python') in sys.path:
     sys.path.append(os.path.join(sys.path[0],'build-python'))
-from antlr4 import InputStream
+from antlr4 import InputStream, CommonTokenStream
+from TestGrammar.TestGrammarLexer import TestGrammarLexer
+from TestGrammar.TestGrammarParser import TestGrammarParser
+from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
 # pygls
 from typing import List
 
@@ -73,59 +76,63 @@ class ODslLanguageServer( LanguageServer ):
     CONFIGURATION_SECTION = 'ODslServer'
 
     def __init__(self, *args):
-        self.diagnostics: List[Diagnostic] = []
         super().__init__( *args )
+        # set ErrorListener
+        self.error_listener: DiagnosticListener = DiagnosticListener()
+        # set empty input stream
+        input_stream: InputStream = InputStream(str())
+
+        # set lexer
+        self.lexer: TestGrammarLexer = TestGrammarLexer(input_stream)
+        # set ErrorListener for diagnostics
+        self.lexer.removeErrorListeners()
+        self.lexer.addErrorListener(self.error_listener)
+
+        # set token stream pipe between lexer and parser
+        tokenStream: CommonTokenStream = CommonTokenStream(self.lexer)
+
+        # set parser
+        self.parser: TestGrammarParser = TestGrammarParser(tokenStream)
+        # set ErrorListener for diagnostics
+        self.parser.removeErrorListeners()
+        self.parser.addErrorListener(self.error_listener)
 
 
 odsl_server = ODslLanguageServer( 'pygls-odsl-prototype', 'v0.1' )
 
 
-def _validate(ls, params):
+def _validate(ls: ODslLanguageServer, params):
     ls.show_message_log( 'Validating file...' )
 
     text_doc = ls.workspace.get_document( params.text_document.uri )
 
     source = text_doc.source
-    diagnostics = _validate_format( source ) if source else []
+    diagnostics = _validate_format( ls, source ) if source else []
 
-    # set listener
-    error_listener = VerboseListener()
-    # create input stream of characters for lexer
-    input_stream = InputStream( "c = + b()\n" )
-    # if len(sys.argv) > 1:
-    #     pass
-    #     # input_stream = FileStream(sys.argv[1])
-    # else:
-    #     # TODO move parameters into file
-    #     input_stream = InputStream(sys.stdin.readline())
-
-    # create lexer and parser objects and token stream pipe between them
-    lexer = TestGrammarLexer(input_stream)
-    lexer.removeErrorListeners()
-    lexer.addErrorListener(error_listener)
-
-    tokenStream = CommonTokenStream(lexer)
-
-    parser = TestGrammarParser(tokenStream)
-    parser.removeErrorListeners()
-    parser.addErrorListener(error_listener)
-
-    ls.publish_diagnostics( text_doc.uri, ls.diagnostics )
+    ls.publish_diagnostics( text_doc.uri, diagnostics )
 
 
-def _validate_format(source):
+def _validate_format(ls: ODslLanguageServer, source):
     """Validates file format."""
-    diagnostics = []
+    # create input stream of characters for lexer
+    input_stream = InputStream( source )
+
+    # set the input stream and reset the lexer/parser/listener
+    ls.error_listener.reset()
+    ls.lexer.inputStream = input_stream
+    ls.parser.setInputStream(CommonTokenStream(ls.lexer))
+
+
 
     try:
-        # parser(source)
-        pass
+        # launch parser by invoking startrule
+        ls.parser.prog()
     except OSError as err:
         msg = err.filename.msg
 
-        diagnostics.append( msg )
+        ls.error_listener.diagnostics.append( msg )
 
-    return diagnostics
+    return ls.error_listener.diagnostics
 
 
 @odsl_server.feature( COMPLETION, CompletionOptions( trigger_characters=[','] ) )

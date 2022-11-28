@@ -31,7 +31,7 @@
             ],
             "justMyCode": false,
             "python": "${command:python.interpreterPath}",
-            "cwd": "${workspaceFolder}/src/pygls",
+            "cwd": "${workspaceFolder}/src/pygls_pkg",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
@@ -46,7 +46,7 @@
             ],
             "justMyCode": false,
             "python": "${command:python.interpreterPath}",
-            "cwd": "${workspaceFolder}/src/pygls",
+            "cwd": "${workspaceFolder}/src/pygls_pkg",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }

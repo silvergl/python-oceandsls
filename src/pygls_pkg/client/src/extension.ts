@@ -32,7 +32,7 @@ let client: LanguageClient;
 function getClientOptions(): LanguageClientOptions {
     return {
         // Register the server for plain text documents
-        //documentSelector: [{ scheme: 'file', language: 'plaintext' }],
+        //  documentSelector: [{ scheme: 'file', language: 'plaintext' }],
         // Register the server for oceandsl as defined in package.json
         //  src 'A language server example using language services to support embedded languages'
         documentSelector: [

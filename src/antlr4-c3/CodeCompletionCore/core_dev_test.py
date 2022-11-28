@@ -13,7 +13,7 @@ import logging
 
 from antlr4 import *
 from antlr4.InputStream import InputStream
-from TestExprCore.TestExprCoreLexer import TestExprCoreLexer, ParserRuleContext
+from TestExprCore.TestExprCoreLexer import TestExprCoreLexer
 from TestExprCore.TestExprCoreParser import TestExprCoreParser
 from TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
 
@@ -68,10 +68,6 @@ if __name__ == "__main__":
     candidates = core.collectCandidates(0)
 
     print(candidates)
-
-    cls_list = ParserRuleContext.__subclasses__()
-
-    print(cls_list)
 
     # evaluator - walk parse tree
     # visitor = TestExprCoreVisitor

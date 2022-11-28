@@ -21,8 +21,6 @@ import uuid
 from typing import Optional
 
 # util imports
-import sys
-
 import sys, os
 
 # user
@@ -37,6 +35,8 @@ from antlr4 import InputStream, CommonTokenStream
 from TestGrammar.TestGrammarLexer import TestGrammarLexer
 from TestGrammar.TestGrammarParser import TestGrammarParser
 from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
+#antlr4-c3
+from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore
 # pygls
 from typing import List
 
@@ -128,6 +128,12 @@ def _validate_format(ls: ODslLanguageServer, source):
 @odsl_server.feature( COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
+
+    # launch c3 core with parser:Parser, preferredRules:tuple, ignoredTokens:tuple
+    core = CodeCompletionCore(odsl_server.parser)
+
+    candidates = core.collectCandidates(0)
+
     return CompletionList(
         is_incomplete=False, items=[
             CompletionItem( label='"' ),

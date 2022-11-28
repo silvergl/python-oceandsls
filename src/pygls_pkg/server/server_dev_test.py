@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 __author__ = 'sgu'
 
-import sys
-sys.path.append( '../../../../build-python' )
+import sys, os
+sys.path.append(os.path.join(sys.path[0],'..','..','build-python'))
+
+# debug import
+from pprint import pprint
+pprint(sys.path)
 
 from antlr4 import *
-from TestGrammarParser.TestGrammarLexer import TestGrammarLexer, ParserRuleContext
-from TestGrammarParser.TestGrammarParser import TestGrammarParser
-from TestGrammarParser.TestGrammarVisitor import TestGrammarVisitor
+from TestGrammar.TestGrammarLexer import TestGrammarLexer, ParserRuleContext
+from TestGrammar.TestGrammarParser import TestGrammarParser
+from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
 from antlr4.error.ErrorListener import ErrorListener
 from antlr4.Recognizer import Recognizer
 

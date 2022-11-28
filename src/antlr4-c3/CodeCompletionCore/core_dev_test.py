@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 __author__ = 'sgu'
 
-import sys
-sys.path.insert( 0, '../../../build-python' )
+import sys, os
+if not os.path.join(sys.path[0],'..','..','..','build-python') in sys.path:
+    sys.path.append(os.path.join(sys.path[0],'..','..','..','build-python'))
+
+# debug import
+from pprint import pprint
+pprint(sys.path)
 
 import logging
 
@@ -11,13 +16,14 @@ from antlr4.InputStream import InputStream
 from TestExprCore.TestExprCoreLexer import TestExprCoreLexer, ParserRuleContext
 from TestExprCore.TestExprCoreParser import TestExprCoreParser
 from TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
+
 from CodeCompletionCore import CodeCompletionCore
 
 if __name__ == "__main__":
     # create input stream of characters for lexer
-    if len(sys.argv) > 1:
+    if len( sys.argv ) > 1:
         # input_stream = FileStream(sys.argv[1])
-        input_stream = InputStream( "var c = + b()" )
+        input_stream = InputStream( "var c = a + b()" )
     else:
         # TODO move parameters into file
         input_stream = InputStream(sys.stdin.readline())

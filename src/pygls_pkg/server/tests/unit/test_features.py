@@ -31,6 +31,10 @@ try:
     # fail relative import beyond top-level package
     from ...server import completions, did_close, did_open
 except Exception as inst:
+    # debug import
+    import sys, os
+    from pprint import pprint
+    pprint(sys.path)
     raise SkipTest("Skipping all tests in test_feature.py")
 
 

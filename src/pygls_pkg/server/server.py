@@ -23,14 +23,21 @@ from typing import Optional
 # util imports
 import sys
 
+import sys, os
 #user
-sys.path.append('src/pygls/server')
+if not os.path.join(sys.path[0],'src','pygls_pkg','server') in sys.path:
+    sys.path.append(os.path.join(sys.path[0],'src','pygls_pkg','server'))
 from VerboseListener import VerboseListener
 #antlr4
-sys.path.append('build-python')
+if not os.path.join(sys.path[0],'build-python') in sys.path:
+    sys.path.append(os.path.join(sys.path[0],'build-python'))
 from antlr4 import InputStream
 # pygls
 from typing import List
+
+# debug import
+# from pprint import pprint
+# pprint(sys.path)
 
 from pygls.lsp.methods import (COMPLETION, TEXT_DOCUMENT_DID_CHANGE,
                                TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN,

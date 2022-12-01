@@ -24,6 +24,8 @@ from typing import Optional
 import sys, os
 
 # user
+from src.pygls_pkg.server.utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
+
 if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) )
 from DiagnosticListener import DiagnosticListener
@@ -81,10 +83,10 @@ class ODslLanguageServer( LanguageServer ):
         self.lexer.addErrorListener( self.error_listener )
 
         # set token stream pipe between lexer and parser
-        tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
+        self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: TestGrammarParser = TestGrammarParser( tokenStream )
+        self.parser: TestGrammarParser = TestGrammarParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )
@@ -112,7 +114,8 @@ def _validate_format(ls: ODslLanguageServer, source):
     # set the input stream and reset the lexer/parser/listener
     ls.error_listener.reset()
     ls.lexer.inputStream = input_stream
-    ls.parser.setInputStream( CommonTokenStream( ls.lexer ) )
+    ls.tokenStream = CommonTokenStream( ls.lexer )
+    ls.parser.setInputStream( ls.tokenStream )
 
     try:
         # launch parser by invoking startrule
@@ -124,15 +127,34 @@ def _validate_format(ls: ODslLanguageServer, source):
 
     return ls.error_listener.diagnostics
 
-
 @odsl_server.feature( COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
-    # launch c3 core with parser:Parser, preferredRules:tuple, ignoredTokens:tuple
-    core = CodeCompletionCore(odsl_server.parser)
+    text_doc = odsl_server.workspace.get_document( params.text_document.uri )
 
-    candidates = core.collectCandidates(0)
+    source = text_doc.source
+
+    # create input stream of characters for lexer
+    input_stream = InputStream( source )
+
+    # set the input stream and reset the lexer/parser/listener
+    odsl_server.error_listener.reset()
+    odsl_server.lexer.inputStream = input_stream
+    odsl_server.tokenStream = CommonTokenStream( odsl_server.lexer )
+    odsl_server.parser.setInputStream( odsl_server.tokenStream )
+
+    tokenPosition: TokenPosition = computeTokenPosition(odsl_server.parser.prog(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
+
+    if tokenPosition is None:
+        return CompletionList( is_incomplete=False, items=[] )
+
+    # return getSuggestionsForParseTree(parser, parseTree, () => new SymbolTableVisitor().visit(parseTree), position)
+
+    # launch c3 core with parser:Parser, preferredRules:tuple, ignoredTokens:tuple
+    core: CodeCompletionCore = CodeCompletionCore(odsl_server.parser)
+
+    candidates = core.collectCandidates(tokenPosition.index)
 
     return CompletionList(
         is_incomplete=False, items=[

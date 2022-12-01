@@ -52,8 +52,8 @@ def positionOfToken(token: Token, text: str, caretPosition: CaretPosition, ident
             index -= 1
 
         # TODO check to choose complete token text or substring
-        # result: tokenPosition = tokenPosition(index, parseTree, text)
-        result: tokenPosition = TokenPosition(index, parseTree, text[0 : caretPosition.column - start])
+        # result: TokenPosition = tokenPosition(index, parseTree, text)
+        result: TokenPosition = TokenPosition(index, parseTree, text[0 : caretPosition.column - start])
 
         return result
     else:

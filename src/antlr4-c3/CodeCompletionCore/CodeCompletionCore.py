@@ -364,7 +364,8 @@ class CodeCompletionCore:
 
         if s == stopState or s.stateType == ATNState.RULE_STOP:
             followSet: FollowSetWithPath = FollowSetWithPath()
-            followSet.intervals = IntervalSet.of( Token.EPSILON )
+            followSet.intervals = IntervalSet()
+            followSet.intervals.addOne(Token.EPSILON)
             followSet.path = ruleStack[:]  # .copy()
             followSets.append( followSet )
             stateStack.pop()

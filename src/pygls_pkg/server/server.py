@@ -34,9 +34,9 @@ from DiagnosticListener import DiagnosticListener
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
 from antlr4 import InputStream, CommonTokenStream
-from TestGrammar.TestGrammarLexer import TestGrammarLexer
-from TestGrammar.TestGrammarParser import TestGrammarParser
-from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
+from TestExprCore.TestExprCoreLexer import TestExprCoreLexer
+from TestExprCore.TestExprCoreParser import TestExprCoreParser
+from TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
 #antlr4-c3
 from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore
 # pygls
@@ -77,7 +77,7 @@ class ODslLanguageServer( LanguageServer ):
         input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: TestGrammarLexer = TestGrammarLexer( input_stream )
+        self.lexer: TestExprCoreLexer = TestExprCoreLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener( self.error_listener )
@@ -86,7 +86,7 @@ class ODslLanguageServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: TestGrammarParser = TestGrammarParser( self.tokenStream )
+        self.parser: TestExprCoreParser = TestExprCoreParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )
@@ -119,7 +119,7 @@ def _validate_format(ls: ODslLanguageServer, source):
 
     try:
         # launch parser by invoking startrule
-        ls.parser.prog()
+        ls.parser.expression()
     except OSError as err:
         msg = err.filename.msg
 
@@ -144,7 +144,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     odsl_server.tokenStream = CommonTokenStream( odsl_server.lexer )
     odsl_server.parser.setInputStream( odsl_server.tokenStream )
 
-    tokenPosition: TokenPosition = computeTokenPosition(odsl_server.parser.prog(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
+    tokenPosition: TokenPosition = computeTokenPosition(odsl_server.parser.expression(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
 
     if tokenPosition is None:
         return CompletionList( is_incomplete=False, items=[] )

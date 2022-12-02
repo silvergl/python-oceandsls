@@ -103,6 +103,46 @@
           <option name="language" value="Python3" />
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/KotlinParser.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="KotlinParser" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/KotlinExample/KotlinParser.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="Kotlin" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/KotlinExample/KotlinLexer.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="Kotlin" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/dev/KotlinExample/UnicodeClasses.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="Kotlin" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
       </list>
     </option>
   </component>

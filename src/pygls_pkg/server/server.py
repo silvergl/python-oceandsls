@@ -24,6 +24,9 @@ from typing import Optional
 import sys, os
 
 # user
+from antlr4.IntervalSet import IntervalSet
+from pygls.workspace import Document
+
 from src.pygls_pkg.server.utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
 
 if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
@@ -38,7 +41,7 @@ from TestExprCore.TestExprCoreLexer import TestExprCoreLexer
 from TestExprCore.TestExprCoreParser import TestExprCoreParser
 from TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
 #antlr4-c3
-from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore
+from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 # pygls
 from typing import List
 
@@ -96,20 +99,22 @@ odsl_server = ODslLanguageServer( 'pygls-odsl-prototype', 'v0.1' )
 
 
 def _validate(ls: ODslLanguageServer, params):
+    # msg to debug console
+    # TODO setup debug logger
     ls.show_message_log( 'Validating file...' )
 
-    text_doc = ls.workspace.get_document( params.text_document.uri )
-
-    source = text_doc.source
-    diagnostics = _validate_format( ls, source ) if source else []
-
+    # get file content for lexer input stream
+    text_doc: Document = ls.workspace.get_document( params.text_document.uri )
+    source: str = text_doc.source
+    # validate format if source is determined
+    diagnostics: List[Diagnostic] = _validate_format( ls, source ) if source is not None else []
+    # return diagnostics
     ls.publish_diagnostics( text_doc.uri, diagnostics )
 
-
-def _validate_format(ls: ODslLanguageServer, source):
+def _validate_format(ls: ODslLanguageServer, source: str):
     """Validates file format."""
-    # create input stream of characters for lexer
-    input_stream = InputStream( source )
+    # get input stream of characters for lexer
+    input_stream: InputStream = InputStream( source )
 
     # set the input stream and reset the lexer/parser/listener
     ls.error_listener.reset()
@@ -121,51 +126,52 @@ def _validate_format(ls: ODslLanguageServer, source):
         # launch parser by invoking startrule
         ls.parser.expression()
     except OSError as err:
+        # TODO add exception
         msg = err.filename.msg
 
         ls.error_listener.diagnostics.append( msg )
 
+    # return diagnostics
     return ls.error_listener.diagnostics
 
 @odsl_server.feature( COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
-    text_doc = odsl_server.workspace.get_document( params.text_document.uri )
+    # set input stream of characters for lexer
+    text_doc: Document = odsl_server.workspace.get_document( params.text_document.uri )
+    source: str = text_doc.source
+    input_stream: InputStream = InputStream( source )
 
-    source = text_doc.source
-
-    # create input stream of characters for lexer
-    input_stream = InputStream( source )
-
-    # set the input stream and reset the lexer/parser/listener
+    # reset the lexer/parser
     odsl_server.error_listener.reset()
     odsl_server.lexer.inputStream = input_stream
     odsl_server.tokenStream = CommonTokenStream( odsl_server.lexer )
     odsl_server.parser.setInputStream( odsl_server.tokenStream )
 
-    tokenPosition: TokenPosition = computeTokenPosition(odsl_server.parser.expression(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
+    # get token index under caret position
+    # launches parser by invoking startrule
+    # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
+    tokenIndex: TokenPosition = computeTokenPosition(odsl_server.parser.expression(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
 
-    if tokenPosition is None:
-        return CompletionList( is_incomplete=False, items=[] )
+    # set emtpy return list
+    completionList: CompletionList = CompletionList(is_incomplete=False ,items=[])
 
-    # return getSuggestionsForParseTree(parser, parseTree, () => new SymbolTableVisitor().visit(parseTree), position)
+    # return if no index could be determined
+    if tokenIndex is None:
+        # TODO add exception
+        return completionList
 
-    # launch c3 core with parser:Parser, preferredRules:tuple, ignoredTokens:tuple
+    # launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore(odsl_server.parser)
-
-    candidates = core.collectCandidates(tokenPosition.index)
-
-    return CompletionList(
-        is_incomplete=False, items=[
-            CompletionItem( label='"' ),
-            CompletionItem( label='[' ),
-            CompletionItem( label=']' ),
-            CompletionItem( label='{' ),
-            CompletionItem( label='}' ),
-        ]
-    )
-
+    # get completion candidates
+    candidates: CandidatesCollection = core.collectCandidates(tokenIndex.index)
+    # get labels of completion candidates to return
+    labels_list: List[str] = []
+    for key, valueList in candidates.tokens.items():
+        completionList.add_item(CompletionItem( label= IntervalSet.elementName( IntervalSet, odsl_server.parser.literalNames, odsl_server.parser.symbolicNames, key ) ))
+    # return completion candidates labels
+    return completionList
 
 # @odsl_server.thread()
 @odsl_server.command( ODslLanguageServer.CMD_COUNT_DOWN_BLOCKING )

@@ -2,7 +2,7 @@
 <module type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Python" name="Python">
-      <configuration sdkName="Python 3.8 (venv_antlr4-python)" />
+      <configuration sdkName="Python 3.10 (antlr4-python)" />
     </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
@@ -11,9 +11,10 @@
       <sourceFolder url="file://$MODULE_DIR$/build-python" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/antlr4-c3" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/pygls_pkg" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/venv_antlr4-python_3.10" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.10 (antlr4-python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Python 3.8 (venv_antlr4-python) interpreter library" level="application" />
+    <orderEntry type="library" name="Python 3.10 (antlr4-python) interpreter library" level="application" />
   </component>
 </module>

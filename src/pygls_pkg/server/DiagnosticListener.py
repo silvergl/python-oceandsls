@@ -11,7 +11,11 @@ from antlr4.Token import Token
 from antlr4.error.Errors import RecognitionException
 # pygls
 from typing import List
-from pygls.lsp.types import (Diagnostic, Range, Position)
+# Deprecated from 0.13
+# from pygls.lsp.types import (Diagnostic, Range, Position)
+# Migrating to pygls v1.0
+# https://pygls.readthedocs.io/en/latest/pages/migrating-to-v1.html
+from lsprotocol.types import (Diagnostic, Range, Position)
 
 class DiagnosticListener( ErrorListener ):
     def __init__(self):

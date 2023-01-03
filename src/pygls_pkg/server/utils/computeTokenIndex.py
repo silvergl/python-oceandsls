@@ -5,6 +5,10 @@ from antlr4 import TerminalNode, Token, BufferedTokenStream
 from antlr4.tree.Tree import ParseTree
 from antlr4.ParserRuleContext import ParserRuleContext
 
+# util imports
+import logging
+
+logger = logging.getLogger(__name__)
 
 @dataclass
 class CaretPosition:
@@ -65,6 +69,7 @@ def computeTokenPositionOfTerminal(terminalNode: TerminalNode, tokenStream: Buff
     return positionOfToken( token, text, caretPosition, identifierTokenTypes, terminalNode )
 
 def computeTokenPositionOfChildNode(parserRuleContext: ParserRuleContext, tokens: BufferedTokenStream, caretPosition: CaretPosition, identifierTokenTypes: List[int]):
+    logger.info('start: %s, stop: %s, caret: %s', parserRuleContext.start.line,parserRuleContext.stop.line,caretPosition.line)
     if (parserRuleContext.start is not None and parserRuleContext.start.line > caretPosition.line) or (parserRuleContext.stop is not None and parserRuleContext.stop.line < caretPosition.line):
         return None
     i = 0

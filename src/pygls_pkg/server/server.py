@@ -21,7 +21,7 @@ import uuid
 from typing import Optional
 
 # util imports
-import sys, os
+import sys, os, logging
 
 # user
 from antlr4.IntervalSet import IntervalSet
@@ -37,9 +37,9 @@ from DiagnosticListener import DiagnosticListener
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
 from antlr4 import InputStream, CommonTokenStream
-from TestExprCore.TestExprCoreLexer import TestExprCoreLexer
-from TestExprCore.TestExprCoreParser import TestExprCoreParser
-from TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
+from TestGrammar.TestGrammarLexer import TestGrammarLexer
+from TestGrammar.TestGrammarParser import TestGrammarParser
+from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
 #antlr4-c3
 from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 # pygls
@@ -49,12 +49,20 @@ from typing import List
 # from pprint import pprint
 # pprint(sys.path)
 
-from pygls.lsp.methods import (COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
-from pygls.lsp.types import (CompletionItem, CompletionList, CompletionOptions, CompletionParams, ConfigurationItem, ConfigurationParams, Diagnostic, DidChangeTextDocumentParams,
-                             DidCloseTextDocumentParams, DidOpenTextDocumentParams, MessageType, Position, Range, Registration, RegistrationParams, SemanticTokens,
-                             SemanticTokensLegend, SemanticTokensParams, Unregistration, UnregistrationParams)
-from pygls.lsp.types.basic_structures import (WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport)
+# Deprecated from 0.13
+# from pygls.lsp.methods import (COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
+# from pygls.lsp.types import (CompletionItem, CompletionList, CompletionOptions, CompletionParams, ConfigurationItem, ConfigurationParams, Diagnostic, DidChangeTextDocumentParams,
+#                              DidCloseTextDocumentParams, DidOpenTextDocumentParams, MessageType, Position, Range, Registration, RegistrationParams, SemanticTokens,
+#                              SemanticTokensLegend, SemanticTokensParams, Unregistration, UnregistrationParams)
+# from pygls.lsp.types.basic_structures import (WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport)
 from pygls.server import LanguageServer
+# Migrating to pygls v1.0
+# https://pygls.readthedocs.io/en/latest/pages/migrating-to-v1.html
+from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
+                              CompletionItem, CompletionList, CompletionOptions, CompletionParams, ConfigurationItem, ConfigurationParams, Diagnostic,
+                              DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, MessageType, Position, Range, Registration,
+                              RegistrationParams, SemanticTokens, SemanticTokensLegend, SemanticTokensParams, Unregistration, UnregistrationParams,
+                              WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport)
 
 COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1
@@ -80,7 +88,7 @@ class ODslLanguageServer( LanguageServer ):
         input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: TestExprCoreLexer = TestExprCoreLexer( input_stream )
+        self.lexer: TestGrammarLexer = TestGrammarLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener( self.error_listener )
@@ -89,7 +97,7 @@ class ODslLanguageServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: TestExprCoreParser = TestExprCoreParser( self.tokenStream )
+        self.parser: TestGrammarParser = TestGrammarParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )
@@ -97,11 +105,12 @@ class ODslLanguageServer( LanguageServer ):
 
 odsl_server = ODslLanguageServer( 'pygls-odsl-prototype', 'v0.1' )
 
+logger = logging.getLogger(__name__)
 
 def _validate(ls: ODslLanguageServer, params):
     # msg to debug console
     # TODO setup debug logger
-    ls.show_message_log( 'Validating file...' )
+    # ls.show_message_log( 'Validating file...' )
 
     # get file content for lexer input stream
     text_doc: Document = ls.workspace.get_document( params.text_document.uri )
@@ -124,7 +133,7 @@ def _validate_format(ls: ODslLanguageServer, source: str):
 
     try:
         # launch parser by invoking startrule
-        ls.parser.expression()
+        ls.parser.prog()
     except OSError as err:
         # TODO add exception
         msg = err.filename.msg
@@ -134,7 +143,7 @@ def _validate_format(ls: ODslLanguageServer, source: str):
     # return diagnostics
     return ls.error_listener.diagnostics
 
-@odsl_server.feature( COMPLETION, CompletionOptions( trigger_characters=[','] ) )
+@odsl_server.feature( TEXT_DOCUMENT_COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
@@ -152,7 +161,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # get token index under caret position
     # launches parser by invoking startrule
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
-    tokenIndex: TokenPosition = computeTokenPosition(odsl_server.parser.expression(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
+    tokenIndex: TokenPosition = computeTokenPosition(odsl_server.parser.prog(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
 
     # set emtpy return list
     completionList: CompletionList = CompletionList(is_incomplete=False ,items=[])
@@ -160,6 +169,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # return if no index could be determined
     if tokenIndex is None:
         # TODO add exception
+        logger.info( 'Return empty completionList...' )
         return completionList
 
     # launch c3 core with parser
@@ -169,8 +179,9 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # get labels of completion candidates to return
     labels_list: List[str] = []
     for key, valueList in candidates.tokens.items():
-        completionList.add_item(CompletionItem( label= IntervalSet.elementName( IntervalSet, odsl_server.parser.literalNames, odsl_server.parser.symbolicNames, key ) ))
+        completionList.items.append(CompletionItem( label= IntervalSet.elementName( IntervalSet, odsl_server.parser.literalNames, odsl_server.parser.symbolicNames, key ) ))
     # return completion candidates labels
+    logger.info( 'Return complete completionList...' )
     return completionList
 
 # @odsl_server.thread()
@@ -262,7 +273,7 @@ async def progress(ls: ODslLanguageServer, *args):
 @odsl_server.command( ODslLanguageServer.CMD_REGISTER_COMPLETIONS )
 async def register_completions(ls: ODslLanguageServer, *args):
     """Register completions method on the client."""
-    params = RegistrationParams( registrations=[Registration( id=str( uuid.uuid4() ), method=COMPLETION, register_options={"triggerCharacters": "[':']"} )] )
+    params = RegistrationParams( registrations=[Registration( id=str( uuid.uuid4() ), method=TEXT_DOCUMENT_COMPLETION, register_options={"triggerCharacters": "[':']"} )] )
     response = await ls.register_capability_async( params )
     if response is None:
         ls.show_message( 'Successfully registered completions method' )
@@ -318,7 +329,7 @@ def show_configuration_thread(ls: ODslLanguageServer, *args):
 @odsl_server.command( ODslLanguageServer.CMD_UNREGISTER_COMPLETIONS )
 async def unregister_completions(ls: ODslLanguageServer, *args):
     """Unregister completions method on the client."""
-    params = UnregistrationParams( unregisterations=[Unregistration( id=str( uuid.uuid4() ), method=COMPLETION )] )
+    params = UnregistrationParams( unregisterations=[Unregistration( id=str( uuid.uuid4() ), method=TEXT_DOCUMENT_COMPLETION )] )
     response = await ls.unregister_capability_async( params )
     if response is None:
         ls.show_message( 'Successfully unregistered completions method' )

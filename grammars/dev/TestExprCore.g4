@@ -9,22 +9,26 @@ grammar TestExprCore;
 
 /** The start rule; begin parsing here. */
 // parser rules start with lowercase letters
-expression: assignment | simpleExpression;
+expression: assignment | simpleExpression
+          ;
 
-assignment: (VAR | LET) ID EQUAL simpleExpression;
+assignment: (VAR | LET) ID EQUAL simpleExpression
+          ;
 
-simpleExpression:
-    simpleExpression (PLUS | MINUS) simpleExpression
-    | simpleExpression (MULTIPLY | DIVIDE) simpleExpression
-    | variableRef
-    | functionRef
-;
+simpleExpression: simpleExpression (PLUS | MINUS) simpleExpression
+                | simpleExpression (MULTIPLY | DIVIDE) simpleExpression
+                | variableRef
+                | functionRef
+                ;
 
-variableRef: identifier;
+variableRef: identifier
+           ;
 
-functionRef: identifier OPEN_PAR CLOSE_PAR;
+functionRef: identifier OPEN_PAR CLOSE_PAR
+           ;
 
-identifier: ID;
+identifier: ID
+          ;
 
 // lexer rules with uppercase letters
 VAR: [vV] [aA] [rR];

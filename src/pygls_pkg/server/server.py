@@ -37,9 +37,9 @@ from DiagnosticListener import DiagnosticListener
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
 from antlr4 import InputStream, CommonTokenStream
-from TestGrammar.TestGrammarLexer import TestGrammarLexer
-from TestGrammar.TestGrammarParser import TestGrammarParser
-from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
+from SimpleGrammar.SimpleGrammarLexer import SimpleGrammarLexer
+from SimpleGrammar.SimpleGrammarParser import SimpleGrammarParser
+from SimpleGrammar.SimpleGrammarVisitor import SimpleGrammarVisitor
 #antlr4-c3
 from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 # pygls
@@ -88,7 +88,7 @@ class ODslLanguageServer( LanguageServer ):
         input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: TestGrammarLexer = TestGrammarLexer( input_stream )
+        self.lexer: SimpleGrammarLexer = SimpleGrammarLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener( self.error_listener )
@@ -97,7 +97,7 @@ class ODslLanguageServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: TestGrammarParser = TestGrammarParser( self.tokenStream )
+        self.parser: SimpleGrammarParser = SimpleGrammarParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )

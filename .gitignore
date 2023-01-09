@@ -63,6 +63,13 @@ coverage.xml
 *.log
 *.pot
 
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
 # Sphinx documentation
 doc/_build/
 

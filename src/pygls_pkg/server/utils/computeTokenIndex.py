@@ -50,7 +50,7 @@ def computeTokenIndex (parseTree: ParseTree, caretPosition: CaretPosition) -> in
 def positionOfToken(token: Token, text: str, caretPosition: CaretPosition, identifierTokenTypes: List[int], parseTree: ParseTree):
     start = token.column
     stop = token.column + len(text)
-    logger.info('token.line: %s == caretPosition.line: %s = %s, start: %s <= caretPosition.column: %s <= stop: %s = %s, token.column: %s , len(text): %s, text: %s',token.line, caretPosition.line,token.line == caretPosition.line,start , caretPosition.column , stop,start <= caretPosition.column <= stop, token.column , len(text), text)
+    logger.info('token.line: %s == caretPosition.line: %s = %s, start: %s <= caretPosition.column: %s <= stop: %s = %s, token.column: %s , len(text): %s, text: %s, index: %s',token.line, caretPosition.line,token.line == caretPosition.line,start , caretPosition.column , stop,start <= caretPosition.column <= stop, token.column , len(text), text, token.tokenIndex)
     if token.line == caretPosition.line and start <= caretPosition.column <= stop:
         index = token.tokenIndex
         if token.type in identifierTokenTypes:
@@ -91,6 +91,7 @@ def computeTokenPositionOfChildNode(parserRuleContext: ParserRuleContext, tokens
     if parserRuleContext.start is not None and parserRuleContext.stop is not None:
         logger.info('parserRuleContext.start.tokenIndex: %s <= parserRuleContext.stop.tokenIndex: %s = %s', parserRuleContext.start.tokenIndex, parserRuleContext.stop.tokenIndex, parserRuleContext.start.tokenIndex <= parserRuleContext.stop.tokenIndex )
         i = parserRuleContext.start.tokenIndex
+        logger.info('while parserRuleContext start.tokenIndex: %s, stop.tokenIndex: %s', parserRuleContext.start.tokenIndex ,parserRuleContext.stop.tokenIndex)
         while i <= parserRuleContext.stop.tokenIndex:
             pos = positionOfToken( tokens.tokens[i], tokens.tokens[i].text, caretPosition, identifierTokenTypes, parserRuleContext )
             logger.info('positionOfToken = %s', pos )

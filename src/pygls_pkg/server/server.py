@@ -37,9 +37,9 @@ from DiagnosticListener import DiagnosticListener
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
 from antlr4 import InputStream, CommonTokenStream
-from SimpleGrammar.SimpleGrammarLexer import SimpleGrammarLexer
-from SimpleGrammar.SimpleGrammarParser import SimpleGrammarParser
-from SimpleGrammar.SimpleGrammarVisitor import SimpleGrammarVisitor
+from TestGrammar.TestGrammarLexer import TestGrammarLexer
+from TestGrammar.TestGrammarParser import TestGrammarParser
+from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
 #antlr4-c3
 from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 # pygls
@@ -88,7 +88,7 @@ class ODslLanguageServer( LanguageServer ):
         input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: SimpleGrammarLexer = SimpleGrammarLexer( input_stream )
+        self.lexer: TestGrammarLexer = TestGrammarLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener( self.error_listener )
@@ -97,7 +97,7 @@ class ODslLanguageServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: SimpleGrammarParser = SimpleGrammarParser( self.tokenStream )
+        self.parser: TestGrammarParser = TestGrammarParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )
@@ -163,6 +163,8 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
     tokenIndex: TokenPosition = computeTokenPosition(odsl_server.parser.prog(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
 
+    logger.info('tokenIndex: %s\n', tokenIndex)
+
     # set emtpy return list
     completionList: CompletionList = CompletionList(is_incomplete=False ,items=[])
 
@@ -176,10 +178,15 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     core: CodeCompletionCore = CodeCompletionCore(odsl_server.parser)
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates(tokenIndex.index)
+
+    logger.info('candidates: %s\n', candidates)
+
     # get labels of completion candidates to return
     labels_list: List[str] = []
     for key, valueList in candidates.tokens.items():
+        logger.info('key: %s, valueList: %s', key, valueList)
         completionList.items.append(CompletionItem( label= IntervalSet.elementName( IntervalSet, odsl_server.parser.literalNames, odsl_server.parser.symbolicNames, key ) ))
+    logger.info('\n')
     # return completion candidates labels
     logger.info( 'Return complete completionList...' )
     return completionList

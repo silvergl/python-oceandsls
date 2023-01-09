@@ -42,4 +42,4 @@ EQUAL:     '=';
 OPEN_PAR:  '(';
 CLOSE_PAR: ')';
 ID:        [a-zA-Z] [a-zA-Z0-9_]*;          // match identifiers
-WS:        [ \n\r\t] -> channel(HIDDEN);    // toss out whitespace
+WS:        [ \n\r\t] -> channel(HIDDEN);    // hide spaces, carriage returns, newlines and tabs from the parser but generate tokens aka toss out whitespace

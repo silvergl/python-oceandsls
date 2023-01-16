@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# TODO check source
 from __future__ import annotations
 
 __author__ = 'sgu'
@@ -1111,12 +1110,6 @@ class SymbolTable(ScopedSymbol):
 
         return None
 
-    #
-    #
-    #
-    # @param context
-    #
-    # :return:
     def symbolWithContextSync(self, context: ParseTree) -> Optional[Symbol]:
         """
         Synchronously looks for a symbol which is connected with a given parse tree context.

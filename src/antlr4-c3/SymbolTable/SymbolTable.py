@@ -17,8 +17,6 @@ from typing import Optional, List, TypeVar, Generic, Callable, ParamSpec, Set
 
 from antlr4.tree.Tree import ParseTree
 
-P = ParamSpec("P")
-
 # TODO check raise Exception
 # class DuplicateSymbolError(Error):
 
@@ -105,22 +103,22 @@ class FundamentalType(Type):
 
     name: str
 
-    typeKind: TypeKind
-    referenceKind: ReferenceKind
+    __typeKind: TypeKind
+    __referenceKind: ReferenceKind
 
     def __init__(self, name: str, typeKind = TypeKind.Unknown, referenceKind = ReferenceKind.Irrelevant):
         self.name = name
-        self.typeKind = typeKind
-        self.referenceKind = referenceKind
+        self.__typeKind = typeKind
+        self.__referenceKind = referenceKind
 
     def baseTypes(self) -> List[Type]:
         return []
 
     def kind(self) -> TypeKind:
-        return self.typeKind
+        return self.__typeKind
 
     def reference(self) -> ReferenceKind:
-        return self.referenceKind
+        return self.__referenceKind
 
 #
 # The root of the symbol table class hierarchy: a symbol can be any manageable entity (like a block), not only
@@ -142,50 +140,50 @@ class Symbol:
     visibility: MemberVisibility = MemberVisibility.Unknown
 
     # eslint-disable-next-line no-use-before-define
-    theParent: Optional[Symbol] = None
+    __theParent: Optional[Symbol] = None
 
     def __init__(self, name: str = ''):
         self.name = name
 
     def parent(self) -> Optional[Symbol]:
-        return self.theParent
+        return self.__theParent
 
     def firstSibling(self) -> Symbol:
-        if isinstance(self.theParent, ScopedSymbol):
-            return self.theParent.firstChild
+        if isinstance( self.__theParent, ScopedSymbol ):
+            return self.__theParent.firstChild
 
         return self
 
     # @returns the symbol before this symbol in its scope.
     def previousSibling(self) -> Optional[Symbol]:
-        if not isinstance(self.theParent, ScopedSymbol):
+        if not isinstance( self.__theParent, ScopedSymbol ):
             return self
 
-        return self.theParent.previousSiblingOf(self)
+        return self.__theParent.previousSiblingOf( self )
 
     # @returns the symbol following this symbol in its scope.
     def nextSibling(self) -> Optional[Symbol]:
-        if not isinstance(self.theParent, ScopedSymbol):
+        if not isinstance( self.__theParent, ScopedSymbol ):
             return self
 
-        return self.theParent.nextSiblingOf(self)
+        return self.__theParent.nextSiblingOf( self )
 
     def lastSibling(self) -> Symbol:
-        if isinstance(self.theParent, ScopedSymbol):
-            return self.theParent.lastChild
+        if isinstance( self.__theParent, ScopedSymbol ):
+            return self.__theParent.lastChild
 
         return self
 
     # @returns the next symbol in definition order, regardless of the scope.
     def next(self) -> Optional[Symbol]:
-        if isinstance(self.theParent, ScopedSymbol):
-            return self.theParent.nextOf(self)
+        if isinstance( self.__theParent, ScopedSymbol ):
+            return self.__theParent.nextOf( self )
 
         return None
 
     # @returns the outermost entity (below the symbol table) that holds us.
     def root(self) -> Optional[Symbol]:
-        run: bool = self.theParent
+        run: bool = self.__theParent
         while (run):
             if not run.theParent or isinstance(run.theParent, SymbolTable):
                 return run
@@ -198,7 +196,7 @@ class Symbol:
         if isinstance(self, SymbolTable):
             return self
 
-        run: bool = self.theParent
+        run: bool = self.__theParent
         while (run):
             if isinstance(run, SymbolTable):
                 return run
@@ -214,9 +212,9 @@ class Symbol:
         run: Symbol = self
         while (run):
             result.append(run)
-            if not run.theParent:
+            if not run.__theParent:
                 break
-            run = run.theParent
+            run = run.__theParent
 
         return result
 
@@ -228,12 +226,12 @@ class Symbol:
     # @param parent The new parent to use.
     #
     def setParent(self, parent: Optional[Symbol]) -> None:
-        self.theParent = parent
+        self.__theParent = parent
 
     def removeFromParent(self) -> None:
-        if isinstance(self.theParent, ScopedSymbol):
-            self.theParent.removeSymbol(self)
-            self.theParent = None
+        if isinstance( self.__theParent, ScopedSymbol ):
+            self.__theParent.removeSymbol( self )
+            self.__theParent = None
 
     #
     # Asynchronously looks up a symbol with a given name, in a bottom-up manner.
@@ -246,8 +244,8 @@ class Symbol:
     #          or any of the parent scopes (conditionally).
     # TODO https://stackoverflow.com/q/42009202/
     async def resolve(self, name: str, localOnly: bool = False) -> Optional[Symbol]:
-        if isinstance(self.theParent, ScopedSymbol):
-            return self.theParent.resolve(name, localOnly)
+        if isinstance( self.__theParent, ScopedSymbol ):
+            return self.__theParent.resolve( name, localOnly )
 
         return resolve(None)
 
@@ -261,8 +259,8 @@ class Symbol:
     # @returns the first symbol with a given name, in the order of appearance in this scope
     #          or any of the parent scopes (conditionally).
     def resolveSync(self, name: str, localOnly = False) -> Optional[Symbol]:
-        if isinstance(self.theParent, ScopedSymbol):
-            return self.theParent.resolveSync(name, localOnly)
+        if isinstance( self.__theParent, ScopedSymbol ):
+            return self.__theParent.resolveSync( name, localOnly )
 
         return None
 
@@ -271,14 +269,12 @@ class Symbol:
     #
     #
     # @returns the next enclosing parent of the given type.
-    # TODO check function argument type of List https://stackoverflow.com/q/46105206/
-    T = TypeVar('T', bound=Symbol)
     def getParentOfType(self, t: Callable[P, T]) -> tuple[T, None]:
-        run = self.theParent
-        while (run):
+        run = self.__theParent
+        while run:
             if isinstance(run,  t):
                 return run
-            run = run.theParent
+            run = run.__theParent
 
         return None
 
@@ -297,17 +293,20 @@ class Symbol:
             return ''
 
         result: str = "<anonymous>" if len(self.name) == 0 else self.name
-        run = self.theParent
+        run = self.__theParent
         while (run):
             if includeAnonymous or len(run.name) > 0:
                 result = ("<anonymous>" if len(run.name) == 0 else run.name) + separator + result
 
-            if full is not None or run.theParent is not None:
+            if full is not None or run.__theParent is not None:
                 break
 
-            run = run.theParent
+            run = run.__theParent
 
         return result
+
+P = ParamSpec("P")
+T = TypeVar('T', bound=Symbol)
 
 # A symbol with an attached type (variables, fields etc.).
 class TypedSymbol(Symbol):
@@ -320,26 +319,29 @@ class TypedSymbol(Symbol):
 
 # An alias for another type.
 class TypeAlias(Symbol, Type):
-    targetType: Type
+    __targetType: Type
 
     def __init__(self, name: str, target: Type):
         super().__init__(name)
-        self.targetType = target
+        self.__targetType = target
 
+    @property
     def baseTypes(self) -> List[Type]:
-        return [self.targetType]
+        return [self.__targetType]
 
+    @property
     def kind(self) -> TypeKind:
         return TypeKind.Alias
 
+    @property
     def reference(self) -> ReferenceKind:
         return ReferenceKind.Irrelevant
 
 # A symbol with a scope (so it can have child symbols).
-class ScopedSymbol(Symbol):
+class ScopedSymbol(Symbol,Generic[T]):
 
     # All child symbols in definition order.
-    childSymbols: List[Symbol] = []
+    __childSymbols: List[Symbol] = []
 
     def __init__(name: str = ""):
         super().__init__(name)
@@ -350,7 +352,7 @@ class ScopedSymbol(Symbol):
         return self.getSymbolsOfType(ScopedSymbol)
 
     def children(self) -> List[Symbol]:
-        return self.childSymbols
+        return self.__childSymbols
 
     def firstChild(self) -> Optional[Symbol]:
         if len(self.children) > 0:
@@ -365,7 +367,7 @@ class ScopedSymbol(Symbol):
         return None
 
     def clear(self) -> None:
-        self.childSymbols = []
+        self.__childSymbols = []
 
     #
     # Adds the given symbol to this scope. If it belongs already to a different scope
@@ -398,7 +400,7 @@ class ScopedSymbol(Symbol):
     #
     # Asynchronously retrieves child symbols of a given type from this symbol.
     #
-    # @param t The type of of the objects to return.
+    # @param t The type of the objects to return.
     #
     # @returns A promise resolving to all (nested) children of the given type.
     async def getNestedSymbolsOfType(self, t: Callable[P, T]) -> List[T]:
@@ -853,11 +855,11 @@ class ScopedSymbol(Symbol):
             return self.getSymbolsOfType(FieldSymbol)
 
     class ArrayType(Symbol, Type):
-        referenceKind: ReferenceKind
+        __referenceKind: ReferenceKind
 
         def __init__(self, name: str, referenceKind: ReferenceKind, elemType: Type, size = 0):
             super().__init__(name)
-            self.referenceKind = referenceKind
+            self.__referenceKind = referenceKind
             self._elementType = elemType
             self._size = size
 
@@ -875,7 +877,7 @@ class ScopedSymbol(Symbol):
             return TypeKind.Array
 
         def reference(self) -> ReferenceKind:
-            return self.referenceKind
+            return self.__referenceKind
 
     @dataclass
     class SymbolTableInfo:

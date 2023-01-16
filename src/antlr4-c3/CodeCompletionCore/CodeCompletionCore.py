@@ -51,15 +51,15 @@ class RuleWithStartToken:
 
 RuleWithStartTokenList = List[RuleWithStartToken]
 
-#
-# JDO returning information about matching tokens and rules
-#
-# All the candidates which have been found. Tokens and rules are separated.
-# Token entries include a list of tokens that directly follow them (see also the "following" member in the FollowSetWithPath class).
-# Rule entries include the index of the starting token within the evaluated rule, along with a call stack of rules found during evaluation.
-#
 @dataclass
 class CandidatesCollection:
+    """
+    JDO returning information about matching tokens and rules
+
+    All the candidates which have been found. Tokens and rules are separated. Token entries include a list of tokens
+    that directly follow them (see also the "following" member in the FollowSetWithPath class). Rule entries include the
+    index of the starting token within the evaluated rule, along with a call stack of rules found during evaluation.
+    """
 
     # Collection of Token ID candidates, each with a follow-on List of subsequent tokens
     tokens: dict[int, TokenList] = field( default_factory = dict )
@@ -69,26 +69,25 @@ class CandidatesCollection:
     def __str__( self ):
         return str( 'CandidatesCollection{' + str( self.__dict__ ) + '}' )
 
-#
-# A record for a follow set along with the path at which this set was found.
-# If there is only a single symbol in the interval set then we also collect and store tokens which follow
-# this symbol directly in its rule (i.e. there is no intermediate rule transition). Only single label transitions
-# are considered. This is useful if you have a chain of tokens which can be suggested as a whole, because there is
-# a fixed sequence in the grammar.
-#
 @dataclass
 class FollowSetWithPath:
+    """
+    A record for a follow set along with the path at which this set was found. If there is only a single symbol in the
+    interval set then we also collect and store tokens which follow this symbol directly in its rule (i.e. there is no
+    intermediate rule transition). Only single label transitions are considered. This is useful if you have a chain of
+    tokens which can be suggested as a whole, because there is a fixed sequence in the grammar.
+    """
     intervals: IntervalSet = IntervalSet()
     path: RuleList = field( default_factory = list )
     following: TokenList = field( default_factory = list )
 
-#
-# A list of follow sets (for a given state number) + all of them combined for quick hit tests.
-# This data is static in nature (because the used ATN states are part of a static struct: the ATN).
-# Hence, it can be shared between all C3 instances, however it depends on the actual parser class (type).
-#
 @dataclass
 class FollowSetsHolder:
+    """
+    A list of follow sets (for a given state number) + all of them combined for quick hit tests. This data is static in
+    nature (because the used ATN states are part of a static struct: the ATN). Hence, it can be shared between all C3
+    instances, however it depends on the actual parser class (type).
+    """
     sets: Set[FollowSetWithPath] = field( default_factory = set )
     combined: IntervalSet = IntervalSet()
 
@@ -102,11 +101,11 @@ class IPipelineEntry:
     state: ATNState
     tokenListIndex: int
 
-#
-# Return an array containing the elements represented by the current set. The
-# array is returned in ascending numerical order.
-#
 def intervalSetToList( intervalSet: IntervalSet ) -> List[int]:
+    """
+    Return an array containing the elements represented by the current set. The array is returned in ascending numerical
+    order.
+    """
     values: List = []
     for interval in intervalSet.intervals:
         start: int = interval.start
@@ -119,17 +118,17 @@ def intervalSetToList( intervalSet: IntervalSet ) -> List[int]:
 
     return values
 
-#
-#  The main class for doing the collection process.
-#
 class CodeCompletionCore:
+    """
+    The main class for doing the collection process.
+    """
     followSetsByATN: dict[str, FollowSetsPerState] = {}
 
     atnStateTypeMap: List[str] = ["invalid", "basic", "rule start", "block start", "plus block start", "star block start",
                                   "token start", "rule stop", "block end", "star loop back", "star loop entry", "plus loop back",
                                   "loop end"]
 
-    # Debugging options. Print human readable ATN state and other info.
+    # Debugging options. Print human-readable ATN state and other info.
 
     # Not dependent on showDebugOutput. Prints the collected rules + tokens to terminal.
     showResult: bool = False
@@ -180,13 +179,15 @@ class CodeCompletionCore:
 
     logger = logging.getLogger( __name__ )
 
-    #
-    # This is the main entry point. The caret token index specifies the token stream index for the token which currently
-    # covers the caret (or any other position you want to get code completion candidates for).
-    # Optionally you can pass in a parser rule context which limits the ATN walk to only that or called rules. This can significantly
-    # speed up the retrieval process but might miss some candidates (if they are outside the given context).
-    #
     def collectCandidates( self, caretTokenIndex: int, context: ParserRuleContext = None ) -> CandidatesCollection:
+        """
+        This is the main entry point. The caret token index specifies the token stream index for the token which
+        currently covers the caret (or any other position you want to get code completion candidates for).
+
+        Optionally you can pass in a parser rule context which limits the ATN walk to only that or called rules.
+        This can significantly speed up the retrieval process but might miss some candidates (if they are outside the
+        given context).
+        """
         self.shortcutMap.clear()
         self.candidates.rules.clear()
         self.candidates.tokens.clear()
@@ -239,17 +240,17 @@ class CodeCompletionCore:
 
         return self.candidates
 
-    #
-    # Check if the predicate associated with the given transition evaluates to true.
-    #
     def checkPredicate( self, transition: PredicateTransition ) -> bool:
+        """
+        Check if the predicate associated with the given transition evaluates to true.
+        """
         return transition.getPredicate().eval( self.parser, ParserRuleContext.EMPTY )
 
-    #
-    # Walks the rule chain upwards or downwards (depending on translateRulesTopDown) to see if that matches any of the
-    # preferred rules. If found, that rule is added to the collection candidates and true is returned.
-    #
     def translateStackToRuleIndex( self, ruleWithStartTokenList: RuleWithStartTokenList ) -> bool:
+        """
+        Walks the rule chain upwards or downwards (depending on translateRulesTopDown) to see if that matches any of the
+        preferred rules. If found, that rule is added to the collection candidates and true is returned.
+        """
         if not self.preferredRules:
             return False
 
@@ -273,11 +274,11 @@ class CodeCompletionCore:
 
         return False
 
-    #
-    # Given the index of a rule from a rule chain, check if that matches any of the preferred rules. If it matches,
-    # that rule is added to the collection candidates and true is returned.
-    #
     def translateToRuleIndex( self, i: int, ruleStack: RuleWithStartTokenList ) -> bool:
+        """
+        Given the index of a rule from a rule chain, check if that matches any of the preferred rules. If it matches,
+        that rule is added to the collection candidates and true is returned.
+        """
         ruleIndex: int = ruleStack[i].ruleIndex
         startTokenIndex: int = ruleStack[i].startTokenIndex
 
@@ -304,11 +305,11 @@ class CodeCompletionCore:
 
         return False
 
-    #
-    # This method follows the given transition and collects all symbols within the same rule that directly follow it
-    # without intermediate transitions to other rules and only if there is a single symbol for a transition.
-    #
     def getFollowingTokens( self, transition: Transition ) -> List[int]:
+        """
+        This method follows the given transition and collects all symbols within the same rule that directly follow it
+        without intermediate transitions to other rules and only if there is a single symbol for a transition.
+        """
         result: List[int] = []
 
         pipeline: List[ATNState] = [transition.target]
@@ -332,10 +333,10 @@ class CodeCompletionCore:
 
         return result
 
-    #
-    # Entry point for the recursive follow set collection function.
-    #
     def determineFollowSets( self, start: ATNState, stop: ATNState ) -> List[FollowSetWithPath]:
+        """
+        Entry point for the recursive follow set collection function.
+        """
         result: List[FollowSetWithPath] = []
         stateStack: List[ATNState] = []
         ruleStack: List[int] = []
@@ -343,11 +344,11 @@ class CodeCompletionCore:
 
         return result
 
-    #
-    # Collects possible tokens which could be matched following the given ATN state. This is essentially the same
-    # algorithm as used in the LL1Analyzer class, but here we consider predicates also and use no parser rule context.
-    #
     def collectFollowSets( self, s: ATNState, stopState: ATNState, followSets: List[FollowSetWithPath], stateStack: List[ATNState], ruleStack: List[int] ):
+        """
+        Collects possible tokens which could be matched following the given ATN state. This is essentially the same
+        algorithm as used in the LL1Analyzer class, but here we consider predicates also and use no parser rule context.
+        """
         # TODO check lambda function
         #  stateStack.find((x) => x === s)
         if s in stateStack:
@@ -400,12 +401,12 @@ class CodeCompletionCore:
 
         stateStack.pop()
 
-    #
-    # Walks the ATN for a single rule only. It returns the token stream position for each path that could be matched in this rule.
-    # The result can be empty in case we hit only non-epsilon transitions that didn't match the current input or if we
-    # hit the caret position.
-    #
     def processRule( self, startState: RuleStartState, tokenListIndex: int, callStack: RuleWithStartTokenList, precedence: int, indentation: int ) -> RuleEndStatus:
+        """
+        Walks the ATN for a single rule only. It returns the token stream position for each path that could be matched
+        in this rule. The result can be empty in case we hit only non-epsilon transitions that didn't match the current
+        input or if we hit the caret position.
+        """
 
         # Start with rule specific handling before going into the ATN walk.
 
@@ -625,8 +626,10 @@ class CodeCompletionCore:
 
         return "[" + stateValue + " " + self.atnStateTypeMap[state.stateType] + "] in " + self.ruleNames[state.ruleIndex]
 
-    # self, currentIndent, state, baseDescription, tokenIndex
     def printDescription( self, indentation: int, state: ATNState, baseDescription: str, tokenIndex: int ):
+        """
+        self, currentIndent, state, baseDescription, tokenIndex
+        """
         # TODO check log level
         #  FINER level
         #  logger.isLoggable(Level.FINER)

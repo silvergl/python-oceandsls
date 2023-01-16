@@ -6,7 +6,7 @@ __author__ = 'sgu'
 # TODO license
 
 #
-#  Port of antlr-c3 javascript library to python
+#  Port of antlr-c3 typescript library to python
 #  <p>
 #  The c3 engine is able to provide code completion candidates useful for
 #  editors with ANTLR generated parsers, independent of the actual
@@ -39,18 +39,15 @@ from antlr4.atn.Transition import Transition, PredicateTransition, RuleTransitio
 TokenList = List[int]
 RuleList = List[int]
 
-
 @dataclass
 class CandidateRule:
     startTokenIndex: int
     ruleList: RuleList
 
-
 @dataclass
 class RuleWithStartToken:
     startTokenIndex: int
     ruleIndex: int
-
 
 RuleWithStartTokenList = List[RuleWithStartToken]
 
@@ -95,18 +92,15 @@ class FollowSetsHolder:
     sets: Set[FollowSetWithPath] = field( default_factory = set )
     combined: IntervalSet = IntervalSet()
 
-
 FollowSetsPerState = Dict[int, FollowSetsHolder]
 
 # Token stream position info after a rule was processed.
 RuleEndStatus = Set[int]
 
-
 @dataclass
 class IPipelineEntry:
     state: ATNState
     tokenListIndex: int
-
 
 #
 # Return an array containing the elements represented by the current set. The
@@ -124,7 +118,6 @@ def intervalSetToList( intervalSet: IntervalSet ) -> List[int]:
             start += 1
 
     return values
-
 
 #
 #  The main class for doing the collection process.

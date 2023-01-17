@@ -265,7 +265,7 @@ class Symbol:
             self.__theParent.removeSymbol(self)
             self.__theParent = None
 
-    async def resolve(self, name: str, localOnly: bool = False) -> Optional[Symbol]:
+    async def resolve(self, name: str, localOnly: bool = False) -> Future[Optional[Symbol]]:
         """
         Asynchronously looks up a symbol with a given name, in a bottom-up manner.
 
@@ -275,10 +275,15 @@ class Symbol:
         :return: A promise resolving to the first symbol with a given name, in the order of appearance in this scope or
         any of the parent scopes (conditionally).
         """
+
         if isinstance(self.__theParent, ScopedSymbol):
             return self.__theParent.resolve(name, localOnly)
 
-        return None
+        # else create a future
+        future = asyncio.Future()
+        future.set_result(None)
+
+        return future
 
     def resolveSync(self, name: str, localOnly=False) -> Optional[Symbol]:
         """
@@ -382,7 +387,7 @@ class ScopedSymbol(Symbol):
     def __init__(self, name: str = ""):
         super().__init__(name)
 
-    def directScopes(self) -> List[ScopedSymbol]:
+    def directScopes(self) -> Future[List[ScopedSymbol]]:
         """
         :return: A promise resolving to all direct child symbols with a scope (e.g. classes in a module).
         """
@@ -435,7 +440,7 @@ class ScopedSymbol(Symbol):
             self.children().remove(symbol)
             symbol.setParent(None)
 
-    async def getNestedSymbolsOfType(self, t: type) -> List[T]:
+    async def getNestedSymbolsOfType(self, t: type) -> Future[List[T]]:
         """
         Asynchronously retrieves child symbols of a given type from this symbol.
 
@@ -444,7 +449,7 @@ class ScopedSymbol(Symbol):
         """
         result: List[T] = []
 
-        childPromises: List[List[T]] = [[]]
+        childPromises: List[Future[List[T]]] = [[]]
         for child in self.children():
             if isinstance(child, t):
                 result.append(child)

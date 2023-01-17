@@ -295,7 +295,7 @@ class Symbol:
 
         return None
 
-    def getParentOfType(self, t: Callable[P, T]) -> Optional[T]:
+    def getParentOfType(self, t: type) -> Optional[T]:
         """
         :param t: The type of objects to return.
         :return: the next enclosing parent of the given type.
@@ -435,7 +435,7 @@ class ScopedSymbol(Symbol, Generic[T]):
             self.children().remove(symbol)
             symbol.setParent(None)
 
-    async def getNestedSymbolsOfType(self, t: Callable[P, T]) -> List[T]:
+    async def getNestedSymbolsOfType(self, t: type) -> List[T]:
         """
         Asynchronously retrieves child symbols of a given type from this symbol.
 
@@ -458,7 +458,7 @@ class ScopedSymbol(Symbol, Generic[T]):
 
         return result
 
-    def getNestedSymbolsOfTypeSync(self, t: Callable[P, T]) -> List[T]:
+    def getNestedSymbolsOfTypeSync(self, t: type) -> List[T]:
         """
         Synchronously retrieves child symbols of a given type from this symbol.
 
@@ -514,7 +514,7 @@ class ScopedSymbol(Symbol, Generic[T]):
         return result
 
     # TODO check promise
-    def getSymbolsOfType(self, t: Callable[P, T]) -> List[T]:
+    def getSymbolsOfType(self, t: type) -> List[T]:
         """
         :param t: The type of the objects to return.
         :return: A promise resolving to direct children of a given type.
@@ -526,9 +526,8 @@ class ScopedSymbol(Symbol, Generic[T]):
 
         return result
 
-    #
     # TODO: add optional position dependency (only symbols defined before a given caret pos are viable).
-    async def getAllSymbols(self, t: Callable[P, T], localOnly=False) -> List[T]:
+    async def getAllSymbols(self, t: type, localOnly=False) -> List[T]:
         """
         :param t: The type of the objects to return.
         :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
@@ -555,7 +554,7 @@ class ScopedSymbol(Symbol, Generic[T]):
 
         return result
 
-    def getAllSymbolsSync(self, t: Callable[P, T], localOnly: bool = False) -> List[T]:
+    def getAllSymbolsSync(self, t: type, localOnly: bool = False) -> List[T]:
         """
         TODO: add optional position dependency (only symbols defined before a given caret pos are viable).
 
@@ -973,8 +972,8 @@ class SymbolTable(ScopedSymbol):
         if table in self.dependencies:
             self.dependencies.remove(table)
 
-    def addNewSymbolOfType(self, t: Callable[P, T], parent: Optional[ScopedSymbol], *my_args: P.args,
-                           **my_kwargs: P.kwargs) -> T:
+    def addNewSymbolOfType(self, t: type, parent: Optional[ScopedSymbol] = None, *my_args: P.args or None,
+                           **my_kwargs: P.kwargs or None) -> T:
         result = t(*my_args, **my_kwargs)
         if parent is None or parent is self:
             self.addSymbol(result)
@@ -1035,7 +1034,7 @@ class SymbolTable(ScopedSymbol):
 
         return self.addNewSymbolOfType(NamespaceSymbol, currentParent, parts[len(parts) - 1])
 
-    async def getAllSymbols(self, t: Callable[P, T], localOnly=False) -> List[T]:
+    async def getAllSymbols(self, t: type, localOnly=False) -> List[T]:
         """
         Asynchronously returns all symbols from this scope (and optionally those from dependencies) of a specific type.
 
@@ -1053,7 +1052,7 @@ class SymbolTable(ScopedSymbol):
 
         return result
 
-    def getAllSymbolsSync(self, t: Callable[P, T], localOnly=False) -> List[T]:
+    def getAllSymbolsSync(self, t: type, localOnly=False) -> List[T]:
         """
         Synchronously returns all symbols from this scope (and optionally those from dependencies) of a specific type.
 

@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from asyncio import Future
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, List, TypeVar, Generic, Callable, ParamSpec, Set, Any
+from typing import Optional, List, TypeVar, Callable, ParamSpec, Set, Any
 
 from antlr4.tree.Tree import ParseTree
 
@@ -337,7 +337,7 @@ class Symbol:
         return result
 
 
-P = ParamSpec("P")
+P = ParamSpec('P')
 T = TypeVar('T', bound=Symbol)
 
 
@@ -372,7 +372,7 @@ class TypeAlias(Symbol, Type):
         return ReferenceKind.Irrelevant
 
 
-class ScopedSymbol(Symbol, Generic[T]):
+class ScopedSymbol(Symbol):
     """
     A symbol with a scope (so it can have child symbols).
     """
@@ -444,13 +444,13 @@ class ScopedSymbol(Symbol, Generic[T]):
         """
         result: List[T] = []
 
-        childPromises: List[List[T]] = []
+        childPromises: List[List[T]] = [[]]
         for child in self.children():
             if isinstance(child, t):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                childPromises.extend(child.getNestedSymbolsOfType(t))
+                childPromises.append(child.getNestedSymbolsOfType(t))
 
         childSymbols = await childPromises
         for entry in childSymbols:
@@ -483,13 +483,13 @@ class ScopedSymbol(Symbol, Generic[T]):
         """
         result: List[Symbol] = []
 
-        childPromises: List[List[Symbol]] = []
+        childPromises: List[List[Symbol]] = [[]]
         for child in self.children():
             if name is None or child.name == name:
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                childPromises.extend(child.getAllNestedSymbols(name))
+                childPromises.append(child.getAllNestedSymbols(name))
 
         childSymbols = await childPromises
         for entry in childSymbols:

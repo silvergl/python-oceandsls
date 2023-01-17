@@ -450,7 +450,7 @@ class ScopedSymbol(Symbol, Generic[T]):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                childPromises.append(child.getNestedSymbolsOfType(t))
+                childPromises.extend(child.getNestedSymbolsOfType(t))
 
         childSymbols = await childPromises
         for entry in childSymbols:
@@ -472,7 +472,7 @@ class ScopedSymbol(Symbol, Generic[T]):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                result.append(child.getNestedSymbolsOfTypeSync(t))
+                result.extend(child.getNestedSymbolsOfTypeSync(t))
 
         return result
 
@@ -489,7 +489,7 @@ class ScopedSymbol(Symbol, Generic[T]):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                childPromises.append(child.getAllNestedSymbols(name))
+                childPromises.extend(child.getAllNestedSymbols(name))
 
         childSymbols = await childPromises
         for entry in childSymbols:
@@ -509,7 +509,7 @@ class ScopedSymbol(Symbol, Generic[T]):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                result.append(child.getAllNestedSymbolsSync(name))
+                result.extend(child.getAllNestedSymbolsSync(name))
 
         return result
 
@@ -545,12 +545,12 @@ class ScopedSymbol(Symbol, Generic[T]):
 
             if isinstance(child, NamespaceSymbol):
                 childSymbols = await child.getAllSymbols(t, True)
-                result.append(childSymbols)
+                result.extend(childSymbols)
 
         if not localOnly:
             if isinstance(self.parent, ScopedSymbol):
                 childSymbols = await self.getAllSymbols(t, True)
-                result.append(childSymbols)
+                result.extend(childSymbols)
 
         return result
 
@@ -574,12 +574,12 @@ class ScopedSymbol(Symbol, Generic[T]):
 
             if isinstance(child, NamespaceSymbol):
                 childSymbols = child.getAllSymbolsSync(t, True)
-                result.append(childSymbols)
+                result.extend(childSymbols)
 
         if not localOnly:
             if isinstance(self.parent, ScopedSymbol):
                 childSymbols = self.getAllSymbolsSync(t, True)
-                result.append(childSymbols)
+                result.extend(childSymbols)
 
         return result
 

@@ -11,10 +11,9 @@ __author__ = 'sgu'
 
 import asyncio
 from dataclasses import dataclass, field
-from asyncio import Future
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, List, TypeVar, Callable, ParamSpec, Set, Any
+from typing import Optional, List, TypeVar, Callable, ParamSpec, Set, Any, Coroutine
 
 from antlr4.tree.Tree import ParseTree
 
@@ -265,7 +264,7 @@ class Symbol:
             self.__theParent.removeSymbol(self)
             self.__theParent = None
 
-    async def resolve(self, name: str, localOnly: bool = False) -> Future[Optional[Symbol]]:
+    async def resolve(self, name: str, localOnly: bool = False) -> Optional[Symbol]:
         """
         Asynchronously looks up a symbol with a given name, in a bottom-up manner.
 
@@ -277,13 +276,9 @@ class Symbol:
         """
 
         if isinstance(self.__theParent, ScopedSymbol):
-            return self.__theParent.resolve(name, localOnly)
+            return await self.__theParent.resolve(name, localOnly)
 
-        # else create a future
-        future = asyncio.Future()
-        future.set_result(None)
-
-        return future
+        return None
 
     def resolveSync(self, name: str, localOnly=False) -> Optional[Symbol]:
         """
@@ -387,7 +382,7 @@ class ScopedSymbol(Symbol):
     def __init__(self, name: str = ""):
         super().__init__(name)
 
-    def directScopes(self) -> Future[List[ScopedSymbol]]:
+    def directScopes(self) -> List[ScopedSymbol]:
         """
         :return: A promise resolving to all direct child symbols with a scope (e.g. classes in a module).
         """
@@ -440,7 +435,7 @@ class ScopedSymbol(Symbol):
             self.children().remove(symbol)
             symbol.setParent(None)
 
-    async def getNestedSymbolsOfType(self, t: type) -> Future[List[T]]:
+    async def getNestedSymbolsOfType(self, t: type) -> List[T]:
         """
         Asynchronously retrieves child symbols of a given type from this symbol.
 
@@ -449,7 +444,7 @@ class ScopedSymbol(Symbol):
         """
         result: List[T] = []
 
-        childPromises: List[Future[List[T]]] = [[]]
+        childPromises: List[Coroutine[List[T]]] = [[]]
         for child in self.children():
             if isinstance(child, t):
                 result.append(child)
@@ -457,7 +452,7 @@ class ScopedSymbol(Symbol):
             if isinstance(child, ScopedSymbol):
                 childPromises.append(child.getNestedSymbolsOfType(t))
 
-        childSymbols = await childPromises
+        childSymbols = await asyncio.gather(*childPromises)
         for entry in childSymbols:
             result.append(entry)
 
@@ -496,7 +491,7 @@ class ScopedSymbol(Symbol):
             if isinstance(child, ScopedSymbol):
                 childPromises.append(child.getAllNestedSymbols(name))
 
-        childSymbols = await childPromises
+        childSymbols = await asyncio.gather(*childPromises)
         for entry in childSymbols:
             result.append(entry)
 
@@ -589,7 +584,7 @@ class ScopedSymbol(Symbol):
         return result
 
     # TODO check return type Optional[Symbol]
-    def resolve(self, name: str, localOnly=False) -> Future[Any]:
+    async def resolve(self, name: str, localOnly=False) -> Optional[Symbol]:
         """
         :param name: The name of the symbol to resolve.
         :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
@@ -597,25 +592,16 @@ class ScopedSymbol(Symbol):
         :return: A promise resolving to the first symbol with a given name, in the order of appearance in this scope or
         any of the parent scopes (conditionally).
         """
-        # create a future
-        future = asyncio.Future()
+        for child in self.children():
+            if child.name == name:
+                return child
 
-        @asyncio.create_task
-        async def find():
-            for child in self.children():
-                if child.name == name:
-                    future.set_result(child)
+        # Nothing found locally. Let the parent continue.
+        if not localOnly:
+            if isinstance(self.parent, ScopedSymbol):
+                return await self.parent.resolve(name, False)
 
-            # Nothing found locally. Let the parent continue.
-            if not (future.done() or localOnly):
-                if isinstance(self.parent, ScopedSymbol):
-                    future.set_result(self.parent.resolve(name, False))
-
-            if not future.done():
-                future.set_result(None)
-
-        # return the future
-        return future
+        return None
 
     def resolveSync(self, name: str, localOnly=False) -> Optional[Symbol]:
         """
@@ -1050,7 +1036,9 @@ class SymbolTable(ScopedSymbol):
         result: List[T] = await super().getAllSymbols(t, localOnly)
 
         if not localOnly:
-            dependencyResults = await map((lambda x: x.getAllSymbols(t, localOnly)), self.dependencies)
+            # TODO alternative
+            # dependencyResults = await asyncio.gather(*[x.getAllSymbols(t, localOnly) for x in self.dependencies])
+            dependencyResults = await asyncio.gather(*(map((lambda x: x.getAllSymbols(t, localOnly)), self.dependencies)))
 
             for value in dependencyResults:
                 result.append(value)

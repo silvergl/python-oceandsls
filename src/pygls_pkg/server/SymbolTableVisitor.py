@@ -24,10 +24,10 @@ class SymbolTableVisitor( TestGrammarVisitor, Generic[T] ):
 
     def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID() )
-        return self.visitChildren()
+        return self.visitChildren(ctx)
 
     def visitFuncExpr(self, ctx: TestGrammarParser.FuncExprContext):
-        return self.withScope( ctx, RoutineSymbol, [ctx.ID()], self.visitChildren() )
+        return self.withScope( ctx, RoutineSymbol, self.visitChildren(ctx), [ctx.ID()] )
 
     def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None,
                   **my_kwargs: P.kwargs or None) -> T:

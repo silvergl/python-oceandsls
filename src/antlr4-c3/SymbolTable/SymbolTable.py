@@ -752,7 +752,7 @@ class BlockSymbol(ScopedSymbol):
 
 class VariableSymbol(TypedSymbol):
 
-    def __init__(self, name: str, value, attached_type: Type = None):
+    def __init__(self, name: str, value = None, attached_type: Type = None):
         super().__init__(name, attached_type)
 
         self.value = value
@@ -760,7 +760,7 @@ class VariableSymbol(TypedSymbol):
 
 class LiteralSymbol(TypedSymbol):
 
-    def __init__(self, name: str, value, attached_type: Type = None):
+    def __init__(self, name: str, value = None, attached_type: Type = None):
         super().__init__(name, attached_type)
 
         self._value = value
@@ -780,7 +780,7 @@ class RoutineSymbol(ScopedSymbol):
     """
     returnType: Optional[Type] = None  # Can be null if result is void.
 
-    def __init__(self, name: str, returnType: Type):
+    def __init__(self, name: str, returnType: Type = None):
         super().__init__(name)
         self.returnType = returnType
 

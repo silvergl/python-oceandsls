@@ -19,7 +19,8 @@ from antlr4.tree.Tree import ParseTree
 
 
 # TODO check raise Exception
-# class DuplicateSymbolError(Error):
+class DuplicateSymbolError(Exception):
+    pass
 
 class MemberVisibility(Enum):
     # Not specified, default depends on the language and type.
@@ -93,6 +94,7 @@ class Type:
 
 
 # TODO https://stackoverflow.com/q/70809438
+@dataclass
 class SymbolTableOptions:
     allowDuplicateSymbols: Optional[bool] = None
 
@@ -146,11 +148,11 @@ class Symbol:
     like variables or classes. We are using a class hierarchy here, instead of an enum or similar, to allow for easy
     extension and certain symbols can so provide additional APIs for simpler access to their sub elements, if needed.
     """
-    # The name of the scopeor empty if anonymous.
-    name: str = ''
+    # The name of the scope or empty if anonymous.
+    name: str
 
     # Reference to the parse tree which contains this symbol.
-    context: Optional[ParseTree] = None
+    context: Optional[ParseTree]
 
     @property
     def modifiers(self) -> Set[int]:
@@ -162,6 +164,7 @@ class Symbol:
 
     def __init__(self, name: str = ''):
         self.name = name
+        self.context = None
 
     def parent(self) -> Optional[Symbol]:
         return self.__theParent
@@ -377,9 +380,10 @@ class ScopedSymbol(Symbol):
     A symbol with a scope (so it can have child symbols).
     """
     # All child symbols in definition order.
-    __childSymbols: List[Symbol] = []
+    __childSymbols: List[Symbol]
 
     def __init__(self, name: str = ""):
+        self.__childSymbols = []
         super().__init__(name)
 
     def directScopes(self) -> List[ScopedSymbol]:
@@ -418,14 +422,14 @@ class ScopedSymbol(Symbol):
 
         # Check for duplicates first.
         symbolTable = self.symbolTable
-        if symbolTable is None or SymbolTableOptions.allowDuplicateSymbols:
+        if symbolTable is None or not SymbolTableOptions.allowDuplicateSymbols:
             for child in self.children():
                 if child == symbol or (len(symbol.name) > 0 and child.name == symbol.name):
                     name = symbol.name
                     if len(name) == 0:
                         name = "<anonymous>"
 
-                    raise Exception("ERROR: Attempt to add duplicate symbol %s'" % name)
+                    raise DuplicateSymbolError("Attempt to add duplicate symbol '%s'" % name)
 
         self.children().append(symbol)
         symbol.setParent(self)
@@ -778,7 +782,7 @@ class RoutineSymbol(ScopedSymbol):
     """
     A standalone function/procedure/rule.
     """
-    returnType: Optional[Type] = None  # Can be null if result is void.
+    returnType: Optional[Type]  # Can be null if result is void.
 
     def __init__(self, name: str, returnType: Type = None):
         super().__init__(name)
@@ -810,7 +814,7 @@ class MethodSymbol(RoutineSymbol):
     """
     methodFlags = MethodFlags.NoneFL
 
-
+@dataclass
 class FieldSymbol(VariableSymbol):
     """
     A field which belongs to a class or other outer container structure.
@@ -823,8 +827,8 @@ class ClassSymbol(ScopedSymbol, Type):
     """
     Classes and structs.
     """
-    isStruct = False
-    reference = ReferenceKind.Irrelevant
+    isStruct: bool
+    reference : int
 
     @property
     def extends(self) -> List[ClassSymbol]:
@@ -844,6 +848,9 @@ class ClassSymbol(ScopedSymbol, Type):
         super().__init__(name)
         self._extends = ext
         self._implements = impl
+
+        self.isStruct = False
+        self.reference = ReferenceKind.Irrelevant
 
     def baseTypes(self) -> List[Type]:
         return self._extends
@@ -868,11 +875,13 @@ class ClassSymbol(ScopedSymbol, Type):
 
 
 class InterfaceSymbol(ScopedSymbol, Type):
-    reference = ReferenceKind.Irrelevant
+    reference: int
 
     def __init__(self, name: str, ext: List[tuple[ClassSymbol, InterfaceSymbol]]):
         super().__init__(name)
         self._extends = ext
+
+        self.reference = ReferenceKind.Irrelevant
 
     @property
     def extends(self) -> List[tuple[ClassSymbol, InterfaceSymbol]]:
@@ -940,9 +949,10 @@ class SymbolTable(ScopedSymbol):
     The main class managing all the symbols for a top level entity like a file, library or similar.
     """
     #  Other symbol information available to this instance.
-    dependencies: Set[SymbolTable] = field(default_factory=set)
+    dependencies: Set[SymbolTable]
 
     def __init__(self, name: str, options: SymbolTableOptions):
+        self.dependencies = set()
         super().__init__(name)
 
     def info(self):

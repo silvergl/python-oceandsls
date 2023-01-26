@@ -17,7 +17,7 @@ from antlr4.Recognizer import Recognizer
 
 from typing import List, Union
 import logging
-from pygls.lsp.types import (Diagnostic, Range, Position)
+from lsprotocol.types import (Diagnostic, Range, Position)
 
 class VerboseListener(ErrorListener):
     def __init__(self):

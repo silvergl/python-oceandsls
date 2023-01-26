@@ -77,7 +77,7 @@ class FollowSetWithPath:
     intermediate rule transition). Only single label transitions are considered. This is useful if you have a chain of
     tokens which can be suggested as a whole, because there is a fixed sequence in the grammar.
     """
-    intervals: IntervalSet = IntervalSet()
+    intervals: IntervalSet = field( default_factory = IntervalSet )
     path: RuleList = field( default_factory = list )
     following: TokenList = field( default_factory = list )
 
@@ -131,13 +131,13 @@ class CodeCompletionCore:
     # Debugging options. Print human-readable ATN state and other info.
 
     # Not dependent on showDebugOutput. Prints the collected rules + tokens to terminal.
-    showResult: bool = False
+    showResult: bool
     # Enables printing ATN state info to terminal.
-    showDebugOutput: bool = False
+    showDebugOutput: bool
     # Only relevant when showDebugOutput is true. Enables transition printing for a state.
-    debugOutputWithTransitions: bool = False
+    debugOutputWithTransitions: bool
     # Also depends on showDebugOutput. Enables call stack printing for each rule recursion.
-    showRuleStack: bool = False
+    showRuleStack: bool
 
     # Tailoring of the result:
     # Tokens which should not appear in the candidates set.
@@ -149,7 +149,7 @@ class CodeCompletionCore:
 
     # Specify if preferred rules should be translated top-down (higher index rule returns first) or
     # bottom-up (lower index rule returns first).
-    translateRulesTopDown: bool = True
+    translateRulesTopDown: bool
 
     parser: Parser
     atn: ATN
@@ -158,12 +158,12 @@ class CodeCompletionCore:
     literalNames: List[str]
     symbolicNames: List[str]
     precedenceStack: List[int]
-    tokenStartIndex: int = 0
-    statesProcessed: int = 0
+    tokenStartIndex: int
+    statesProcessed: int
 
     # A mapping of rule index to token stream position to end token positions.
     # A rule which has been visited before with the same input position will always produce the same output positions.
-    shortcutMap: dict[int, dict[int, RuleEndStatus]] = {}
+    shortcutMap: dict[int, dict[int, RuleEndStatus]]
 
     # The collected candidates (rules and tokens).
     candidates: CandidatesCollection = CandidatesCollection()
@@ -176,6 +176,17 @@ class CodeCompletionCore:
         self.ruleNames = parser.ruleNames
         self.ignoredTokens = set()
         self.preferredRules = set()
+
+        self.showResult = False
+        self.showDebugOutput = False
+        self.debugOutputWithTransitions = False
+        self.showRuleStack = False
+        self.translateRulesTopDown = True
+
+        self.tokenStartIndex = 0
+        self.statesProcessed = 0
+
+        self.shortcutMap = {}
 
     logger = logging.getLogger( __name__ )
 

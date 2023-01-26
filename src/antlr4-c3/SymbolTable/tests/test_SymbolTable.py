@@ -1,14 +1,14 @@
 import asyncio
 import os, sys, time
 from typing import List, Optional
-from unittest import TestCase
+from unittest import IsolatedAsyncioTestCase
 
 from antlr4 import TerminalNode
 from antlr4.Token import CommonToken
 from antlr4.tree.Tree import TerminalNodeImpl
 
 from SymbolTable import SymbolTable, NamespaceSymbol, ClassSymbol, InterfaceSymbol, FieldSymbol, MethodSymbol, \
-    BlockSymbol, VariableSymbol, FundamentalType, LiteralSymbol, DuplicateSymbolError
+    BlockSymbol, VariableSymbol, FundamentalType, LiteralSymbol, DuplicateSymbolError, ScopedSymbol
 
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
@@ -64,28 +64,86 @@ async def createClassSymbolTable(name: str, counts: List[int], namespaces: Optio
 
     return symbolTable
 
-async def main() -> SymbolTable:
-    return await createClassSymbolTable("main", [3, 3, 4, 5, 5])
+# async def symTable() -> SymbolTable:
+#     '''
+#     pre 3.8 async def and await syntax for call asyncio.run(symTable())
+#
+#     :return:
+#     '''
+#     print(f"started at {time.strftime('%X')}")
+#     result = await createClassSymbolTable("main", [3, 3, 4, 5, 5])
+#     print(f"finished at {time.strftime('%X')}")
+#     return result
 
-class SymbolTableTest( TestCase ):
-    def setUp(self) -> None:
+class SymbolTableTest( IsolatedAsyncioTestCase ):
+    async def asyncSetUp(self) -> None:
         dummyNode.text = 'Dummy'
 
-        # print(f"started at {time.strftime('%X')}")
-        self.symbolTable: SymbolTable = asyncio.run(main())
-        # print(f"finished at {time.strftime('%X')}")
-
+        self.symbolTable: SymbolTable = await createClassSymbolTable("main", [3, 3, 4, 5, 5])
         self.info = self.symbolTable.info()
 
-    def test_Single_table_base(self):
+    async def test_Single_table_base(self):
         self.assertEqual(self.info.dependencyCount, 0)
         self.assertEqual(self.info.symbolCount, 16) # 5 + 5 top level symbols + 3 classes + 3 interfaces.
 
-        try:
+        with self.assertRaises(DuplicateSymbolError) as ctx:
             self.symbolTable.addNewSymbolOfType(VariableSymbol, None, "globalVar3")
-            self.assertFalse( True, 'Test 3')
-        except Exception as err:
-            if isinstance(err, DuplicateSymbolError):
-                self.assertEqual(err.msg, "Attempt to add duplicate symbol 'globalVar3'")
-            else:
-                self.assertFalse( True, 'Test 3')
+        self.assertEqual(ctx.exception.args[0]["message"], "Attempt to add duplicate symbol 'globalVar3'")
+
+        class1 = await self.symbolTable.resolve("class1")
+        self.assertIsInstance(class1, ClassSymbol)
+        method2 = await class1.resolve("method2")
+        self.assertIsInstance(method2, MethodSymbol)
+        scopes = await method2.directScopes()
+        self.assertEqual(len(scopes),2) # 2 anonymous blocks.
+        block1 = scopes[0]
+        self.assertIsInstance(block1,ScopedSymbol)
+
+        # with self.assertRaises(DuplicateSymbolError) as ctx:
+        #     self.symbolTable.addNewSymbolOfType(MethodSymbol, None, "method2") # Must throw.
+        # self.assertEqual(ctx.exception.args[0]["message"], "Attempt to add duplicate symbol 'method2'")
+
+        variable = await block1.resolve("globalVar3") # Resolves to the global var 3.
+        self.assertIsInstance(variable, VariableSymbol)
+        self.assertEqual(variable.root(), self.symbolTable)
+
+        variable = await block1.resolve("globalVar3", True) # Try only local vars.
+
+        self.assertEqual(variable, None)
+        
+        variable = await block1.resolve("var1") # Now resolves to local var.
+        self.assertEqual(variable.root(),class1)
+        self.assertEqual(variable.getParentOfType(MethodSymbol),method2)
+        
+        methods = await class1.getSymbolsOfType(MethodSymbol)
+        self.assertEqual(len(methods),3)
+        symbols = await method2.getSymbolsOfType(ScopedSymbol)
+        self.assertEqual(len(symbols),2)
+        self.assertEqual(await block1.resolve("class1", False),class1)
+        
+        symbolPaths = variable.symbolPath()
+        self.assertEqual(len(symbolPaths),5)
+        self.assertEqual(symbolPaths[0].name,"var1")
+        self.assertEqual(symbolPaths[1].name,"block1")
+        self.assertEqual(symbolPaths[2].name,"method2")
+        self.assertEqual(symbolPaths[3].name,"class1")
+        self.assertEqual(symbolPaths[4].name,"main")
+        
+        self.assertEqual(method2.qualifiedName(),"class1.method2")
+        self.assertEqual(method2.qualifiedName("-", True),"main-class1-method2")
+        self.assertEqual(variable.qualifiedName(),"block1.var1")
+        self.assertEqual(variable.qualifiedName("#"),"block1#var1")
+        self.assertEqual(variable.qualifiedName(".", False, True),"block1.var1")
+        self.assertEqual(variable.qualifiedName(".", True, False),"main.class1.method2.block1.var1")
+        self.assertEqual(variable.qualifiedName(".", True, True),"main.class1.method2.block1.var1")
+        
+        allSymbols = await self.symbolTable.getAllNestedSymbols()
+        self.assertEqual(len(allSymbols),94)
+        
+        symbolPath = allSymbols[59].qualifiedName(".", True)
+        self.assertEqual(symbolPath,"main.class1.method2.block1.var1")
+        
+        foundSymbol = self.symbolTable.symbolFromPath("main.class2.method0.block2.var1")
+        self.assertEqual(foundSymbol,allSymbols[78])
+        
+        self.assertEqual(self.symbolTable, self.symbolTable.symbolTable())

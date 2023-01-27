@@ -497,7 +497,7 @@ class ScopedSymbol( Symbol ):
 
         childSymbols = await asyncio.gather( *childPromises )
         for entry in childSymbols:
-            result.append( entry )
+            result.extend( entry )
 
         return result
 

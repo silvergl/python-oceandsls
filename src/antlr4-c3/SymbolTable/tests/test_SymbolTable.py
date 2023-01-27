@@ -99,9 +99,10 @@ class SymbolTableTest( IsolatedAsyncioTestCase ):
         block1 = scopes[0]
         self.assertIsInstance(block1,ScopedSymbol)
 
-        # with self.assertRaises(DuplicateSymbolError) as ctx:
-        #     self.symbolTable.addNewSymbolOfType(MethodSymbol, None, "method2") # Must throw.
-        # self.assertEqual(ctx.exception.args[0]["message"], "Attempt to add duplicate symbol 'method2'")
+        with self.assertRaises(DuplicateSymbolError) as ctx:
+            duplicateMethod = self.symbolTable.addNewSymbolOfType(MethodSymbol, None, "method2")
+            class1.addSymbol(duplicateMethod) # Must throw.
+        self.assertEqual(ctx.exception.args[0]["message"], "Attempt to add duplicate symbol 'method2'")
 
         variable = await block1.resolve("globalVar3") # Resolves to the global var 3.
         self.assertIsInstance(variable, VariableSymbol)

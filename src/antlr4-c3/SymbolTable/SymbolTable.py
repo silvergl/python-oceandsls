@@ -91,6 +91,7 @@ class Type:
     kind: TypeKind
     reference: ReferenceKind
 
+
 @dataclass
 class SymbolTableOptions:
     allowDuplicateSymbols: Optional[bool] = None
@@ -1039,7 +1040,8 @@ class SymbolTable( ScopedSymbol ):
         if not localOnly:
             # TODO alternative
             # dependencyResults = await asyncio.gather(*[x.getAllSymbols(t, localOnly) for x in self.dependencies])
-            dependencyResults = await asyncio.gather( *(map( (lambda x: x.getAllSymbols( t, localOnly )), self.dependencies )) )
+            dependencyResults = await asyncio.gather(
+                *(map( (lambda x: x.getAllSymbols( t, localOnly )), self.dependencies )) )
 
             for value in dependencyResults:
                 result.extend( value )

@@ -448,7 +448,7 @@ class ScopedSymbol( Symbol ):
         """
         result: List[T] = []
 
-        childPromises: List[Coroutine[List[T]]] = [[]]
+        childPromises: List[Coroutine[List[T]]] = []
         for child in self.children():
             if isinstance( child, t ):
                 result.append( child )
@@ -458,7 +458,7 @@ class ScopedSymbol( Symbol ):
 
         childSymbols = await asyncio.gather( *childPromises )
         for entry in childSymbols:
-            result.append( entry )
+            result.extend( entry )
 
         return result
 
@@ -724,11 +724,11 @@ class ScopedSymbol( Symbol ):
         :param child: The reference node.
         :return: the next symbol in definition order, regardless of the scope.
         """
-        if not isinstance( child.parent, ScopedSymbol ):
+        if not isinstance( child.parent(), ScopedSymbol ):
             return None
 
-        if child.parent is not self:
-            return child.parent.nextOf( child )
+        if child.parent() is not self:
+            return child.parent().nextOf( child )
 
         if isinstance( child, ScopedSymbol ) and len( child.children() ) > 0:
             return child.children()[0]
@@ -961,7 +961,7 @@ class SymbolTable( ScopedSymbol ):
         super().clear()
         self.dependencies.clear()
 
-    def addDependencies(self, tables: List[SymbolTable]):
+    def addDependencies(self, *tables: SymbolTable):
         for table in tables:
             self.dependencies.add( table )
 
@@ -1044,11 +1044,10 @@ class SymbolTable( ScopedSymbol ):
         if not localOnly:
             # TODO alternative
             # dependencyResults = await asyncio.gather(*[x.getAllSymbols(t, localOnly) for x in self.dependencies])
-            dependencyResults = await asyncio.gather(
-                *(map( (lambda x: x.getAllSymbols( t, localOnly )), self.dependencies )) )
+            dependencyResults = await asyncio.gather( *(map( (lambda x: x.getAllSymbols( t, localOnly )), self.dependencies )) )
 
             for value in dependencyResults:
-                result.append( value )
+                result.extend( value )
 
         return result
 

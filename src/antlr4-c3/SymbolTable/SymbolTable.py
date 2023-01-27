@@ -10,10 +10,9 @@ __author__ = 'sgu'
 #
 
 import asyncio
-from dataclasses import dataclass, field
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, List, TypeVar, Callable, ParamSpec, Set, Any, Coroutine
+from typing import Optional, List, TypeVar, ParamSpec, Set, Coroutine
 
 from antlr4.tree.Tree import ParseTree
 
@@ -92,8 +91,6 @@ class Type:
     kind: TypeKind
     reference: ReferenceKind
 
-
-# TODO https://stackoverflow.com/q/70809438
 @dataclass
 class SymbolTableOptions:
     allowDuplicateSymbols: Optional[bool] = None
@@ -305,7 +302,6 @@ class Symbol:
         """
         run = self.__theParent
         while run is not None:
-            # TODO check types l.320
             if isinstance( run, t ):
                 return run
             run = run.__theParent
@@ -585,7 +581,6 @@ class ScopedSymbol( Symbol ):
 
         return result
 
-    # TODO check return type Optional[Symbol]
     async def resolve(self, name: str, localOnly=False) -> Optional[Symbol]:
         """
         :param name: The name of the symbol to resolve.
@@ -782,10 +777,10 @@ class RoutineSymbol( ScopedSymbol ):
         super().__init__( name )
         self.returnType = returnType
 
-    def getVariables(self, localOnly=True) -> List[VariableSymbol]:
+    def getVariables(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getSymbolsOfType( VariableSymbol )
 
-    def getParameters(self, localOnly=True) -> List[ParameterSymbol]:
+    def getParameters(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getSymbolsOfType( ParameterSymbol )
 
 
@@ -822,7 +817,7 @@ class ClassSymbol( ScopedSymbol, Type ):
     Classes and structs.
     """
     isStruct: bool
-    reference: int
+    reference: ReferenceKind
 
     @property
     def extends(self) -> List[ClassSymbol]:
@@ -852,7 +847,7 @@ class ClassSymbol( ScopedSymbol, Type ):
     def kind(self) -> TypeKind:
         return TypeKind.Class
 
-    def getMethods(self, includeInherited=False) -> List[MethodSymbol]:
+    def getMethods(self, includeInherited=False) -> Coroutine[List[T]]:
         """
 
         :param includeInherited: Not used.
@@ -860,7 +855,7 @@ class ClassSymbol( ScopedSymbol, Type ):
         """
         return self.getSymbolsOfType( MethodSymbol )
 
-    def getFields(self, includeInherited=False) -> List[FieldSymbol]:
+    def getFields(self, includeInherited=False) -> Coroutine[List[T]]:
         """
         :param includeInherited: Not used.
         :return: all fields.
@@ -869,7 +864,7 @@ class ClassSymbol( ScopedSymbol, Type ):
 
 
 class InterfaceSymbol( ScopedSymbol, Type ):
-    reference: int
+    reference: ReferenceKind
 
     def __init__(self, name: str, ext: List[tuple[ClassSymbol, InterfaceSymbol]]):
         super().__init__( name )
@@ -890,14 +885,14 @@ class InterfaceSymbol( ScopedSymbol, Type ):
     def kind(self) -> TypeKind:
         return TypeKind.Interface
 
-    def getMethods(self, includeInherited=False) -> List[MethodSymbol]:
+    def getMethods(self, includeInherited=False) -> Coroutine[List[MethodSymbol]]:
         """
         :param includeInherited: Not used.
         :return: a list of all methods.
         """
         return self.getSymbolsOfType( MethodSymbol )
 
-    def getFields(self, includeInherited=False) -> List[FieldSymbol]:
+    def getFields(self, includeInherited=False) -> Coroutine[List[T]]:
         """
         :param includeInherited: Not used.
         :return: all fields.
@@ -948,7 +943,7 @@ class SymbolTable( ScopedSymbol ):
 
     def __init__(self, name: str, options: SymbolTableOptions):
         self.dependencies = set()
-        self.options = SymbolTableOptions( options )
+        self.options = options
         super().__init__( name )
 
     def info(self):

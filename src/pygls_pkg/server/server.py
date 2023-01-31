@@ -27,7 +27,10 @@ import sys, os, logging
 from antlr4.IntervalSet import IntervalSet
 from pygls.workspace import Document
 
+from SymbolTableVisitor import SymbolTableVisitor
 from src.pygls_pkg.server.utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
+
+from utils.suggestVariables import suggestVariables
 
 if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) )
@@ -161,7 +164,11 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # get token index under caret position
     # launches parser by invoking startrule
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
-    tokenIndex: TokenPosition = computeTokenPosition(odsl_server.parser.prog(), odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
+
+    StartProgContext = TestGrammarParser.StartProgContext
+    parseTree: StartProgContext = odsl_server.parser.prog()
+
+    tokenIndex: TokenPosition = computeTokenPosition(parseTree, odsl_server.tokenStream, CaretPosition(params.position.line + 1, params.position.character))
 
     logger.info('tokenIndex: %s\n', tokenIndex)
 
@@ -173,6 +180,10 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         # TODO add exception
         logger.info( 'Return empty completionList...' )
         return completionList
+
+    symbolTableFn = SymbolTableVisitor.visit(parseTree)
+
+    test = suggestVariables(symbolTableFn,tokenIndex)
 
     # launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore(odsl_server.parser)

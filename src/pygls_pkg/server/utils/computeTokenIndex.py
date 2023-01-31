@@ -18,7 +18,7 @@ class CaretPosition:
 @dataclass
 class TokenPosition:
     index: int
-    context: ParseTree
+    context: ParserRuleContext
     text: str
 
 def computeTokenIndexOfTerminalNode(terminalNode: TerminalNode, caretPosition: CaretPosition) -> Optional[Any]:
@@ -58,7 +58,8 @@ def positionOfToken(token: Token, text: str, caretPosition: CaretPosition, ident
 
         # TODO check to choose complete token text or substring
         # result: TokenPosition = tokenPosition(index, parseTree, text)
-        result: TokenPosition = TokenPosition(index, parseTree, text[0 : caretPosition.column - start])
+        parserRuleContext: ParserRuleContext = parseTree
+        result: TokenPosition = TokenPosition(index, parserRuleContext, text[0 : caretPosition.column - start])
 
         logger.info('positionOfToken return result = %s', result )
         return result

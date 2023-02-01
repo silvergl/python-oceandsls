@@ -1,4 +1,7 @@
-from typing import List
+import asyncio
+import threading
+import time
+from typing import List, ParamSpec
 
 from antlr4 import ParserRuleContext
 
@@ -10,11 +13,47 @@ del TestGrammarParser
 from SymbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol, T
 from utils.computeTokenIndex import TokenPosition
 
+P = ParamSpec( 'P' )
+
+
+class RunThread( threading.Thread ):
+    def __init__(self, func, *args: P.args or None, **kwargs: P.kwargs or None):
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+        self.result = None
+        super().__init__()
+
+    def run(self):
+        self.result = asyncio.run( self.func( *self.args, **self.kwargs ) )
+
+
+def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:  # 'RuntimeError: There is no current event loop...'
+        loop = None
+    if loop and loop.is_running():
+        thread = RunThread( func, *args, **kwargs )
+        thread.start()
+        thread.join()
+        return thread.result
+
+        # print('Async event loop already running. Adding coroutine to the event loop.')
+        # tsk = loop.create_task(symbolTable.symbolWithContext( context ))
+        # ^-- https://docs.python.org/3/library/asyncio-task.html#task-object
+        # Optionally, a callback function can be executed when the coroutine completes
+        # tsk.add_done_callback( lambda t: print(f'Task done with result={t.result()}  << return val of main()'))
+    else:
+        return asyncio.run( func( *args, **kwargs ) )
+
 
 def getScope(context: ParserRuleContext, symbolTable: SymbolTable):
     if context is None:
         return None
-    scope = symbolTable.symbolWithContext( context )
+
+    scope = run_async( symbolTable.symbolWithContext, context )
+
     if scope is not None:
         return scope
     else:
@@ -22,7 +61,7 @@ def getScope(context: ParserRuleContext, symbolTable: SymbolTable):
 
 
 def getAllSymbolsOfType(scope: ScopedSymbol, symbolType: type):
-    symbols: List[Symbol] = await scope.getSymbolsOfType( symbolType )
+    symbols: List[Symbol] = run_async( scope.getSymbolsOfType, symbolType )
     parent = scope.parent()
     while parent is not None and not isinstance( parent, ScopedSymbol ):
         parent = parent.parent()
@@ -38,7 +77,7 @@ def suggestVariables(symbolTable: SymbolTable, position: TokenPosition):
     if isinstance( scope, ScopedSymbol ):  # Local scope
         symbols = getAllSymbolsOfType( scope, VariableSymbol )
     else:  # Global scope
-        symbols = await symbolTable.getSymbolsOfType( VariableSymbol )
+        symbols = run_async( symbolTable.getSymbolsOfType, VariableSymbol )
 
     variable = position.context
     while not isinstance( variable, StatContext ) and variable.parentCtx is not None:
@@ -51,4 +90,4 @@ def filterTokens(text: str, candidates: List[str]):
     if len( text.strip() ) == 0:
         return candidates
     else:
-        return filter( lambda c: c.lower().startswith( text.lower() ), candidates )
+        return list( filter( lambda c: c.lower().startswith( text.lower() ), candidates ) )

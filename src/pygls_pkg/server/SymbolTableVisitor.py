@@ -13,7 +13,9 @@ class SymbolTableVisitor( TestGrammarVisitor, Generic[T] ):
     def __init__(self):
         super().__init__()
         self._symbolTable = SymbolTable('', SymbolTableOptions(False))
-        self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
+        # TODO scope marker
+        # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
+        self._scope = None
 
     @property
     def symbolTable(self) -> SymbolTable:

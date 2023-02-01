@@ -514,7 +514,6 @@ class ScopedSymbol( Symbol ):
 
         return result
 
-    # TODO check promise
     async def getSymbolsOfType(self, t: type) -> List[T]:
         """
         :param t: The type of the objects to return.

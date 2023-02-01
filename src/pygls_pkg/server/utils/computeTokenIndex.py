@@ -9,6 +9,7 @@ from antlr4.ParserRuleContext import ParserRuleContext
 import logging
 
 logger = logging.getLogger(__name__)
+logger.disabled = True
 
 @dataclass
 class CaretPosition:

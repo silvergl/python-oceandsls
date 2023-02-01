@@ -380,8 +380,8 @@ class ScopedSymbol( Symbol ):
     __childSymbols: List[Symbol]
 
     def __init__(self, name: str = ""):
-        self.__childSymbols = []
         super().__init__( name )
+        self.__childSymbols = []
 
     def directScopes(self) -> Coroutine[List[ScopedSymbol]]:
         """

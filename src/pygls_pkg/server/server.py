@@ -27,13 +27,11 @@ import sys, os, logging
 from antlr4.IntervalSet import IntervalSet
 from pygls.workspace import Document
 
-from SymbolTableVisitor import SymbolTableVisitor
-from src.pygls_pkg.server.utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
-
-from utils.suggestVariables import suggestVariables
-
 if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) )
+from utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
+from utils.suggestVariables import suggestVariables
+from SymbolTableVisitor import SymbolTableVisitor
 from DiagnosticListener import DiagnosticListener
 
 # antlr4
@@ -181,7 +179,9 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         logger.info( 'Return empty completionList...' )
         return completionList
 
-    symbolTableFn = SymbolTableVisitor.visit(parseTree)
+    symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor()
+
+    symbolTableFn = symbolTableVisitor.visit(parseTree)
 
     test = suggestVariables(symbolTableFn,tokenIndex)
 

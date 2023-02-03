@@ -262,7 +262,8 @@ class CodeCompletionCore:
         Walks the rule chain upwards or downwards (depending on translateRulesTopDown) to see if that matches any of the
         preferred rules. If found, that rule is added to the collection candidates and true is returned.
         """
-        if not self.preferredRules:
+
+        if len(self.preferredRules) == 0:
             return False
 
         # Change the direction we iterate over the rule stack

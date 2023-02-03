@@ -1,6 +1,5 @@
 import asyncio
 import threading
-import time
 from typing import List, ParamSpec
 
 from antlr4 import ParserRuleContext
@@ -10,7 +9,7 @@ from TestGrammar.TestGrammarParser import TestGrammarParser
 StatContext = TestGrammarParser.StatContext
 del TestGrammarParser
 
-from SymbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol, T
+from SymbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 from utils.computeTokenIndex import TokenPosition
 
 P = ParamSpec( 'P' )

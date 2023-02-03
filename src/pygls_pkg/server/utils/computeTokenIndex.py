@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Any
 
 from antlr4 import TerminalNode, Token, BufferedTokenStream
-from antlr4.tree.Tree import ParseTree
+from antlr4.tree.Tree import ParseTree, ErrorNodeImpl
 from antlr4.ParserRuleContext import ParserRuleContext
 
 # util imports
@@ -60,7 +60,9 @@ def positionOfToken(token: Token, text: str, caretPosition: CaretPosition, ident
         # TODO check to choose complete token text or substring
         # result: TokenPosition = tokenPosition(index, parseTree, text)
         parserRuleContext: ParserRuleContext = parseTree
-        result: TokenPosition = TokenPosition(index, parserRuleContext, text[0 : caretPosition.column - start])
+        # TODO check for error nodes
+        text = text[0 : caretPosition.column - start] if not isinstance(parseTree,ErrorNodeImpl) else ''
+        result: TokenPosition = TokenPosition(index, parserRuleContext, text)
 
         logger.info('positionOfToken return result = %s', result )
         return result

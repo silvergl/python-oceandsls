@@ -10,9 +10,9 @@ from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
 class SymbolTableVisitor( TestGrammarVisitor, Generic[T] ):
     _symbolTable: SymbolTable
 
-    def __init__(self):
+    def __init__(self, name: str = '', ):
         super().__init__()
-        self._symbolTable = SymbolTable('', SymbolTableOptions(False))
+        self._symbolTable = SymbolTable( name, SymbolTableOptions( False ) )
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
@@ -26,10 +26,10 @@ class SymbolTableVisitor( TestGrammarVisitor, Generic[T] ):
 
     def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID().getText() )
-        return self.visitChildren(ctx)
+        return self.visitChildren( ctx )
 
-    def visitFuncExpr(self, ctx: TestGrammarParser.FuncExprContext):
-        return self.withScope( ctx, RoutineSymbol, lambda : self.visitChildren(ctx), ctx.ID().getText() )
+    # def visitFuncExpr(self, ctx: TestGrammarParser.FuncExprContext):
+    #     return self.withScope( ctx, RoutineSymbol, lambda: self.visitChildren( ctx ), ctx.ID().getText() )
 
     def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None,
                   **my_kwargs: P.kwargs or None) -> T:

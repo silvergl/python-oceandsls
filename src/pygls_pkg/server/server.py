@@ -37,7 +37,7 @@ from DiagnosticListener import DiagnosticListener
 # antlr4
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
-from antlr4 import InputStream, CommonTokenStream
+from antlr4 import InputStream, CommonTokenStream, Token
 from TestGrammar.TestGrammarLexer import TestGrammarLexer
 from TestGrammar.TestGrammarParser import TestGrammarParser
 from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
@@ -191,16 +191,28 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         logger.info( 'Return empty completionList...' )
         return completionList
 
-    symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor()
-
-    symbolTableFn = symbolTableVisitor.visit( parseTree )
-
-    test = suggestVariables( symbolTableFn, tokenIndex )
 
     # launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore( odsl_server.parser )
+
+    core.ignoredTokens = {Token.EPSILON}
+    core.preferredRules = {TestGrammarParser.RULE_variableRef,TestGrammarParser.RULE_functionRef}
+
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
+
+    if any(rule in candidates.rules for rule in [TestGrammarParser.RULE_variableRef,TestGrammarParser.RULE_functionRef]):
+
+        symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor('completions')
+
+        symbolTable = symbolTableVisitor.visit( parseTree )
+
+        variables = suggestVariables( symbolTable, tokenIndex )
+
+        logger.info( 'variables candidates: %s\n', variables )
+
+        for variable in variables:
+            completionList.items.append( CompletionItem(label=variable))
 
     logger.info( 'candidates: %s\n', candidates )
 

@@ -39,19 +39,19 @@ public interface TestGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlankStat(TestGrammarParser.BlankStatContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code funcExpr}
-	 * labeled alternative in {@link TestGrammarParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFuncExpr(TestGrammarParser.FuncExprContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code addSubExpr}
 	 * labeled alternative in {@link TestGrammarParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAddSubExpr(TestGrammarParser.AddSubExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code funRef}
+	 * labeled alternative in {@link TestGrammarParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunRef(TestGrammarParser.FunRefContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code numberExpr}
 	 * labeled alternative in {@link TestGrammarParser#expr}.
@@ -74,12 +74,12 @@ public interface TestGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMulDivExpr(TestGrammarParser.MulDivExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code idExpr}
+	 * Visit a parse tree produced by the {@code idRef}
 	 * labeled alternative in {@link TestGrammarParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIdExpr(TestGrammarParser.IdExprContext ctx);
+	T visitIdRef(TestGrammarParser.IdRefContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code argList}
 	 * labeled alternative in {@link TestGrammarParser#exprList}.
@@ -87,4 +87,18 @@ public interface TestGrammarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArgList(TestGrammarParser.ArgListContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code varExpr}
+	 * labeled alternative in {@link TestGrammarParser#variableRef}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarExpr(TestGrammarParser.VarExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code funcExpr}
+	 * labeled alternative in {@link TestGrammarParser#functionRef}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncExpr(TestGrammarParser.FuncExprContext ctx);
 }

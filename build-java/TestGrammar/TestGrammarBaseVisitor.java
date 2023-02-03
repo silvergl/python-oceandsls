@@ -46,14 +46,14 @@ public class TestGrammarBaseVisitor<T> extends AbstractParseTreeVisitor<T> imple
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFuncExpr(TestGrammarParser.FuncExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAddSubExpr(TestGrammarParser.AddSubExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAddSubExpr(TestGrammarParser.AddSubExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFunRef(TestGrammarParser.FunRefContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -81,7 +81,7 @@ public class TestGrammarBaseVisitor<T> extends AbstractParseTreeVisitor<T> imple
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitIdExpr(TestGrammarParser.IdExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitIdRef(TestGrammarParser.IdRefContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -89,4 +89,18 @@ public class TestGrammarBaseVisitor<T> extends AbstractParseTreeVisitor<T> imple
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitArgList(TestGrammarParser.ArgListContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitVarExpr(TestGrammarParser.VarExprContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitFuncExpr(TestGrammarParser.FuncExprContext ctx) { return visitChildren(ctx); }
 }

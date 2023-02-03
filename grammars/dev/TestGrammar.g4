@@ -38,14 +38,21 @@ stat:   expr NEWLINE                            # printExprStat /** label can be
 
 expr:   left=expr op=(OP_MUL|OP_DIV) right=expr # mulDivExpr /** token attributes (e.g. left and right) are reference labels to distinguish ambiguous token instances references */
     |   left=expr op=(OP_ADD|OP_SUB) right=expr # addSubExpr
-    |   func=ID PAR_L exprList? PAR_R           # funcExpr // function call like f(), f(x), f(1,2)
     |   PAR_L expr PAR_R                        # parensExpr
     |   value=NUM                               # numberExpr
-    |   ID                                      # idExpr
+    |   functionRef                             # funRef
+    |   variableRef                             # idRef
     ;
 
 exprList :   expr(SEP expr)*                    # argList // list of function arguments
          ;
+
+/** rules to lookup in the symboltable */
+variableRef: ID                                 # varExpr
+           ;
+functionRef: ID PAR_L exprList? PAR_R           # funcExpr // function call like f(), f(x), f(1,2)
+           ;
+
 
 /** lexer rules start with uppercase letters */
 OP_MUL  :   '*' ;                                       // assigns token name to '*' used above in grammar

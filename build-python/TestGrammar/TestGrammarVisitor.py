@@ -29,13 +29,13 @@ class TestGrammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestGrammarParser#funcExpr.
-    def visitFuncExpr(self, ctx:TestGrammarParser.FuncExprContext):
+    # Visit a parse tree produced by TestGrammarParser#addSubExpr.
+    def visitAddSubExpr(self, ctx:TestGrammarParser.AddSubExprContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestGrammarParser#addSubExpr.
-    def visitAddSubExpr(self, ctx:TestGrammarParser.AddSubExprContext):
+    # Visit a parse tree produced by TestGrammarParser#funRef.
+    def visitFunRef(self, ctx:TestGrammarParser.FunRefContext):
         return self.visitChildren(ctx)
 
 
@@ -54,13 +54,23 @@ class TestGrammarVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestGrammarParser#idExpr.
-    def visitIdExpr(self, ctx:TestGrammarParser.IdExprContext):
+    # Visit a parse tree produced by TestGrammarParser#idRef.
+    def visitIdRef(self, ctx:TestGrammarParser.IdRefContext):
         return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by TestGrammarParser#argList.
     def visitArgList(self, ctx:TestGrammarParser.ArgListContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestGrammarParser#varExpr.
+    def visitVarExpr(self, ctx:TestGrammarParser.VarExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestGrammarParser#funcExpr.
+    def visitFuncExpr(self, ctx:TestGrammarParser.FuncExprContext):
         return self.visitChildren(ctx)
 
 

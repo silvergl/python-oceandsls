@@ -44,21 +44,21 @@ class TestGrammarListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestGrammarParser#funcExpr.
-    def enterFuncExpr(self, ctx:TestGrammarParser.FuncExprContext):
-        pass
-
-    # Exit a parse tree produced by TestGrammarParser#funcExpr.
-    def exitFuncExpr(self, ctx:TestGrammarParser.FuncExprContext):
-        pass
-
-
     # Enter a parse tree produced by TestGrammarParser#addSubExpr.
     def enterAddSubExpr(self, ctx:TestGrammarParser.AddSubExprContext):
         pass
 
     # Exit a parse tree produced by TestGrammarParser#addSubExpr.
     def exitAddSubExpr(self, ctx:TestGrammarParser.AddSubExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TestGrammarParser#funRef.
+    def enterFunRef(self, ctx:TestGrammarParser.FunRefContext):
+        pass
+
+    # Exit a parse tree produced by TestGrammarParser#funRef.
+    def exitFunRef(self, ctx:TestGrammarParser.FunRefContext):
         pass
 
 
@@ -89,12 +89,12 @@ class TestGrammarListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestGrammarParser#idExpr.
-    def enterIdExpr(self, ctx:TestGrammarParser.IdExprContext):
+    # Enter a parse tree produced by TestGrammarParser#idRef.
+    def enterIdRef(self, ctx:TestGrammarParser.IdRefContext):
         pass
 
-    # Exit a parse tree produced by TestGrammarParser#idExpr.
-    def exitIdExpr(self, ctx:TestGrammarParser.IdExprContext):
+    # Exit a parse tree produced by TestGrammarParser#idRef.
+    def exitIdRef(self, ctx:TestGrammarParser.IdRefContext):
         pass
 
 
@@ -104,6 +104,24 @@ class TestGrammarListener(ParseTreeListener):
 
     # Exit a parse tree produced by TestGrammarParser#argList.
     def exitArgList(self, ctx:TestGrammarParser.ArgListContext):
+        pass
+
+
+    # Enter a parse tree produced by TestGrammarParser#varExpr.
+    def enterVarExpr(self, ctx:TestGrammarParser.VarExprContext):
+        pass
+
+    # Exit a parse tree produced by TestGrammarParser#varExpr.
+    def exitVarExpr(self, ctx:TestGrammarParser.VarExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TestGrammarParser#funcExpr.
+    def enterFuncExpr(self, ctx:TestGrammarParser.FuncExprContext):
+        pass
+
+    # Exit a parse tree produced by TestGrammarParser#funcExpr.
+    def exitFuncExpr(self, ctx:TestGrammarParser.FuncExprContext):
         pass
 
 

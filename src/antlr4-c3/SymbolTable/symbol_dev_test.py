@@ -4,7 +4,7 @@ __author__ = 'sgu'
 import sys
 import time
 import types
-from typing import Callable, Optional, ParamSpec, TypeVar, Generic, List
+from typing import Callable, Optional, ParamSpec, TypeVar, Generic, List, Set
 
 import asyncio
 
@@ -132,9 +132,45 @@ if __name__ == "__main__":
 
     #########################################
 
-    result = getAllSymbolsOfType( ScopedSymbol( "foo" ), VariableSymbol )
+    # result = getAllSymbolsOfType( ScopedSymbol( "foo" ), VariableSymbol )
 
     #########################################
 
     # for x in range( 3 ):
     #     print( "We're on time %d" % (x) )
+
+    #########################################
+
+    # preferredRules: Set[int] = set([1])
+    #
+    # # preferredRules = {2}
+    #
+    # # preferredRules.add(False)
+    #
+    # # PEP 8 https://peps.python.org/pep-0008/
+    # if not preferredRules:
+    #     print ("preferredRules is empty")
+    # else:
+    #     print ("preferredRules is not empty %s" % preferredRules)
+    #
+    #     print(type(preferredRules))
+    #
+    #     for i in preferredRules:
+    #         print(i)
+    #
+    # # explicit plus type error
+    # if len(preferredRules) == 0:
+    #     print ("preferredRules is empty")
+    # else:
+    #     print ("preferredRules is not empty")
+
+    #########################################
+
+    l1 = [1,2,3,4]
+    l2 = [2,7]
+
+    print(any(x in l1 for x in l2))
+
+    for x in l2:
+        print ("%d in l1 %s" % (x, x in l1))
+

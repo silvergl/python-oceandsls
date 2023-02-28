@@ -14,28 +14,46 @@
  *  limitations under the License.
  *
  *  Grammars always start with a grammar header. This grammar is called
- *  TestGrammar and must match the filename: TestGrammar.g4
+ *  TestDrivenDev and must match the filename: TestDrivenDev.g4
  *
- *  This grammar serves as a test grammar for development.
+ *  TODO description This grammars defines pfUnit4.0 Scripts
  *
  *  author Sven Gundlach
  */
 grammar TestDrivenDev;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
-unit            : 'SUT' name=ID
-                  inputs+=input*
-                  outputs+=output*
-                  subUnits+=unit*
+import Assertion,Typing,PhysicalUnits,CommonLexerRules;
+
+/** parser rules start with lowercase letters */
+
+/** The start rule; begin parsing here */
+sut            : 'SUT' name=ID
+                  vars+=input ( ',' vars+=input)*
+                  systemScope=scope
+                  subSystems+=sut ( ',' subSystems+=sut)*
+                  assertions+=assertion ( ',' assertions+=assertion)*
                 ;
 
-input           : 'IN' param
+input           : 'IN' params+=var ( ',' params+=var)*
                 ;
 
-output          : 'OUT' param
+output          : 'OUT' params+=var ( ',' params+=var)*
                 ;
 
-param           :  name=ID type=paramType ':' documentation? ('=' defaultValue=expr)?
+scope           : 'SCOPE'
+                  (path=FILEPATH)?
+                  (module=ID | program=ID)?
+                ;
+
+var           :  name=ID type=paramType ':' documentation? ('=' defaultValue=expr)?
+                ;
+
+assertion       : 'ASSERT'
+                  ppDirective=directive
+                  inputs+=input ( ',' inputs+=input)*
+                  outputs+=output ( ',' outputs+=output)*
+                  message=STRING
                 ;
 
 documentation   : phyUnit=unitSpec
@@ -49,116 +67,12 @@ expr            : left=expr op=(OP_MUL|OP_DIV) right=expr # mulDivExpr /** token
                 | value=NUM                               # numberExpr
                 ;
 
-/**
- * Typing
- */
-paramType       : typeRef
-                | enumType
-                | arrayType
-                ;
-
-typeRef         : type=ID
-                ;
-
-enumType        : '(' values+=enum ( ',' values+=enum)* ')'
-                ;
-
-enum            : name=ID ('=' value=INT)?
-                ;
-
-arrayType       : type=ID '[' dimensions+=dim (',' dimensions+=dim)* ']'
-                ;
-
-dim             : sizeDim
-                | rangeDim
-                ;
-
-sizeDim         : (size=INT)?
-                ;
-
-rangeDim        : lowerBound=INT ':'
-                |                ':' upperBound=INT
-                | lowerBound=INT ':' upperBound=INT
-                ;
-
-/**
- * Physical Units
- */
-
-unitSpec        : units+=composedUnit ( '*' units+=composedUnit)*
-                ;
-
-basicUnit       : siUnit
-                | customUnit
-                | '(' unitSpec ')'
-                ;
-
-siUnit          : (prefix=unitPrefix)? type=siType
-                ;
-
-customUnit      : name=STRING
-                ;
-
-composedUnit    : numerator=basicUnit (('/' denominator=basicUnit) | ('**' exponent=INT))
-                | basicUnit
-                ;
-
-unitPrefix      : noP = 'noP'
-                | yotta = 'yotta'
-                | zetta = 'zetta'
-                | exa   = 'exa'
-                | peta  = 'peta'
-                | tera  = 'tera'
-                | giga  = 'giga'
-                | mega  = 'mega'
-                | kilo  = 'kilo'
-                | hecto = 'hecto'
-                | deca  = 'deca'
-                | deci  = 'deci'
-                | centi = 'centi'
-                | mili  = 'mili'
-                | micro = 'micro'
-                | nano  = 'nano'
-                | pico  = 'pico'
-                | femto = 'femto'
-                | atto  = 'atto'
-                | zepto = 'zepto'
-                | yocto = 'yocto'
-                ;
-
-siType          : meter   = 'meter'
-                | gram    = 'gram'
-                | ton     = 'ton'
-                | second  = 'second'
-                | ampere  = 'ampere'
-                | kelvin  = 'kelvin'
-                | mole    = 'mole'
-                | candela = 'candela'
-                | pascal  = 'pascal'
-                | joul    = 'Joul'
-                ;
-
-/** parser rules start with lowercase letters */
-
-/** The start rule; begin parsing here */
-
-
 /** lexer rules start with uppercase letters */
-OP_MUL : '*' ;                                       // assigns token name to '*' used above in grammar
-OP_DIV : '/' ;
-OP_ADD : '+' ;
-OP_SUB : '-' ;
-PAR_L  : '(' ;                                       // match left parenthesis
-PAR_R  : ')' ;                                       // match right parenthesis
-
-ID     : '^'? [a-zA-Z_] [a-zA-Z0-9_]* ;      // match identifiers
-STRING : CHAR+ ;                             // match strings
-
-NUM    : '-'? ('.' DIG+ | DIG+ ('.' DIG*)? EXP? ) ;  // match numbers
-INT    : '0' | [1-9] DIG* ;                     // fragment match integers without leading zeros
-/** fragments generate no lexer tokens */
-fragment EXP  : [eE] [+\-]? INT ;                      // fragment match exponent
-fragment CHAR : [a-zA-Z] ;                             // fragment match characters
-fragment DIG  : [0-9] ;                                // fragment match digits
+OP_MUL   : '*' ;                                       // assigns token name to '*' used above in grammar
+OP_DIV   : '/' ;
+OP_ADD   : '+' ;
+OP_SUB   : '-' ;
+PAR_L    : '(' ;                                       // match left parenthesis
+PAR_R    : ')' ;                                       // match right parenthesis
 
 /** overwrite imported rules */

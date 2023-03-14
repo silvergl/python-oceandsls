@@ -46,7 +46,7 @@ scope           : 'SCOPE'
                   (module=ID | program=ID)?
                 ;
 
-var           :  value=expr (type=paramType)? ':' (name=ID)? (',' doc=documentation)?
+var           :  value=expr (type=paramType)?  (',' name=ID)? (':' doc=documentation)?
                 ;
 
 assertion       : 'ASSERT'

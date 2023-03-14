@@ -20,7 +20,7 @@
  *
  *  author Sven Gundlach
  */
-grammar TestDrivenDev;
+grammar TestDrivenDev_DSL;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
 import Assertion,Typing,PhysicalUnits,CommonLexerRules;
@@ -29,7 +29,7 @@ import Assertion,Typing,PhysicalUnits,CommonLexerRules;
 
 /** The start rule; begin parsing here */
 sut            : 'SUT' name=ID
-                  vars+=input ( ',' vars+=input)*
+                  ('GLB' vars+=var ( ',' vars+=var)*)?
                   systemScope=scope
                   subSystems+=sut ( ',' subSystems+=sut)*
                   assertions+=assertion ( ',' assertions+=assertion)*
@@ -46,13 +46,13 @@ scope           : 'SCOPE'
                   (module=ID | program=ID)?
                 ;
 
-var           :  name=ID type=paramType ':' documentation? ('=' defaultValue=expr)?
+var           :  value=expr (type=paramType)? ':' (name=ID)? (',' doc=documentation)?
                 ;
 
 assertion       : 'ASSERT'
                   ppDirective=directive
-                  inputs+=input ( ',' inputs+=input)*
-                  outputs+=output ( ',' outputs+=output)*
+                  inputs+=input
+                  outputs+=output
                   message=STRING
                 ;
 

@@ -1,0 +1,6 @@
+SUT square
+	SCOPE Square_mod
+	ASSERT Equal
+		IN 3 int : x mM , description for this input e.g. it's assumed to be millimolar not millimol
+		OUT 9 int : x mM , description for this output
+		square(3)

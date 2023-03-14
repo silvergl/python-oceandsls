@@ -1,5 +1,5 @@
 // Generated from java-escape by ANTLR 4.11.1
-package TestDrivenDev;
+package TestDrivenDev_DSL;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
-public class TestDrivenDevLexer extends Lexer {
+public class TestDrivenDev_DSLLexer extends Lexer {
 	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -115,13 +115,13 @@ public class TestDrivenDevLexer extends Lexer {
 	}
 
 
-	public TestDrivenDevLexer(CharStream input) {
+	public TestDrivenDev_DSLLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
-	public String getGrammarFileName() { return "TestDrivenDev.g4"; }
+	public String getGrammarFileName() { return "TestDrivenDev_DSL.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

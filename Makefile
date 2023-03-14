@@ -1,7 +1,7 @@
 # enable ANTLR support
 antlr4 := java -jar /usr/local/lib/antlr-4.11.1-complete.jar
 
-PKGTARGETS = Terminals Expression Configuration Declaration TestExprCore TestGrammar allstar TestDrivenDev
+PKGTARGETS = Terminals Expression Configuration Declaration TestExprCore TestGrammar allstar TestDrivenDev_DSL
 
 # Release version used by release targets
 PACKAGE = TestGrammar

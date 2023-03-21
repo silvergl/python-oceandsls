@@ -1,4 +1,4 @@
-# Generated from TestGrammar.g4 by ANTLR 4.11.1
+# Generated from TestGrammar.g4 by ANTLR 4.12.0
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -76,7 +76,7 @@ class TestGrammarParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.11.1")
+        self.checkVersion("4.12.0")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -140,7 +140,7 @@ class TestGrammarParser ( Parser ):
             self.state = 15
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 7200) != 0:
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 7200) != 0):
                 self.state = 12
                 self.stat()
                 self.state = 17
@@ -817,7 +817,7 @@ class TestGrammarParser ( Parser ):
             self.state = 63
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if ((_la) & ~0x3f) == 0 and ((1 << _la) & 3104) != 0:
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 3104) != 0):
                 self.state = 62
                 self.exprList()
 

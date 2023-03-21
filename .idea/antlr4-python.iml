@@ -11,6 +11,7 @@
       <sourceFolder url="file://$MODULE_DIR$/build-python" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/antlr4-c3" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/pygls_pkg" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/fxtran" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv_antlr4-python_3.10" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (antlr4-python)" jdkType="Python SDK" />

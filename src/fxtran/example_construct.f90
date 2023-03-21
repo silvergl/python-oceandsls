@@ -1,11 +1,13 @@
 subroutine foo()
     implicit none
     integer :: i, j, k
+    !$construct begin
     do i = 1, 10
         do j = 1, 10
             call bar(i, j, k)
         end do
     end do
+    !$construct end
 end subroutine foo
 
 subroutine bar(a, b, c)

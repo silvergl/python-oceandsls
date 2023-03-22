@@ -6,24 +6,6 @@ import graphviz as gv
 # requires sudo apt install libgraphviz-dev
 import pygraphviz as pgv
 
-# local decl
-#   EN-decl-LT
-#
-# glb decl
-#
-#
-# call stmt
-#   call-stmt
-#
-#   procedure-designator
-#        name callee
-#   arg-spec
-#
-# module
-#   module-stmt
-#       module-N
-
-
 def get_files(root_dir: str = "", pattern: str = "*.[fF]90"):
     files = []
     for root, dirnames, filenames in os.walk( root_dir ):
@@ -78,7 +60,6 @@ def read_decorate_src_xml(fxtran_filepath: str = ""):
 
     return root_manual
 
-
 root_dir: str = "/home/sgu/IdeaProjects/antlr4-python/src/fxtran/"
 fxtran_path: str = "/home/sgu/IdeaProjects/fxtran/bin/fxtran"
 
@@ -89,32 +70,91 @@ write_decorate_src_xml( root_dir, fxtran_path )
 # Get Fortran files
 xml_files = get_files( root_dir, "*.[fF]90.xml" )
 
+# local decl
+#   EN-decl-LT
+#
+# glb decl
+#
+#
+# call stmt
+#   call-stmt
+#
+#   procedure-designator
+#        name callee
+#   arg-spec
+#
+# module
+#   module-stmt
+#       module-N
 
-subroutine_calls = {}
 for xml_file in xml_files:
     root_element = read_decorate_src_xml( xml_file )
     current_subroutine = []
 
     for item in root_element.iter():
-        if item.tag == "subroutine-stmt":
-            for subsubroutine in item:
-                if subsubroutine.tag == 'subroutine-N':
-                    nom = subsubroutine[0][0].text
-                    current_subroutine.append( nom )
-                    subroutine_calls[current_subroutine[-1]] = []
-        if item.tag == "end-subroutine-stmt":
-            current_subroutine.pop( -1 )
-        if item.tag == "call-stmt":
-            if len( current_subroutine ):
-                subroutine_calls[current_subroutine[-1]].append( item[0][0][0][0].text )
 
-callgraph = gv.Digraph( format="pdf", strict=True )
-for subroutine in subroutine_calls:
-    if subroutine_calls[subroutine]:
-        callgraph.node( subroutine.upper(), color="black", shape="diamond", fillcolor="limegreen", style="rounded,filled" )
+        match item.tag:
+            case 'file':
+                # file path
+                # '/home/sgu/IdeaProjects/antlr4-python/src/fxtran/fortrantut.f90'
+                print(item.attrib['name'])
+            case 'program-stmt':
+                for subitem in item:
+                    match subitem.tag:
+                        case 'program-N':
+                            # program Name
+                            print(item[0][0].text)
+            case 'EN-decl-LT':
+                for subitem in item:
+                    match subitem.tag:
+                        case 'EN-decl':
+                            # local variable name
+                            # print(subitem[0][0][0].text)
+                            for subsubitem in subitem:
+                                match subsubitem.tag:
+                                    case 'EN-N':
+                                        # local variable name
+                                        print(subsubitem[0][0].text)
+                                    case 'array-spec':
+                                        # upper-bound
+                                        print(subsubitem[0][0][0][0][0][0].text)
+                                        # TODO lower-bound
+                                        print(subsubitem[0][1][0])
+            case 'subroutine-stmt':
+                for subitem in item:
+                    match subitem.tag:
+                        case 'subroutine-N':
+                            pass
+            case 'end-subroutine-stmt':
+                pass
+            case 'call-stmt':
+                pass
 
-for subroutine in subroutine_calls:
-    for called in subroutine_calls[subroutine]:
-        callgraph.edge( subroutine.upper(), called.upper() )
-
-callgraph.render( root_dir + "gv", view=False )
+# subroutine_calls = {}
+# for xml_file in xml_files:
+#     root_element = read_decorate_src_xml( xml_file )
+#     current_subroutine = []
+#
+#     for item in root_element.iter():
+#         if item.tag == "subroutine-stmt":
+#             for subsubroutine in item:
+#                 if subsubroutine.tag == 'subroutine-N':
+#                     nom = subsubroutine[0][0].text
+#                     current_subroutine.append( nom )
+#                     subroutine_calls[current_subroutine[-1]] = []
+#         if item.tag == "end-subroutine-stmt":
+#             current_subroutine.pop( -1 )
+#         if item.tag == "call-stmt":
+#             if len( current_subroutine ):
+#                 subroutine_calls[current_subroutine[-1]].append( item[0][0][0][0].text )
+#
+# callgraph = gv.Digraph( format="pdf", strict=True )
+# for subroutine in subroutine_calls:
+#     if subroutine_calls[subroutine]:
+#         callgraph.node( subroutine.upper(), color="black", shape="diamond", fillcolor="limegreen", style="rounded,filled" )
+#
+# for subroutine in subroutine_calls:
+#     for called in subroutine_calls[subroutine]:
+#         callgraph.edge( subroutine.upper(), called.upper() )
+#
+# callgraph.render( root_dir + "gv", view=False )

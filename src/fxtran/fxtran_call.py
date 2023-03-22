@@ -6,6 +6,23 @@ import graphviz as gv
 # requires sudo apt install libgraphviz-dev
 import pygraphviz as pgv
 
+# local decl
+#   EN-decl-LT
+#
+# glb decl
+#
+#
+# call stmt
+#   call-stmt
+#
+#   procedure-designator
+#        name callee
+#   arg-spec
+#
+# module
+#   module-stmt
+#       module-N
+
 
 def get_files(root_dir: str = "", pattern: str = "*.[fF]90"):
     files = []
@@ -19,10 +36,13 @@ def write_decorate_src_xml(root_dir: str = "", fxtran_path: str = ""):
     # Define the fxtran command
     fxtran_cmd_ops = [
         fxtran_path,
-        "-line-length 200",
+        # "-line-length 200",
         "-no-cpp",
-        "-no-include",
-        "-construct-tag"
+        "-strip-comments",
+        "-name-attr",
+        # "-code-tag",
+        # "-no-include",
+        # "-construct-tag",
     ]
 
     # Get Fortran files
@@ -90,7 +110,7 @@ for xml_file in xml_files:
 
 callgraph = gv.Digraph( format="pdf", strict=True )
 for subroutine in subroutine_calls:
-    if subroutine_calls[subroutine] != []:
+    if subroutine_calls[subroutine]:
         callgraph.node( subroutine.upper(), color="black", shape="diamond", fillcolor="limegreen", style="rounded,filled" )
 
 for subroutine in subroutine_calls:

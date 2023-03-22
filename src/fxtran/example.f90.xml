@@ -1,22 +1,22 @@
-<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="200" openmp="0" openacc="0"><file name="//home/sgu/IdeaProjects/antlr4-python/src/fxtran/example.f90"><program-unit><subroutine-stmt>subroutine <subroutine-N><N><n>foo</n></N></subroutine-N>(<dummy-arg-LT></dummy-arg-LT>)</subroutine-stmt>
+<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="/home/sgu/IdeaProjects/antlr4-python/src/fxtran/example.f90"><subroutine-stmt>subroutine <subroutine-N><N n="FOO"><n>foo</n></N></subroutine-N>(<dummy-arg-LT></dummy-arg-LT>)</subroutine-stmt>
     <implicit-none-stmt>implicit none</implicit-none-stmt>
-    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_> :: <EN-decl-LT><EN-decl><EN-N><N><n>i</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N><n>j</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N><n>k</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
-    <do-construct><do-stmt>do <do-V><named-E><N><n>i</n></N></named-E></do-V> = <lower-bound><literal-E><l>1</l></literal-E></lower-bound>, <upper-bound><literal-E><l>10</l></literal-E></upper-bound></do-stmt>
-        <do-construct><do-stmt>do <do-V><named-E><N><n>j</n></N></named-E></do-V> = <lower-bound><literal-E><l>1</l></literal-E></lower-bound>, <upper-bound><literal-E><l>10</l></literal-E></upper-bound></do-stmt>
-            <call-stmt>call <procedure-designator><named-E><N><n>bar</n></N></named-E></procedure-designator>(<arg-spec><arg><named-E><N><n>i</n></N></named-E></arg>, <arg><named-E><N><n>j</n></N></named-E></arg>, <arg><named-E><N><n>k</n></N></named-E></arg></arg-spec>)</call-stmt>
-        <end-do-stmt>end do</end-do-stmt></do-construct>
-    <end-do-stmt>end do</end-do-stmt></do-construct>
-<end-subroutine-stmt>end subroutine <subroutine-N><N><n>foo</n></N></subroutine-N></end-subroutine-stmt></program-unit>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_> :: <EN-decl-LT><EN-decl><EN-N><N n="I"><n>i</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="J"><n>j</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="K"><n>k</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <do-stmt>do <do-V><named-E><N n="I"><n>i</n></N></named-E></do-V> = <lower-bound><literal-E><l>1</l></literal-E></lower-bound>, <upper-bound><literal-E><l>10</l></literal-E></upper-bound></do-stmt>
+        <do-stmt>do <do-V><named-E><N n="J"><n>j</n></N></named-E></do-V> = <lower-bound><literal-E><l>1</l></literal-E></lower-bound>, <upper-bound><literal-E><l>10</l></literal-E></upper-bound></do-stmt>
+            <call-stmt>call <procedure-designator><named-E><N n="BAR"><n>bar</n></N></named-E></procedure-designator>(<arg-spec><arg><named-E><N n="I"><n>i</n></N></named-E></arg>, <arg><named-E><N n="J"><n>j</n></N></named-E></arg>, <arg><named-E><N n="K"><n>k</n></N></named-E></arg></arg-spec>)</call-stmt>
+        <end-do-stmt>end do</end-do-stmt>
+    <end-do-stmt>end do</end-do-stmt>
+<end-subroutine-stmt>end subroutine <subroutine-N><N n="FOO"><n>foo</n></N></subroutine-N></end-subroutine-stmt>
 
-<program-unit><subroutine-stmt>subroutine <subroutine-N><N><n>bar</n></N></subroutine-N>(<dummy-arg-LT><arg-N><N><n>a</n></N></arg-N>, <arg-N><N><n>b</n></N></arg-N>, <arg-N><N><n>c</n></N></arg-N></dummy-arg-LT>)</subroutine-stmt>
+<subroutine-stmt>subroutine <subroutine-N><N n="BAR"><n>bar</n></N></subroutine-N>(<dummy-arg-LT><arg-N><N n="A"><n>a</n></N></arg-N>, <arg-N><N n="B"><n>b</n></N></arg-N>, <arg-N><N n="C"><n>c</n></N></arg-N></dummy-arg-LT>)</subroutine-stmt>
     <implicit-none-stmt>implicit none</implicit-none-stmt>
-    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_>, <attribute><attribute-N>intent</attribute-N>(<intent-spec>in</intent-spec>)</attribute> :: <EN-decl-LT><EN-decl><EN-N><N><n>a</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N><n>b</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
-    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_>, <attribute><attribute-N>intent</attribute-N>(<intent-spec>out</intent-spec>)</attribute> :: <EN-decl-LT><EN-decl><EN-N><N><n>c</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
-    <a-stmt><E-1><named-E><N><n>c</n></N></named-E></E-1> <a>=</a> <E-2><op-E><named-E><N><n>a</n></N></named-E> <op><o>+</o></op> <named-E><N><n>b</n></N></named-E></op-E></E-2></a-stmt>
-<end-subroutine-stmt>end subroutine <subroutine-N><N><n>bar</n></N></subroutine-N></end-subroutine-stmt></program-unit>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_>, <attribute><attribute-N>intent</attribute-N>(<intent-spec>in</intent-spec>)</attribute> :: <EN-decl-LT><EN-decl><EN-N><N n="A"><n>a</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="B"><n>b</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_>, <attribute><attribute-N>intent</attribute-N>(<intent-spec>out</intent-spec>)</attribute> :: <EN-decl-LT><EN-decl><EN-N><N n="C"><n>c</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <a-stmt><E-1><named-E><N n="C"><n>c</n></N></named-E></E-1> <a>=</a> <E-2><op-E><named-E><N n="A"><n>a</n></N></named-E> <op n="+"><o>+</o></op> <named-E><N n="B"><n>b</n></N></named-E></op-E></E-2></a-stmt>
+<end-subroutine-stmt>end subroutine <subroutine-N><N n="BAR"><n>bar</n></N></subroutine-N></end-subroutine-stmt>
 
-<program-unit><program-stmt>program <program-N><N><n>main</n></N></program-N></program-stmt>
+<program-stmt>program <program-N><N n="MAIN"><n>main</n></N></program-N></program-stmt>
     <implicit-none-stmt>implicit none</implicit-none-stmt>
-    <call-stmt>call <procedure-designator><named-E><N><n>foo</n></N></named-E></procedure-designator>(<arg-spec></arg-spec>)</call-stmt>
-<end-program-stmt>end program <program-N><N><n>main</n></N></program-N></end-program-stmt></program-unit>
+    <call-stmt>call <procedure-designator><named-E><N n="FOO"><n>foo</n></N></named-E></procedure-designator>(<arg-spec></arg-spec>)</call-stmt>
+<end-program-stmt>end program <program-N><N n="MAIN"><n>main</n></N></program-N></end-program-stmt>
 </file></object>

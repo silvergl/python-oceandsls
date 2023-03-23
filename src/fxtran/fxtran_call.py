@@ -58,14 +58,15 @@ def read_decorate_src_xml(fxtran_filepath: str = ""):
 
     # print(ET.tostring(root).decode())
 
-    return root_manual
+    return root
 
 root_dir: str = "/home/sgu/IdeaProjects/antlr4-python/src/fxtran/"
 fxtran_path: str = "/home/sgu/IdeaProjects/fxtran/bin/fxtran"
 
-ns = {'fxtran': 'http://fxtran.net/#syntax','real_person': 'http://people.example.com', 'role': 'http://characters.example.com'}
+ns = {'fx': 'http://fxtran.net/#syntax'}
 
-write_decorate_src_xml( root_dir, fxtran_path )
+# TODO uncomment
+# write_decorate_src_xml( root_dir, fxtran_path )
 
 # Get Fortran files
 xml_files = get_files( root_dir, "*.[fF]90.xml" )
@@ -89,6 +90,21 @@ xml_files = get_files( root_dir, "*.[fF]90.xml" )
 
 for xml_file in xml_files:
     root_element = read_decorate_src_xml( xml_file )
+
+    en_decl_lt_elems = root_element.findall(".//fx:EN-decl-LT", ns)
+    en_n_elems = root_element.findall('.//fx:EN-N', ns)
+
+    en_n_text_list = []
+    for en_decl_lt_elem in en_decl_lt_elems:
+        en_n_elems = en_decl_lt_elem.findall(".//fx:EN-N", ns)
+        for en_n_elem in en_n_elems:
+            en_n_text_list.append(en_n_elem.text)
+
+    en_decl_lt_content = [elem.text for elem in en_decl_lt_elems]
+    en_n_content = [elem.text for elem in en_n_elems]
+
+    result = {'EN_decl_LT': en_decl_lt_content, 'EN_N': en_n_content}
+
     current_subroutine = []
 
     for item in root_element.iter():

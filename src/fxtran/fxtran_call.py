@@ -66,7 +66,7 @@ fxtran_path: str = "/home/sgu/IdeaProjects/fxtran/bin/fxtran"
 ns = {'fx': 'http://fxtran.net/#syntax'}
 
 # TODO uncomment
-# write_decorate_src_xml( root_dir, fxtran_path )
+write_decorate_src_xml( root_dir, fxtran_path )
 
 # Get Fortran files
 xml_files = get_files( root_dir, "*.[fF]90.xml" )

@@ -1,4 +1,0 @@
-strict digraph {
-	FOO [color=black fillcolor=limegreen shape=diamond style="rounded,filled"]
-	FOO -> BAR
-}

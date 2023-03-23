@@ -208,7 +208,55 @@
                     <n>main</n></N>
             </program-N>
         </program-stmt>
+        <use-stmt>use 
+            <module-N>
+                <N n="MULT_MOD">
+                    <n>mult_mod</n></N>
+            </module-N>
+        </use-stmt>
+        <use-stmt>use 
+            <module-N>
+                <N n="GLOBAL_VAR">
+                    <n>global_var</n></N>
+            </module-N>
+        </use-stmt>
+        <use-stmt>use 
+            <module-N>
+                <N n="GLOBAL_RD">
+                    <n>global_rd</n></N>
+            </module-N>
+        </use-stmt>
         <implicit-none-stmt>implicit none</implicit-none-stmt>
+        <T-decl-stmt>
+            <_T-spec_>
+                <intrinsic-T-spec>
+                    <T-N>integer</T-N>
+                </intrinsic-T-spec>
+            </_T-spec_>:: 
+            <EN-decl-LT>
+                <EN-decl>
+                    <EN-N>
+                        <N n="RES_I">
+                            <n>res_i</n></N>
+                    </EN-N>
+                </EN-decl>
+            </EN-decl-LT>
+        </T-decl-stmt>
+        <T-decl-stmt>
+            <_T-spec_>
+                <intrinsic-T-spec>
+                    <T-N>real</T-N>
+                </intrinsic-T-spec>
+            </_T-spec_>:: 
+            <EN-decl-LT>
+                <EN-decl>
+                    <EN-N>
+                        <N n="RES_R">
+                            <n>res_r</n></N>
+                    </EN-N>
+                </EN-decl>
+            </EN-decl-LT>
+        </T-decl-stmt>
         <call-stmt>call 
             <procedure-designator>
                 <named-E>
@@ -218,6 +266,345 @@
             </procedure-designator>(
             <arg-spec/>
             )</call-stmt>
+        <call-stmt>call 
+            <procedure-designator>
+                <named-E>
+                    <N n="SET_GL">
+                        <n>set_gl</n></N>
+                </named-E>
+            </procedure-designator>( 
+            <arg-spec>
+                <arg>
+                    <literal-E>
+                        <l>5</l></literal-E>
+                </arg>, 
+                <arg>
+                    <literal-E>
+                        <l>4</l></literal-E>
+                </arg>
+            </arg-spec>)</call-stmt>
+        <a-stmt>
+            <E-1>
+                <named-E>
+                    <N n="RES_I">
+                        <n>res_i</n>
+                    </N>
+                </named-E>
+            </E-1>
+            <a>=</a>
+            <E-2>
+                <named-E>
+                    <N n="ADD_GL">
+                        <n>add_gl</n>
+                    </N>
+                    <R-LT>
+                        <parens-R>(
+                            <element-LT/>
+                            )</parens-R>
+                    </R-LT>
+                </named-E>
+            </E-2>
+        </a-stmt>
+        <print-stmt>print 
+            <format>
+                <string-E>
+                    <S>&quot;(a8,i1)&quot;</S></string-E>
+            </format>, 
+            <output-item-LT>
+                <output-item>
+                    <string-E>
+                        <S>&quot;5 + 4 = &quot;</S></string-E>
+                </output-item>, 
+                <output-item>
+                    <named-E>
+                        <N n="RES_I">
+                            <n>res_i</n></N>
+                    </named-E>
+                </output-item>
+            </output-item-LT>
+        </print-stmt>
+        <a-stmt>
+            <E-1>
+                <named-E>
+                    <N n="RES_I">
+                        <n>res_i</n>
+                    </N>
+                </named-E>
+            </E-1>
+            <a>=</a>
+            <E-2>
+                <named-E>
+                    <N n="ADD_RES">
+                        <n>add_res</n>
+                    </N>
+                    <R-LT>
+                        <parens-R>(
+                            <element-LT>
+                                <element>
+                                    <literal-E>
+                                        <l>5</l></literal-E>
+                                </element>,
+                                <element>
+                                    <literal-E>
+                                        <l>4</l></literal-E>
+                                </element>
+                            </element-LT>)</parens-R>
+                    </R-LT>
+                </named-E>
+            </E-2>
+        </a-stmt>
+        <print-stmt>print 
+            <format>
+                <string-E>
+                    <S>&quot;(a8,i1)&quot;</S></string-E>
+            </format>, 
+            <output-item-LT>
+                <output-item>
+                    <string-E>
+                        <S>&quot;5 + 4 = &quot;</S></string-E>
+                </output-item>, 
+                <output-item>
+                    <named-E>
+                        <N n="RES_I">
+                            <n>res_i</n></N>
+                    </named-E>
+                </output-item>
+            </output-item-LT>
+        </print-stmt>
+        <a-stmt>
+            <E-1>
+                <named-E>
+                    <N n="RES_I">
+                        <n>res_i</n>
+                    </N>
+                </named-E>
+            </E-1>
+            <a>=</a>
+            <E-2>
+                <named-E>
+                    <N n="MULT">
+                        <n>mult</n>
+                    </N>
+                    <R-LT>
+                        <parens-R>(
+                            <element-LT>
+                                <element>
+                                    <literal-E>
+                                        <l>5</l></literal-E>
+                                </element>,
+                                <element>
+                                    <literal-E>
+                                        <l>4</l></literal-E>
+                                </element>
+                            </element-LT>)</parens-R>
+                    </R-LT>
+                </named-E>
+            </E-2>
+        </a-stmt>
+        <print-stmt>print 
+            <format>
+                <string-E>
+                    <S>&quot;(a8,i2)&quot;</S></string-E>
+            </format>, 
+            <output-item-LT>
+                <output-item>
+                    <string-E>
+                        <S>&quot;5 * 4 = &quot;</S></string-E>
+                </output-item>, 
+                <output-item>
+                    <named-E>
+                        <N n="RES_I">
+                            <n>res_i</n></N>
+                    </named-E>
+                </output-item>
+            </output-item-LT>
+        </print-stmt>
+        <a-stmt>
+            <E-1>
+                <named-E>
+                    <N n="RES_R">
+                        <n>res_r</n>
+                    </N>
+                </named-E>
+            </E-1>
+            <a>=</a>
+            <E-2>
+                <named-E>
+                    <N n="MULT">
+                        <n>mult</n>
+                    </N>
+                    <R-LT>
+                        <parens-R>(
+                            <element-LT>
+                                <element>
+                                    <literal-E>
+                                        <l>5.0</l></literal-E>
+                                </element>,
+                                <element>
+                                    <literal-E>
+                                        <l>4.0</l></literal-E>
+                                </element>
+                            </element-LT>)</parens-R>
+                    </R-LT>
+                </named-E>
+            </E-2>
+        </a-stmt>
+        <print-stmt>print 
+            <format>
+                <string-E>
+                    <S>&quot;(a12,f6.2)&quot;</S></string-E>
+            </format>, 
+            <output-item-LT>
+                <output-item>
+                    <string-E>
+                        <S>&quot;5.0 * 4.0 = &quot;</S></string-E>
+                </output-item>, 
+                <output-item>
+                    <named-E>
+                        <N n="RES_R">
+                            <n>res_r</n></N>
+                    </named-E>
+                </output-item>
+            </output-item-LT>
+        </print-stmt>
+        <contains-stmt>contains</contains-stmt>
+        <function-stmt>
+            <intrinsic-T-spec>
+                <T-N>integer</T-N>
+            </intrinsic-T-spec>
+            <prefix>pure</prefix>function 
+            <function-N>
+                <N n="ADD_RES">
+                    <n>add_res</n></N>
+            </function-N>(
+            <dummy-arg-LT>
+                <arg-N>
+                    <N n="A">
+                        <n>a</n></N>
+                </arg-N>, 
+                <arg-N>
+                    <N n="B">
+                        <n>b</n></N>
+                </arg-N>
+            </dummy-arg-LT>) 
+            <result-spec>
+                result(
+                <N n="C">
+                    <n>c</n></N>)</result-spec>
+        </function-stmt>
+        <implicit-none-stmt>implicit none</implicit-none-stmt>
+        <T-decl-stmt>
+            <_T-spec_>
+                <intrinsic-T-spec>
+                    <T-N>integer</T-N>
+                </intrinsic-T-spec>
+            </_T-spec_>, 
+            <attribute>
+                <attribute-N>intent</attribute-N>
+                (
+                <intent-spec>in</intent-spec>
+                )</attribute>:: 
+            <EN-decl-LT>
+                <EN-decl>
+                    <EN-N>
+                        <N n="A">
+                            <n>a</n></N>
+                    </EN-N>
+                </EN-decl>
+            </EN-decl-LT>
+        </T-decl-stmt>
+        <T-decl-stmt>
+            <_T-spec_>
+                <intrinsic-T-spec>
+                    <T-N>integer</T-N>
+                </intrinsic-T-spec>
+            </_T-spec_>, 
+            <attribute>
+                <attribute-N>intent</attribute-N>
+                (
+                <intent-spec>in</intent-spec>
+                )</attribute>, 
+            <attribute>
+                <attribute-N>optional</attribute-N></attribute>:: 
+            <EN-decl-LT>
+                <EN-decl>
+                    <EN-N>
+                        <N n="B">
+                            <n>b</n></N>
+                    </EN-N>
+                </EN-decl>
+            </EN-decl-LT>
+        </T-decl-stmt>
+        <if-then-stmt>if(
+            <condition-E>
+                <named-E>
+                    <N n="PRESENT">
+                        <n>present</n></N>
+                    <R-LT>
+                        <parens-R>(
+                            <element-LT>
+                                <element>
+                                    <named-E>
+                                        <N n="B">
+                                            <n>b</n></N>
+                                    </named-E>
+                                </element>
+                            </element-LT>)</parens-R>
+                    </R-LT>
+                </named-E>
+            </condition-E>) then</if-then-stmt>
+        <a-stmt>
+            <E-1>
+                <named-E>
+                    <N n="C">
+                        <n>c</n>
+                    </N>
+                </named-E>
+            </E-1>
+            <a>=</a>
+            <E-2>
+                <op-E>
+                    <named-E>
+                        <N n="A">
+                            <n>a</n>
+                        </N>
+                    </named-E>
+                    <op n="+">
+                        <o>+</o>
+                    </op>
+                    <named-E>
+                        <N n="B">
+                            <n>b</n>
+                        </N>
+                    </named-E>
+                </op-E>
+            </E-2>
+        </a-stmt>
+        <else-stmt>else</else-stmt>
+        <a-stmt>
+            <E-1>
+                <named-E>
+                    <N n="C">
+                        <n>c</n>
+                    </N>
+                </named-E>
+            </E-1>
+            <a>=</a>
+            <E-2>
+                <named-E>
+                    <N n="A">
+                        <n>a</n>
+                    </N>
+                </named-E>
+            </E-2>
+        </a-stmt>
+        <end-if-stmt>end if</end-if-stmt>
+        <end-function-stmt>end function 
+            <function-N>
+                <N n="ADD_RES">
+                    <n>add_res</n></N>
+            </function-N>
+        </end-function-stmt>
         <end-program-stmt>end program 
             <program-N>
                 <N n="MAIN">

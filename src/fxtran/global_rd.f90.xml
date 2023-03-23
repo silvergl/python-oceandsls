@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<object openacc="0" openmp="0" source-form="FREE" source-width="132" xmlns="http://fxtran.net/#syntax">
+   <file name="/home/sgu/IdeaProjects/antlr4-python/src/fxtran/global_rd.f90">
+      <module-stmt>module 
+         <module-N>
+            <N n="GLOBAL_RD">
+               <n>global_rd</n></N>
+         </module-N>
+      </module-stmt>
+      <implicit-none-stmt>implicit none</implicit-none-stmt>
+      <contains-stmt>contains</contains-stmt>
+      <function-stmt>
+         <intrinsic-T-spec>
+            <T-N>integer</T-N>
+         </intrinsic-T-spec>function 
+         <function-N>
+            <N n="ADD_GL">
+               <n>add_gl</n></N>
+         </function-N>(
+         <dummy-arg-LT/>
+         )</function-stmt>
+      <use-stmt>use 
+         <module-N>
+            <N n="GLOBAL_VAR">
+               <n>global_var</n></N>
+         </module-N>
+      </use-stmt>
+      <implicit-none-stmt>implicit none</implicit-none-stmt>
+      <T-decl-stmt>
+         <_T-spec_>
+            <intrinsic-T-spec>
+               <T-N>integer</T-N>
+            </intrinsic-T-spec>
+         </_T-spec_>:: 
+         <EN-decl-LT>
+            <EN-decl>
+               <EN-N>
+                  <N n="C">
+                     <n>c</n></N>
+               </EN-N>
+            </EN-decl>
+         </EN-decl-LT>
+      </T-decl-stmt>
+      <a-stmt>
+         <E-1>
+            <named-E>
+               <N n="C">
+                  <n>c</n>
+               </N>
+            </named-E>
+         </E-1>
+         <a>=</a>
+         <E-2>
+            <op-E>
+               <named-E>
+                  <N n="GL_A">
+                     <n>gl_a</n>
+                  </N>
+               </named-E>
+               <op n="+">
+                  <o>+</o>
+               </op>
+               <named-E>
+                  <N n="GL_B">
+                     <n>gl_b</n>
+                  </N>
+               </named-E>
+            </op-E>
+         </E-2>
+      </a-stmt>
+      <end-function-stmt>end function 
+         <function-N>
+            <N n="ADD_GL">
+               <n>add_gl</n></N>
+         </function-N>
+      </end-function-stmt>
+      <end-module-stmt>end module 
+         <module-N>
+            <N n="GLOBAL_RD">
+               <n>global_rd</n></N>
+         </module-N>
+      </end-module-stmt>
+   </file>
+</object>

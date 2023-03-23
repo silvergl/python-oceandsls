@@ -1,4 +1,4 @@
-<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="/home/sgu/IdeaProjects/antlr4-python/src/fxtran/fortrantut.f90">
+<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="/home/sgu/IdeaProjects/antlr4-python/src/fxtran/data/fortrantut.f90">
 
 
 <program-stmt>program <program-N><N n="FORTRANTUT"><n>fortrantut</n></N></program-N></program-stmt>

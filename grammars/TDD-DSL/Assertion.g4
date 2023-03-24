@@ -17,6 +17,7 @@
  *  Typing and must match the filename: Typing.g4
  *
  *  TODO description This grammar defines types of preprocessing directives for pfUnit 4.0.
+ *  src: https://github.com/Goddard-Fortran-Ecosystem/pFUnit/blob/main/documentation/pFUnit3-ReferenceManual.pdf
  *
  *  author Sven Gundlach
  */

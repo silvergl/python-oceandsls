@@ -1,0 +1,13 @@
+@test
+SUBROUTINE test_fT_ME()
+ use cfo_example
+ use funit
+ INTEGER, PARAMETER :: dp=KIND(0D0)
+
+ REAL(dp) :: temperature, expected
+
+ temperature = 20D0
+ expected = (1D0 + (temperature - 15D0)*9.5D0)/260D0
+ 
+ @assertEqual( expected, fT_ME( temperature ), tolerance=1D-12 )
+END SUBROUTINE test_fT_ME

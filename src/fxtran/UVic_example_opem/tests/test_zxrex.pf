@@ -1,0 +1,32 @@
+@test
+SUBROUTINE test_zxrex()
+ use cfo_example
+ use funit
+
+ TYPE(ocf), DIMENSION(3) :: zoos
+
+ INTEGER, PARAMETER :: dp=KIND(0D0)
+ REAL(dp) :: Rm, fQ
+ INTEGER :: i
+ zoos = [ ocf( 1D0, 0.1D0, 0.1D0, 10D0, 2D0, 5D0, 1D0, 1D0, 1D0 ) &
+        , ocf( 2D0, 0.2D0, 0.2D0, 20D0, 4D0, 10D0, 2D0, 2D0, 1D0 ) &
+        , ocf( 3D0, 0.3D0, 0.3D0, 30D0, 6D0, 15D0, 3D0, 3D0, 1D0 ) ]
+ Rm = 1D0
+ fQ = 0.5D0
+
+ DO i = 1, 3
+   CALL zxrex( zoos(i), Rm, fQ )
+ END DO
+
+ @assertEqual( 3.5D0, zoos(1)%ngr, tolerance=1D-6 )
+ @assertEqual( 6.5D0, zoos(1)%RC, tolerance=1D-12 )
+ @assertEqual( -8.D0, zoos(1)%XC )
+
+ @assertEqual( 11D0, zoos(2)%ngr, tolerance=1D-6 )
+ @assertEqual( 29D0, zoos(2)%RC, tolerance=1D-12 )
+ @assertEqual( -36D0, zoos(2)%XC )
+
+ @assertEqual( 16.499999D0, zoos(3)%ngr, tolerance=1D-6 )
+ @assertEqual( 73.5D0, zoos(3)%RC, tolerance=1D-12 )
+ @assertEqual( -84.0D0, zoos(3)%XC)
+END SUBROUTINE test_zxrex

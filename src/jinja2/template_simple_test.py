@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+
+__author__ = 'sgu'
+
+# TODO license
+
+#
+#  test example for using the Jinja2 template engine
+#
 from jinja2 import Environment, FileSystemLoader
 
 # direct string template

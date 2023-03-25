@@ -87,11 +87,6 @@ class Utest:
     mods: List[Module] = field( default_factory=list )
     assertions: List[Assertion] = field( default_factory=list )
 
-    # def __init__(self, fn: str, mods= [], assertions=[]):
-    #     self.fn = fn
-    #     self.mods = mods
-    #     self.assertions = assertions
-
 
 import os
 

@@ -1,8 +1,7 @@
-import jinja2
 from jinja2 import Environment, FileSystemLoader
 
 # direct string template
-environment = jinja2.Environment()
+environment = Environment()
 template = environment.from_string( "string0 '{{ str0 }}'" )
 template.render( str0="Foobar" )
 

@@ -8,12 +8,12 @@ __author__ = 'sgu'
 #  pfUnit generator using jinja2 templates to generate Fortran Unit Tests
 #
 
+import os
 from enum import Enum
 from typing import List, Optional
 from dataclasses import dataclass, field
 
 from jinja2 import Environment, FileSystemLoader
-
 
 ## Python 3.11 alternative
 # from enum import StrEnum
@@ -36,7 +36,7 @@ from jinja2 import Environment, FileSystemLoader
 
 class CallableType( Enum ):
     """
-    Type of callables for unit tests
+    Types of callable for unit tests
     """
     Function = 'function'
     Subroutine = 'subroutine'
@@ -87,9 +87,7 @@ class Utest:
     mods: List[Module] = field( default_factory=list )
     assertions: List[Assertion] = field( default_factory=list )
 
-
-import os
-
+# TODO move into a test data function
 # Define the number of variable occurrences for each test
 num_files = 1
 num_mods = 1
@@ -109,6 +107,7 @@ for i in range( num_files ):
     # list_tests.append( {'fn': f"file_{i}", 'sub': {'name': f"sub_{i}"}, 'mods': list_mods, 'assertions': list_ass} )
     list_tests.append( Utest( f"file_{i}", Callable( f"sub_{i}", CallableType.Subroutine ), list_mods, list_ass ) )
 
+# TODO move into a test write function
 # Load Jinja2 template
 environment = Environment( loader=FileSystemLoader( 'templates/' ) )
 # Use test_template.txt

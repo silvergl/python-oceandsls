@@ -1,5 +1,5 @@
 @test
-subroutine {{ test.sub.name }}()
+{{ test.callable.type }} {{ test.callable.name }}()
    {% for mod in test.mods %}use {{ mod.name }}
    {% endfor %}
    use funit

@@ -23,7 +23,7 @@
 grammar PhysicalUnits;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
-import CommonLexerRules;
+import TDDLexerRules;
 
 /** parser rules start with lowercase letters */
 unitSpec        : units+=composedUnit ( '*' units+=composedUnit)*
@@ -44,37 +44,43 @@ composedUnit    : numerator=basicUnit (('/' denominator=basicUnit) | ('**' expon
                 | basicUnit
                 ;
 
+/** SI prefixes */
 unitPrefix      : noP = 'noP'
-                | yotta = 'yotta'
-                | zetta = 'zetta'
-                | exa   = 'exa'
-                | peta  = 'peta'
-                | tera  = 'tera'
-                | giga  = 'giga'
-                | mega  = 'mega'
-                | kilo  = 'kilo'
-                | hecto = 'hecto'
-                | deca  = 'deca'
-                | deci  = 'deci'
-                | centi = 'centi'
-                | mili  = 'mili'
-                | micro = 'micro'
-                | nano  = 'nano'
-                | pico  = 'pico'
-                | femto = 'femto'
-                | atto  = 'atto'
-                | zepto = 'zepto'
-                | yocto = 'yocto'
+                | quetta = 'Q'
+                | ronna = 'R'
+                | yotta = 'Y'
+                | zetta = 'Z'
+                | exa   = 'E'
+                | peta  = 'P'
+                | tera  = 'T'
+                | giga  = 'G'
+                | mega  = 'M'
+                | kilo  = 'k'
+                | hecto = 'h'
+                | deca  = 'da'
+                | deci  = 'd'
+                | centi = 'c'
+                | mili  = 'm'
+                | micro = 'μ'
+                | nano  = 'n'
+                | pico  = 'p'
+                | femto = 'f'
+                | atto  = 'a'
+                | zepto = 'z'
+                | yocto = 'y'
+                | ronto = 'r'
+                | quecto = 'q'
                 ;
 
-siType          : meter   = 'meter'
-                | gram    = 'gram'
-                | ton     = 'ton'
-                | second  = 'second'
-                | ampere  = 'ampere'
-                | kelvin  = 'kelvin'
-                | mole    = 'mole'
-                | candela = 'candela'
-                | pascal  = 'pascal'
-                | joul    = 'Joul'
+/** SI Unit symbols */
+siType          : second    = 's'
+                | metre     = 'm'
+                | gram      = 'g'
+                | ampere    = 'A'
+                | kelvin    = 'K'
+                | mole      = 'mol'
+                | candela   = 'cd'
+                | pascal    = 'Pa'
+                | joule     = 'J'
+                | ton       = 't'
                 ;

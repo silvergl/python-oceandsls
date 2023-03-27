@@ -23,56 +23,61 @@
 grammar TestDrivenDev_DSL;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
-import Assertion,Typing,PhysicalUnits,CommonLexerRules;
+import Assertion,Typing,PhysicalUnits,TDDLexerRules;
 
 /** parser rules start with lowercase letters */
-
-/** The start rule; begin parsing here */
-sut            : 'SUT' name=ID
-                  ('GLB' vars+=var ( ',' vars+=var)*)?
-                  systemScope=scope
-                  subSystems+=sut ( ',' subSystems+=sut)*
-                  assertions+=assertion ( ',' assertions+=assertion)*
+/** Top-level rule; begin parsing here */
+test_suite      : test_case+
                 ;
 
-input           : 'IN' params+=var ( ',' params+=var)*
+/** Rule for a test case */
+test_case       : TEST ID ':' NEWLINE
+                  assertions+=test_assertion
+                  ( NEWLINE assertions+=test_assertion )*
                 ;
 
-output          : 'OUT' params+=var ( ',' params+=var)*
+/** Rule for a test assertion */
+test_assertion  : ppDirective=directive PAR_L
+                    in=test_input NEWLINE
+                    out=test_output NEWLINE
+                    msg=STRING
+                    PAR_R
+                  NEWLINE
                 ;
 
-scope           : 'SCOPE'
-                  (path=FILEPATH)?
-                  (module=ID | program=ID)?
+/** Rule for a test input */
+test_input      : (IN)? params+=var
+                  (SEMICOLON params+=var)*
                 ;
 
-var           :  value=expr (type=paramType)?  (',' name=ID)? (':' doc=documentation)?
+/** Rule for a test output */
+test_output     : (OUT)? params+=var
+                  ( SEMICOLON params+=var)*
                 ;
 
-assertion       : 'ASSERT'
-                  ppDirective=directive
-                  inputs+=input
-                  outputs+=output
-                  message=STRING
+var             : value=expr
+                  (name=ID)?
+                  (COLON type=param)?
+                  (COMMA doc=documentation)?
+                ;
+
+param           : name=ID
+                | type=paramType
+                | name=ID COLON type=paramType
                 ;
 
 documentation   : phyUnit=unitSpec
                 | description=STRING
-                | phyUnit=unitSpec ',' description=STRING
+                | phyUnit=unitSpec HASH description=STRING
                 ;
 
-expr            : left=expr op=(OP_MUL|OP_DIV) right=expr # mulDivExpr /** token attributes (e.g. left and right) are reference labels to distinguish ambiguous token instances references */
-                | left=expr op=(OP_ADD|OP_SUB) right=expr # addSubExpr
-                | PAR_L expr PAR_R                        # parensExpr
+/** Expression rules */
+expr            : left=expr op=(OP_MUL|OP_DIV) right=expr # mulDivExpr /** Multiplication, Division have precedence */
+                | left=expr op=(OP_ADD|OP_SUB) right=expr # addSubExpr /** Addition, Subtraction have not precedence */
+                | PAR_L expr PAR_R                        # parensExpr /** Parenthesized expression */
                 | value=NUM                               # numberExpr
+                | value=INT                               # intExpr
+                | value=STRING                            # strExpr
                 ;
-
-/** lexer rules start with uppercase letters */
-OP_MUL   : '*' ;                                       // assigns token name to '*' used above in grammar
-OP_DIV   : '/' ;
-OP_ADD   : '+' ;
-OP_SUB   : '-' ;
-PAR_L    : '(' ;                                       // match left parenthesis
-PAR_R    : ')' ;                                       // match right parenthesis
 
 /** overwrite imported rules */

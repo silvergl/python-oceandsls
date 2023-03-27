@@ -1,4 +1,4 @@
-# Generated from TestDrivenDev_DSL.g4 by ANTLR 4.11.1
+# Generated from TestDrivenDev_DSL.g4 by ANTLR 4.12.0
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .TestDrivenDev_DSLParser import TestDrivenDev_DSLParser
@@ -9,23 +9,28 @@ else:
 
 class TestDrivenDev_DSLVisitor(ParseTreeVisitor):
 
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#sut.
-    def visitSut(self, ctx:TestDrivenDev_DSLParser.SutContext):
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#test_suite.
+    def visitTest_suite(self, ctx:TestDrivenDev_DSLParser.Test_suiteContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#input.
-    def visitInput(self, ctx:TestDrivenDev_DSLParser.InputContext):
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#test_case.
+    def visitTest_case(self, ctx:TestDrivenDev_DSLParser.Test_caseContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#output.
-    def visitOutput(self, ctx:TestDrivenDev_DSLParser.OutputContext):
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#test_assertion.
+    def visitTest_assertion(self, ctx:TestDrivenDev_DSLParser.Test_assertionContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#scope.
-    def visitScope(self, ctx:TestDrivenDev_DSLParser.ScopeContext):
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#test_input.
+    def visitTest_input(self, ctx:TestDrivenDev_DSLParser.Test_inputContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#test_output.
+    def visitTest_output(self, ctx:TestDrivenDev_DSLParser.Test_outputContext):
         return self.visitChildren(ctx)
 
 
@@ -34,13 +39,23 @@ class TestDrivenDev_DSLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#assertion.
-    def visitAssertion(self, ctx:TestDrivenDev_DSLParser.AssertionContext):
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#param.
+    def visitParam(self, ctx:TestDrivenDev_DSLParser.ParamContext):
         return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by TestDrivenDev_DSLParser#documentation.
     def visitDocumentation(self, ctx:TestDrivenDev_DSLParser.DocumentationContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#strExpr.
+    def visitStrExpr(self, ctx:TestDrivenDev_DSLParser.StrExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#intExpr.
+    def visitIntExpr(self, ctx:TestDrivenDev_DSLParser.IntExprContext):
         return self.visitChildren(ctx)
 
 

@@ -9,7 +9,7 @@ VER = $(strip $(shell cat version))
 PYVERDIR = $(PACKAGE)-$(VER)
 PYBUILDDIR = build/$(PYVERDIR)
 OBJDIR = build
-SRCDIR = grammars/dev
+SRCDIR = grammars/TDD-DSL
 GRAMMAR = $(PACKAGE).g4
 
 all: clean $(OBJDIR)-python/$(PACKAGE) $(OBJDIR)-java/$(PACKAGE)

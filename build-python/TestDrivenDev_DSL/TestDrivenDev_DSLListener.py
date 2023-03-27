@@ -1,4 +1,4 @@
-# Generated from TestDrivenDev_DSL.g4 by ANTLR 4.11.1
+# Generated from TestDrivenDev_DSL.g4 by ANTLR 4.12.0
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .TestDrivenDev_DSLParser import TestDrivenDev_DSLParser
@@ -8,39 +8,48 @@ else:
 # This class defines a complete listener for a parse tree produced by TestDrivenDev_DSLParser.
 class TestDrivenDev_DSLListener(ParseTreeListener):
 
-    # Enter a parse tree produced by TestDrivenDev_DSLParser#sut.
-    def enterSut(self, ctx:TestDrivenDev_DSLParser.SutContext):
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#test_suite.
+    def enterTest_suite(self, ctx:TestDrivenDev_DSLParser.Test_suiteContext):
         pass
 
-    # Exit a parse tree produced by TestDrivenDev_DSLParser#sut.
-    def exitSut(self, ctx:TestDrivenDev_DSLParser.SutContext):
-        pass
-
-
-    # Enter a parse tree produced by TestDrivenDev_DSLParser#input.
-    def enterInput(self, ctx:TestDrivenDev_DSLParser.InputContext):
-        pass
-
-    # Exit a parse tree produced by TestDrivenDev_DSLParser#input.
-    def exitInput(self, ctx:TestDrivenDev_DSLParser.InputContext):
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#test_suite.
+    def exitTest_suite(self, ctx:TestDrivenDev_DSLParser.Test_suiteContext):
         pass
 
 
-    # Enter a parse tree produced by TestDrivenDev_DSLParser#output.
-    def enterOutput(self, ctx:TestDrivenDev_DSLParser.OutputContext):
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#test_case.
+    def enterTest_case(self, ctx:TestDrivenDev_DSLParser.Test_caseContext):
         pass
 
-    # Exit a parse tree produced by TestDrivenDev_DSLParser#output.
-    def exitOutput(self, ctx:TestDrivenDev_DSLParser.OutputContext):
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#test_case.
+    def exitTest_case(self, ctx:TestDrivenDev_DSLParser.Test_caseContext):
         pass
 
 
-    # Enter a parse tree produced by TestDrivenDev_DSLParser#scope.
-    def enterScope(self, ctx:TestDrivenDev_DSLParser.ScopeContext):
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#test_assertion.
+    def enterTest_assertion(self, ctx:TestDrivenDev_DSLParser.Test_assertionContext):
         pass
 
-    # Exit a parse tree produced by TestDrivenDev_DSLParser#scope.
-    def exitScope(self, ctx:TestDrivenDev_DSLParser.ScopeContext):
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#test_assertion.
+    def exitTest_assertion(self, ctx:TestDrivenDev_DSLParser.Test_assertionContext):
+        pass
+
+
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#test_input.
+    def enterTest_input(self, ctx:TestDrivenDev_DSLParser.Test_inputContext):
+        pass
+
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#test_input.
+    def exitTest_input(self, ctx:TestDrivenDev_DSLParser.Test_inputContext):
+        pass
+
+
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#test_output.
+    def enterTest_output(self, ctx:TestDrivenDev_DSLParser.Test_outputContext):
+        pass
+
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#test_output.
+    def exitTest_output(self, ctx:TestDrivenDev_DSLParser.Test_outputContext):
         pass
 
 
@@ -53,12 +62,12 @@ class TestDrivenDev_DSLListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestDrivenDev_DSLParser#assertion.
-    def enterAssertion(self, ctx:TestDrivenDev_DSLParser.AssertionContext):
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#param.
+    def enterParam(self, ctx:TestDrivenDev_DSLParser.ParamContext):
         pass
 
-    # Exit a parse tree produced by TestDrivenDev_DSLParser#assertion.
-    def exitAssertion(self, ctx:TestDrivenDev_DSLParser.AssertionContext):
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#param.
+    def exitParam(self, ctx:TestDrivenDev_DSLParser.ParamContext):
         pass
 
 
@@ -68,6 +77,24 @@ class TestDrivenDev_DSLListener(ParseTreeListener):
 
     # Exit a parse tree produced by TestDrivenDev_DSLParser#documentation.
     def exitDocumentation(self, ctx:TestDrivenDev_DSLParser.DocumentationContext):
+        pass
+
+
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#strExpr.
+    def enterStrExpr(self, ctx:TestDrivenDev_DSLParser.StrExprContext):
+        pass
+
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#strExpr.
+    def exitStrExpr(self, ctx:TestDrivenDev_DSLParser.StrExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#intExpr.
+    def enterIntExpr(self, ctx:TestDrivenDev_DSLParser.IntExprContext):
+        pass
+
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#intExpr.
+    def exitIntExpr(self, ctx:TestDrivenDev_DSLParser.IntExprContext):
         pass
 
 

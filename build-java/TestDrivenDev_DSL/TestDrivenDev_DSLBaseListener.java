@@ -77,18 +77,6 @@ public class TestDrivenDev_DSLBaseListener implements TestDrivenDev_DSLListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVar(TestDrivenDev_DSLParser.VarContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitVar(TestDrivenDev_DSLParser.VarContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterParam(TestDrivenDev_DSLParser.ParamContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -96,6 +84,18 @@ public class TestDrivenDev_DSLBaseListener implements TestDrivenDev_DSLListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitParam(TestDrivenDev_DSLParser.ParamContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVar(TestDrivenDev_DSLParser.VarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVar(TestDrivenDev_DSLParser.VarContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -305,6 +305,18 @@ public class TestDrivenDev_DSLBaseListener implements TestDrivenDev_DSLListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterBasicUnit(TestDrivenDev_DSLParser.BasicUnitContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -336,18 +348,6 @@ public class TestDrivenDev_DSLBaseListener implements TestDrivenDev_DSLListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCustomUnit(TestDrivenDev_DSLParser.CustomUnitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

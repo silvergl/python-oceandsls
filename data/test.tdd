@@ -1,0 +1,6 @@
+test my_test_case :
+    Equal (
+        in 3 x : real , k g 'description for this input'
+        out 9.0 x : real , k g 'description for this output'
+        'assertion msg'
+        )

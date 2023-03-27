@@ -29,6 +29,13 @@ import TDDLexerRules;
 unitSpec        : units+=composedUnit ( '*' units+=composedUnit)*
                 ;
 
+composedUnit    : numerator=basicUnit (
+                      ('/' denominator=basicUnit)
+                    | ('**' exponent=INT)
+                  )
+                | basicUnit
+                ;
+
 basicUnit       : siUnit
                 | customUnit
                 | '(' unitSpec ')'
@@ -40,9 +47,7 @@ siUnit          : (prefix=unitPrefix)? type=siType
 customUnit      : name=STRING
                 ;
 
-composedUnit    : numerator=basicUnit (('/' denominator=basicUnit) | ('**' exponent=INT))
-                | basicUnit
-                ;
+
 
 /** SI prefixes */
 unitPrefix      : noP = 'noP'

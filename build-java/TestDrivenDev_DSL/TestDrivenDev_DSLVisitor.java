@@ -41,17 +41,17 @@ public interface TestDrivenDev_DSLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTest_output(TestDrivenDev_DSLParser.Test_outputContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#var}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVar(TestDrivenDev_DSLParser.VarContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#param}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParam(TestDrivenDev_DSLParser.ParamContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#var}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVar(TestDrivenDev_DSLParser.VarContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#documentation}.
 	 * @param ctx the parse tree
@@ -161,6 +161,12 @@ public interface TestDrivenDev_DSLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitUnitSpec(TestDrivenDev_DSLParser.UnitSpecContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#composedUnit}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#basicUnit}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -178,12 +184,6 @@ public interface TestDrivenDev_DSLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCustomUnit(TestDrivenDev_DSLParser.CustomUnitContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#composedUnit}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#unitPrefix}.
 	 * @param ctx the parse tree

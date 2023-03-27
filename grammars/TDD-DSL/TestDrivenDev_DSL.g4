@@ -27,48 +27,46 @@ import Assertion,Typing,PhysicalUnits,TDDLexerRules;
 
 /** parser rules start with lowercase letters */
 /** Top-level rule; begin parsing here */
-test_suite      : test_case+
+test_suite      : test_cases+=test_case ( NEWLINE test_cases+=test_case )?
                 ;
 
 /** Rule for a test case */
-test_case       : TEST ID ':' NEWLINE
+test_case       : 'test' ID ':' (NEWLINE)?
                   assertions+=test_assertion
                   ( NEWLINE assertions+=test_assertion )*
                 ;
 
 /** Rule for a test assertion */
-test_assertion  : ppDirective=directive PAR_L
+test_assertion  : ppDirective=directive PAR_L NEWLINE?
                     in=test_input NEWLINE
                     out=test_output NEWLINE
-                    msg=STRING
+                    (cm=COMMENT)?
                     PAR_R
-                  NEWLINE
                 ;
 
 /** Rule for a test input */
-test_input      : (IN)? params+=var
-                  (SEMICOLON params+=var)*
+test_input      : 'in' params+=param
+                  (SEMICOLON params+=param)*
                 ;
 
 /** Rule for a test output */
-test_output     : (OUT)? params+=var
-                  ( SEMICOLON params+=var)*
+test_output     : 'out' params+=param
+                  ( SEMICOLON params+=param)*
                 ;
 
-var             : value=expr
-                  (name=ID)?
-                  (COLON type=param)?
+param           : value=expr
+                  (decl=var)?
                   (COMMA doc=documentation)?
                 ;
 
-param           : name=ID
+var             : name=ID
                 | type=paramType
-                | name=ID COLON type=paramType
+                | name=ID ':' type=paramType
                 ;
 
 documentation   : phyUnit=unitSpec
-                | description=STRING
-                | phyUnit=unitSpec HASH description=STRING
+                | description=COMMENT
+                | phyUnit=unitSpec description=COMMENT
                 ;
 
 /** Expression rules */

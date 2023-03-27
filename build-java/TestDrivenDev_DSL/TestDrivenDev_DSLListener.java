@@ -58,16 +58,6 @@ public interface TestDrivenDev_DSLListener extends ParseTreeListener {
 	 */
 	void exitTest_output(TestDrivenDev_DSLParser.Test_outputContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TestDrivenDev_DSLParser#var}.
-	 * @param ctx the parse tree
-	 */
-	void enterVar(TestDrivenDev_DSLParser.VarContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TestDrivenDev_DSLParser#var}.
-	 * @param ctx the parse tree
-	 */
-	void exitVar(TestDrivenDev_DSLParser.VarContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TestDrivenDev_DSLParser#param}.
 	 * @param ctx the parse tree
 	 */
@@ -77,6 +67,16 @@ public interface TestDrivenDev_DSLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitParam(TestDrivenDev_DSLParser.ParamContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TestDrivenDev_DSLParser#var}.
+	 * @param ctx the parse tree
+	 */
+	void enterVar(TestDrivenDev_DSLParser.VarContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestDrivenDev_DSLParser#var}.
+	 * @param ctx the parse tree
+	 */
+	void exitVar(TestDrivenDev_DSLParser.VarContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TestDrivenDev_DSLParser#documentation}.
 	 * @param ctx the parse tree
@@ -260,6 +260,16 @@ public interface TestDrivenDev_DSLListener extends ParseTreeListener {
 	 */
 	void exitUnitSpec(TestDrivenDev_DSLParser.UnitSpecContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TestDrivenDev_DSLParser#composedUnit}.
+	 * @param ctx the parse tree
+	 */
+	void enterComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestDrivenDev_DSLParser#composedUnit}.
+	 * @param ctx the parse tree
+	 */
+	void exitComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TestDrivenDev_DSLParser#basicUnit}.
 	 * @param ctx the parse tree
 	 */
@@ -289,16 +299,6 @@ public interface TestDrivenDev_DSLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCustomUnit(TestDrivenDev_DSLParser.CustomUnitContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TestDrivenDev_DSLParser#composedUnit}.
-	 * @param ctx the parse tree
-	 */
-	void enterComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TestDrivenDev_DSLParser#composedUnit}.
-	 * @param ctx the parse tree
-	 */
-	void exitComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TestDrivenDev_DSLParser#unitPrefix}.
 	 * @param ctx the parse tree

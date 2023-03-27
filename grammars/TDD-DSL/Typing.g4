@@ -50,7 +50,7 @@ dim             : sizeDim
 sizeDim         : (size=INT)?
                 ;
 
-rangeDim        : lowerBound=INT COLON
-                |                COLON upperBound=INT
-                | lowerBound=INT COLON upperBound=INT
+rangeDim        : lowerBound=INT ':'
+                |                ':' upperBound=INT
+                | lowerBound=INT ':' upperBound=INT
                 ;

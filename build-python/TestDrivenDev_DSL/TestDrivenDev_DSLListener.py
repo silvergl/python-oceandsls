@@ -53,21 +53,21 @@ class TestDrivenDev_DSLListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestDrivenDev_DSLParser#var.
-    def enterVar(self, ctx:TestDrivenDev_DSLParser.VarContext):
-        pass
-
-    # Exit a parse tree produced by TestDrivenDev_DSLParser#var.
-    def exitVar(self, ctx:TestDrivenDev_DSLParser.VarContext):
-        pass
-
-
     # Enter a parse tree produced by TestDrivenDev_DSLParser#param.
     def enterParam(self, ctx:TestDrivenDev_DSLParser.ParamContext):
         pass
 
     # Exit a parse tree produced by TestDrivenDev_DSLParser#param.
     def exitParam(self, ctx:TestDrivenDev_DSLParser.ParamContext):
+        pass
+
+
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#var.
+    def enterVar(self, ctx:TestDrivenDev_DSLParser.VarContext):
+        pass
+
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#var.
+    def exitVar(self, ctx:TestDrivenDev_DSLParser.VarContext):
         pass
 
 
@@ -224,6 +224,15 @@ class TestDrivenDev_DSLListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TestDrivenDev_DSLParser#composedUnit.
+    def enterComposedUnit(self, ctx:TestDrivenDev_DSLParser.ComposedUnitContext):
+        pass
+
+    # Exit a parse tree produced by TestDrivenDev_DSLParser#composedUnit.
+    def exitComposedUnit(self, ctx:TestDrivenDev_DSLParser.ComposedUnitContext):
+        pass
+
+
     # Enter a parse tree produced by TestDrivenDev_DSLParser#basicUnit.
     def enterBasicUnit(self, ctx:TestDrivenDev_DSLParser.BasicUnitContext):
         pass
@@ -248,15 +257,6 @@ class TestDrivenDev_DSLListener(ParseTreeListener):
 
     # Exit a parse tree produced by TestDrivenDev_DSLParser#customUnit.
     def exitCustomUnit(self, ctx:TestDrivenDev_DSLParser.CustomUnitContext):
-        pass
-
-
-    # Enter a parse tree produced by TestDrivenDev_DSLParser#composedUnit.
-    def enterComposedUnit(self, ctx:TestDrivenDev_DSLParser.ComposedUnitContext):
-        pass
-
-    # Exit a parse tree produced by TestDrivenDev_DSLParser#composedUnit.
-    def exitComposedUnit(self, ctx:TestDrivenDev_DSLParser.ComposedUnitContext):
         pass
 
 

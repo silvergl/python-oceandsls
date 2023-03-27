@@ -34,13 +34,13 @@ class TestDrivenDev_DSLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#var.
-    def visitVar(self, ctx:TestDrivenDev_DSLParser.VarContext):
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#param.
+    def visitParam(self, ctx:TestDrivenDev_DSLParser.ParamContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#param.
-    def visitParam(self, ctx:TestDrivenDev_DSLParser.ParamContext):
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#var.
+    def visitVar(self, ctx:TestDrivenDev_DSLParser.VarContext):
         return self.visitChildren(ctx)
 
 
@@ -129,6 +129,11 @@ class TestDrivenDev_DSLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TestDrivenDev_DSLParser#composedUnit.
+    def visitComposedUnit(self, ctx:TestDrivenDev_DSLParser.ComposedUnitContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TestDrivenDev_DSLParser#basicUnit.
     def visitBasicUnit(self, ctx:TestDrivenDev_DSLParser.BasicUnitContext):
         return self.visitChildren(ctx)
@@ -141,11 +146,6 @@ class TestDrivenDev_DSLVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TestDrivenDev_DSLParser#customUnit.
     def visitCustomUnit(self, ctx:TestDrivenDev_DSLParser.CustomUnitContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#composedUnit.
-    def visitComposedUnit(self, ctx:TestDrivenDev_DSLParser.ComposedUnitContext):
         return self.visitChildren(ctx)
 
 

@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 
 from jinja2 import Environment, FileSystemLoader
 
+
 ## Python 3.11 alternative
 # from enum import StrEnum
 #
@@ -87,51 +88,100 @@ class Utest:
     mods: List[Module] = field( default_factory=list )
     assertions: List[Assertion] = field( default_factory=list )
 
-# TODO move into a test data function
-# Define the number of variable occurrences for each test
-num_files = 1
-num_mods = 1
-num_ass = 1
-list_tests = []
-for i in range( num_files ):
-    list_mods = []
-    for j in range( num_mods ):
-        # list_mods.append( {'name': f"module_{i}_{j}"} )
-        list_mods.append( Module( f"module_{i}_{j}" ) )
 
-    list_ass = []
-    for j in range( num_mods ):
-        # list_ass.append( {'name': f"assertion_{i}_{j}", 'input': i, 'output': j} )
-        list_ass.append( Assertion( f"assertion_{i}_{j}", i, j ) )
 
-    # list_tests.append( {'fn': f"file_{i}", 'sub': {'name': f"sub_{i}"}, 'mods': list_mods, 'assertions': list_ass} )
-    list_tests.append( Utest( f"file_{i}", Callable( f"sub_{i}", CallableType.Subroutine ), list_mods, list_ass ) )
+import difflib
 
-# TODO move into a test write function
-# Load Jinja2 template
-environment = Environment( loader=FileSystemLoader( 'templates/' ) )
-# Use test_template.txt
-template = environment.get_template( 'tdd_pf_template.txt' )
+def merge_file_content(file_content_0:str, file_content_1:str) -> str:
+    '''
+    Merge two file contents based on difflib.
 
-# Loop through each test
-for test in list_tests:
-    # Render template
-    content = template.render( test=test )
+    :param file_content_0: Content of first file
+    :param file_content_1: Content of second file
+    :return: 3-way merge of comparing the first file and second file
+    '''
+    return "\n".join(
+        lines[2:] for lines in difflib.Differ().compare(
+            file_content_0.split( "\n" ),
+            file_content_1.split("\n"))
+        if not lines.startswith("?")
+    )
 
-    # Define the folder and filename
-    path = os.path.join( os.getcwd(), 'gen', 'test' )
+def gen_test_data(num_files: int = 1, num_mods: int = 1, num_ass: int = 1) -> List[Utest]:
+    '''
+    Generate test data for jinja_tdd
 
-    # Create folder if it doesn't exist
-    if not os.path.isdir( path ):
-        os.makedirs( path )
-        print( f'... create {path}' )
+    :param num_files: number of test files
+    :param num_mods: number of modules in each file
+    :param num_ass: number of assertions in each file
+    :return: list of unit tests
+    '''
+    list_tests = []
+    for i in range( num_files ):
+        list_mods = []
+        for j in range( num_mods ):
+            # list_mods.append( {'name': f"module_{i}_{j}"} )
+            list_mods.append( Module( f"module_{i}_{j}" ) )
 
-    # Create file if it doesn't exist
-    # filename = f"test_{test['fn'].lower()}.pf"
-    filename = f"test_{test.fn.lower()}.pf"
-    path = os.path.join( os.getcwd(), path, filename )
-    if not os.path.exists( path ):
-        # Write rendered content to file
+        list_ass = []
+        for j in range( num_ass ):
+            # list_ass.append( {'name': f"assertion_{i}_{j}", 'input': i, 'output': j} )
+            list_ass.append( Assertion( f"assertion_{i}_{j}", i, j ) )
+
+        # list_tests.append( {'fn': f"file_{i}", 'sub': {'name': f"sub_{i}"}, 'mods': list_mods, 'assertions':
+        # list_ass} )
+        list_tests.append( Utest( f"file_{i}", Callable( f"sub_{i}", CallableType.Subroutine ), list_mods, list_ass ) )
+
+    return list_tests
+
+
+def write_tdd(list_tests: List[Utest], template_path: str = 'templates/', template_file: str = 'tdd_pf_template.txt',
+              test_path: str = 'gen', test_folder: str = 'test', test_file_pr: str = 'test_') -> None:
+    '''
+    Write pFUnit files using Jinja2 Template files.
+
+    :param list_tests: List of unit test data
+    :param template_path: system path to template file
+    :param template_file: template file
+    :param test_path: system path to store pFUnit tests
+    :param test_folder: test folder under system path for *.pf files
+    :param test_files: prefix_name of *.pf files
+    :return:
+    '''
+    # Load Jinja2 template
+    environment = Environment( loader=FileSystemLoader( template_path ) )
+    # Use test_template.txt
+    template = environment.get_template( template_file )
+
+    # Loop through each test
+    for test in list_tests:
+        # Render template
+        content = template.render( test=test )
+
+        # Define the folder and filename
+        path = os.path.join( os.getcwd(), test_path, test_folder )
+
+        # Create folder if it doesn't exist
+        if not os.path.isdir( path ):
+            os.makedirs( path )
+            # TODO add to debug info
+            print( f'... create {path}' )
+
+        # Create file if it doesn't exist else merge with existing file
+        # filename = f"test_{test['fn'].lower()}.pf"
+        filename = f"{test_file_pr}{test.fn.lower()}.pf"
+        path = os.path.join( os.getcwd(), path, filename )
+        if os.path.exists( path ):
+            with open( path, mode='r', encoding='utf-8' ) as f:
+                content_org = f.read()
+            content= merge_file_content( content, content_org )
+
+        # Write rendered and optional merged content to file
         with open( path, mode='w', encoding='utf-8' ) as f:
             f.write( content )
+            # TODO add to debug info
             print( f'... wrote {path}' )
+
+# test function
+# TODO mv to pytest
+write_tdd( gen_test_data(num_mods = 2) )

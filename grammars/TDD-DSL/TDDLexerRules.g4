@@ -91,7 +91,7 @@ OP_SUB   : '-' ;
 
 // Parentheses
 PAR_L    : '(' ;                                       // match left parenthesis
-PAR_R    : ')' ;                                       // match right parenthesisPAR_L
+PAR_R    : ')' ;                                       // match right parenthesis
 SPAR_L    : '[' ;                                       // match left square brackets
 SPAR_R      : ']' ;                                       // match right square brackets
 

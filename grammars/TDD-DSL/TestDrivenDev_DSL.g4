@@ -23,7 +23,8 @@
 grammar TestDrivenDev_DSL;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
-import Assertion,Typing,PhysicalUnits,TDDLexerRules;
+//import Assertion,Typing,PhysicalUnits,TDDLexerRules;
+import Assertion;
 
 /** parser rules start with lowercase letters */
 /** Top-level rule; begin parsing here */
@@ -31,7 +32,7 @@ test_suite      : test_cases+=test_case ( NEWLINE test_cases+=test_case )?
                 ;
 
 /** Rule for a test case */
-test_case       : 'test' ID ':' (NEWLINE)?
+test_case       : 'test' ID ':' NEWLINE?
                   assertions+=test_assertion
                   ( NEWLINE assertions+=test_assertion )*
                 ;
@@ -39,9 +40,11 @@ test_case       : 'test' ID ':' (NEWLINE)?
 /** Rule for a test assertion */
 test_assertion  : ppDirective=directive PAR_L NEWLINE?
                     in=test_input NEWLINE
-                    out=test_output NEWLINE
-                    (cm=COMMENT)?
-                    PAR_R
+                    out=test_output
+                    (
+                        NEWLINE cm=COMMENT PAR_R
+                      | NEWLINE? PAR_R
+                    )
                 ;
 
 /** Rule for a test input */
@@ -55,27 +58,63 @@ test_output     : 'out' params+=param
                 ;
 
 param           : value=expr
-                  (decl=var)?
-                  (COMMA doc=documentation)?
+//                  (decl=var)?
+//                  (COMMA doc=documentation)?
                 ;
 
-var             : name=ID
-                | type=paramType
-                | name=ID ':' type=paramType
-                ;
-
-documentation   : phyUnit=unitSpec
-                | description=COMMENT
-                | phyUnit=unitSpec description=COMMENT
-                ;
+//var             : name=ID
+//                | type=paramType
+//                | name=ID ':' type=paramType
+//                ;
+//
+//documentation   : phyUnit=unitSpec
+//                | description=COMMENT
+//                | phyUnit=unitSpec description=COMMENT
+//                ;
 
 /** Expression rules */
 expr            : left=expr op=(OP_MUL|OP_DIV) right=expr # mulDivExpr /** Multiplication, Division have precedence */
                 | left=expr op=(OP_ADD|OP_SUB) right=expr # addSubExpr /** Addition, Subtraction have not precedence */
                 | PAR_L expr PAR_R                        # parensExpr /** Parenthesized expression */
-                | value=NUM                               # numberExpr
                 | value=INT                               # intExpr
+                | value=NUM                               # numberExpr
                 | value=STRING                            # strExpr
                 ;
 
 /** overwrite imported rules */
+// Identifiers
+ID : [a-zA-Z][a-zA-Z0-9_]* ;  // match identifiers
+
+// Punctuations
+SEMICOLON : ';' ;
+
+// Operators
+OP_ASS   : '=' ;
+OP_MUL   : '*' ;
+OP_DIV   : '/' ;
+OP_ADD   : '+' ;
+OP_SUB   : '-' ;
+
+// Parentheses
+PAR_L    : '(' ;                                       // match left parenthesis
+PAR_R    : ')' ;                                       // match right parenthesis
+
+// String literals
+STRING : '\'' (STRESC|.)*? '\'';
+fragment STRESC : '\\\'' | '\\\\' ;
+COMMENT : '#' (CMESC|.)*? NEWLINE;
+fragment CMESC : '\\#' | '\\\\' ;
+
+// Numeric literals
+INT : '0' | [1-9] DIG* ;    // fragment match integers without leading zeros
+NUM : '-'? (('.' DIG+ )| ( DIG+ ('.' DIG*)? EXP? ) ) ;    // match numbers
+/** fragments generate no lexer tokens */
+fragment EXP  : [eE] [+\-]? INT ;    // fragment match exponent
+//fragment CHAR : [a-zA-Z_] ; // fragment match characters
+fragment DIG  : [0-9] ; // fragment match digits
+
+
+// Newlines, whitespace and comments
+TDD_COMMENT :   '//' .*? NEWLINE -> channel(HIDDEN) ; // hide comments from parser, match '//' until newline optionally preceded by a carriage return
+NEWLINE :   '\r'? '\n' ;    // return newlines wiht optional carriage return to parser (is end-statement signal)
+WS :        [ \t]+ -> channel(HIDDEN) ; // hide spaces and tabs from the parser but generate tokens aka toss out whitespace

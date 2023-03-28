@@ -47,18 +47,6 @@ public interface TestDrivenDev_DSLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParam(TestDrivenDev_DSLParser.ParamContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#var}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVar(TestDrivenDev_DSLParser.VarContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#documentation}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDocumentation(TestDrivenDev_DSLParser.DocumentationContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code strExpr}
 	 * labeled alternative in {@link TestDrivenDev_DSLParser#expr}.
 	 * @param ctx the parse tree
@@ -106,94 +94,4 @@ public interface TestDrivenDev_DSLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDirective(TestDrivenDev_DSLParser.DirectiveContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#paramType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParamType(TestDrivenDev_DSLParser.ParamTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#typeRef}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTypeRef(TestDrivenDev_DSLParser.TypeRefContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#enumType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEnumType(TestDrivenDev_DSLParser.EnumTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#enum}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEnum(TestDrivenDev_DSLParser.EnumContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#arrayType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayType(TestDrivenDev_DSLParser.ArrayTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#dim}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDim(TestDrivenDev_DSLParser.DimContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#sizeDim}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSizeDim(TestDrivenDev_DSLParser.SizeDimContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#rangeDim}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRangeDim(TestDrivenDev_DSLParser.RangeDimContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#unitSpec}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUnitSpec(TestDrivenDev_DSLParser.UnitSpecContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#composedUnit}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComposedUnit(TestDrivenDev_DSLParser.ComposedUnitContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#basicUnit}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBasicUnit(TestDrivenDev_DSLParser.BasicUnitContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#siUnit}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSiUnit(TestDrivenDev_DSLParser.SiUnitContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#customUnit}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCustomUnit(TestDrivenDev_DSLParser.CustomUnitContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#unitPrefix}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUnitPrefix(TestDrivenDev_DSLParser.UnitPrefixContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestDrivenDev_DSLParser#siType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSiType(TestDrivenDev_DSLParser.SiTypeContext ctx);
 }

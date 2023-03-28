@@ -39,16 +39,6 @@ class TestDrivenDev_DSLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#var.
-    def visitVar(self, ctx:TestDrivenDev_DSLParser.VarContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#documentation.
-    def visitDocumentation(self, ctx:TestDrivenDev_DSLParser.DocumentationContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by TestDrivenDev_DSLParser#strExpr.
     def visitStrExpr(self, ctx:TestDrivenDev_DSLParser.StrExprContext):
         return self.visitChildren(ctx)
@@ -81,81 +71,6 @@ class TestDrivenDev_DSLVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TestDrivenDev_DSLParser#directive.
     def visitDirective(self, ctx:TestDrivenDev_DSLParser.DirectiveContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#paramType.
-    def visitParamType(self, ctx:TestDrivenDev_DSLParser.ParamTypeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#typeRef.
-    def visitTypeRef(self, ctx:TestDrivenDev_DSLParser.TypeRefContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#enumType.
-    def visitEnumType(self, ctx:TestDrivenDev_DSLParser.EnumTypeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#enum.
-    def visitEnum(self, ctx:TestDrivenDev_DSLParser.EnumContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#arrayType.
-    def visitArrayType(self, ctx:TestDrivenDev_DSLParser.ArrayTypeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#dim.
-    def visitDim(self, ctx:TestDrivenDev_DSLParser.DimContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#sizeDim.
-    def visitSizeDim(self, ctx:TestDrivenDev_DSLParser.SizeDimContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#rangeDim.
-    def visitRangeDim(self, ctx:TestDrivenDev_DSLParser.RangeDimContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#unitSpec.
-    def visitUnitSpec(self, ctx:TestDrivenDev_DSLParser.UnitSpecContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#composedUnit.
-    def visitComposedUnit(self, ctx:TestDrivenDev_DSLParser.ComposedUnitContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#basicUnit.
-    def visitBasicUnit(self, ctx:TestDrivenDev_DSLParser.BasicUnitContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#siUnit.
-    def visitSiUnit(self, ctx:TestDrivenDev_DSLParser.SiUnitContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#customUnit.
-    def visitCustomUnit(self, ctx:TestDrivenDev_DSLParser.CustomUnitContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#unitPrefix.
-    def visitUnitPrefix(self, ctx:TestDrivenDev_DSLParser.UnitPrefixContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestDrivenDev_DSLParser#siType.
-    def visitSiType(self, ctx:TestDrivenDev_DSLParser.SiTypeContext):
         return self.visitChildren(ctx)
 
 

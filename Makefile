@@ -18,6 +18,7 @@ all: clean $(OBJDIR)-python/$(PACKAGE) $(OBJDIR)-java/$(PACKAGE)
 all_pkg: $(PKGTARGETS)
 
 $(PKGTARGETS): %: $(SRCDIR)/%.g4
+	rm -rf ../../$(OBJDIR)-python/$@ ../../$(OBJDIR)-java/$@ build/
 	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-python/$@ -visitor -package $@ -Dlanguage=Python3
 	cd $(<D); $(antlr4) $(<F) -o ../../$(OBJDIR)-java/$@ -visitor -package $@ 
 	javac $(OBJDIR)-java/$@/*.java

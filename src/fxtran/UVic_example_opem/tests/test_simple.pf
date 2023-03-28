@@ -3,6 +3,6 @@ subroutine test_assert_true()
    use cfo_example
    use funit
 
-   @assertTrue(1 == 1)
+   @assertTrue(1.0 == 1)
    
 end subroutine test_assert_true

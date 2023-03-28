@@ -1,6 +1,15 @@
-test my_test_case :
-    Equal (
-        in 'foo \' bar'
-        out 9.0
-        # assertion \# comment
+test test_assert_true :
+    True (
+        in :
+        1.0 x : real , k g # input param0
+        out :
+        1 x : int , k g # output param0
+        # true assertion 
+        )
+    False (
+        in :
+        1.0 x : real , k g # input param0
+        out :
+        1 x : int , k g # output param0
+        # false assertion
         )

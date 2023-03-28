@@ -23,7 +23,7 @@
 grammar PhysicalUnits;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
-import TDDLexerRules;
+import CommonLexerRules;
 
 /** parser rules start with lowercase letters */
 unitSpec        : units+=composedUnit ( '*' units+=composedUnit)*

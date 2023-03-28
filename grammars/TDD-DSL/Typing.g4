@@ -23,7 +23,7 @@
 grammar Typing;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
-import TDDLexerRules;
+import CommonLexerRules;
 
 /** parser rules start with lowercase letters */
 paramType       : typeRef
@@ -34,13 +34,13 @@ paramType       : typeRef
 typeRef         : type=ID
                 ;
 
-enumType        : PAR_L values+=enum ( COMMA values+=enum)* PAR_R
+enumType        : '(' values+=enum ( ',' values+=enum)* ')'
                 ;
 
-enum            : name=ID (OP_ASS value=INT)?
+enum            : name=ID ('=' value=INT)?
                 ;
 
-arrayType       : type=ID SPAR_L dimensions+=dim (COMMA dimensions+=dim)* SPAR_R
+arrayType       : type=ID '[' dimensions+=dim (',' dimensions+=dim)* ']'
                 ;
 
 dim             : sizeDim

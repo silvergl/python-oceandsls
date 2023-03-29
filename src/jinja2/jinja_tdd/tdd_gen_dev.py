@@ -185,3 +185,14 @@ def write_tdd(list_tests: List[Utest], template_path: str = 'templates/', templa
 # test function
 # TODO mv to pytest
 write_tdd( gen_test_data(num_mods = 2) )
+
+
+assert_operands = {'fail': 0, 'equal': 2, 'notequal': 2, 'true': 1, 'false': 1,
+                   'lessthan': 2, 'lessthanorequal': 2, 'greaterthan': 2,
+                   'greaterthanorequal': 2, 'notequal': 2,
+                   'relativelyequal': 2, 'isinfinite': 1, 'isfinite': 1,
+                   'isnan': 1, 'ismemberof': 2, 'contains': 2, 'any': 1,
+                   'all': 1, 'notall': 1, 'none': 1, 'ispermutationof': 2,
+                   'exceptionraised': 0, 'sameshape': 2, 'that': 2, '_that': 2}
+
+assert_variants = '|'.join(assert_operands.keys())

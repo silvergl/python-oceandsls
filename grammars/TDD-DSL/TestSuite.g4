@@ -73,8 +73,14 @@ test_module             : module=ID NEWLINE
 
 /** test assertion; ends on newline */
 test_assertion          : 'assert' directive '(' NEWLINE
-                          test_input test_output (COMMENT)?     /** ends on newline */
+                          test_input test_output pubAttributes (COMMENT)?     /** ends on newline */
                           ')'
+                        ;
+
+/** arguments of pfUnit prepparser rules start with lowercase letters */
+pubAttributes           : ('tolerance' ':' tol=expr NEWLINE)?
+                          ('failmessage' ':' msg=STRING NEWLINE)?
+                          ('whitespace' '=' ign='IGNORE_DIFFERENCES')?       /** option for assertEqual */
                         ;
 
 /** test input; ends on newline*/

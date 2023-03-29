@@ -27,7 +27,8 @@ grammar Keyword;
 /** imports include all rules, imported rules are overwritten by existing rules */
 
 /** parser rules start with lowercase letters */
-f90StdKey       : keyword  = 'DIMENSION'                # arraySpec
+f90StdKey       : keyword  = 'ALLOCATABLE'              # arraySpec
+                | keyword  = 'DIMENSION'                # arraySpec
                 | keyword  = 'INTENT(IN)'               # argSpecInput
                 | keyword  = 'INTENT(INOUT)'            # argSpecInOutput
                 | keyword  = 'INTENT(OUT)'              # argSpecOutput
@@ -36,26 +37,31 @@ f90StdKey       : keyword  = 'DIMENSION'                # arraySpec
                 ;
 
 /** parser rules start with lowercase letters */
-directive       : ppDirective  = 'Equal'
-                | ppDirective  = 'True'
-                | ppDirective  = 'EqualUserDefined'
-                | ppDirective  = 'False'
-                | ppDirective  = 'LessThan'
-                | ppDirective  = 'LessThanOrEqual'
-                | ppDirective  = 'GreaterThan'
-                | ppDirective  = 'GreaterThanOrEqual'
-                | ppDirective  = 'IsMemberOf'
-                | ppDirective  = 'Contains'
-                | ppDirective  = 'Any'
-                | ppDirective  = 'All'
-                | ppDirective  = 'NotAll'
-                | ppDirective  = 'None'
-                | ppDirective  = 'IsPermutationOf'
-                | ppDirective  = 'ExceptionRaised'
-                | ppDirective  = 'SameShape'
-                | ppDirective  = 'IsNaN'
-                | ppDirective  = 'IsFinite'
-                | ppDirective  = 'Associated'
-                | ppDirective  = 'NotAssociated'
-                | ppDirective  = 'Equivalent'
+directive       : ppDirective  = 'NotAssociated'        /** @assertNotAssociated(xPtr) */
+                | ppDirective  = 'Associated'           /** @assertAssociated(xPtr) */
+                | ppDirective  = 'Fail'                 /** @assertfail(message='0') */
+                | ppDirective  = 'ExceptionRaised'      /** @assertExceptionRaised(new_line('a')//'Expected: is <2>' // new_line('a') // '     but: was <1>') */
+                | ppDirective  = 'True'                 /** @asserttrue(1 == 1, message='1') */
+                | ppDirective  = 'False'                /** @assertfalse(1 == 2, message='1') */
+                | ppDirective  = 'EqualUserDefined'     /** @assertEqualUserDefined(1,1, message='2') */
+                | ppDirective  = 'All'                  /** @assertall([.true., .true.], message='1') */
+                | ppDirective  = 'None'                 /** @assertnone([.false., .false.], message='1') */
+                | ppDirective  = 'Any'                  /** @assertany([.true., .false.], message='1') */
+                | ppDirective  = 'NotAll'               /** @assertnotall([.true., .false.], message='1') */
+                | ppDirective  = 'SameShape'            /** @assertsameshape(a1, a2, message='2') */
+                | ppDirective  = 'IsNaN'                /** @assertisnan(nan, message='1') */
+                | ppDirective  = 'IsFinite'             /** @assertisfinite(1D0, message='1') */
+                | ppDirective  = 'Equivalent'           /** @assertEquivalent(YES,YES, message='1') */
+                /** tolarance only if input is of type real; D only if of type REAL(KIND(1D0)) */
+                | ppDirective  = 'LessThan'             /** @assertlessthan( 1, 2.0, message='2', tolerance=1E-12) */
+                | ppDirective  = 'LessThanOrEqual'      /** @assertlessthanorequal( 2, 2.0, message='2', tolerance=1E-12) */
+                | ppDirective  = 'GreaterThan'          /** @assertgreaterthan( 2, 1.0, message='2', tolerance=1E-12) */
+                | ppDirective  = 'GreaterThanOrEqual'   /** @assertgreaterthanorequal( 2, 2.0, message='2', tolerance=1E-12) 1D-12 if input of KIND() */
+                | ppDirective  = 'Equal'                /** @assertequal( 1, 1, message='2', tolerance=1E-12) 1D-12 if input of KIND() */
+                | ppDirective  = 'NotEqual'             /** @assertnotequal( 1, 2, message='2', tolerance=1E-12) 1D-12 if input of KIND() */
+                | ppDirective  = 'RelativelyEqual'      /** @assertRelativelyEqual( 2, 2.0, message='2', tolerance=1E-12) 1D-12 if input of KIND() */
+                | ppDirective  = '_that'                /** @assert_that(1, is(equal_to(1))) */
+//                | ppDirective  = 'IsMemberOf'         /** Not Implemented */
+//                | ppDirective  = 'Contains'           /** Not Implemented */
+//                | ppDirective  = 'IsPermutationOf'    /** Not Implemented */
                 ;

@@ -1,4 +1,4 @@
-test my_test_case :
+test test_fT_ME :
     scope :
         filepath : '/pfunit_example'
         modules :
@@ -9,8 +9,10 @@ test my_test_case :
         expected : REAL( dp ) = (1D0 + (temperature - 15D0)*9.5D0)/260D0
     assert Equal (
         in :
-        x : int = 3 , k g # 3 kg input
+            expected , k g # 3 kg input
         out :
-        x : real = 9.0 , k g # 9.0 kg output
-        # equal assertion
+            fT_ME( temperature ) , k g # 9.0 kg output
+        tolerance : 1D-12
+        failmessage : 'custom assert fail msg'
+        # comment for assertion
         )

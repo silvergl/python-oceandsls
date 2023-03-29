@@ -71,6 +71,12 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTest_assertion(TestSuiteParser.Test_assertionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#pubAttributes}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPubAttributes(TestSuiteParser.PubAttributesContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#test_input}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -59,6 +59,11 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TestSuiteParser#pubAttributes.
+    def visitPubAttributes(self, ctx:TestSuiteParser.PubAttributesContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TestSuiteParser#test_input.
     def visitTest_input(self, ctx:TestSuiteParser.Test_inputContext):
         return self.visitChildren(ctx)

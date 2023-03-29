@@ -137,6 +137,18 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPubAttributes(TestSuiteParser.PubAttributesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPubAttributes(TestSuiteParser.PubAttributesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTest_input(TestSuiteParser.Test_inputContext ctx) { }
 	/**
 	 * {@inheritDoc}

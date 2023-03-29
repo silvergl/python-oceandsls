@@ -108,6 +108,16 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitTest_assertion(TestSuiteParser.Test_assertionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TestSuiteParser#pubAttributes}.
+	 * @param ctx the parse tree
+	 */
+	void enterPubAttributes(TestSuiteParser.PubAttributesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestSuiteParser#pubAttributes}.
+	 * @param ctx the parse tree
+	 */
+	void exitPubAttributes(TestSuiteParser.PubAttributesContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#test_input}.
 	 * @param ctx the parse tree
 	 */

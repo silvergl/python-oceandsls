@@ -98,6 +98,15 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TestSuiteParser#pubAttributes.
+    def enterPubAttributes(self, ctx:TestSuiteParser.PubAttributesContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#pubAttributes.
+    def exitPubAttributes(self, ctx:TestSuiteParser.PubAttributesContext):
+        pass
+
+
     # Enter a parse tree produced by TestSuiteParser#test_input.
     def enterTest_input(self, ctx:TestSuiteParser.Test_inputContext):
         pass

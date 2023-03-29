@@ -1,0 +1,358 @@
+model cnp_recom
+
+substances
+	float N : mmol
+	float C : mmol
+	float P : mmol
+	float Chl : mmol
+	float DIN : mmol N m^-3
+	float DIP ::
+	float DIC ::
+	float _TA ::
+
+parameters
+	float Q_r_C_N : mmol C (mmol N)^-1 = 5.5   //
+	float Q_r_N_P :  mmol N (mmol P)^-1 = 16.0  //
+
+	float T_ref : K = 283.15
+
+	float sigma_N_C : (mmol N)^2 (mmol C)^-2 = 100.0
+	float sigma_P_N  : (mmol P)^2 (mmol N)^-2 = 50.0
+	float g_max:: = 0.3
+
+	float T_f :: = 0
+
+	float epsilon :: = 0.78
+	float A_E :: = 0.75
+	float Omega :: = 0
+
+	float Q_1_N_C : mmol N (mmol C)^-1 = 0.043
+	float Q_2_N_C : mmol N (mmol C)^-1 = 0.171
+	float Q_1_P_N : mmol P (mmol N)^-1 = 0.02
+	float Q_2_P_N : mmol P (mmol N)^-1 = 0.2
+	float Q_u_N_C : mmol N (mmol C)^-1 = 0.171
+	float Q_u_P_N : mmol P (mmol N)^-1 = 0.014
+
+	float Zeta_DIN : mmol C (mmol N)^-1 = 2.3
+	float Zeta_N_2 : mmol C (mmol N)^-1 = 4.2
+
+	float Psi_max :: = 0.8
+	string criteria :: = option_a
+
+diagnostics
+	float T_K : K = 0
+	float I : W m^-2
+
+	float q_C_N ::
+	float q_C_P ::
+	float q_N_P ::
+	float q_C_N : mmol C (mmol N)^-1
+	float q_N_C : mmol N (mmol C)^-1
+	float q_P_N : mmol P (mmol N)^-1
+	float q_C_N ::
+	float q_N_C ::
+	float q_P_N ::
+
+compartment Phy {
+	states
+		Chl = 0
+		C = 0
+		N = 0
+		P = 0
+
+	parameters
+		float r_0 :: = 0.01
+		float Ar :: = 4000
+
+		float alpha : mmol C (mg Chl)^-1 m^2 W^-1 #d^-1 = 0.6
+		float my_max : #d^-1 = 2.6
+		float gamma_C : #d^-1 = 0.08
+		float gamma_Chl : #d^-1 = 0.01
+		float gamma : #d^-1 = 0.06
+		float Phi :  m^3 (mmol N)^-1 #d^-1 = 0.02
+		float Theta_2_N : mg Chl (mmol N)^-1 = 2.4
+
+	diagnostics
+		float Theta_C : mg Chl (mmol C)^-1
+		float Theta_N : mg Chl (mmol N)^-1
+
+	calc Psi = max(0, Psi_max * ( 1 - q_N_C/Q_2_N_C))
+
+	calc R_P = 1 - Q_1_P_N / q_P_N
+	calc R_C = (1 + exp(-1 * sigma_N_C * (Q_2_N_C - q_N_C)))^-1
+	calc R_N = (1 + exp(-1 * sigma_P_N * (Q_2_P_N - q_P_N)))^-1
+	calc T_f = exp (-1*Ar * (T_K^-1 - T_K^-1))
+
+	calc phot_max = my_max * T_f * (q_N_C - Q_1_N_C)/(Q_2_N_C - Q_1_N_C)
+	calc phot_DIC = phot_max * (1 - exp( -1 * alpha * Theta_C * I / phot_max ))
+
+	calc assim_DIN = Q_u_N_C * my_max * T_f * R_P * R_C * Nutrients.DIN / (Nutrients.K_DIN + Nutrients.DIN)
+	calc assim_DIP = Q_u_P_N * my_max * T_f * R_N * Nutrients.DIP/(Nutrients.K_DIP + Nutrients.DIP)
+
+	calc degr_Chl = gamma_Chl
+	calc synth_Chl = assim_DIN * Theta_2_N * phot_DIC / (alpha * Theta_C * I)
+
+	update C = phot_DIC * C - (respiration + gamma_C + aggregation) * C - Phy>grazing * q_C_N
+	update N = assim_DIN * C - (r_0 * T_f + gamma + aggregation) * N - Phy>grazing
+	update P = assim_DIP * N - (r_0 * T_f + gamma + aggregation) * P - Phy>grazing * q_P_N
+	update Chl = synth_Chl * C - (degr_Chl + aggregation) * Chl - Phy>grazing * Theta_N
+}
+
+compartment N_2 {
+	states
+		N = 0
+
+	update N = 0
+}
+
+compartment Nutrients {
+	states
+		DIN = 0
+		DIP = 0
+		DIC = 0
+		_TA = 0
+
+	parameters
+		float K_DIP : mmol P m^-3 = 0
+		float K_DIN : mmol N m^-3 = 0
+
+		float rho_C :: = 0
+		float rho_N :: = 0
+		float rho_P :: = 0
+
+	update DIC = T_f * (rho_C * LDOM.C + MG.rho * MG.C)
+		+ respiration * Phy.C
+		+ respiration * Nif.C
+		+ (Het:respiration + epsilon * (1 - Omega) * Het:mortality) * Het.C
+		- Phy.phot_DIC * Phy.C - Nif.phot_DIC * Nif.C
+	update DIN = T_f * (rho_N * LDOM.N + MG.rho * MG.N)
+		+ Phy.r_0 * Phy.T_f * Phy.N
+		+ Nif.r_0 * Nif.T_f * Nif.N
+		+ epsilon * (Het:excretion.N + (1 - Omega) * Het:mortality) * Het.N
+		- Phy:assimilation - Nif.assim_DIN * Nif.C - denitrification
+	update DIP = T_f * rho_P * LDOM.P
+		+ Phy.r_0 * Phy.T_f * Phy.P
+		+ Nif.r_0 * Nif.T_f * Nif.P
+		+ epsilon * (Het:excretion.P + ( 1-Omega) * Het:mortality) * Het.P - Phy.assim_DIP * Phy.N - Nif.assim_DIP * Nif.N
+	update _TA = Phy.assim_DIN * Phy.C + Phy.assim_DIP * Phy.N
+		+ assimilation.C + assimilation.N
+		- Phy.r_0 * Phy.T_f * Phy.N - Nif.r_0 * Nif.T_f * Nif.N
+		- Phy.r_0 * Phy.T_f * Phy.P - Nif.r_0 * Nif.T_f * Nif.P
+		- epsilon * (Het:excretion.N + (1-Omega) * Het:mortality) * Het.N
+		- epsilon * (Het:excretion.P + (1-Omega) * Het:mortality) * Het.P
+		- T_f * (rho_N * LDOM.N - MG.rho * MG.N - rho_P * LDOM.P)
+		+ denitrification
+}
+
+compartment Het {
+	states
+		C = 0
+		N = 0
+		P = 0
+
+	parameters
+		float K_N : mmol N m^-3 = 1.0
+		float r_0 : #d^-1 = 0.01
+		float tau : #d^-1 = 0.5
+		float gamma : m^3 (mmol N)^-1 #d^-1 = 0.3
+
+	update C = A_E * (Phy:grazing * q_C_N + Nif:grazing * q_C_N) - (respiration + mortality) * C
+	update N = A_E * (Phy:grazing + Nif:grazing) - (excretion.N + mortality) * N
+	update P = A_E * (Phy:grazing * q_P_N + Nif:grazing * q_P_N) - (excretion.P + mortality) * P
+}
+
+compartment Det {
+	states
+		C = 0
+		N = 0
+		P = 0
+
+	parameters
+		float Phi : m^3 (mmol N)^-1 #d^-1 = 0.02
+		float Omega :: = 0
+
+	calc omega_C = 0
+	calc omega_N = 0
+	calc omega_P = 0
+
+	// could add a sink
+	calc sedimentation_C = 0
+	calc sedimentation_N = 0
+	calc sedimentation_P = 0
+
+	update C = Phy:aggregation * Phy.C
+		+ aggregation * Nif.C
+		+ MG.Phi * N * MG.C
+		+ (1-A_E) * (Phy:grazing * q_C_N + Phy:grazing * q_C_N)
+		+ Omega * Het:mortality * Het.C - degradation.C - sedimentation_C
+	update N = Phy:aggregation * Phy.N
+		+ Nif:aggregation * Nif.N
+		+ MG.Phi * N * MG.N
+		+ (1-A_E) * (Phy:grazing + Nif:grazing) + Omega * Het:mortality * Het.N - degradation.N - sedimentation_N
+	update P = Phy:aggregation * Phy.P
+		+ Nif:aggregation * Nif.P
+		+ (1-A_E) * (Phy:grazing * q_P_N + Nif:grazing * q_P_N)
+		+ Omega * Het:mortality * Het.P - degradation.P - sedimentation_P
+}
+
+
+compartment dCCHO {
+	states C = 0
+
+	parameters
+		float Phi_TEPC :: = 0
+		float Phi :: = 0
+
+	update C = Phy.Psi * Phy.gamma_C * Phy.C + Nif.Psi * Nif.gamma_C * Nif.C - coagulation * C
+}
+
+
+compartment MG {
+	states
+		C = 0
+		N = 0
+
+	parameters
+		float Phi :: = 0
+		float rho :: = 0
+		float Xi :: = 0
+
+	update C = coagulation * dCCHO.C - aggregation * C
+	update N = Xi * C * LDOM.N - (rho * T_f + Phi * Det.N) * N
+}
+
+
+compartment LDOM {
+	states
+		C = 0
+		N = 0
+		P = 0
+
+	parameters
+		float omega_C :: = 0
+		float omega_N :: = 0
+		float omega_P :: = 0
+		float Omega :: = 0
+		float rho_C :: = 0
+		float rho_N :: = 0
+		float rho_P :: = 0
+
+	update C = degradation.C
+		+ (1 - Phy.Psi) * Phy.gamma_C * Phy.C
+		+ (1 - Nif.Psi) * Nif.gamma_C * Nif.C
+		+ (1-epsilon) * (1-Omega) * mortality * Het.C - rho_C * T_f * C
+	update N = degradation.N
+		+ Phy.gamma * Phy.N + Nif.gamma * Nif.N
+		+ (1-epsilon) * excretion.N * Het.N
+		+ (1-epsilon) * (1-Omega) * mortality * Het.N - (rho_N * T_f + MG.Xi * MG.C) * N
+	update P = degradation.P
+		- Phy.gamma * Phy.P + Nif.gamma * Nif.P
+		+ (1-epsilon) * (excretion.P + (1-Omega) * mortality) * Het.P - rho_P * T_f * P
+}
+
+
+compartment Nif {
+	states
+		Chl = 0
+		C = 0
+		N = 0
+		P = 0
+
+	parameters
+		float Q_1_N_C : mmol N (mmol C)^-1 = 0.043
+		float Q_2_N_C : mmol N (mmol C)^-1 = 0.171
+		float Q_u_N_C : mmol N (mmol C)^-1 = 0.171
+		float Q_u2_N_C : mmol N (mmol C)^-1 = 0.09
+		float Q_1_P_N : mmol P (mmol N)^-1 = 0.02
+		float Q_2_P_N : mmol P (mmol N)^-1 = 0.2
+		float Q_u_P_N : mmol P (mmol N)^-1 = 0.025
+
+		float theta_2_N : mg Chl (mmol N)^-1 = 1.2
+
+		float alpha : mmol C (mg Chl)^-1 m^2 W^-1 #d^-1 = 0.6
+		float r_0 : #d^-1 = 0.01       //
+		float my_max : #d^-1 = 1.0     // d^-1
+
+		float Ar :: = 1500        // -
+		float gamma_C : #d^-1 = 0.08   // d^-1
+		float gamma_Chl : #d^-1 = 0.01 // d^-1
+		float gamma : #d^-1 = 0.06     // d^-1
+		float Phi : m^3 (mmol N)^-1 #d^-1 = 0.002      // m^3 (mmol N)^-1 d^-1
+
+	diagnostics
+		float theta_C ::
+		float theta_N ::
+
+	calc Psi = max(0, Psi_max * (1 - q_N_C / Q_2_N_C))
+
+	calc phot_max = my_max * T_f * (q_N_C - Q_1_N_C)/(Q_2_N_C  - Q_1_N_C)
+	calc phot_DIC = phot_max * (1 - exp ((-1*alpha * theta_C * I)/phot_max))
+
+	calc T_f = exp(-1 * Ar * (1/T_K - 1/T_ref))
+
+	calc gamma = 0
+	calc degr_Chl = 0
+
+	calc R_P = 1 - Q_1_P_N / q_P_N
+	calc R_C = (1 + exp(-1 * sigma_N_C * (Q_2_N_C - q_N_C)))^-1
+	calc R_N = (1 + exp(-1 *sigma_P_N * (Q_2_P_N - q_P_N)))^-1
+
+	calc assim_DIN = Q_u_N_C * (1 - f_N2) * my_max * T_f * R_P * R_C
+	calc assim_N_2 = Q_u2_N_C * f_N2 * my_max * T_f * R_P * R_C
+	calc assim_DIP = Q_u_P_N * my_max * T_f * R_N * Nutrients.DIP / (Nutrients.K_DIP + Nutrients.DIP)
+
+	calc f_N2 = 0
+	calc synth_Chl = (assim_DIN + assim_N_2) * theta_2_N * phot_DIC / (alpha * theta_C * I)
+
+	update C = phot_DIC * C - (respiration + gamma + aggregation) * C
+	update N = (assim_DIN + assim_N_2) * C - ( r_0 * T_f + gamma + aggregation) * N - Phy:grazing
+	update P = assim_DIP * N - (r_0 * T_f + gamma + aggregation) * P - Phy:grazing * q_P_N
+	update Chl = synth_Chl * C - (degr_Chl + aggregation) * Chl - Phy:grazing * theta_N
+}
+
+connection absorption from LDOM to MG = 0 // to MG
+
+connection aggregation from Phy to Det = Phy.Phi * Phy.N + Det.Phi * Det.N
+connection aggregation from MG to Det = (MG.rho * T_f + MG.Phi * Det.N) // to Det
+connection aggregation from Nif to Det = Nif.Phi * Nif.N + Det.Phi * Det.N
+
+connection assimilation from Nutrients to Phy = Phy.assim_DIN * Phy.C // to phy
+
+connection assimilation(N,C) from Nutrients to Nif {
+	N = Nif.assim_DIP * Nif.N
+	C = Nif.assim_DIN * Nif.C
+}
+
+connection coagulation from dCCHO to MG = (dCCHO.Phi * dCCHO.C + dCCHO.Phi_TEPC * MG.C)  // connection to MG
+
+connection degradation(C,N,P) from Det to LDOM {
+	C = Det.omega_C * Det.C
+	N = Det.omega_N * Det.N
+	P = Det.omega_P * Det.P
+}
+
+connection denitrification from Nutrients to N_2 = 0
+
+connection exudation from Phy to dCCHO = 0 // to dCCHO
+connection exudation from Phy to LDOM = 0 // to LDOM
+connection exudation from Nif to LDOM = 0 // to LDOM
+
+connection excretion(N,P) from Het to LDOM {
+	N = Het.tau * (max(0, 1 - q_C_N/Q_r_C_N, 1 - Q_r_N_P/q_N_P))^2  // to LDOM
+	P = Het.tau * (max(0, 1 - q_C_P/(Q_r_C_N * Q_r_N_P), 1-q_N_P/Q_r_N_P)) // to LDOM
+}
+
+connection grazing from Phy to Het = g_max * Phy.T_f * Phy.N^2/(Het.K_N^2 + Nif.N^2+Nif.N^2) * Het.N
+connection grazing from Nif to Het = g_max * T_f * (Nif.N^2 / (Het.K_N^2 + Phy.N^2 + Nif.N^2) * Het.N)
+
+connection mortality from Het to Det = Het.gamma * Het.N  // to Det
+
+connection nitrification from N_2 to Nif = 0 // connection to Nif
+
+connection remineralization from MG to Nutrients = 0 // to Nutrients
+connection remineralization from LDOM to Nutrients = 0 // to Nutrients
+
+connection respiration from Phy to Nutrients = Phy.r_0 * Phy.T_f + Zeta_DIN * Phy.assim_DIN
+connection respiration from Het to Nutrients = T_f * Het.r_0
+		+ Het.tau * (max(0, 1 - Q_r_C_N/q_C_N, 1 - Q_r_C_N * Q_r_N_P / q_C_P))^2
+connection respiration from Nif to Nutrients = Nif.r_0 * T_f + Zeta_DIN * Nif.assim_DIN + Zeta_N_2 * Nif.assim_N_2

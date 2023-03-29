@@ -61,15 +61,15 @@ substanceExpression:
 	substance=ID '=' expression=arithmeticExpression
 ;
 
-calculation: basiccalculation | alternativecalculation;
+calculation: basicCalculation | alternativeCalculation;
 
-basiccalculation:
+basicCalculation:
 	'calc' name=ID '=' expression=arithmeticExpression
 ;
 
-alternativecalculation:
+alternativeCalculation:
 	'alternatives' name=ID ':' expression=arithmeticExpression '{'
-		alternatives+=basiccalculation*
+		alternatives+=basicCalculation*
 	'}'
 ;
 
@@ -142,9 +142,10 @@ arrayExpression:
 	'[' expressions+=arithmeticExpression (',' expressions+=arithmeticExpression)* ']'
 ;
 
-functionCallingExpression: type=eFunction '(' expressions+= arithmeticExpression(',' expressions+= arithmeticExpression)* ')';
-eFunction:
-	exp = 'exp' | inverse = 'inverse' | max = 'max'
+functionCallingExpression: type=function '(' expressions+= arithmeticExpression (',' expressions+= arithmeticExpression)* ')';
+
+function:
+	'exp' | 'inverse' | 'max'
 ;
 
 literalExpression:
@@ -190,11 +191,7 @@ termReference:
 	(sourceCompartment=ID '>')?  (targetCompartment=ID ':')? reference=qualifiedName
 ;
 
-term:
-	name=ID
-;
-
-// returns term
+// should be moved to documentation
 subterm:
 	updateState | connection | parameterDeclaration | calculation | environmentVariableDeclaration | substanceExpression | substanceState
 ;

@@ -1,0 +1,187 @@
+@test
+SUBROUTINE pointer()
+ use funit
+
+ real, pointer :: xPtr => NULL()
+ real, target  :: x
+
+ ! FAILS
+ !@assertNotAssociated(xPtr)    
+
+ x = 0.0
+ xPtr => x
+ ! USE pointer
+ @assertAssociated(xPtr)
+
+ ! FAILS
+ !@assertfail(message='0')
+
+END SUBROUTINE pointer
+
+@test
+SUBROUTINE error()
+ use funit
+
+ call assert_that(1, is(equal_to(2)))
+ @assertExceptionRaised(new_line('a')//'Expected: is <2>' // new_line('a') // '     but: was <1>')
+
+END SUBROUTINE error
+
+@test
+SUBROUTINE true_false()
+ use funit
+ 
+ @asserttrue(1 == 1, message='1')
+ @assertfalse(1 == 2, message='1')
+
+ ! instead of assertTrue(a==b,...)
+ @assertEqualUserDefined(1,1, message='2')
+
+END SUBROUTINE true_false
+
+@test
+SUBROUTINE lessgreaterthanorequal()
+ use funit
+
+ @assertlessthan( 1, 2.0, message='2', tolerance=1E-12)
+ @assertlessthanorequal( 2, 2.0, message='2', tolerance=1E-12)
+ @assertgreaterthan( 2, 1.0, message='2', tolerance=1E-12)
+ @assertgreaterthanorequal( 2, 2.0, message='2', tolerance=1E-12)
+
+END SUBROUTINE lessgreaterthanorequal
+
+@test
+SUBROUTINE boolean()
+ use funit
+
+ @assertall([.true., .true.], message='1')
+ @assertnone([.false., .false.], message='1')
+ @assertany([.true., .false.], message='1')
+ @assertnotall([.true., .false.], message='1')
+
+END SUBROUTINE boolean
+
+@test
+SUBROUTINE shape()
+ use funit
+ integer, dimension(1:5) :: a1, a2
+
+ do n = 1,5
+   a1(n) = n
+   a2(n) = n
+ end do
+
+ @assertsameshape(a1, a2, message='2')
+
+END SUBROUTINE shape
+
+@test
+SUBROUTINE infinite()
+ USE ieee_arithmetic
+ use funit
+
+ REAL :: inf_32, nan
+ inf_32 = ieee_value(inf_32,  ieee_positive_inf)
+
+ nan = IEEE_VALUE(nan, IEEE_QUIET_NAN)
+ @assertisnan(nan, message='1')
+
+ @assertisfinite(1D0, message='1')
+
+END SUBROUTINE infinite
+
+@test
+SUBROUTINE logic()
+ use funit
+ logical, parameter :: YES = .true., NO = .false.
+
+ @assertEquivalent(YES,YES, message='2')
+
+END SUBROUTINE logic
+
+@test
+SUBROUTINE equal()
+ use funit
+ INTEGER, PARAMETER :: dp=KIND(0D0) 
+ REAL(dp) :: eq0 = 1, eq1 = 1
+
+ @assertequal( 1, 1.0, message='2', tolerance=1E-12)
+ @assertnotequal( 1, 2.0, message='2', tolerance=1E-12)
+ @assertRelativelyEqual( 2, 2.0, message='2', tolerance=1E-12)
+
+END SUBROUTINE equal
+
+@test
+SUBROUTINE that()
+ use funit
+
+ @assert_that(1, is(equal_to(1)))
+ 
+END SUBROUTINE that
+
+@test
+SUBROUTINE all_assertion()
+ USE ieee_arithmetic
+ use funit
+ INTEGER, PARAMETER :: dp=KIND(0D0) 
+
+ REAL(dp) :: eq0 = 1, eq1 = 1
+
+ REAL :: inf_32, nan
+ integer, dimension(1:5) :: a1, a2
+ logical, parameter :: YES = .true., NO = .false.
+
+ real, pointer :: xPtr => NULL()
+ real, target  :: x
+
+ inf_32 = ieee_value(inf_32,  ieee_positive_inf)
+
+ ! FAILS
+ !@assertNotAssociated(xPtr)    
+
+ x = 0.0
+ xPtr => x
+ ! USE pointer
+ @assertAssociated(xPtr)
+
+ ! FAILS
+ !@assertfail(message='0')
+
+ call assert_that(1, is(equal_to(2)))
+ @assertExceptionRaised(new_line('a')//'Expected: is <2>' // new_line('a') // '     but: was <1>')
+
+ @asserttrue(1 == 1, message='1')
+ @assertfalse(1 == 2, message='1')
+
+ ! instead of assertTrue(a==b,...)
+ @assertEqualUserDefined(1,1, message='2')
+
+ @assertlessthan( 1, 2, message='2')
+ @assertlessthanorequal( 2, 2, message='2')
+ @assertgreaterthan( 2, 1, message='2')
+ @assertgreaterthanorequal( 2, 2, message='2')
+
+ @assertall([.true., .true.], message='1')
+ @assertnone([.false., .false.], message='1')
+ @assertany([.true., .false.], message='1')
+ @assertnotall([.true., .false.], message='1')
+
+ do n = 1,5
+   a1(n) = n
+   a2(n) = n
+ end do
+ @assertsameshape(a1, a2, message='2')
+
+ nan = IEEE_VALUE(nan, IEEE_QUIET_NAN)
+ @assertisnan(nan, message='1')
+
+ @assertisfinite(1D0, message='1')
+
+ @assertEquivalent(YES,YES, message='2')
+
+ @assertequal( 1, 1.0, message='2', tolerance=1E-12)
+ @assertnotequal( 1, 2.0, message='2', tolerance=1E-12)
+ @assertRelativelyEqual( 2, 2.0, message='2', tolerance=1E-12)
+
+ @assert_that(1, is(equal_to(1)))
+END SUBROUTINE all_assertion

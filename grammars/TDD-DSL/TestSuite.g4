@@ -23,7 +23,7 @@
 grammar TestSuite;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
-import Assertion, Typing, PhysicalUnits, CommonLexerRules;
+import Keyword, Typing, Reference, PhysicalUnits, CommonLexerRules;
 
 /** test_suite ; top-level rule; begin parsing here */
 test_suite              : cases+=test_case
@@ -33,22 +33,22 @@ test_suite              : cases+=test_case
 /** test case*/
 test_case               : 'test' ID ':' NEWLINE
                           scope=test_scope
-                          vars+=test_vars
+                          vars=test_vars
                           assertions+=test_assertion
                           (NEWLINE assertions+=test_assertion)*
                         ;
 
-/** scope of test case*/
-test_vars              : 'var' ':' NEWLINE
-                          test_files
-                          test_modules
+/** variables used in test case; ends on newline*/
+test_vars               : 'var' ':' NEWLINE
+                          vars+=test_var+
                         ;
 
 /** variables used in test case*/
-test_vars               : arithmeticExpression (varDeclaration)? optionalDesc  /** ends on newline */
+test_var                : varDeclaration '=' expr? optionalDesc  /** ends on newline */
                         ;
 
-varDeclaration          : name=ID ':' type=paramType                                            # varDecl
+/** declaration of variables used in test cases  */
+varDeclaration          : name=reference ':' type=paramType (',' keys+=f90StdKey (',' keys+=f90StdKey)*)?
                         ;
 
 /** scope of test case*/
@@ -62,57 +62,47 @@ test_scope              : 'scope' ':' NEWLINE
 test_files              : 'filepath' ':' path=STRING NEWLINE
                         ;
 
-/** modules used in the test*/
+/** modules used in the test; ends on newline*/
 test_modules            : 'modules' ':'  NEWLINE
-                          modules+=test_module
-                          (NEWLINE modules+=test_module)*
+                          modules+=test_module+
                         ;
 
-/** modules names*/
+/** modules names; ends on newline*/
 test_module             : module=ID NEWLINE
                         ;
 
-/** test assertion ends on newline */
+/** test assertion; ends on newline */
 test_assertion          : 'assert' directive '(' NEWLINE
                           test_input test_output (COMMENT)?     /** ends on newline */
                           ')'
                         ;
 
-/** test input ends on newline*/
+/** test input; ends on newline*/
 test_input              : 'in' ':' NEWLINE
                           parameter+    /** ends on newline */
                         ;
 
-/** test output ends on newline */
+/** test output; ends on newline */
 test_output             : 'out' ':' NEWLINE
                           parameter+     /** ends on newline */
                         ;
 
-/** IO parameter ends on newline */
-parameter               : arithmeticExpression (parameterDeclaration)? optionalDesc  /** ends on newline */
+/** IO parameter; ends on newline */
+parameter               : (parameterDeclaration '=')? expr optionalDesc  /** ends on newline */
                         ;
 
 /** optional description for declarations; ensures non description to be newline */
-optionalDesc            : NEWLINE                                                               # emptyDesc
-                        | ',' unitSpec optionalComment                                          # specDesc      /** ends on newline */
+optionalDesc            : NEWLINE                               # emptyDesc
+                        | ',' unitSpec optionalComment          # specDesc      /** ends on newline */
                         ;
 
 /** ensure non comment to be newline */
-optionalComment         : NEWLINE                                                               # emptyComment
-                        | COMMENT                                                               # specComment   /** ends on newline */
+optionalComment         : NEWLINE                               # emptyComment
+                        | COMMENT                               # specComment   /** ends on newline */
                         ;
 
 /** optional IO parameter declaration */
-parameterDeclaration    : name=ID                                                               # nameDecl
-                        | type=paramType                                                        # typeDecl
-                        | name=ID ':' type=paramType                                            # combinedDecl
-                        ;
-
-/** arithmetic expression for value calculation */
-arithmeticExpression    : '(' inner=arithmeticExpression ')'                                    # parensExpr    /** Parenthesized expression */
-                        | left=arithmeticExpression op=('*' | '/') right=arithmeticExpression   # mulDivExpr    /** Multiplication, Division have precedence */
-                        | left=arithmeticExpression op=('+' | '-') right=arithmeticExpression   # addSubExpr    /** Addition, Subtraction have not precedence */
-                        | value=NUM                                                             # numberExpr
-                        | value=STRING                                                          # strExpr
-                        | value=INT                                                             # intExpr
+parameterDeclaration    : name=reference                        # nameDecl
+                        | type=paramType                        # typeDecl
+                        | name=reference ':' type=paramType     # combinedDecl
                         ;

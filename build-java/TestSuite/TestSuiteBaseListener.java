@@ -41,6 +41,42 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTest_vars(TestSuiteParser.Test_varsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTest_vars(TestSuiteParser.Test_varsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTest_var(TestSuiteParser.Test_varContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTest_var(TestSuiteParser.Test_varContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVarDeclaration(TestSuiteParser.VarDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVarDeclaration(TestSuiteParser.VarDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTest_scope(TestSuiteParser.Test_scopeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -221,73 +257,73 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStrExpr(TestSuiteParser.StrExprContext ctx) { }
+	@Override public void enterArraySpec(TestSuiteParser.ArraySpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitStrExpr(TestSuiteParser.StrExprContext ctx) { }
+	@Override public void exitArraySpec(TestSuiteParser.ArraySpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntExpr(TestSuiteParser.IntExprContext ctx) { }
+	@Override public void enterArgSpecInput(TestSuiteParser.ArgSpecInputContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntExpr(TestSuiteParser.IntExprContext ctx) { }
+	@Override public void exitArgSpecInput(TestSuiteParser.ArgSpecInputContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAddSubExpr(TestSuiteParser.AddSubExprContext ctx) { }
+	@Override public void enterArgSpecInOutput(TestSuiteParser.ArgSpecInOutputContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAddSubExpr(TestSuiteParser.AddSubExprContext ctx) { }
+	@Override public void exitArgSpecInOutput(TestSuiteParser.ArgSpecInOutputContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNumberExpr(TestSuiteParser.NumberExprContext ctx) { }
+	@Override public void enterArgSpecOutput(TestSuiteParser.ArgSpecOutputContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNumberExpr(TestSuiteParser.NumberExprContext ctx) { }
+	@Override public void exitArgSpecOutput(TestSuiteParser.ArgSpecOutputContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParensExpr(TestSuiteParser.ParensExprContext ctx) { }
+	@Override public void enterConstantSpec(TestSuiteParser.ConstantSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParensExpr(TestSuiteParser.ParensExprContext ctx) { }
+	@Override public void exitConstantSpec(TestSuiteParser.ConstantSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMulDivExpr(TestSuiteParser.MulDivExprContext ctx) { }
+	@Override public void enterCustom(TestSuiteParser.CustomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMulDivExpr(TestSuiteParser.MulDivExprContext ctx) { }
+	@Override public void exitCustom(TestSuiteParser.CustomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -396,6 +432,126 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitRangeDim(TestSuiteParser.RangeDimContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStrExpr(TestSuiteParser.StrExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStrExpr(TestSuiteParser.StrExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIntExpr(TestSuiteParser.IntExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntExpr(TestSuiteParser.IntExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAddSubExpr(TestSuiteParser.AddSubExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAddSubExpr(TestSuiteParser.AddSubExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRefExpr(TestSuiteParser.RefExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRefExpr(TestSuiteParser.RefExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNumberExpr(TestSuiteParser.NumberExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNumberExpr(TestSuiteParser.NumberExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterParensExpr(TestSuiteParser.ParensExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParensExpr(TestSuiteParser.ParensExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMulDivExpr(TestSuiteParser.MulDivExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMulDivExpr(TestSuiteParser.MulDivExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunRef(TestSuiteParser.FunRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunRef(TestSuiteParser.FunRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVarRef(TestSuiteParser.VarRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVarRef(TestSuiteParser.VarRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArgList(TestSuiteParser.ArgListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArgList(TestSuiteParser.ArgListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

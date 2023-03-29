@@ -34,7 +34,9 @@ fragment ESC    : '\\' [btnr'"\\];
 // Numeric literals
 INT             : '0' | [1-9] DIG* ;                            // fragment match integers without leading zeros
 NUM             : '-'? (('.' DIG+)| (DIG+ ('.' DIG*)? EXP?));   // match numbers
+DP              : '-'? (('.' DIG+)| (DIG+ ('.' DIG*)? DEXP?));  // match numbers
 fragment EXP    : [eE] [+\-]? DIG+;                             // fragment match exponent
+fragment DEXP   : 'D' [+\-]? DIG+;                              // fragment match double precision exponent
 fragment DIG    : [0-9];                                        // fragment match digits
 
 // Newlines, whitespace and comments

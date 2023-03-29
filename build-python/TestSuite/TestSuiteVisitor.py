@@ -19,6 +19,21 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TestSuiteParser#test_vars.
+    def visitTest_vars(self, ctx:TestSuiteParser.Test_varsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#test_var.
+    def visitTest_var(self, ctx:TestSuiteParser.Test_varContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#varDeclaration.
+    def visitVarDeclaration(self, ctx:TestSuiteParser.VarDeclarationContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TestSuiteParser#test_scope.
     def visitTest_scope(self, ctx:TestSuiteParser.Test_scopeContext):
         return self.visitChildren(ctx)
@@ -94,33 +109,33 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#strExpr.
-    def visitStrExpr(self, ctx:TestSuiteParser.StrExprContext):
+    # Visit a parse tree produced by TestSuiteParser#arraySpec.
+    def visitArraySpec(self, ctx:TestSuiteParser.ArraySpecContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#intExpr.
-    def visitIntExpr(self, ctx:TestSuiteParser.IntExprContext):
+    # Visit a parse tree produced by TestSuiteParser#argSpecInput.
+    def visitArgSpecInput(self, ctx:TestSuiteParser.ArgSpecInputContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#addSubExpr.
-    def visitAddSubExpr(self, ctx:TestSuiteParser.AddSubExprContext):
+    # Visit a parse tree produced by TestSuiteParser#argSpecInOutput.
+    def visitArgSpecInOutput(self, ctx:TestSuiteParser.ArgSpecInOutputContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#numberExpr.
-    def visitNumberExpr(self, ctx:TestSuiteParser.NumberExprContext):
+    # Visit a parse tree produced by TestSuiteParser#argSpecOutput.
+    def visitArgSpecOutput(self, ctx:TestSuiteParser.ArgSpecOutputContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#parensExpr.
-    def visitParensExpr(self, ctx:TestSuiteParser.ParensExprContext):
+    # Visit a parse tree produced by TestSuiteParser#constantSpec.
+    def visitConstantSpec(self, ctx:TestSuiteParser.ConstantSpecContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#mulDivExpr.
-    def visitMulDivExpr(self, ctx:TestSuiteParser.MulDivExprContext):
+    # Visit a parse tree produced by TestSuiteParser#custom.
+    def visitCustom(self, ctx:TestSuiteParser.CustomContext):
         return self.visitChildren(ctx)
 
 
@@ -166,6 +181,56 @@ class TestSuiteVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TestSuiteParser#rangeDim.
     def visitRangeDim(self, ctx:TestSuiteParser.RangeDimContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#strExpr.
+    def visitStrExpr(self, ctx:TestSuiteParser.StrExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#intExpr.
+    def visitIntExpr(self, ctx:TestSuiteParser.IntExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#addSubExpr.
+    def visitAddSubExpr(self, ctx:TestSuiteParser.AddSubExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#refExpr.
+    def visitRefExpr(self, ctx:TestSuiteParser.RefExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#numberExpr.
+    def visitNumberExpr(self, ctx:TestSuiteParser.NumberExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#parensExpr.
+    def visitParensExpr(self, ctx:TestSuiteParser.ParensExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#mulDivExpr.
+    def visitMulDivExpr(self, ctx:TestSuiteParser.MulDivExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#funRef.
+    def visitFunRef(self, ctx:TestSuiteParser.FunRefContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#varRef.
+    def visitVarRef(self, ctx:TestSuiteParser.VarRefContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#argList.
+    def visitArgList(self, ctx:TestSuiteParser.ArgListContext):
         return self.visitChildren(ctx)
 
 

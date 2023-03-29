@@ -23,6 +23,24 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTest_case(TestSuiteParser.Test_caseContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_vars}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTest_vars(TestSuiteParser.Test_varsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_var}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTest_var(TestSuiteParser.Test_varContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarDeclaration(TestSuiteParser.VarDeclarationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#test_scope}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -72,14 +90,14 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	T visitParameter(TestSuiteParser.ParameterContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code emptyDesc}
-	 * labeled alternative in {@link TestSuiteParser#optionalParDesc}.
+	 * labeled alternative in {@link TestSuiteParser#optionalDesc}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitEmptyDesc(TestSuiteParser.EmptyDescContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code specDesc}
-	 * labeled alternative in {@link TestSuiteParser#optionalParDesc}.
+	 * labeled alternative in {@link TestSuiteParser#optionalDesc}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
@@ -120,47 +138,47 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCombinedDecl(TestSuiteParser.CombinedDeclContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code strExpr}
-	 * labeled alternative in {@link TestSuiteParser#arithmeticExpression}.
+	 * Visit a parse tree produced by the {@code arraySpec}
+	 * labeled alternative in {@link TestSuiteParser#f90StdKey}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStrExpr(TestSuiteParser.StrExprContext ctx);
+	T visitArraySpec(TestSuiteParser.ArraySpecContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code intExpr}
-	 * labeled alternative in {@link TestSuiteParser#arithmeticExpression}.
+	 * Visit a parse tree produced by the {@code argSpecInput}
+	 * labeled alternative in {@link TestSuiteParser#f90StdKey}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIntExpr(TestSuiteParser.IntExprContext ctx);
+	T visitArgSpecInput(TestSuiteParser.ArgSpecInputContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code addSubExpr}
-	 * labeled alternative in {@link TestSuiteParser#arithmeticExpression}.
+	 * Visit a parse tree produced by the {@code argSpecInOutput}
+	 * labeled alternative in {@link TestSuiteParser#f90StdKey}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAddSubExpr(TestSuiteParser.AddSubExprContext ctx);
+	T visitArgSpecInOutput(TestSuiteParser.ArgSpecInOutputContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code numberExpr}
-	 * labeled alternative in {@link TestSuiteParser#arithmeticExpression}.
+	 * Visit a parse tree produced by the {@code argSpecOutput}
+	 * labeled alternative in {@link TestSuiteParser#f90StdKey}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNumberExpr(TestSuiteParser.NumberExprContext ctx);
+	T visitArgSpecOutput(TestSuiteParser.ArgSpecOutputContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code parensExpr}
-	 * labeled alternative in {@link TestSuiteParser#arithmeticExpression}.
+	 * Visit a parse tree produced by the {@code constantSpec}
+	 * labeled alternative in {@link TestSuiteParser#f90StdKey}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParensExpr(TestSuiteParser.ParensExprContext ctx);
+	T visitConstantSpec(TestSuiteParser.ConstantSpecContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code mulDivExpr}
-	 * labeled alternative in {@link TestSuiteParser#arithmeticExpression}.
+	 * Visit a parse tree produced by the {@code custom}
+	 * labeled alternative in {@link TestSuiteParser#f90StdKey}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMulDivExpr(TestSuiteParser.MulDivExprContext ctx);
+	T visitCustom(TestSuiteParser.CustomContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#directive}.
 	 * @param ctx the parse tree
@@ -215,6 +233,76 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRangeDim(TestSuiteParser.RangeDimContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code strExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStrExpr(TestSuiteParser.StrExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code intExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntExpr(TestSuiteParser.IntExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code addSubExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddSubExpr(TestSuiteParser.AddSubExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code refExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRefExpr(TestSuiteParser.RefExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code numberExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNumberExpr(TestSuiteParser.NumberExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code parensExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParensExpr(TestSuiteParser.ParensExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mulDivExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMulDivExpr(TestSuiteParser.MulDivExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code funRef}
+	 * labeled alternative in {@link TestSuiteParser#reference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunRef(TestSuiteParser.FunRefContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code varRef}
+	 * labeled alternative in {@link TestSuiteParser#reference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarRef(TestSuiteParser.VarRefContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code argList}
+	 * labeled alternative in {@link TestSuiteParser#exprList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArgList(TestSuiteParser.ArgListContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree

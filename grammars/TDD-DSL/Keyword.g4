@@ -16,14 +16,24 @@
  *  Grammars always start with a grammar header. This grammar is called
  *  Typing and must match the filename: Typing.g4
  *
- *  TODO description This grammar defines types of preprocessing directives for pfUnit 4.0.
- *  src: https://github.com/Goddard-Fortran-Ecosystem/pFUnit/blob/main/documentation/pFUnit3-ReferenceManual.pdf
+ *  TODO description This grammar defines keywords used for unit test description.
+ *                      - Types of preprocessing directives for pfUnit 4.0.
+ *                          - src: https://github.com/Goddard-Fortran-Ecosystem/pFUnit/blob/main/documentation/pFUnit3-ReferenceManual.pdf
  *
  *  author Sven Gundlach
  */
-grammar Assertion;
+grammar Keyword;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
+
+/** parser rules start with lowercase letters */
+f90StdKey       : keyword  = 'DIMENSION'                # arraySpec
+                | keyword  = 'INTENT(IN)'               # argSpecInput
+                | keyword  = 'INTENT(INOUT)'            # argSpecInOutput
+                | keyword  = 'INTENT(OUT)'              # argSpecOutput
+                | keyword  = 'PARAMETER'                # constantSpec
+                | keyword  = STRING                     # custom
+                ;
 
 /** parser rules start with lowercase letters */
 directive       : ppDirective  = 'Equal'

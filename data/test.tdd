@@ -1,12 +1,16 @@
 test my_test_case :
     scope :
-    filepath : '/pfunit_example'
-    modules :
-        cfo_example
+        filepath : '/pfunit_example'
+        modules :
+            cfo_example
+    var :
+        dp : int, PARAMETER = KIND( 0D0 )
+        temperature : REAL( dp ) = 20D0
+        expected : REAL( dp ) = (1D0 + (temperature - 15D0)*9.5D0)/260D0
     assert Equal (
         in :
-        3 x : int , k g # 3 kg input
+        x : int = 3 , k g # 3 kg input
         out :
-        9.0 x : real , k g # 9.0 kg output
+        x : real = 9.0 , k g # 9.0 kg output
         # equal assertion
         )

@@ -23,7 +23,7 @@
 grammar Typing;
 
 /** imports include all rules, imported rules are overwritten by existing rules */
-import CommonLexerRules;
+import Reference, CommonLexerRules;
 
 /** parser rules start with lowercase letters */
 paramType       : typeRef
@@ -31,16 +31,16 @@ paramType       : typeRef
                 | arrayType
                 ;
 
-typeRef         : type=ID
+typeRef         : type=reference
                 ;
 
 enumType        : '(' values+=enum ( ',' values+=enum)* ')'
                 ;
 
-enum            : name=ID ('=' value=INT)?
+enum            : name=reference ('=' value=INT)?
                 ;
 
-arrayType       : type=ID '[' dimensions+=dim (',' dimensions+=dim)* ']'
+arrayType       : type=reference '[' dimensions+=dim (',' dimensions+=dim)* ']'
                 ;
 
 dim             : sizeDim

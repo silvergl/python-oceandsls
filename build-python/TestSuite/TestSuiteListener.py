@@ -26,6 +26,42 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TestSuiteParser#test_scope.
+    def enterTest_scope(self, ctx:TestSuiteParser.Test_scopeContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#test_scope.
+    def exitTest_scope(self, ctx:TestSuiteParser.Test_scopeContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#test_files.
+    def enterTest_files(self, ctx:TestSuiteParser.Test_filesContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#test_files.
+    def exitTest_files(self, ctx:TestSuiteParser.Test_filesContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#test_modules.
+    def enterTest_modules(self, ctx:TestSuiteParser.Test_modulesContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#test_modules.
+    def exitTest_modules(self, ctx:TestSuiteParser.Test_modulesContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#test_module.
+    def enterTest_module(self, ctx:TestSuiteParser.Test_moduleContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#test_module.
+    def exitTest_module(self, ctx:TestSuiteParser.Test_moduleContext):
+        pass
+
+
     # Enter a parse tree produced by TestSuiteParser#test_assertion.
     def enterTest_assertion(self, ctx:TestSuiteParser.Test_assertionContext):
         pass

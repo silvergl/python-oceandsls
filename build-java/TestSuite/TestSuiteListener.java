@@ -28,6 +28,46 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitTest_case(TestSuiteParser.Test_caseContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TestSuiteParser#test_scope}.
+	 * @param ctx the parse tree
+	 */
+	void enterTest_scope(TestSuiteParser.Test_scopeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestSuiteParser#test_scope}.
+	 * @param ctx the parse tree
+	 */
+	void exitTest_scope(TestSuiteParser.Test_scopeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TestSuiteParser#test_files}.
+	 * @param ctx the parse tree
+	 */
+	void enterTest_files(TestSuiteParser.Test_filesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestSuiteParser#test_files}.
+	 * @param ctx the parse tree
+	 */
+	void exitTest_files(TestSuiteParser.Test_filesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TestSuiteParser#test_modules}.
+	 * @param ctx the parse tree
+	 */
+	void enterTest_modules(TestSuiteParser.Test_modulesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestSuiteParser#test_modules}.
+	 * @param ctx the parse tree
+	 */
+	void exitTest_modules(TestSuiteParser.Test_modulesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TestSuiteParser#test_module}.
+	 * @param ctx the parse tree
+	 */
+	void enterTest_module(TestSuiteParser.Test_moduleContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestSuiteParser#test_module}.
+	 * @param ctx the parse tree
+	 */
+	void exitTest_module(TestSuiteParser.Test_moduleContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#test_assertion}.
 	 * @param ctx the parse tree
 	 */

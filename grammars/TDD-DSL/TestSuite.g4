@@ -26,18 +26,54 @@ grammar TestSuite;
 import Assertion, Typing, PhysicalUnits, CommonLexerRules;
 
 /** test_suite ; top-level rule; begin parsing here */
-test_suite              : test_cases+=test_case
-                          (NEWLINE test_cases+=test_case+)*
+test_suite              : cases+=test_case
+                          (NEWLINE cases+=test_case+)*
                         ;
 
 /** test case*/
 test_case               : 'test' ID ':' NEWLINE
-                          test_assertions+=test_assertion
-                          (NEWLINE test_assertions+=test_assertion)*
+                          scope=test_scope
+                          vars+=test_vars
+                          assertions+=test_assertion
+                          (NEWLINE assertions+=test_assertion)*
+                        ;
+
+/** scope of test case*/
+test_vars              : 'var' ':' NEWLINE
+                          test_files
+                          test_modules
+                        ;
+
+/** variables used in test case*/
+test_vars               : arithmeticExpression (varDeclaration)? optionalDesc  /** ends on newline */
+                        ;
+
+varDeclaration          : name=ID ':' type=paramType                                            # varDecl
+                        ;
+
+/** scope of test case*/
+test_scope              : 'scope' ':' NEWLINE
+                          test_files
+                          test_modules
+                        ;
+
+// TODO use special literal for filepath eg FILEPATH : [-.a-zA-Z0-9:/\\]+ ;
+/** files containing the tests*/
+test_files              : 'filepath' ':' path=STRING NEWLINE
+                        ;
+
+/** modules used in the test*/
+test_modules            : 'modules' ':'  NEWLINE
+                          modules+=test_module
+                          (NEWLINE modules+=test_module)*
+                        ;
+
+/** modules names*/
+test_module             : module=ID NEWLINE
                         ;
 
 /** test assertion ends on newline */
-test_assertion          : directive '(' NEWLINE
+test_assertion          : 'assert' directive '(' NEWLINE
                           test_input test_output (COMMENT)?     /** ends on newline */
                           ')'
                         ;
@@ -53,11 +89,11 @@ test_output             : 'out' ':' NEWLINE
                         ;
 
 /** IO parameter ends on newline */
-parameter               : arithmeticExpression (parameterDeclaration)? optionalParDesc  /** ends on newline */
+parameter               : arithmeticExpression (parameterDeclaration)? optionalDesc  /** ends on newline */
                         ;
 
-/** ensure non description to be newline */
-optionalParDesc         : NEWLINE                                                               # emptyDesc
+/** optional description for declarations; ensures non description to be newline */
+optionalDesc            : NEWLINE                                                               # emptyDesc
                         | ',' unitSpec optionalComment                                          # specDesc      /** ends on newline */
                         ;
 

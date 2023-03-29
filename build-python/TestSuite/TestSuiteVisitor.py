@@ -19,6 +19,26 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TestSuiteParser#test_scope.
+    def visitTest_scope(self, ctx:TestSuiteParser.Test_scopeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#test_files.
+    def visitTest_files(self, ctx:TestSuiteParser.Test_filesContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#test_modules.
+    def visitTest_modules(self, ctx:TestSuiteParser.Test_modulesContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#test_module.
+    def visitTest_module(self, ctx:TestSuiteParser.Test_moduleContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion(self, ctx:TestSuiteParser.Test_assertionContext):
         return self.visitChildren(ctx)

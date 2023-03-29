@@ -1,5 +1,5 @@
 add_library(sut
-  square.F90
+  square.f90
   )
 
 set_target_properties (sut PROPERTIES

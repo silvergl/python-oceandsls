@@ -23,6 +23,30 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTest_case(TestSuiteParser.Test_caseContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_scope}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTest_scope(TestSuiteParser.Test_scopeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_files}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTest_files(TestSuiteParser.Test_filesContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_modules}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTest_modules(TestSuiteParser.Test_modulesContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_module}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTest_module(TestSuiteParser.Test_moduleContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#test_assertion}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

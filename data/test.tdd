@@ -1,15 +1,12 @@
-test test_assert_true :
-    True (
+test my_test_case :
+    scope :
+    filepath : '/pfunit_example'
+    modules :
+        cfo_example
+    assert Equal (
         in :
-        1.0 x : real , k g # input param0
+        3 x : int , k g # 3 kg input
         out :
-        1 x : int , k g # output param0
-        # true assertion 
-        )
-    False (
-        in :
-        1.0 x : real , k g # input param0
-        out :
-        1 x : int , k g # output param0
-        # false assertion
+        9.0 x : real , k g # 9.0 kg output
+        # equal assertion
         )

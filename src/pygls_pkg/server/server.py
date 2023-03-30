@@ -63,13 +63,11 @@ from pygls.server import LanguageServer
 # Migrating to pygls v1.0
 # https://pygls.readthedocs.io/en/latest/pages/migrating-to-v1.html
 from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE,
-                              TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
-                              CompletionItem, CompletionList, CompletionOptions, CompletionParams, ConfigurationItem,
-                              ConfigurationParams, Diagnostic,
-                              DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-                              MessageType, Position, Range, Registration,
-                              RegistrationParams, SemanticTokens, SemanticTokensLegend, SemanticTokensParams,
-                              Unregistration, UnregistrationParams,
+                              TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, CompletionItem,
+                              CompletionList, CompletionOptions, CompletionParams, ConfigurationItem,
+                              ConfigurationParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams,
+                              DidOpenTextDocumentParams, MessageType, Registration, RegistrationParams, SemanticTokens,
+                              SemanticTokensLegend, SemanticTokensParams, Unregistration, UnregistrationParams,
                               WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport)
 
 COUNT_DOWN_START_IN_SECONDS = 10
@@ -191,19 +189,19 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         logger.info( 'Return empty completionList...' )
         return completionList
 
-
     # launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore( odsl_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {TestGrammarParser.RULE_variableRef,TestGrammarParser.RULE_functionRef}
+    core.preferredRules = {TestGrammarParser.RULE_variableRef, TestGrammarParser.RULE_functionRef}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
 
-    if any(rule in candidates.rules for rule in [TestGrammarParser.RULE_variableRef,TestGrammarParser.RULE_functionRef]):
+    if any( rule in candidates.rules for rule in
+            [TestGrammarParser.RULE_variableRef, TestGrammarParser.RULE_functionRef] ):
 
-        symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor('completions')
+        symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
 
         symbolTable = symbolTableVisitor.visit( parseTree )
 
@@ -212,7 +210,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         logger.info( 'variables candidates: %s\n', variables )
 
         for variable in variables:
-            completionList.items.append( CompletionItem(label=variable))
+            completionList.items.append( CompletionItem( label=variable ) )
 
     logger.info( 'candidates: %s\n', candidates )
 
@@ -358,7 +356,7 @@ def show_configuration_callback(ls: ODslLanguageServer, *args):
 
     ls.get_configuration( ConfigurationParams(
         items=[ConfigurationItem( scope_uri='', section=ODslLanguageServer.CONFIGURATION_SECTION )] ),
-                          _config_callback )
+        _config_callback )
 
 
 @odsl_server.thread()

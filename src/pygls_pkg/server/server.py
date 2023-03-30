@@ -38,9 +38,9 @@ from DiagnosticListener import DiagnosticListener
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
 from antlr4 import InputStream, CommonTokenStream, Token
-from TestGrammar.TestGrammarLexer import TestGrammarLexer
-from TestGrammar.TestGrammarParser import TestGrammarParser
-from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
+from TestSuite.TestSuiteLexer import TestSuiteLexer
+from TestSuite.TestSuiteParser import TestSuiteParser
+from TestSuite.TestSuiteVisitor import TestSuiteVisitor
 # antlr4-c3
 from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 # pygls
@@ -73,7 +73,6 @@ from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE
 COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1
 
-
 class ODslLanguageServer( LanguageServer ):
     CMD_COUNT_DOWN_BLOCKING = 'countDownBlocking'
     CMD_COUNT_DOWN_NON_BLOCKING = 'countDownNonBlocking'
@@ -94,7 +93,7 @@ class ODslLanguageServer( LanguageServer ):
         input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: TestGrammarLexer = TestGrammarLexer( input_stream )
+        self.lexer: TestSuiteLexer = TestSuiteLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener( self.error_listener )
@@ -103,7 +102,7 @@ class ODslLanguageServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: TestGrammarParser = TestGrammarParser( self.tokenStream )
+        self.parser: TestSuiteParser = TestSuiteParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )
@@ -141,7 +140,7 @@ def _validate_format(ls: ODslLanguageServer, source: str):
 
     try:
         # launch parser by invoking startrule
-        ls.parser.prog()
+        ls.parser.test_suite()
     except OSError as err:
         # TODO add exception
         msg = err.filename.msg
@@ -152,9 +151,17 @@ def _validate_format(ls: ODslLanguageServer, source: str):
     return ls.error_listener.diagnostics
 
 
+def get_symbol_name_at_position(uri, position):
+    logger.info( 'uri: %s\n', uri, 'position: %s\n', position )
+
+
+def lookup_symbol(uri, name):
+    logger.info( 'uri: %s\n', uri, 'name: %s\n', name )
+
 @odsl_server.feature( TEXT_DOCUMENT_COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
+    logger.info( '\n---------------------------------\n             START               \n---------------------------------' )
 
     # set input stream of characters for lexer
     text_doc: Document = odsl_server.workspace.get_document( params.text_document.uri )
@@ -171,8 +178,8 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # launches parser by invoking startrule
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
 
-    StartProgContext = TestGrammarParser.StartProgContext
-    parseTree: StartProgContext = odsl_server.parser.prog()
+    Top_levelContext = TestSuiteParser.Test_suiteContext
+    parseTree: Top_levelContext = odsl_server.parser.test_suite()
 
     tokenIndex: TokenPosition = computeTokenPosition( parseTree, odsl_server.tokenStream,
                                                       CaretPosition( params.position.line + 1,
@@ -193,13 +200,12 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     core: CodeCompletionCore = CodeCompletionCore( odsl_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {TestGrammarParser.RULE_variableRef, TestGrammarParser.RULE_functionRef}
+    core.preferredRules = {TestSuiteParser, TestSuiteParser}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
 
-    if any( rule in candidates.rules for rule in
-            [TestGrammarParser.RULE_variableRef, TestGrammarParser.RULE_functionRef] ):
+    if any( rule in candidates.rules for rule in [TestSuiteParser.RULE_reference] ):
 
         symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
 
@@ -224,6 +230,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     logger.info( '\n' )
     # return completion candidates labels
     logger.info( 'Return complete completionList...' )
+    logger.info( '\n---------------------------------\n             END                 \n---------------------------------\n\n' )
     return completionList
 
 

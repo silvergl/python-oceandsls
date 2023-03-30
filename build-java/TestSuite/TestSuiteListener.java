@@ -454,6 +454,18 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitNumberExpr(TestSuiteParser.NumberExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code testExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterTestExpr(TestSuiteParser.TestExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code testExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitTestExpr(TestSuiteParser.TestExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code parensExpr}
 	 * labeled alternative in {@link TestSuiteParser#expr}.
 	 * @param ctx the parse tree

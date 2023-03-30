@@ -377,6 +377,15 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TestSuiteParser#testExpr.
+    def enterTestExpr(self, ctx:TestSuiteParser.TestExprContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#testExpr.
+    def exitTestExpr(self, ctx:TestSuiteParser.TestExprContext):
+        pass
+
+
     # Enter a parse tree produced by TestSuiteParser#parensExpr.
     def enterParensExpr(self, ctx:TestSuiteParser.ParensExprContext):
         pass

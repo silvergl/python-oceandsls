@@ -33,11 +33,11 @@ function getClientOptions(): LanguageClientOptions {
     return {
         // Register the server for plain text documents
         //  documentSelector: [{ scheme: 'file', language: 'plaintext' }],
-        // Register the server for oceandsl as defined in package.json
+        // Register the server for oceandsl_tdd as defined in package.json
         //  src 'A language server example using language services to support embedded languages'
         documentSelector: [
-            { scheme: "file", language: "oceandsl" },
-            { scheme: "untitled", language: "oceandsl" },
+            { scheme: "file", language: "oceandsl_tdd" },
+            { scheme: "untitled", language: "oceandsl_tdd" },
         ],
         outputChannelName: "[pygls] ODslLanguageServer",
         synchronize: {

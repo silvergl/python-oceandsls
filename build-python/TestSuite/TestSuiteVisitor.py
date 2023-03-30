@@ -214,6 +214,11 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TestSuiteParser#testExpr.
+    def visitTestExpr(self, ctx:TestSuiteParser.TestExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TestSuiteParser#parensExpr.
     def visitParensExpr(self, ctx:TestSuiteParser.ParensExprContext):
         return self.visitChildren(ctx)

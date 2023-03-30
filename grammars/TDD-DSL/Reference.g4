@@ -29,6 +29,7 @@ import CommonLexerRules;
 expr                    : '(' inner=expr ')'                    # parensExpr    /** Parenthesized expression */
                         | left=expr op=('*' | '/') right=expr   # mulDivExpr    /** Multiplication, Division have precedence */
                         | left=expr op=('+' | '-') right=expr   # addSubExpr    /** Addition, Subtraction have not precedence */
+                        | op=('+' | '-') right=expr             # testExpr
                         | value=(NUM | DP)                      # numberExpr
                         | value=STRING                          # strExpr
                         | value=INT                             # intExpr

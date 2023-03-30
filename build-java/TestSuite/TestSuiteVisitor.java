@@ -275,6 +275,13 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNumberExpr(TestSuiteParser.NumberExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code testExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTestExpr(TestSuiteParser.TestExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code parensExpr}
 	 * labeled alternative in {@link TestSuiteParser#expr}.
 	 * @param ctx the parse tree

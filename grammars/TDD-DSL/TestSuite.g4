@@ -44,7 +44,7 @@ test_vars               : 'var' ':' NEWLINE
                         ;
 
 /** variables used in test case*/
-test_var                : varDeclaration '=' expr? optionalDesc  /** ends on newline */
+test_var                : varDeclaration ('=' expr)? optionalDesc  /** ends on newline */
                         ;
 
 /** declaration of variables used in test cases  */

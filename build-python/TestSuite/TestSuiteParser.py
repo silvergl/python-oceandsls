@@ -240,12 +240,12 @@ class TestSuiteParser ( Parser ):
     RULE_pubAttributes = 10
     RULE_test_input = 11
     RULE_test_output = 12
-    RULE_parameter = 13
+    RULE_test_parameter = 13
     RULE_optionalDesc = 14
     RULE_optionalComment = 15
     RULE_parameterDeclaration = 16
     RULE_f90StdKey = 17
-    RULE_directive = 18
+    RULE_test_directive = 18
     RULE_paramType = 19
     RULE_typeRef = 20
     RULE_enumType = 21
@@ -268,11 +268,12 @@ class TestSuiteParser ( Parser ):
     ruleNames =  [ "test_suite", "test_case", "test_vars", "test_var", "varDeclaration", 
                    "test_scope", "test_files", "test_modules", "test_module", 
                    "test_assertion", "pubAttributes", "test_input", "test_output", 
-                   "parameter", "optionalDesc", "optionalComment", "parameterDeclaration", 
-                   "f90StdKey", "directive", "paramType", "typeRef", "enumType", 
-                   "enum", "arrayType", "dim", "sizeDim", "rangeDim", "expr", 
-                   "reference", "exprList", "unitSpec", "composedUnit", 
-                   "basicUnit", "siUnit", "customUnit", "unitPrefix", "siType" ]
+                   "test_parameter", "optionalDesc", "optionalComment", 
+                   "parameterDeclaration", "f90StdKey", "test_directive", 
+                   "paramType", "typeRef", "enumType", "enum", "arrayType", 
+                   "dim", "sizeDim", "rangeDim", "expr", "reference", "exprList", 
+                   "unitSpec", "composedUnit", "basicUnit", "siUnit", "customUnit", 
+                   "unitPrefix", "siType" ]
 
     EOF = Token.EOF
     T__0=1
@@ -644,6 +645,9 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.decl = None # VarDeclarationContext
+            self.value = None # ExprContext
+            self.comment = None # OptionalDescContext
 
         def varDeclaration(self):
             return self.getTypedRuleContext(TestSuiteParser.VarDeclarationContext,0)
@@ -685,7 +689,7 @@ class TestSuiteParser ( Parser ):
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 108
-            self.varDeclaration()
+            localctx.decl = self.varDeclaration()
             self.state = 111
             self._errHandler.sync(self)
             _la = self._input.LA(1)
@@ -693,11 +697,11 @@ class TestSuiteParser ( Parser ):
                 self.state = 109
                 self.match(TestSuiteParser.T__3)
                 self.state = 110
-                self.expr(0)
+                localctx.value = self.expr(0)
 
 
             self.state = 113
-            self.optionalDesc()
+            localctx.comment = self.optionalDesc()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -805,6 +809,8 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.files = None # Test_filesContext
+            self.modules = None # Test_modulesContext
 
         def NEWLINE(self):
             return self.getToken(TestSuiteParser.NEWLINE, 0)
@@ -850,9 +856,9 @@ class TestSuiteParser ( Parser ):
             self.state = 131
             self.match(TestSuiteParser.NEWLINE)
             self.state = 132
-            self.test_files()
+            localctx.files = self.test_files()
             self.state = 133
-            self.test_modules()
+            localctx.modules = self.test_modules()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -999,7 +1005,7 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.module = None # Token
+            self.name = None # Token
 
         def NEWLINE(self):
             return self.getToken(TestSuiteParser.NEWLINE, 0)
@@ -1034,7 +1040,7 @@ class TestSuiteParser ( Parser ):
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 148
-            localctx.module = self.match(TestSuiteParser.ID)
+            localctx.name = self.match(TestSuiteParser.ID)
             self.state = 149
             self.match(TestSuiteParser.NEWLINE)
         except RecognitionException as re:
@@ -1052,13 +1058,18 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-
-        def directive(self):
-            return self.getTypedRuleContext(TestSuiteParser.DirectiveContext,0)
-
+            self.directive = None # Test_directiveContext
+            self.input_ = None # Test_inputContext
+            self.output = None # Test_outputContext
+            self.attr = None # PubAttributesContext
+            self.comment = None # Token
 
         def NEWLINE(self):
             return self.getToken(TestSuiteParser.NEWLINE, 0)
+
+        def test_directive(self):
+            return self.getTypedRuleContext(TestSuiteParser.Test_directiveContext,0)
+
 
         def test_input(self):
             return self.getTypedRuleContext(TestSuiteParser.Test_inputContext,0)
@@ -1105,23 +1116,23 @@ class TestSuiteParser ( Parser ):
             self.state = 151
             self.match(TestSuiteParser.T__8)
             self.state = 152
-            self.directive()
+            localctx.directive = self.test_directive()
             self.state = 153
             self.match(TestSuiteParser.T__9)
             self.state = 154
             self.match(TestSuiteParser.NEWLINE)
             self.state = 155
-            self.test_input()
+            localctx.input_ = self.test_input()
             self.state = 156
-            self.test_output()
+            localctx.output = self.test_output()
             self.state = 157
-            self.pubAttributes()
+            localctx.attr = self.pubAttributes()
             self.state = 159
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==90:
                 self.state = 158
-                self.match(TestSuiteParser.COMMENT)
+                localctx.comment = self.match(TestSuiteParser.COMMENT)
 
 
             self.state = 161
@@ -1240,15 +1251,16 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.parameter = None # Test_parameterContext
 
         def NEWLINE(self):
             return self.getToken(TestSuiteParser.NEWLINE, 0)
 
-        def parameter(self, i:int=None):
+        def test_parameter(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(TestSuiteParser.ParameterContext)
+                return self.getTypedRuleContexts(TestSuiteParser.Test_parameterContext)
             else:
-                return self.getTypedRuleContext(TestSuiteParser.ParameterContext,i)
+                return self.getTypedRuleContext(TestSuiteParser.Test_parameterContext,i)
 
 
         def getRuleIndex(self):
@@ -1289,7 +1301,7 @@ class TestSuiteParser ( Parser ):
             _la = self._input.LA(1)
             while True:
                 self.state = 184
-                self.parameter()
+                localctx.parameter = self.test_parameter()
                 self.state = 187 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
@@ -1311,15 +1323,16 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.parameter = None # Test_parameterContext
 
         def NEWLINE(self):
             return self.getToken(TestSuiteParser.NEWLINE, 0)
 
-        def parameter(self, i:int=None):
+        def test_parameter(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(TestSuiteParser.ParameterContext)
+                return self.getTypedRuleContexts(TestSuiteParser.Test_parameterContext)
             else:
-                return self.getTypedRuleContext(TestSuiteParser.ParameterContext,i)
+                return self.getTypedRuleContext(TestSuiteParser.Test_parameterContext,i)
 
 
         def getRuleIndex(self):
@@ -1360,7 +1373,7 @@ class TestSuiteParser ( Parser ):
             _la = self._input.LA(1)
             while True:
                 self.state = 192
-                self.parameter()
+                localctx.parameter = self.test_parameter()
                 self.state = 195 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
@@ -1376,12 +1389,13 @@ class TestSuiteParser ( Parser ):
         return localctx
 
 
-    class ParameterContext(ParserRuleContext):
+    class Test_parameterContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.decl = None # ParameterDeclarationContext
 
         def expr(self):
             return self.getTypedRuleContext(TestSuiteParser.ExprContext,0)
@@ -1396,29 +1410,29 @@ class TestSuiteParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return TestSuiteParser.RULE_parameter
+            return TestSuiteParser.RULE_test_parameter
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterParameter" ):
-                listener.enterParameter(self)
+            if hasattr( listener, "enterTest_parameter" ):
+                listener.enterTest_parameter(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitParameter" ):
-                listener.exitParameter(self)
+            if hasattr( listener, "exitTest_parameter" ):
+                listener.exitTest_parameter(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParameter" ):
-                return visitor.visitParameter(self)
+            if hasattr( visitor, "visitTest_parameter" ):
+                return visitor.visitTest_parameter(self)
             else:
                 return visitor.visitChildren(self)
 
 
 
 
-    def parameter(self):
+    def test_parameter(self):
 
-        localctx = TestSuiteParser.ParameterContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 26, self.RULE_parameter)
+        localctx = TestSuiteParser.Test_parameterContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 26, self.RULE_test_parameter)
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 200
@@ -1426,7 +1440,7 @@ class TestSuiteParser ( Parser ):
             la_ = self._interp.adaptivePredict(self._input,14,self._ctx)
             if la_ == 1:
                 self.state = 197
-                self.parameterDeclaration()
+                localctx.decl = self.parameterDeclaration()
                 self.state = 198
                 self.match(TestSuiteParser.T__3)
 
@@ -1465,6 +1479,8 @@ class TestSuiteParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.OptionalDescContext
             super().__init__(parser)
+            self.type_ = None # UnitSpecContext
+            self.comment = None # OptionalCommentContext
             self.copyFrom(ctx)
 
         def unitSpec(self):
@@ -1534,9 +1550,9 @@ class TestSuiteParser ( Parser ):
                 self.state = 206
                 self.match(TestSuiteParser.T__4)
                 self.state = 207
-                self.unitSpec()
+                localctx.type_ = self.unitSpec()
                 self.state = 208
-                self.optionalComment()
+                localctx.comment = self.optionalComment()
                 pass
             else:
                 raise NoViableAltException(self)
@@ -1595,6 +1611,7 @@ class TestSuiteParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.OptionalCommentContext
             super().__init__(parser)
+            self.comment = None # Token
             self.copyFrom(ctx)
 
         def COMMENT(self):
@@ -1634,7 +1651,7 @@ class TestSuiteParser ( Parser ):
                 localctx = TestSuiteParser.SpecCommentContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 213
-                self.match(TestSuiteParser.COMMENT)
+                localctx.comment = self.match(TestSuiteParser.COMMENT)
                 pass
             else:
                 raise NoViableAltException(self)
@@ -1808,6 +1825,31 @@ class TestSuiteParser ( Parser ):
 
 
 
+    class CustomKeyContext(F90StdKeyContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.F90StdKeyContext
+            super().__init__(parser)
+            self.keyword = None # Token
+            self.copyFrom(ctx)
+
+        def STRING(self):
+            return self.getToken(TestSuiteParser.STRING, 0)
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterCustomKey" ):
+                listener.enterCustomKey(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitCustomKey" ):
+                listener.exitCustomKey(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCustomKey" ):
+                return visitor.visitCustomKey(self)
+            else:
+                return visitor.visitChildren(self)
+
+
     class ConstantSpecContext(F90StdKeyContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.F90StdKeyContext
@@ -1850,31 +1892,6 @@ class TestSuiteParser ( Parser ):
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitArraySpec" ):
                 return visitor.visitArraySpec(self)
-            else:
-                return visitor.visitChildren(self)
-
-
-    class CustomContext(F90StdKeyContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.F90StdKeyContext
-            super().__init__(parser)
-            self.keyword = None # Token
-            self.copyFrom(ctx)
-
-        def STRING(self):
-            return self.getToken(TestSuiteParser.STRING, 0)
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCustom" ):
-                listener.enterCustom(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCustom" ):
-                listener.exitCustom(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCustom" ):
-                return visitor.visitCustom(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -1994,7 +2011,7 @@ class TestSuiteParser ( Parser ):
                 localctx.keyword = self.match(TestSuiteParser.T__22)
                 pass
             elif token in [89]:
-                localctx = TestSuiteParser.CustomContext(self, localctx)
+                localctx = TestSuiteParser.CustomKeyContext(self, localctx)
                 self.enterOuterAlt(localctx, 7)
                 self.state = 230
                 localctx.keyword = self.match(TestSuiteParser.STRING)
@@ -2011,7 +2028,7 @@ class TestSuiteParser ( Parser ):
         return localctx
 
 
-    class DirectiveContext(ParserRuleContext):
+    class Test_directiveContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -2021,29 +2038,29 @@ class TestSuiteParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return TestSuiteParser.RULE_directive
+            return TestSuiteParser.RULE_test_directive
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDirective" ):
-                listener.enterDirective(self)
+            if hasattr( listener, "enterTest_directive" ):
+                listener.enterTest_directive(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDirective" ):
-                listener.exitDirective(self)
+            if hasattr( listener, "exitTest_directive" ):
+                listener.exitTest_directive(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitDirective" ):
-                return visitor.visitDirective(self)
+            if hasattr( visitor, "visitTest_directive" ):
+                return visitor.visitTest_directive(self)
             else:
                 return visitor.visitChildren(self)
 
 
 
 
-    def directive(self):
+    def test_directive(self):
 
-        localctx = TestSuiteParser.DirectiveContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 36, self.RULE_directive)
+        localctx = TestSuiteParser.Test_directiveContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 36, self.RULE_test_directive)
         try:
             self.state = 256
             self._errHandler.sync(self)
@@ -2182,35 +2199,92 @@ class TestSuiteParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
+
+        def getRuleIndex(self):
+            return TestSuiteParser.RULE_paramType
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class RefContext(ParamTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.ParamTypeContext
+            super().__init__(parser)
+            self.type_ = None # TypeRefContext
+            self.copyFrom(ctx)
+
         def typeRef(self):
             return self.getTypedRuleContext(TestSuiteParser.TypeRefContext,0)
 
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterRef" ):
+                listener.enterRef(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitRef" ):
+                listener.exitRef(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitRef" ):
+                return visitor.visitRef(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class EnmContext(ParamTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.ParamTypeContext
+            super().__init__(parser)
+            self.type_ = None # EnumTypeContext
+            self.copyFrom(ctx)
 
         def enumType(self):
             return self.getTypedRuleContext(TestSuiteParser.EnumTypeContext,0)
 
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterEnm" ):
+                listener.enterEnm(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitEnm" ):
+                listener.exitEnm(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitEnm" ):
+                return visitor.visitEnm(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class ArrayContext(ParamTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.ParamTypeContext
+            super().__init__(parser)
+            self.type_ = None # ArrayTypeContext
+            self.copyFrom(ctx)
+
         def arrayType(self):
             return self.getTypedRuleContext(TestSuiteParser.ArrayTypeContext,0)
 
 
-        def getRuleIndex(self):
-            return TestSuiteParser.RULE_paramType
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterParamType" ):
-                listener.enterParamType(self)
+            if hasattr( listener, "enterArray" ):
+                listener.enterArray(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitParamType" ):
-                listener.exitParamType(self)
+            if hasattr( listener, "exitArray" ):
+                listener.exitArray(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParamType" ):
-                return visitor.visitParamType(self)
+            if hasattr( visitor, "visitArray" ):
+                return visitor.visitArray(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -2223,21 +2297,24 @@ class TestSuiteParser ( Parser ):
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,20,self._ctx)
             if la_ == 1:
+                localctx = TestSuiteParser.RefContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 258
-                self.typeRef()
+                localctx.type_ = self.typeRef()
                 pass
 
             elif la_ == 2:
+                localctx = TestSuiteParser.EnmContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 259
-                self.enumType()
+                localctx.type_ = self.enumType()
                 pass
 
             elif la_ == 3:
+                localctx = TestSuiteParser.ArrayContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
                 self.state = 260
-                self.arrayType()
+                localctx.type_ = self.arrayType()
                 pass
 
 
@@ -2521,31 +2598,66 @@ class TestSuiteParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
+
+        def getRuleIndex(self):
+            return TestSuiteParser.RULE_dim
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class SizeContext(DimContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.DimContext
+            super().__init__(parser)
+            self.type_ = None # SizeDimContext
+            self.copyFrom(ctx)
+
         def sizeDim(self):
             return self.getTypedRuleContext(TestSuiteParser.SizeDimContext,0)
 
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterSize" ):
+                listener.enterSize(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitSize" ):
+                listener.exitSize(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSize" ):
+                return visitor.visitSize(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class RangeContext(DimContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.DimContext
+            super().__init__(parser)
+            self.type_ = None # RangeDimContext
+            self.copyFrom(ctx)
 
         def rangeDim(self):
             return self.getTypedRuleContext(TestSuiteParser.RangeDimContext,0)
 
 
-        def getRuleIndex(self):
-            return TestSuiteParser.RULE_dim
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDim" ):
-                listener.enterDim(self)
+            if hasattr( listener, "enterRange" ):
+                listener.enterRange(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDim" ):
-                listener.exitDim(self)
+            if hasattr( listener, "exitRange" ):
+                listener.exitRange(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitDim" ):
-                return visitor.visitDim(self)
+            if hasattr( visitor, "visitRange" ):
+                return visitor.visitRange(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -2558,15 +2670,17 @@ class TestSuiteParser ( Parser ):
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,24,self._ctx)
             if la_ == 1:
+                localctx = TestSuiteParser.SizeContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 293
-                self.sizeDim()
+                localctx.type_ = self.sizeDim()
                 pass
 
             elif la_ == 2:
+                localctx = TestSuiteParser.RangeContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 294
-                self.rangeDim()
+                localctx.type_ = self.rangeDim()
                 pass
 
 
@@ -3112,6 +3226,8 @@ class TestSuiteParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.ReferenceContext
             super().__init__(parser)
+            self.name = None # Token
+            self.exprs = None # ExprListContext
             self.copyFrom(ctx)
 
         def ID(self):
@@ -3139,6 +3255,7 @@ class TestSuiteParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.ReferenceContext
             super().__init__(parser)
+            self.name = None # Token
             self.copyFrom(ctx)
 
         def ID(self):
@@ -3173,7 +3290,7 @@ class TestSuiteParser ( Parser ):
                 localctx = TestSuiteParser.FunRefContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 333
-                self.match(TestSuiteParser.ID)
+                localctx.name = self.match(TestSuiteParser.ID)
                 self.state = 334
                 self.match(TestSuiteParser.T__9)
                 self.state = 336
@@ -3181,7 +3298,7 @@ class TestSuiteParser ( Parser ):
                 _la = self._input.LA(1)
                 if (((_la) & ~0x3f) == 0 and ((1 << _la) & 6755399441056768) != 0) or ((((_la - 88)) & ~0x3f) == 0 and ((1 << (_la - 88)) & 59) != 0):
                     self.state = 335
-                    self.exprList()
+                    localctx.exprs = self.exprList()
 
 
                 self.state = 338
@@ -3192,7 +3309,7 @@ class TestSuiteParser ( Parser ):
                 localctx = TestSuiteParser.VarRefContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 339
-                self.match(TestSuiteParser.ID)
+                localctx.name = self.match(TestSuiteParser.ID)
                 pass
 
 
@@ -3226,6 +3343,8 @@ class TestSuiteParser ( Parser ):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.ExprListContext
             super().__init__(parser)
+            self._expr = None # ExprContext
+            self.exprs = list() # of ExprContexts
             self.copyFrom(ctx)
 
         def expr(self, i:int=None):
@@ -3260,7 +3379,8 @@ class TestSuiteParser ( Parser ):
             localctx = TestSuiteParser.ArgListContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 342
-            self.expr(0)
+            localctx._expr = self.expr(0)
+            localctx.exprs.append(localctx._expr)
             self.state = 347
             self._errHandler.sync(self)
             _la = self._input.LA(1)
@@ -3268,7 +3388,8 @@ class TestSuiteParser ( Parser ):
                 self.state = 343
                 self.match(TestSuiteParser.T__4)
                 self.state = 344
-                self.expr(0)
+                localctx._expr = self.expr(0)
+                localctx.exprs.append(localctx._expr)
                 self.state = 349
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
@@ -3359,6 +3480,7 @@ class TestSuiteParser ( Parser ):
             self.numerator = None # BasicUnitContext
             self.denominator = None # BasicUnitContext
             self.exponent = None # Token
+            self.unit = None # BasicUnitContext
 
         def basicUnit(self, i:int=None):
             if i is None:
@@ -3425,7 +3547,7 @@ class TestSuiteParser ( Parser ):
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 365
-                self.basicUnit()
+                localctx.unit = self.basicUnit()
                 pass
 
 
@@ -3445,35 +3567,92 @@ class TestSuiteParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def siUnit(self):
-            return self.getTypedRuleContext(TestSuiteParser.SiUnitContext,0)
 
+        def getRuleIndex(self):
+            return TestSuiteParser.RULE_basicUnit
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class CustomUnitTypeContext(BasicUnitContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.BasicUnitContext
+            super().__init__(parser)
+            self.type_ = None # CustomUnitContext
+            self.copyFrom(ctx)
 
         def customUnit(self):
             return self.getTypedRuleContext(TestSuiteParser.CustomUnitContext,0)
 
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterCustomUnitType" ):
+                listener.enterCustomUnitType(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitCustomUnitType" ):
+                listener.exitCustomUnitType(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCustomUnitType" ):
+                return visitor.visitCustomUnitType(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class SiUnitTypeContext(BasicUnitContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.BasicUnitContext
+            super().__init__(parser)
+            self.type_ = None # SiUnitContext
+            self.copyFrom(ctx)
+
+        def siUnit(self):
+            return self.getTypedRuleContext(TestSuiteParser.SiUnitContext,0)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterSiUnitType" ):
+                listener.enterSiUnitType(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitSiUnitType" ):
+                listener.exitSiUnitType(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSiUnitType" ):
+                return visitor.visitSiUnitType(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class ComposedUnitTypeContext(BasicUnitContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.BasicUnitContext
+            super().__init__(parser)
+            self.type_ = None # UnitSpecContext
+            self.copyFrom(ctx)
+
         def unitSpec(self):
             return self.getTypedRuleContext(TestSuiteParser.UnitSpecContext,0)
 
 
-        def getRuleIndex(self):
-            return TestSuiteParser.RULE_basicUnit
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterBasicUnit" ):
-                listener.enterBasicUnit(self)
+            if hasattr( listener, "enterComposedUnitType" ):
+                listener.enterComposedUnitType(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitBasicUnit" ):
-                listener.exitBasicUnit(self)
+            if hasattr( listener, "exitComposedUnitType" ):
+                listener.exitComposedUnitType(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitBasicUnit" ):
-                return visitor.visitBasicUnit(self)
+            if hasattr( visitor, "visitComposedUnitType" ):
+                return visitor.visitComposedUnitType(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -3486,21 +3665,24 @@ class TestSuiteParser ( Parser ):
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87]:
+                localctx = TestSuiteParser.SiUnitTypeContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 368
-                self.siUnit()
+                localctx.type_ = self.siUnit()
                 pass
             elif token in [89]:
+                localctx = TestSuiteParser.CustomUnitTypeContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 369
-                self.customUnit()
+                localctx.type_ = self.customUnit()
                 pass
             elif token in [10]:
+                localctx = TestSuiteParser.ComposedUnitTypeContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
                 self.state = 370
                 self.match(TestSuiteParser.T__9)
                 self.state = 371
-                self.unitSpec()
+                localctx.type_ = self.unitSpec()
                 self.state = 372
                 self.match(TestSuiteParser.T__10)
                 pass
@@ -3632,50 +3814,590 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.noP = None # Token
-            self.quetta = None # Token
-            self.ronna = None # Token
-            self.yotta = None # Token
-            self.zetta = None # Token
-            self.exa = None # Token
-            self.peta = None # Token
-            self.tera = None # Token
-            self.giga = None # Token
-            self.mega = None # Token
-            self.kilo = None # Token
-            self.hecto = None # Token
-            self.deca = None # Token
-            self.deci = None # Token
-            self.centi = None # Token
-            self.mili = None # Token
-            self.micro = None # Token
-            self.nano = None # Token
-            self.pico = None # Token
-            self.femto = None # Token
-            self.atto = None # Token
-            self.zepto = None # Token
-            self.yocto = None # Token
-            self.ronto = None # Token
-            self.quecto = None # Token
 
 
         def getRuleIndex(self):
             return TestSuiteParser.RULE_unitPrefix
 
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class MegaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUnitPrefix" ):
-                listener.enterUnitPrefix(self)
+            if hasattr( listener, "enterMega" ):
+                listener.enterMega(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUnitPrefix" ):
-                listener.exitUnitPrefix(self)
+            if hasattr( listener, "exitMega" ):
+                listener.exitMega(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitUnitPrefix" ):
-                return visitor.visitUnitPrefix(self)
+            if hasattr( visitor, "visitMega" ):
+                return visitor.visitMega(self)
             else:
                 return visitor.visitChildren(self)
 
+
+    class AttoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterAtto" ):
+                listener.enterAtto(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitAtto" ):
+                listener.exitAtto(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAtto" ):
+                return visitor.visitAtto(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class FemtoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterFemto" ):
+                listener.enterFemto(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitFemto" ):
+                listener.exitFemto(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitFemto" ):
+                return visitor.visitFemto(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class ZeptoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterZepto" ):
+                listener.enterZepto(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitZepto" ):
+                listener.exitZepto(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitZepto" ):
+                return visitor.visitZepto(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class NanoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterNano" ):
+                listener.enterNano(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitNano" ):
+                listener.exitNano(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitNano" ):
+                return visitor.visitNano(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class DeciContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterDeci" ):
+                listener.enterDeci(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitDeci" ):
+                listener.exitDeci(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDeci" ):
+                return visitor.visitDeci(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class GigaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterGiga" ):
+                listener.enterGiga(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitGiga" ):
+                listener.exitGiga(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitGiga" ):
+                return visitor.visitGiga(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class QuectoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterQuecto" ):
+                listener.enterQuecto(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitQuecto" ):
+                listener.exitQuecto(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitQuecto" ):
+                return visitor.visitQuecto(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class ExaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterExa" ):
+                listener.enterExa(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitExa" ):
+                listener.exitExa(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitExa" ):
+                return visitor.visitExa(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class PicoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterPico" ):
+                listener.enterPico(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitPico" ):
+                listener.exitPico(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPico" ):
+                return visitor.visitPico(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class KiloContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterKilo" ):
+                listener.enterKilo(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitKilo" ):
+                listener.exitKilo(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitKilo" ):
+                return visitor.visitKilo(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class YoctoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterYocto" ):
+                listener.enterYocto(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitYocto" ):
+                listener.exitYocto(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitYocto" ):
+                return visitor.visitYocto(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class YottaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterYotta" ):
+                listener.enterYotta(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitYotta" ):
+                listener.exitYotta(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitYotta" ):
+                return visitor.visitYotta(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class PetaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterPeta" ):
+                listener.enterPeta(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitPeta" ):
+                listener.exitPeta(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPeta" ):
+                return visitor.visitPeta(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class TeraContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterTera" ):
+                listener.enterTera(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitTera" ):
+                listener.exitTera(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitTera" ):
+                return visitor.visitTera(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class CentiContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterCenti" ):
+                listener.enterCenti(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitCenti" ):
+                listener.exitCenti(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCenti" ):
+                return visitor.visitCenti(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class HectoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterHecto" ):
+                listener.enterHecto(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitHecto" ):
+                listener.exitHecto(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitHecto" ):
+                return visitor.visitHecto(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class MiliContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterMili" ):
+                listener.enterMili(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitMili" ):
+                listener.exitMili(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMili" ):
+                return visitor.visitMili(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class NoPContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterNoP" ):
+                listener.enterNoP(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitNoP" ):
+                listener.exitNoP(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitNoP" ):
+                return visitor.visitNoP(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class ZettaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterZetta" ):
+                listener.enterZetta(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitZetta" ):
+                listener.exitZetta(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitZetta" ):
+                return visitor.visitZetta(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class DecaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterDeca" ):
+                listener.enterDeca(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitDeca" ):
+                listener.exitDeca(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDeca" ):
+                return visitor.visitDeca(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class QuettaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterQuetta" ):
+                listener.enterQuetta(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitQuetta" ):
+                listener.exitQuetta(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitQuetta" ):
+                return visitor.visitQuetta(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class MicroContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterMicro" ):
+                listener.enterMicro(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitMicro" ):
+                listener.exitMicro(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMicro" ):
+                return visitor.visitMicro(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class RontoContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterRonto" ):
+                listener.enterRonto(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitRonto" ):
+                listener.exitRonto(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitRonto" ):
+                return visitor.visitRonto(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class RonnaContext(UnitPrefixContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.UnitPrefixContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterRonna" ):
+                listener.enterRonna(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitRonna" ):
+                listener.exitRonna(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitRonna" ):
+                return visitor.visitRonna(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3688,129 +4410,154 @@ class TestSuiteParser ( Parser ):
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [54]:
+                localctx = TestSuiteParser.NoPContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 383
-                localctx.noP = self.match(TestSuiteParser.T__53)
+                localctx.value = self.match(TestSuiteParser.T__53)
                 pass
             elif token in [55]:
+                localctx = TestSuiteParser.QuettaContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 384
-                localctx.quetta = self.match(TestSuiteParser.T__54)
+                localctx.value = self.match(TestSuiteParser.T__54)
                 pass
             elif token in [56]:
+                localctx = TestSuiteParser.RonnaContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
                 self.state = 385
-                localctx.ronna = self.match(TestSuiteParser.T__55)
+                localctx.value = self.match(TestSuiteParser.T__55)
                 pass
             elif token in [57]:
+                localctx = TestSuiteParser.YottaContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
                 self.state = 386
-                localctx.yotta = self.match(TestSuiteParser.T__56)
+                localctx.value = self.match(TestSuiteParser.T__56)
                 pass
             elif token in [58]:
+                localctx = TestSuiteParser.ZettaContext(self, localctx)
                 self.enterOuterAlt(localctx, 5)
                 self.state = 387
-                localctx.zetta = self.match(TestSuiteParser.T__57)
+                localctx.value = self.match(TestSuiteParser.T__57)
                 pass
             elif token in [59]:
+                localctx = TestSuiteParser.ExaContext(self, localctx)
                 self.enterOuterAlt(localctx, 6)
                 self.state = 388
-                localctx.exa = self.match(TestSuiteParser.T__58)
+                localctx.value = self.match(TestSuiteParser.T__58)
                 pass
             elif token in [60]:
+                localctx = TestSuiteParser.PetaContext(self, localctx)
                 self.enterOuterAlt(localctx, 7)
                 self.state = 389
-                localctx.peta = self.match(TestSuiteParser.T__59)
+                localctx.value = self.match(TestSuiteParser.T__59)
                 pass
             elif token in [61]:
+                localctx = TestSuiteParser.TeraContext(self, localctx)
                 self.enterOuterAlt(localctx, 8)
                 self.state = 390
-                localctx.tera = self.match(TestSuiteParser.T__60)
+                localctx.value = self.match(TestSuiteParser.T__60)
                 pass
             elif token in [62]:
+                localctx = TestSuiteParser.GigaContext(self, localctx)
                 self.enterOuterAlt(localctx, 9)
                 self.state = 391
-                localctx.giga = self.match(TestSuiteParser.T__61)
+                localctx.value = self.match(TestSuiteParser.T__61)
                 pass
             elif token in [63]:
+                localctx = TestSuiteParser.MegaContext(self, localctx)
                 self.enterOuterAlt(localctx, 10)
                 self.state = 392
-                localctx.mega = self.match(TestSuiteParser.T__62)
+                localctx.value = self.match(TestSuiteParser.T__62)
                 pass
             elif token in [64]:
+                localctx = TestSuiteParser.KiloContext(self, localctx)
                 self.enterOuterAlt(localctx, 11)
                 self.state = 393
-                localctx.kilo = self.match(TestSuiteParser.T__63)
+                localctx.value = self.match(TestSuiteParser.T__63)
                 pass
             elif token in [65]:
+                localctx = TestSuiteParser.HectoContext(self, localctx)
                 self.enterOuterAlt(localctx, 12)
                 self.state = 394
-                localctx.hecto = self.match(TestSuiteParser.T__64)
+                localctx.value = self.match(TestSuiteParser.T__64)
                 pass
             elif token in [66]:
+                localctx = TestSuiteParser.DecaContext(self, localctx)
                 self.enterOuterAlt(localctx, 13)
                 self.state = 395
-                localctx.deca = self.match(TestSuiteParser.T__65)
+                localctx.value = self.match(TestSuiteParser.T__65)
                 pass
             elif token in [67]:
+                localctx = TestSuiteParser.DeciContext(self, localctx)
                 self.enterOuterAlt(localctx, 14)
                 self.state = 396
-                localctx.deci = self.match(TestSuiteParser.T__66)
+                localctx.value = self.match(TestSuiteParser.T__66)
                 pass
             elif token in [68]:
+                localctx = TestSuiteParser.CentiContext(self, localctx)
                 self.enterOuterAlt(localctx, 15)
                 self.state = 397
-                localctx.centi = self.match(TestSuiteParser.T__67)
+                localctx.value = self.match(TestSuiteParser.T__67)
                 pass
             elif token in [69]:
+                localctx = TestSuiteParser.MiliContext(self, localctx)
                 self.enterOuterAlt(localctx, 16)
                 self.state = 398
-                localctx.mili = self.match(TestSuiteParser.T__68)
+                localctx.value = self.match(TestSuiteParser.T__68)
                 pass
             elif token in [70]:
+                localctx = TestSuiteParser.MicroContext(self, localctx)
                 self.enterOuterAlt(localctx, 17)
                 self.state = 399
-                localctx.micro = self.match(TestSuiteParser.T__69)
+                localctx.value = self.match(TestSuiteParser.T__69)
                 pass
             elif token in [71]:
+                localctx = TestSuiteParser.NanoContext(self, localctx)
                 self.enterOuterAlt(localctx, 18)
                 self.state = 400
-                localctx.nano = self.match(TestSuiteParser.T__70)
+                localctx.value = self.match(TestSuiteParser.T__70)
                 pass
             elif token in [72]:
+                localctx = TestSuiteParser.PicoContext(self, localctx)
                 self.enterOuterAlt(localctx, 19)
                 self.state = 401
-                localctx.pico = self.match(TestSuiteParser.T__71)
+                localctx.value = self.match(TestSuiteParser.T__71)
                 pass
             elif token in [73]:
+                localctx = TestSuiteParser.FemtoContext(self, localctx)
                 self.enterOuterAlt(localctx, 20)
                 self.state = 402
-                localctx.femto = self.match(TestSuiteParser.T__72)
+                localctx.value = self.match(TestSuiteParser.T__72)
                 pass
             elif token in [74]:
+                localctx = TestSuiteParser.AttoContext(self, localctx)
                 self.enterOuterAlt(localctx, 21)
                 self.state = 403
-                localctx.atto = self.match(TestSuiteParser.T__73)
+                localctx.value = self.match(TestSuiteParser.T__73)
                 pass
             elif token in [75]:
+                localctx = TestSuiteParser.ZeptoContext(self, localctx)
                 self.enterOuterAlt(localctx, 22)
                 self.state = 404
-                localctx.zepto = self.match(TestSuiteParser.T__74)
+                localctx.value = self.match(TestSuiteParser.T__74)
                 pass
             elif token in [76]:
+                localctx = TestSuiteParser.YoctoContext(self, localctx)
                 self.enterOuterAlt(localctx, 23)
                 self.state = 405
-                localctx.yocto = self.match(TestSuiteParser.T__75)
+                localctx.value = self.match(TestSuiteParser.T__75)
                 pass
             elif token in [77]:
+                localctx = TestSuiteParser.RontoContext(self, localctx)
                 self.enterOuterAlt(localctx, 24)
                 self.state = 406
-                localctx.ronto = self.match(TestSuiteParser.T__76)
+                localctx.value = self.match(TestSuiteParser.T__76)
                 pass
             elif token in [78]:
+                localctx = TestSuiteParser.QuectoContext(self, localctx)
                 self.enterOuterAlt(localctx, 25)
                 self.state = 407
-                localctx.quecto = self.match(TestSuiteParser.T__77)
+                localctx.value = self.match(TestSuiteParser.T__77)
                 pass
             else:
                 raise NoViableAltException(self)
@@ -3830,35 +4577,245 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.second = None # Token
-            self.metre = None # Token
-            self.gram = None # Token
-            self.ampere = None # Token
-            self.kelvin = None # Token
-            self.mole = None # Token
-            self.candela = None # Token
-            self.pascal = None # Token
-            self.joule = None # Token
-            self.ton = None # Token
 
 
         def getRuleIndex(self):
             return TestSuiteParser.RULE_siType
 
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class MetreContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSiType" ):
-                listener.enterSiType(self)
+            if hasattr( listener, "enterMetre" ):
+                listener.enterMetre(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSiType" ):
-                listener.exitSiType(self)
+            if hasattr( listener, "exitMetre" ):
+                listener.exitMetre(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSiType" ):
-                return visitor.visitSiType(self)
+            if hasattr( visitor, "visitMetre" ):
+                return visitor.visitMetre(self)
             else:
                 return visitor.visitChildren(self)
 
+
+    class JouleContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterJoule" ):
+                listener.enterJoule(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitJoule" ):
+                listener.exitJoule(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitJoule" ):
+                return visitor.visitJoule(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class KelvinContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterKelvin" ):
+                listener.enterKelvin(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitKelvin" ):
+                listener.exitKelvin(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitKelvin" ):
+                return visitor.visitKelvin(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class TonContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterTon" ):
+                listener.enterTon(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitTon" ):
+                listener.exitTon(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitTon" ):
+                return visitor.visitTon(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class GramContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterGram" ):
+                listener.enterGram(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitGram" ):
+                listener.exitGram(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitGram" ):
+                return visitor.visitGram(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class PascalContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterPascal" ):
+                listener.enterPascal(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitPascal" ):
+                listener.exitPascal(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPascal" ):
+                return visitor.visitPascal(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class MoleContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterMole" ):
+                listener.enterMole(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitMole" ):
+                listener.exitMole(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMole" ):
+                return visitor.visitMole(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class CandelaContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterCandela" ):
+                listener.enterCandela(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitCandela" ):
+                listener.exitCandela(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCandela" ):
+                return visitor.visitCandela(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class AmpereContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterAmpere" ):
+                listener.enterAmpere(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitAmpere" ):
+                listener.exitAmpere(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAmpere" ):
+                return visitor.visitAmpere(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class SecondContext(SiTypeContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TestSuiteParser.SiTypeContext
+            super().__init__(parser)
+            self.value = None # Token
+            self.copyFrom(ctx)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterSecond" ):
+                listener.enterSecond(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitSecond" ):
+                listener.exitSecond(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSecond" ):
+                return visitor.visitSecond(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3871,54 +4828,64 @@ class TestSuiteParser ( Parser ):
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [79]:
+                localctx = TestSuiteParser.SecondContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 410
-                localctx.second = self.match(TestSuiteParser.T__78)
+                localctx.value = self.match(TestSuiteParser.T__78)
                 pass
             elif token in [69]:
+                localctx = TestSuiteParser.MetreContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 411
-                localctx.metre = self.match(TestSuiteParser.T__68)
+                localctx.value = self.match(TestSuiteParser.T__68)
                 pass
             elif token in [80]:
+                localctx = TestSuiteParser.GramContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
                 self.state = 412
-                localctx.gram = self.match(TestSuiteParser.T__79)
+                localctx.value = self.match(TestSuiteParser.T__79)
                 pass
             elif token in [81]:
+                localctx = TestSuiteParser.AmpereContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
                 self.state = 413
-                localctx.ampere = self.match(TestSuiteParser.T__80)
+                localctx.value = self.match(TestSuiteParser.T__80)
                 pass
             elif token in [82]:
+                localctx = TestSuiteParser.KelvinContext(self, localctx)
                 self.enterOuterAlt(localctx, 5)
                 self.state = 414
-                localctx.kelvin = self.match(TestSuiteParser.T__81)
+                localctx.value = self.match(TestSuiteParser.T__81)
                 pass
             elif token in [83]:
+                localctx = TestSuiteParser.MoleContext(self, localctx)
                 self.enterOuterAlt(localctx, 6)
                 self.state = 415
-                localctx.mole = self.match(TestSuiteParser.T__82)
+                localctx.value = self.match(TestSuiteParser.T__82)
                 pass
             elif token in [84]:
+                localctx = TestSuiteParser.CandelaContext(self, localctx)
                 self.enterOuterAlt(localctx, 7)
                 self.state = 416
-                localctx.candela = self.match(TestSuiteParser.T__83)
+                localctx.value = self.match(TestSuiteParser.T__83)
                 pass
             elif token in [85]:
+                localctx = TestSuiteParser.PascalContext(self, localctx)
                 self.enterOuterAlt(localctx, 8)
                 self.state = 417
-                localctx.pascal = self.match(TestSuiteParser.T__84)
+                localctx.value = self.match(TestSuiteParser.T__84)
                 pass
             elif token in [86]:
+                localctx = TestSuiteParser.JouleContext(self, localctx)
                 self.enterOuterAlt(localctx, 9)
                 self.state = 418
-                localctx.joule = self.match(TestSuiteParser.T__85)
+                localctx.value = self.match(TestSuiteParser.T__85)
                 pass
             elif token in [87]:
+                localctx = TestSuiteParser.TonContext(self, localctx)
                 self.enterOuterAlt(localctx, 10)
                 self.state = 419
-                localctx.ton = self.match(TestSuiteParser.T__86)
+                localctx.value = self.match(TestSuiteParser.T__86)
                 pass
             else:
                 raise NoViableAltException(self)

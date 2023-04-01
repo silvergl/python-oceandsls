@@ -89,11 +89,11 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTest_output(TestSuiteParser.Test_outputContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#parameter}.
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_parameter}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParameter(TestSuiteParser.ParameterContext ctx);
+	T visitTest_parameter(TestSuiteParser.Test_parameterContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code emptyDesc}
 	 * labeled alternative in {@link TestSuiteParser#optionalDesc}.
@@ -179,24 +179,39 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstantSpec(TestSuiteParser.ConstantSpecContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code custom}
+	 * Visit a parse tree produced by the {@code customKey}
 	 * labeled alternative in {@link TestSuiteParser#f90StdKey}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCustom(TestSuiteParser.CustomContext ctx);
+	T visitCustomKey(TestSuiteParser.CustomKeyContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#directive}.
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_directive}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDirective(TestSuiteParser.DirectiveContext ctx);
+	T visitTest_directive(TestSuiteParser.Test_directiveContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#paramType}.
+	 * Visit a parse tree produced by the {@code ref}
+	 * labeled alternative in {@link TestSuiteParser#paramType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParamType(TestSuiteParser.ParamTypeContext ctx);
+	T visitRef(TestSuiteParser.RefContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code enm}
+	 * labeled alternative in {@link TestSuiteParser#paramType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnm(TestSuiteParser.EnmContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code array}
+	 * labeled alternative in {@link TestSuiteParser#paramType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArray(TestSuiteParser.ArrayContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#typeRef}.
 	 * @param ctx the parse tree
@@ -222,11 +237,19 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayType(TestSuiteParser.ArrayTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#dim}.
+	 * Visit a parse tree produced by the {@code size}
+	 * labeled alternative in {@link TestSuiteParser#dim}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDim(TestSuiteParser.DimContext ctx);
+	T visitSize(TestSuiteParser.SizeContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code range}
+	 * labeled alternative in {@link TestSuiteParser#dim}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRange(TestSuiteParser.RangeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#sizeDim}.
 	 * @param ctx the parse tree
@@ -329,11 +352,26 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitComposedUnit(TestSuiteParser.ComposedUnitContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#basicUnit}.
+	 * Visit a parse tree produced by the {@code siUnitType}
+	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBasicUnit(TestSuiteParser.BasicUnitContext ctx);
+	T visitSiUnitType(TestSuiteParser.SiUnitTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code customUnitType}
+	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCustomUnitType(TestSuiteParser.CustomUnitTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code composedUnitType}
+	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComposedUnitType(TestSuiteParser.ComposedUnitTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#siUnit}.
 	 * @param ctx the parse tree
@@ -347,15 +385,248 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCustomUnit(TestSuiteParser.CustomUnitContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#unitPrefix}.
+	 * Visit a parse tree produced by the {@code noP}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitUnitPrefix(TestSuiteParser.UnitPrefixContext ctx);
+	T visitNoP(TestSuiteParser.NoPContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#siType}.
+	 * Visit a parse tree produced by the {@code quetta}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSiType(TestSuiteParser.SiTypeContext ctx);
+	T visitQuetta(TestSuiteParser.QuettaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ronna}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRonna(TestSuiteParser.RonnaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code yotta}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitYotta(TestSuiteParser.YottaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code zetta}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitZetta(TestSuiteParser.ZettaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code exa}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExa(TestSuiteParser.ExaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code peta}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPeta(TestSuiteParser.PetaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code tera}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTera(TestSuiteParser.TeraContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code giga}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGiga(TestSuiteParser.GigaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mega}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMega(TestSuiteParser.MegaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code kilo}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitKilo(TestSuiteParser.KiloContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code hecto}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitHecto(TestSuiteParser.HectoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code deca}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeca(TestSuiteParser.DecaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code deci}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeci(TestSuiteParser.DeciContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code centi}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCenti(TestSuiteParser.CentiContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mili}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMili(TestSuiteParser.MiliContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code micro}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMicro(TestSuiteParser.MicroContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code nano}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNano(TestSuiteParser.NanoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code pico}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPico(TestSuiteParser.PicoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code femto}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFemto(TestSuiteParser.FemtoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code atto}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAtto(TestSuiteParser.AttoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code zepto}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitZepto(TestSuiteParser.ZeptoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code yocto}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitYocto(TestSuiteParser.YoctoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ronto}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRonto(TestSuiteParser.RontoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code quecto}
+	 * labeled alternative in {@link TestSuiteParser#unitPrefix}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitQuecto(TestSuiteParser.QuectoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code second}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSecond(TestSuiteParser.SecondContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code metre}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMetre(TestSuiteParser.MetreContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code gram}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGram(TestSuiteParser.GramContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ampere}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAmpere(TestSuiteParser.AmpereContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code kelvin}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitKelvin(TestSuiteParser.KelvinContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mole}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMole(TestSuiteParser.MoleContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code candela}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCandela(TestSuiteParser.CandelaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code pascal}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPascal(TestSuiteParser.PascalContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code joule}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitJoule(TestSuiteParser.JouleContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ton}
+	 * labeled alternative in {@link TestSuiteParser#siType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTon(TestSuiteParser.TonContext ctx);
 }

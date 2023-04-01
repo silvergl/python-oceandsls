@@ -27,17 +27,19 @@ import sys, os, logging
 from antlr4.IntervalSet import IntervalSet
 from pygls.workspace import Document
 
+
 if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) )
 from utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
 from utils.suggestVariables import suggestVariables
+from TestSuiteListenerImpl import TestSuiteListenerImpl
 from SymbolTableVisitor import SymbolTableVisitor
 from DiagnosticListener import DiagnosticListener
 
 # antlr4
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
-from antlr4 import InputStream, CommonTokenStream, Token
+from antlr4 import InputStream, CommonTokenStream, Token, ParseTreeWalker
 from TestSuite.TestSuiteLexer import TestSuiteLexer
 from TestSuite.TestSuiteParser import TestSuiteParser
 from TestSuite.TestSuiteVisitor import TestSuiteVisitor
@@ -68,7 +70,8 @@ from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE
                               ConfigurationParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams,
                               DidOpenTextDocumentParams, MessageType, Registration, RegistrationParams, SemanticTokens,
                               SemanticTokensLegend, SemanticTokensParams, Unregistration, UnregistrationParams,
-                              WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport)
+                              WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport,
+                              TEXT_DOCUMENT_DID_SAVE, DidSaveTextDocumentParams)
 
 COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1
@@ -268,6 +271,34 @@ def did_close(server: ODslLanguageServer, params: DidCloseTextDocumentParams):
     """Text document did close notification."""
     server.show_message( 'Text Document Did Close' )
 
+@odsl_server.feature( TEXT_DOCUMENT_DID_SAVE )
+def did_save(server: ODslLanguageServer, params: DidSaveTextDocumentParams):
+    """Text document did save notification."""
+
+    """Returns completion items."""
+    logger.info( '\n---------------------------------\n             START SAVE          \n---------------------------------' )
+
+    # set input stream of characters for lexer
+    text_doc: Document = odsl_server.workspace.get_document( params.text_document.uri )
+    source: str = text_doc.source
+    input_stream: InputStream = InputStream( source )
+
+    # reset the lexer/parser
+    odsl_server.error_listener.reset()
+    odsl_server.lexer.inputStream = input_stream
+    odsl_server.tokenStream = CommonTokenStream( odsl_server.lexer )
+    odsl_server.parser.setInputStream( odsl_server.tokenStream )
+
+    Top_levelContext = TestSuiteParser.Test_suiteContext
+    parseTree: Top_levelContext = odsl_server.parser.test_suite()
+
+
+    listener = TestSuiteListenerImpl()
+    walker = ParseTreeWalker()
+    walker.walk(listener, parseTree)
+
+    server.show_message( 'Text Document Did Save' )
+    logger.info( '\n---------------------------------\n             END SAVE            \n---------------------------------\n\n' )
 
 @odsl_server.feature( TEXT_DOCUMENT_DID_OPEN )
 async def did_open(ls, params: DidOpenTextDocumentParams):

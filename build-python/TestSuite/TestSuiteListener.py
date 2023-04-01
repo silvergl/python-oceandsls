@@ -125,12 +125,12 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#parameter.
-    def enterParameter(self, ctx:TestSuiteParser.ParameterContext):
+    # Enter a parse tree produced by TestSuiteParser#test_parameter.
+    def enterTest_parameter(self, ctx:TestSuiteParser.Test_parameterContext):
         pass
 
-    # Exit a parse tree produced by TestSuiteParser#parameter.
-    def exitParameter(self, ctx:TestSuiteParser.ParameterContext):
+    # Exit a parse tree produced by TestSuiteParser#test_parameter.
+    def exitTest_parameter(self, ctx:TestSuiteParser.Test_parameterContext):
         pass
 
 
@@ -242,30 +242,48 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#custom.
-    def enterCustom(self, ctx:TestSuiteParser.CustomContext):
+    # Enter a parse tree produced by TestSuiteParser#customKey.
+    def enterCustomKey(self, ctx:TestSuiteParser.CustomKeyContext):
         pass
 
-    # Exit a parse tree produced by TestSuiteParser#custom.
-    def exitCustom(self, ctx:TestSuiteParser.CustomContext):
-        pass
-
-
-    # Enter a parse tree produced by TestSuiteParser#directive.
-    def enterDirective(self, ctx:TestSuiteParser.DirectiveContext):
-        pass
-
-    # Exit a parse tree produced by TestSuiteParser#directive.
-    def exitDirective(self, ctx:TestSuiteParser.DirectiveContext):
+    # Exit a parse tree produced by TestSuiteParser#customKey.
+    def exitCustomKey(self, ctx:TestSuiteParser.CustomKeyContext):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#paramType.
-    def enterParamType(self, ctx:TestSuiteParser.ParamTypeContext):
+    # Enter a parse tree produced by TestSuiteParser#test_directive.
+    def enterTest_directive(self, ctx:TestSuiteParser.Test_directiveContext):
         pass
 
-    # Exit a parse tree produced by TestSuiteParser#paramType.
-    def exitParamType(self, ctx:TestSuiteParser.ParamTypeContext):
+    # Exit a parse tree produced by TestSuiteParser#test_directive.
+    def exitTest_directive(self, ctx:TestSuiteParser.Test_directiveContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#ref.
+    def enterRef(self, ctx:TestSuiteParser.RefContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#ref.
+    def exitRef(self, ctx:TestSuiteParser.RefContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#enm.
+    def enterEnm(self, ctx:TestSuiteParser.EnmContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#enm.
+    def exitEnm(self, ctx:TestSuiteParser.EnmContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#array.
+    def enterArray(self, ctx:TestSuiteParser.ArrayContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#array.
+    def exitArray(self, ctx:TestSuiteParser.ArrayContext):
         pass
 
 
@@ -305,12 +323,21 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#dim.
-    def enterDim(self, ctx:TestSuiteParser.DimContext):
+    # Enter a parse tree produced by TestSuiteParser#size.
+    def enterSize(self, ctx:TestSuiteParser.SizeContext):
         pass
 
-    # Exit a parse tree produced by TestSuiteParser#dim.
-    def exitDim(self, ctx:TestSuiteParser.DimContext):
+    # Exit a parse tree produced by TestSuiteParser#size.
+    def exitSize(self, ctx:TestSuiteParser.SizeContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#range.
+    def enterRange(self, ctx:TestSuiteParser.RangeContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#range.
+    def exitRange(self, ctx:TestSuiteParser.RangeContext):
         pass
 
 
@@ -449,12 +476,30 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#basicUnit.
-    def enterBasicUnit(self, ctx:TestSuiteParser.BasicUnitContext):
+    # Enter a parse tree produced by TestSuiteParser#siUnitType.
+    def enterSiUnitType(self, ctx:TestSuiteParser.SiUnitTypeContext):
         pass
 
-    # Exit a parse tree produced by TestSuiteParser#basicUnit.
-    def exitBasicUnit(self, ctx:TestSuiteParser.BasicUnitContext):
+    # Exit a parse tree produced by TestSuiteParser#siUnitType.
+    def exitSiUnitType(self, ctx:TestSuiteParser.SiUnitTypeContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#customUnitType.
+    def enterCustomUnitType(self, ctx:TestSuiteParser.CustomUnitTypeContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#customUnitType.
+    def exitCustomUnitType(self, ctx:TestSuiteParser.CustomUnitTypeContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#composedUnitType.
+    def enterComposedUnitType(self, ctx:TestSuiteParser.ComposedUnitTypeContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#composedUnitType.
+    def exitComposedUnitType(self, ctx:TestSuiteParser.ComposedUnitTypeContext):
         pass
 
 
@@ -476,21 +521,318 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#unitPrefix.
-    def enterUnitPrefix(self, ctx:TestSuiteParser.UnitPrefixContext):
+    # Enter a parse tree produced by TestSuiteParser#noP.
+    def enterNoP(self, ctx:TestSuiteParser.NoPContext):
         pass
 
-    # Exit a parse tree produced by TestSuiteParser#unitPrefix.
-    def exitUnitPrefix(self, ctx:TestSuiteParser.UnitPrefixContext):
+    # Exit a parse tree produced by TestSuiteParser#noP.
+    def exitNoP(self, ctx:TestSuiteParser.NoPContext):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#siType.
-    def enterSiType(self, ctx:TestSuiteParser.SiTypeContext):
+    # Enter a parse tree produced by TestSuiteParser#quetta.
+    def enterQuetta(self, ctx:TestSuiteParser.QuettaContext):
         pass
 
-    # Exit a parse tree produced by TestSuiteParser#siType.
-    def exitSiType(self, ctx:TestSuiteParser.SiTypeContext):
+    # Exit a parse tree produced by TestSuiteParser#quetta.
+    def exitQuetta(self, ctx:TestSuiteParser.QuettaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#ronna.
+    def enterRonna(self, ctx:TestSuiteParser.RonnaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#ronna.
+    def exitRonna(self, ctx:TestSuiteParser.RonnaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#yotta.
+    def enterYotta(self, ctx:TestSuiteParser.YottaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#yotta.
+    def exitYotta(self, ctx:TestSuiteParser.YottaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#zetta.
+    def enterZetta(self, ctx:TestSuiteParser.ZettaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#zetta.
+    def exitZetta(self, ctx:TestSuiteParser.ZettaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#exa.
+    def enterExa(self, ctx:TestSuiteParser.ExaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#exa.
+    def exitExa(self, ctx:TestSuiteParser.ExaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#peta.
+    def enterPeta(self, ctx:TestSuiteParser.PetaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#peta.
+    def exitPeta(self, ctx:TestSuiteParser.PetaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#tera.
+    def enterTera(self, ctx:TestSuiteParser.TeraContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#tera.
+    def exitTera(self, ctx:TestSuiteParser.TeraContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#giga.
+    def enterGiga(self, ctx:TestSuiteParser.GigaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#giga.
+    def exitGiga(self, ctx:TestSuiteParser.GigaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#mega.
+    def enterMega(self, ctx:TestSuiteParser.MegaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#mega.
+    def exitMega(self, ctx:TestSuiteParser.MegaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#kilo.
+    def enterKilo(self, ctx:TestSuiteParser.KiloContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#kilo.
+    def exitKilo(self, ctx:TestSuiteParser.KiloContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#hecto.
+    def enterHecto(self, ctx:TestSuiteParser.HectoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#hecto.
+    def exitHecto(self, ctx:TestSuiteParser.HectoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#deca.
+    def enterDeca(self, ctx:TestSuiteParser.DecaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#deca.
+    def exitDeca(self, ctx:TestSuiteParser.DecaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#deci.
+    def enterDeci(self, ctx:TestSuiteParser.DeciContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#deci.
+    def exitDeci(self, ctx:TestSuiteParser.DeciContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#centi.
+    def enterCenti(self, ctx:TestSuiteParser.CentiContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#centi.
+    def exitCenti(self, ctx:TestSuiteParser.CentiContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#mili.
+    def enterMili(self, ctx:TestSuiteParser.MiliContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#mili.
+    def exitMili(self, ctx:TestSuiteParser.MiliContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#micro.
+    def enterMicro(self, ctx:TestSuiteParser.MicroContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#micro.
+    def exitMicro(self, ctx:TestSuiteParser.MicroContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#nano.
+    def enterNano(self, ctx:TestSuiteParser.NanoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#nano.
+    def exitNano(self, ctx:TestSuiteParser.NanoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#pico.
+    def enterPico(self, ctx:TestSuiteParser.PicoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#pico.
+    def exitPico(self, ctx:TestSuiteParser.PicoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#femto.
+    def enterFemto(self, ctx:TestSuiteParser.FemtoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#femto.
+    def exitFemto(self, ctx:TestSuiteParser.FemtoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#atto.
+    def enterAtto(self, ctx:TestSuiteParser.AttoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#atto.
+    def exitAtto(self, ctx:TestSuiteParser.AttoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#zepto.
+    def enterZepto(self, ctx:TestSuiteParser.ZeptoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#zepto.
+    def exitZepto(self, ctx:TestSuiteParser.ZeptoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#yocto.
+    def enterYocto(self, ctx:TestSuiteParser.YoctoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#yocto.
+    def exitYocto(self, ctx:TestSuiteParser.YoctoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#ronto.
+    def enterRonto(self, ctx:TestSuiteParser.RontoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#ronto.
+    def exitRonto(self, ctx:TestSuiteParser.RontoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#quecto.
+    def enterQuecto(self, ctx:TestSuiteParser.QuectoContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#quecto.
+    def exitQuecto(self, ctx:TestSuiteParser.QuectoContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#second.
+    def enterSecond(self, ctx:TestSuiteParser.SecondContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#second.
+    def exitSecond(self, ctx:TestSuiteParser.SecondContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#metre.
+    def enterMetre(self, ctx:TestSuiteParser.MetreContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#metre.
+    def exitMetre(self, ctx:TestSuiteParser.MetreContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#gram.
+    def enterGram(self, ctx:TestSuiteParser.GramContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#gram.
+    def exitGram(self, ctx:TestSuiteParser.GramContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#ampere.
+    def enterAmpere(self, ctx:TestSuiteParser.AmpereContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#ampere.
+    def exitAmpere(self, ctx:TestSuiteParser.AmpereContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#kelvin.
+    def enterKelvin(self, ctx:TestSuiteParser.KelvinContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#kelvin.
+    def exitKelvin(self, ctx:TestSuiteParser.KelvinContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#mole.
+    def enterMole(self, ctx:TestSuiteParser.MoleContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#mole.
+    def exitMole(self, ctx:TestSuiteParser.MoleContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#candela.
+    def enterCandela(self, ctx:TestSuiteParser.CandelaContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#candela.
+    def exitCandela(self, ctx:TestSuiteParser.CandelaContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#pascal.
+    def enterPascal(self, ctx:TestSuiteParser.PascalContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#pascal.
+    def exitPascal(self, ctx:TestSuiteParser.PascalContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#joule.
+    def enterJoule(self, ctx:TestSuiteParser.JouleContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#joule.
+    def exitJoule(self, ctx:TestSuiteParser.JouleContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#ton.
+    def enterTon(self, ctx:TestSuiteParser.TonContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#ton.
+    def exitTon(self, ctx:TestSuiteParser.TonContext):
         pass
 
 

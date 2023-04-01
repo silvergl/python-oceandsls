@@ -26,9 +26,9 @@ grammar Typing;
 import Reference, CommonLexerRules;
 
 /** parser rules start with lowercase letters */
-paramType       : typeRef
-                | enumType
-                | arrayType
+paramType       : type=typeRef                                          # ref
+                | type=enumType                                         # enm
+                | type=arrayType                                        # array
                 ;
 
 typeRef         : type=reference
@@ -43,8 +43,8 @@ enum            : name=reference ('=' value=INT)?
 arrayType       : type=reference '[' dimensions+=dim (',' dimensions+=dim)* ']'
                 ;
 
-dim             : sizeDim
-                | rangeDim
+dim             : type=sizeDim                                          # size
+                | type=rangeDim                                         # range
                 ;
 
 sizeDim         : (size=INT)?

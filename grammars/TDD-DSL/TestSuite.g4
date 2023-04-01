@@ -44,7 +44,7 @@ test_vars               : 'var' ':' NEWLINE
                         ;
 
 /** variables used in test case*/
-test_var                : varDeclaration ('=' expr)? optionalDesc  /** ends on newline */
+test_var                : decl=varDeclaration ('=' value=expr)? comment=optionalDesc  /** ends on newline */
                         ;
 
 /** declaration of variables used in test cases  */
@@ -53,8 +53,8 @@ varDeclaration          : name=reference ':' type=paramType (',' keys+=f90StdKey
 
 /** scope of test case*/
 test_scope              : 'scope' ':' NEWLINE
-                          test_files
-                          test_modules
+                          files=test_files
+                          modules=test_modules
                         ;
 
 // TODO use special literal for filepath eg FILEPATH : [-.a-zA-Z0-9:/\\]+ ;
@@ -68,12 +68,12 @@ test_modules            : 'modules' ':'  NEWLINE
                         ;
 
 /** modules names; ends on newline*/
-test_module             : module=ID NEWLINE
+test_module             : name=ID NEWLINE
                         ;
 
 /** test assertion; ends on newline */
-test_assertion          : 'assert' directive '(' NEWLINE
-                          test_input test_output pubAttributes (COMMENT)?     /** ends on newline */
+test_assertion          : 'assert' directive=test_directive '(' NEWLINE
+                          input=test_input output=test_output attr=pubAttributes (comment=COMMENT)?     /** ends on newline */
                           ')'
                         ;
 
@@ -84,27 +84,28 @@ pubAttributes           : ('tolerance' ':' tol=expr NEWLINE)?
                         ;
 
 /** test input; ends on newline*/
+//TODO check # parameter for arg # of ppDirective
 test_input              : 'in' ':' NEWLINE
-                          parameter+    /** ends on newline */
+                          parameter=test_parameter+    /** ends on newline */
                         ;
 
 /** test output; ends on newline */
 test_output             : 'out' ':' NEWLINE
-                          parameter+     /** ends on newline */
+                          parameter=test_parameter+     /** ends on newline */
                         ;
 
 /** IO parameter; ends on newline */
-parameter               : (parameterDeclaration '=')? expr optionalDesc  /** ends on newline */
+test_parameter               : (decl=parameterDeclaration '=')? expr optionalDesc  /** ends on newline */
                         ;
 
 /** optional description for declarations; ensures non description to be newline */
 optionalDesc            : NEWLINE                               # emptyDesc
-                        | ',' unitSpec optionalComment          # specDesc      /** ends on newline */
+                        | ',' type=unitSpec comment=optionalComment          # specDesc      /** ends on newline */
                         ;
 
 /** ensure non comment to be newline */
 optionalComment         : NEWLINE                               # emptyComment
-                        | COMMENT                               # specComment   /** ends on newline */
+                        | comment=COMMENT                               # specComment   /** ends on newline */
                         ;
 
 /** optional IO parameter declaration */

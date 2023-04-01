@@ -33,12 +33,12 @@ composedUnit    : numerator=basicUnit (
                       ('/' denominator=basicUnit)
                     | ('**' exponent=INT)
                   )
-                | basicUnit
+                | unit=basicUnit
                 ;
 
-basicUnit       : siUnit
-                | customUnit
-                | '(' unitSpec ')'
+basicUnit       : type=siUnit                           # siUnitType
+                | type=customUnit                       # customUnitType
+                | '(' type=unitSpec ')'                 # composedUnitType
                 ;
 
 siUnit          : (prefix=unitPrefix)? type=siType
@@ -50,42 +50,42 @@ customUnit      : name=STRING
 
 
 /** SI prefixes */
-unitPrefix      : noP = 'noP'
-                | quetta = 'Q'
-                | ronna = 'R'
-                | yotta = 'Y'
-                | zetta = 'Z'
-                | exa   = 'E'
-                | peta  = 'P'
-                | tera  = 'T'
-                | giga  = 'G'
-                | mega  = 'M'
-                | kilo  = 'k'
-                | hecto = 'h'
-                | deca  = 'da'
-                | deci  = 'd'
-                | centi = 'c'
-                | mili  = 'm'
-                | micro = 'μ'
-                | nano  = 'n'
-                | pico  = 'p'
-                | femto = 'f'
-                | atto  = 'a'
-                | zepto = 'z'
-                | yocto = 'y'
-                | ronto = 'r'
-                | quecto = 'q'
+unitPrefix      : value = 'noP' # noP
+                | value = 'Q'   # quetta
+                | value = 'R'   # ronna
+                | value = 'Y'   # yotta
+                | value = 'Z'   # zetta
+                | value   = 'E' # exa
+                | value  = 'P'  # peta
+                | value  = 'T'  # tera
+                | value  = 'G'  # giga
+                | value  = 'M'  # mega
+                | value  = 'k'  # kilo
+                | value = 'h'   # hecto
+                | value  = 'da' # deca
+                | value  = 'd'  # deci
+                | value = 'c'   # centi
+                | value  = 'm'  # mili
+                | value = 'μ'   # micro
+                | value  = 'n'  # nano
+                | value  = 'p'  # pico
+                | value = 'f'   # femto
+                | value  = 'a'  # atto
+                | value = 'z'   # zepto
+                | value = 'y'   # yocto
+                | value = 'r'   # ronto
+                | value = 'q'   # quecto
                 ;
 
 /** SI Unit symbols */
-siType          : second    = 's'
-                | metre     = 'm'
-                | gram      = 'g'
-                | ampere    = 'A'
-                | kelvin    = 'K'
-                | mole      = 'mol'
-                | candela   = 'cd'
-                | pascal    = 'Pa'
-                | joule     = 'J'
-                | ton       = 't'
+siType          : value    = 's'    # second
+                | value     = 'm'   # metre
+                | value      = 'g'  # gram
+                | value    = 'A'    # ampere
+                | value    = 'K'    # kelvin
+                | value = 'mol'     # mole
+                | value   = 'cd'    # candela
+                | value    = 'Pa'   # pascal
+                | value     = 'J'   # joule
+                | value       = 't' # ton
                 ;

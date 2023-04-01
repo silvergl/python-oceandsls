@@ -74,8 +74,8 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#parameter.
-    def visitParameter(self, ctx:TestSuiteParser.ParameterContext):
+    # Visit a parse tree produced by TestSuiteParser#test_parameter.
+    def visitTest_parameter(self, ctx:TestSuiteParser.Test_parameterContext):
         return self.visitChildren(ctx)
 
 
@@ -139,18 +139,28 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#custom.
-    def visitCustom(self, ctx:TestSuiteParser.CustomContext):
+    # Visit a parse tree produced by TestSuiteParser#customKey.
+    def visitCustomKey(self, ctx:TestSuiteParser.CustomKeyContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#directive.
-    def visitDirective(self, ctx:TestSuiteParser.DirectiveContext):
+    # Visit a parse tree produced by TestSuiteParser#test_directive.
+    def visitTest_directive(self, ctx:TestSuiteParser.Test_directiveContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#paramType.
-    def visitParamType(self, ctx:TestSuiteParser.ParamTypeContext):
+    # Visit a parse tree produced by TestSuiteParser#ref.
+    def visitRef(self, ctx:TestSuiteParser.RefContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#enm.
+    def visitEnm(self, ctx:TestSuiteParser.EnmContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#array.
+    def visitArray(self, ctx:TestSuiteParser.ArrayContext):
         return self.visitChildren(ctx)
 
 
@@ -174,8 +184,13 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#dim.
-    def visitDim(self, ctx:TestSuiteParser.DimContext):
+    # Visit a parse tree produced by TestSuiteParser#size.
+    def visitSize(self, ctx:TestSuiteParser.SizeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#range.
+    def visitRange(self, ctx:TestSuiteParser.RangeContext):
         return self.visitChildren(ctx)
 
 
@@ -254,8 +269,18 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#basicUnit.
-    def visitBasicUnit(self, ctx:TestSuiteParser.BasicUnitContext):
+    # Visit a parse tree produced by TestSuiteParser#siUnitType.
+    def visitSiUnitType(self, ctx:TestSuiteParser.SiUnitTypeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#customUnitType.
+    def visitCustomUnitType(self, ctx:TestSuiteParser.CustomUnitTypeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#composedUnitType.
+    def visitComposedUnitType(self, ctx:TestSuiteParser.ComposedUnitTypeContext):
         return self.visitChildren(ctx)
 
 
@@ -269,13 +294,178 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#unitPrefix.
-    def visitUnitPrefix(self, ctx:TestSuiteParser.UnitPrefixContext):
+    # Visit a parse tree produced by TestSuiteParser#noP.
+    def visitNoP(self, ctx:TestSuiteParser.NoPContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#siType.
-    def visitSiType(self, ctx:TestSuiteParser.SiTypeContext):
+    # Visit a parse tree produced by TestSuiteParser#quetta.
+    def visitQuetta(self, ctx:TestSuiteParser.QuettaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#ronna.
+    def visitRonna(self, ctx:TestSuiteParser.RonnaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#yotta.
+    def visitYotta(self, ctx:TestSuiteParser.YottaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#zetta.
+    def visitZetta(self, ctx:TestSuiteParser.ZettaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#exa.
+    def visitExa(self, ctx:TestSuiteParser.ExaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#peta.
+    def visitPeta(self, ctx:TestSuiteParser.PetaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#tera.
+    def visitTera(self, ctx:TestSuiteParser.TeraContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#giga.
+    def visitGiga(self, ctx:TestSuiteParser.GigaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#mega.
+    def visitMega(self, ctx:TestSuiteParser.MegaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#kilo.
+    def visitKilo(self, ctx:TestSuiteParser.KiloContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#hecto.
+    def visitHecto(self, ctx:TestSuiteParser.HectoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#deca.
+    def visitDeca(self, ctx:TestSuiteParser.DecaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#deci.
+    def visitDeci(self, ctx:TestSuiteParser.DeciContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#centi.
+    def visitCenti(self, ctx:TestSuiteParser.CentiContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#mili.
+    def visitMili(self, ctx:TestSuiteParser.MiliContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#micro.
+    def visitMicro(self, ctx:TestSuiteParser.MicroContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#nano.
+    def visitNano(self, ctx:TestSuiteParser.NanoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#pico.
+    def visitPico(self, ctx:TestSuiteParser.PicoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#femto.
+    def visitFemto(self, ctx:TestSuiteParser.FemtoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#atto.
+    def visitAtto(self, ctx:TestSuiteParser.AttoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#zepto.
+    def visitZepto(self, ctx:TestSuiteParser.ZeptoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#yocto.
+    def visitYocto(self, ctx:TestSuiteParser.YoctoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#ronto.
+    def visitRonto(self, ctx:TestSuiteParser.RontoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#quecto.
+    def visitQuecto(self, ctx:TestSuiteParser.QuectoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#second.
+    def visitSecond(self, ctx:TestSuiteParser.SecondContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#metre.
+    def visitMetre(self, ctx:TestSuiteParser.MetreContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#gram.
+    def visitGram(self, ctx:TestSuiteParser.GramContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#ampere.
+    def visitAmpere(self, ctx:TestSuiteParser.AmpereContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#kelvin.
+    def visitKelvin(self, ctx:TestSuiteParser.KelvinContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#mole.
+    def visitMole(self, ctx:TestSuiteParser.MoleContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#candela.
+    def visitCandela(self, ctx:TestSuiteParser.CandelaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#pascal.
+    def visitPascal(self, ctx:TestSuiteParser.PascalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#joule.
+    def visitJoule(self, ctx:TestSuiteParser.JouleContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#ton.
+    def visitTon(self, ctx:TestSuiteParser.TonContext):
         return self.visitChildren(ctx)
 
 

@@ -33,11 +33,11 @@ f90StdKey       : keyword  = 'ALLOCATABLE'              # arraySpec
                 | keyword  = 'INTENT(INOUT)'            # argSpecInOutput
                 | keyword  = 'INTENT(OUT)'              # argSpecOutput
                 | keyword  = 'PARAMETER'                # constantSpec
-                | keyword  = STRING                     # custom
+                | keyword  = STRING                     # customKey
                 ;
 
 /** parser rules start with lowercase letters */
-directive       : ppDirective  = 'NotAssociated'        /** @assertNotAssociated(xPtr) */
+test_directive  : ppDirective  = 'NotAssociated'        /** @assertNotAssociated(xPtr) */
                 | ppDirective  = 'Associated'           /** @assertAssociated(xPtr) */
                 | ppDirective  = 'Fail'                 /** @assertfail(message='0') */
                 | ppDirective  = 'ExceptionRaised'      /** @assertExceptionRaised(new_line('a')//'Expected: is <2>' // new_line('a') // '     but: was <1>') */

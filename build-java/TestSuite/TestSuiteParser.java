@@ -35,19 +35,19 @@ public class TestSuiteParser extends Parser {
 		RULE_test_suite = 0, RULE_test_case = 1, RULE_test_vars = 2, RULE_test_var = 3, 
 		RULE_varDeclaration = 4, RULE_test_scope = 5, RULE_test_files = 6, RULE_test_modules = 7, 
 		RULE_test_module = 8, RULE_test_assertion = 9, RULE_pubAttributes = 10, 
-		RULE_test_input = 11, RULE_test_output = 12, RULE_parameter = 13, RULE_optionalDesc = 14, 
-		RULE_optionalComment = 15, RULE_parameterDeclaration = 16, RULE_f90StdKey = 17, 
-		RULE_directive = 18, RULE_paramType = 19, RULE_typeRef = 20, RULE_enumType = 21, 
-		RULE_enum = 22, RULE_arrayType = 23, RULE_dim = 24, RULE_sizeDim = 25, 
-		RULE_rangeDim = 26, RULE_expr = 27, RULE_reference = 28, RULE_exprList = 29, 
-		RULE_unitSpec = 30, RULE_composedUnit = 31, RULE_basicUnit = 32, RULE_siUnit = 33, 
-		RULE_customUnit = 34, RULE_unitPrefix = 35, RULE_siType = 36;
+		RULE_test_input = 11, RULE_test_output = 12, RULE_test_parameter = 13, 
+		RULE_optionalDesc = 14, RULE_optionalComment = 15, RULE_parameterDeclaration = 16, 
+		RULE_f90StdKey = 17, RULE_test_directive = 18, RULE_paramType = 19, RULE_typeRef = 20, 
+		RULE_enumType = 21, RULE_enum = 22, RULE_arrayType = 23, RULE_dim = 24, 
+		RULE_sizeDim = 25, RULE_rangeDim = 26, RULE_expr = 27, RULE_reference = 28, 
+		RULE_exprList = 29, RULE_unitSpec = 30, RULE_composedUnit = 31, RULE_basicUnit = 32, 
+		RULE_siUnit = 33, RULE_customUnit = 34, RULE_unitPrefix = 35, RULE_siType = 36;
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"test_suite", "test_case", "test_vars", "test_var", "varDeclaration", 
 			"test_scope", "test_files", "test_modules", "test_module", "test_assertion", 
-			"pubAttributes", "test_input", "test_output", "parameter", "optionalDesc", 
-			"optionalComment", "parameterDeclaration", "f90StdKey", "directive", 
+			"pubAttributes", "test_input", "test_output", "test_parameter", "optionalDesc", 
+			"optionalComment", "parameterDeclaration", "f90StdKey", "test_directive", 
 			"paramType", "typeRef", "enumType", "enum", "arrayType", "dim", "sizeDim", 
 			"rangeDim", "expr", "reference", "exprList", "unitSpec", "composedUnit", 
 			"basicUnit", "siUnit", "customUnit", "unitPrefix", "siType"
@@ -391,6 +391,9 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Test_varContext extends ParserRuleContext {
+		public VarDeclarationContext decl;
+		public ExprContext value;
+		public OptionalDescContext comment;
 		public VarDeclarationContext varDeclaration() {
 			return getRuleContext(VarDeclarationContext.class,0);
 		}
@@ -427,7 +430,7 @@ public class TestSuiteParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(108);
-			varDeclaration();
+			((Test_varContext)_localctx).decl = varDeclaration();
 			setState(111);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -436,12 +439,12 @@ public class TestSuiteParser extends Parser {
 				setState(109);
 				match(T__3);
 				setState(110);
-				expr(0);
+				((Test_varContext)_localctx).value = expr(0);
 				}
 			}
 
 			setState(113);
-			optionalDesc();
+			((Test_varContext)_localctx).comment = optionalDesc();
 			}
 		}
 		catch (RecognitionException re) {
@@ -552,6 +555,8 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Test_scopeContext extends ParserRuleContext {
+		public Test_filesContext files;
+		public Test_modulesContext modules;
 		public TerminalNode NEWLINE() { return getToken(TestSuiteParser.NEWLINE, 0); }
 		public Test_filesContext test_files() {
 			return getRuleContext(Test_filesContext.class,0);
@@ -591,9 +596,9 @@ public class TestSuiteParser extends Parser {
 			setState(131);
 			match(NEWLINE);
 			setState(132);
-			test_files();
+			((Test_scopeContext)_localctx).files = test_files();
 			setState(133);
-			test_modules();
+			((Test_scopeContext)_localctx).modules = test_modules();
 			}
 		}
 		catch (RecognitionException re) {
@@ -731,7 +736,7 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Test_moduleContext extends ParserRuleContext {
-		public Token module;
+		public Token name;
 		public TerminalNode NEWLINE() { return getToken(TestSuiteParser.NEWLINE, 0); }
 		public TerminalNode ID() { return getToken(TestSuiteParser.ID, 0); }
 		public Test_moduleContext(ParserRuleContext parent, int invokingState) {
@@ -760,7 +765,7 @@ public class TestSuiteParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(148);
-			((Test_moduleContext)_localctx).module = match(ID);
+			((Test_moduleContext)_localctx).name = match(ID);
 			setState(149);
 			match(NEWLINE);
 			}
@@ -778,10 +783,15 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Test_assertionContext extends ParserRuleContext {
-		public DirectiveContext directive() {
-			return getRuleContext(DirectiveContext.class,0);
-		}
+		public Test_directiveContext directive;
+		public Test_inputContext input;
+		public Test_outputContext output;
+		public PubAttributesContext attr;
+		public Token comment;
 		public TerminalNode NEWLINE() { return getToken(TestSuiteParser.NEWLINE, 0); }
+		public Test_directiveContext test_directive() {
+			return getRuleContext(Test_directiveContext.class,0);
+		}
 		public Test_inputContext test_input() {
 			return getRuleContext(Test_inputContext.class,0);
 		}
@@ -821,24 +831,24 @@ public class TestSuiteParser extends Parser {
 			setState(151);
 			match(T__8);
 			setState(152);
-			directive();
+			((Test_assertionContext)_localctx).directive = test_directive();
 			setState(153);
 			match(T__9);
 			setState(154);
 			match(NEWLINE);
 			setState(155);
-			test_input();
+			((Test_assertionContext)_localctx).input = test_input();
 			setState(156);
-			test_output();
+			((Test_assertionContext)_localctx).output = test_output();
 			setState(157);
-			pubAttributes();
+			((Test_assertionContext)_localctx).attr = pubAttributes();
 			setState(159);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==COMMENT) {
 				{
 				setState(158);
-				match(COMMENT);
+				((Test_assertionContext)_localctx).comment = match(COMMENT);
 				}
 			}
 
@@ -957,12 +967,13 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Test_inputContext extends ParserRuleContext {
+		public Test_parameterContext parameter;
 		public TerminalNode NEWLINE() { return getToken(TestSuiteParser.NEWLINE, 0); }
-		public List<ParameterContext> parameter() {
-			return getRuleContexts(ParameterContext.class);
+		public List<Test_parameterContext> test_parameter() {
+			return getRuleContexts(Test_parameterContext.class);
 		}
-		public ParameterContext parameter(int i) {
-			return getRuleContext(ParameterContext.class,i);
+		public Test_parameterContext test_parameter(int i) {
+			return getRuleContext(Test_parameterContext.class,i);
 		}
 		public Test_inputContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1003,7 +1014,7 @@ public class TestSuiteParser extends Parser {
 				{
 				{
 				setState(184);
-				parameter();
+				((Test_inputContext)_localctx).parameter = test_parameter();
 				}
 				}
 				setState(187); 
@@ -1025,12 +1036,13 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Test_outputContext extends ParserRuleContext {
+		public Test_parameterContext parameter;
 		public TerminalNode NEWLINE() { return getToken(TestSuiteParser.NEWLINE, 0); }
-		public List<ParameterContext> parameter() {
-			return getRuleContexts(ParameterContext.class);
+		public List<Test_parameterContext> test_parameter() {
+			return getRuleContexts(Test_parameterContext.class);
 		}
-		public ParameterContext parameter(int i) {
-			return getRuleContext(ParameterContext.class,i);
+		public Test_parameterContext test_parameter(int i) {
+			return getRuleContext(Test_parameterContext.class,i);
 		}
 		public Test_outputContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1071,7 +1083,7 @@ public class TestSuiteParser extends Parser {
 				{
 				{
 				setState(192);
-				parameter();
+				((Test_outputContext)_localctx).parameter = test_parameter();
 				}
 				}
 				setState(195); 
@@ -1092,7 +1104,8 @@ public class TestSuiteParser extends Parser {
 	}
 
 	@SuppressWarnings("CheckReturnValue")
-	public static class ParameterContext extends ParserRuleContext {
+	public static class Test_parameterContext extends ParserRuleContext {
+		public ParameterDeclarationContext decl;
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
@@ -1102,28 +1115,28 @@ public class TestSuiteParser extends Parser {
 		public ParameterDeclarationContext parameterDeclaration() {
 			return getRuleContext(ParameterDeclarationContext.class,0);
 		}
-		public ParameterContext(ParserRuleContext parent, int invokingState) {
+		public Test_parameterContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_parameter; }
+		@Override public int getRuleIndex() { return RULE_test_parameter; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterParameter(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterTest_parameter(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitParameter(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitTest_parameter(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitParameter(this);
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitTest_parameter(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final ParameterContext parameter() throws RecognitionException {
-		ParameterContext _localctx = new ParameterContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_parameter);
+	public final Test_parameterContext test_parameter() throws RecognitionException {
+		Test_parameterContext _localctx = new Test_parameterContext(_ctx, getState());
+		enterRule(_localctx, 26, RULE_test_parameter);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
@@ -1133,7 +1146,7 @@ public class TestSuiteParser extends Parser {
 			case 1:
 				{
 				setState(197);
-				parameterDeclaration();
+				((Test_parameterContext)_localctx).decl = parameterDeclaration();
 				setState(198);
 				match(T__3);
 				}
@@ -1170,6 +1183,8 @@ public class TestSuiteParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class SpecDescContext extends OptionalDescContext {
+		public UnitSpecContext type;
+		public OptionalCommentContext comment;
 		public UnitSpecContext unitSpec() {
 			return getRuleContext(UnitSpecContext.class,0);
 		}
@@ -1232,9 +1247,9 @@ public class TestSuiteParser extends Parser {
 				setState(206);
 				match(T__4);
 				setState(207);
-				unitSpec();
+				((SpecDescContext)_localctx).type = unitSpec();
 				setState(208);
-				optionalComment();
+				((SpecDescContext)_localctx).comment = optionalComment();
 				}
 				break;
 			default:
@@ -1284,6 +1299,7 @@ public class TestSuiteParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class SpecCommentContext extends OptionalCommentContext {
+		public Token comment;
 		public TerminalNode COMMENT() { return getToken(TestSuiteParser.COMMENT, 0); }
 		public SpecCommentContext(OptionalCommentContext ctx) { copyFrom(ctx); }
 		@Override
@@ -1321,7 +1337,7 @@ public class TestSuiteParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(213);
-				match(COMMENT);
+				((SpecCommentContext)_localctx).comment = match(COMMENT);
 				}
 				break;
 			default:
@@ -1480,6 +1496,25 @@ public class TestSuiteParser extends Parser {
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
+	public static class CustomKeyContext extends F90StdKeyContext {
+		public Token keyword;
+		public TerminalNode STRING() { return getToken(TestSuiteParser.STRING, 0); }
+		public CustomKeyContext(F90StdKeyContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterCustomKey(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitCustomKey(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitCustomKey(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class ConstantSpecContext extends F90StdKeyContext {
 		public Token keyword;
 		public ConstantSpecContext(F90StdKeyContext ctx) { copyFrom(ctx); }
@@ -1512,25 +1547,6 @@ public class TestSuiteParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitArraySpec(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	@SuppressWarnings("CheckReturnValue")
-	public static class CustomContext extends F90StdKeyContext {
-		public Token keyword;
-		public TerminalNode STRING() { return getToken(TestSuiteParser.STRING, 0); }
-		public CustomContext(F90StdKeyContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterCustom(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitCustom(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitCustom(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1645,11 +1661,11 @@ public class TestSuiteParser extends Parser {
 				}
 				break;
 			case STRING:
-				_localctx = new CustomContext(_localctx);
+				_localctx = new CustomKeyContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(230);
-				((CustomContext)_localctx).keyword = match(STRING);
+				((CustomKeyContext)_localctx).keyword = match(STRING);
 				}
 				break;
 			default:
@@ -1668,30 +1684,30 @@ public class TestSuiteParser extends Parser {
 	}
 
 	@SuppressWarnings("CheckReturnValue")
-	public static class DirectiveContext extends ParserRuleContext {
+	public static class Test_directiveContext extends ParserRuleContext {
 		public Token ppDirective;
-		public DirectiveContext(ParserRuleContext parent, int invokingState) {
+		public Test_directiveContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_directive; }
+		@Override public int getRuleIndex() { return RULE_test_directive; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterDirective(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterTest_directive(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitDirective(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitTest_directive(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitDirective(this);
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitTest_directive(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final DirectiveContext directive() throws RecognitionException {
-		DirectiveContext _localctx = new DirectiveContext(_ctx, getState());
-		enterRule(_localctx, 36, RULE_directive);
+	public final Test_directiveContext test_directive() throws RecognitionException {
+		Test_directiveContext _localctx = new Test_directiveContext(_ctx, getState());
+		enterRule(_localctx, 36, RULE_test_directive);
 		try {
 			setState(256);
 			_errHandler.sync(this);
@@ -1700,161 +1716,161 @@ public class TestSuiteParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(233);
-				((DirectiveContext)_localctx).ppDirective = match(T__23);
+				((Test_directiveContext)_localctx).ppDirective = match(T__23);
 				}
 				break;
 			case T__24:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(234);
-				((DirectiveContext)_localctx).ppDirective = match(T__24);
+				((Test_directiveContext)_localctx).ppDirective = match(T__24);
 				}
 				break;
 			case T__25:
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(235);
-				((DirectiveContext)_localctx).ppDirective = match(T__25);
+				((Test_directiveContext)_localctx).ppDirective = match(T__25);
 				}
 				break;
 			case T__26:
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(236);
-				((DirectiveContext)_localctx).ppDirective = match(T__26);
+				((Test_directiveContext)_localctx).ppDirective = match(T__26);
 				}
 				break;
 			case T__27:
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(237);
-				((DirectiveContext)_localctx).ppDirective = match(T__27);
+				((Test_directiveContext)_localctx).ppDirective = match(T__27);
 				}
 				break;
 			case T__28:
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(238);
-				((DirectiveContext)_localctx).ppDirective = match(T__28);
+				((Test_directiveContext)_localctx).ppDirective = match(T__28);
 				}
 				break;
 			case T__29:
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(239);
-				((DirectiveContext)_localctx).ppDirective = match(T__29);
+				((Test_directiveContext)_localctx).ppDirective = match(T__29);
 				}
 				break;
 			case T__30:
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(240);
-				((DirectiveContext)_localctx).ppDirective = match(T__30);
+				((Test_directiveContext)_localctx).ppDirective = match(T__30);
 				}
 				break;
 			case T__31:
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(241);
-				((DirectiveContext)_localctx).ppDirective = match(T__31);
+				((Test_directiveContext)_localctx).ppDirective = match(T__31);
 				}
 				break;
 			case T__32:
 				enterOuterAlt(_localctx, 10);
 				{
 				setState(242);
-				((DirectiveContext)_localctx).ppDirective = match(T__32);
+				((Test_directiveContext)_localctx).ppDirective = match(T__32);
 				}
 				break;
 			case T__33:
 				enterOuterAlt(_localctx, 11);
 				{
 				setState(243);
-				((DirectiveContext)_localctx).ppDirective = match(T__33);
+				((Test_directiveContext)_localctx).ppDirective = match(T__33);
 				}
 				break;
 			case T__34:
 				enterOuterAlt(_localctx, 12);
 				{
 				setState(244);
-				((DirectiveContext)_localctx).ppDirective = match(T__34);
+				((Test_directiveContext)_localctx).ppDirective = match(T__34);
 				}
 				break;
 			case T__35:
 				enterOuterAlt(_localctx, 13);
 				{
 				setState(245);
-				((DirectiveContext)_localctx).ppDirective = match(T__35);
+				((Test_directiveContext)_localctx).ppDirective = match(T__35);
 				}
 				break;
 			case T__36:
 				enterOuterAlt(_localctx, 14);
 				{
 				setState(246);
-				((DirectiveContext)_localctx).ppDirective = match(T__36);
+				((Test_directiveContext)_localctx).ppDirective = match(T__36);
 				}
 				break;
 			case T__37:
 				enterOuterAlt(_localctx, 15);
 				{
 				setState(247);
-				((DirectiveContext)_localctx).ppDirective = match(T__37);
+				((Test_directiveContext)_localctx).ppDirective = match(T__37);
 				}
 				break;
 			case T__38:
 				enterOuterAlt(_localctx, 16);
 				{
 				setState(248);
-				((DirectiveContext)_localctx).ppDirective = match(T__38);
+				((Test_directiveContext)_localctx).ppDirective = match(T__38);
 				}
 				break;
 			case T__39:
 				enterOuterAlt(_localctx, 17);
 				{
 				setState(249);
-				((DirectiveContext)_localctx).ppDirective = match(T__39);
+				((Test_directiveContext)_localctx).ppDirective = match(T__39);
 				}
 				break;
 			case T__40:
 				enterOuterAlt(_localctx, 18);
 				{
 				setState(250);
-				((DirectiveContext)_localctx).ppDirective = match(T__40);
+				((Test_directiveContext)_localctx).ppDirective = match(T__40);
 				}
 				break;
 			case T__41:
 				enterOuterAlt(_localctx, 19);
 				{
 				setState(251);
-				((DirectiveContext)_localctx).ppDirective = match(T__41);
+				((Test_directiveContext)_localctx).ppDirective = match(T__41);
 				}
 				break;
 			case T__42:
 				enterOuterAlt(_localctx, 20);
 				{
 				setState(252);
-				((DirectiveContext)_localctx).ppDirective = match(T__42);
+				((Test_directiveContext)_localctx).ppDirective = match(T__42);
 				}
 				break;
 			case T__43:
 				enterOuterAlt(_localctx, 21);
 				{
 				setState(253);
-				((DirectiveContext)_localctx).ppDirective = match(T__43);
+				((Test_directiveContext)_localctx).ppDirective = match(T__43);
 				}
 				break;
 			case T__44:
 				enterOuterAlt(_localctx, 22);
 				{
 				setState(254);
-				((DirectiveContext)_localctx).ppDirective = match(T__44);
+				((Test_directiveContext)_localctx).ppDirective = match(T__44);
 				}
 				break;
 			case T__45:
 				enterOuterAlt(_localctx, 23);
 				{
 				setState(255);
-				((DirectiveContext)_localctx).ppDirective = match(T__45);
+				((Test_directiveContext)_localctx).ppDirective = match(T__45);
 				}
 				break;
 			default:
@@ -1874,30 +1890,76 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class ParamTypeContext extends ParserRuleContext {
-		public TypeRefContext typeRef() {
-			return getRuleContext(TypeRefContext.class,0);
-		}
-		public EnumTypeContext enumType() {
-			return getRuleContext(EnumTypeContext.class,0);
-		}
-		public ArrayTypeContext arrayType() {
-			return getRuleContext(ArrayTypeContext.class,0);
-		}
 		public ParamTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_paramType; }
+	 
+		public ParamTypeContext() { }
+		public void copyFrom(ParamTypeContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class RefContext extends ParamTypeContext {
+		public TypeRefContext type;
+		public TypeRefContext typeRef() {
+			return getRuleContext(TypeRefContext.class,0);
+		}
+		public RefContext(ParamTypeContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterParamType(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterRef(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitParamType(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitRef(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitParamType(this);
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitRef(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class EnmContext extends ParamTypeContext {
+		public EnumTypeContext type;
+		public EnumTypeContext enumType() {
+			return getRuleContext(EnumTypeContext.class,0);
+		}
+		public EnmContext(ParamTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterEnm(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitEnm(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitEnm(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ArrayContext extends ParamTypeContext {
+		public ArrayTypeContext type;
+		public ArrayTypeContext arrayType() {
+			return getRuleContext(ArrayTypeContext.class,0);
+		}
+		public ArrayContext(ParamTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterArray(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitArray(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitArray(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1910,24 +1972,27 @@ public class TestSuiteParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
 			case 1:
+				_localctx = new RefContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(258);
-				typeRef();
+				((RefContext)_localctx).type = typeRef();
 				}
 				break;
 			case 2:
+				_localctx = new EnmContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(259);
-				enumType();
+				((EnmContext)_localctx).type = enumType();
 				}
 				break;
 			case 3:
+				_localctx = new ArrayContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(260);
-				arrayType();
+				((ArrayContext)_localctx).type = arrayType();
 				}
 				break;
 			}
@@ -2204,27 +2269,55 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class DimContext extends ParserRuleContext {
-		public SizeDimContext sizeDim() {
-			return getRuleContext(SizeDimContext.class,0);
-		}
-		public RangeDimContext rangeDim() {
-			return getRuleContext(RangeDimContext.class,0);
-		}
 		public DimContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_dim; }
+	 
+		public DimContext() { }
+		public void copyFrom(DimContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class SizeContext extends DimContext {
+		public SizeDimContext type;
+		public SizeDimContext sizeDim() {
+			return getRuleContext(SizeDimContext.class,0);
+		}
+		public SizeContext(DimContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterDim(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterSize(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitDim(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitSize(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitDim(this);
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitSize(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class RangeContext extends DimContext {
+		public RangeDimContext type;
+		public RangeDimContext rangeDim() {
+			return getRuleContext(RangeDimContext.class,0);
+		}
+		public RangeContext(DimContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterRange(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitRange(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitRange(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2237,17 +2330,19 @@ public class TestSuiteParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,24,_ctx) ) {
 			case 1:
+				_localctx = new SizeContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(293);
-				sizeDim();
+				((SizeContext)_localctx).type = sizeDim();
 				}
 				break;
 			case 2:
+				_localctx = new RangeContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(294);
-				rangeDim();
+				((RangeContext)_localctx).type = rangeDim();
 				}
 				break;
 			}
@@ -2772,6 +2867,8 @@ public class TestSuiteParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class FunRefContext extends ReferenceContext {
+		public Token name;
+		public ExprListContext exprs;
 		public TerminalNode ID() { return getToken(TestSuiteParser.ID, 0); }
 		public ExprListContext exprList() {
 			return getRuleContext(ExprListContext.class,0);
@@ -2793,6 +2890,7 @@ public class TestSuiteParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class VarRefContext extends ReferenceContext {
+		public Token name;
 		public TerminalNode ID() { return getToken(TestSuiteParser.ID, 0); }
 		public VarRefContext(ReferenceContext ctx) { copyFrom(ctx); }
 		@Override
@@ -2823,7 +2921,7 @@ public class TestSuiteParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(333);
-				match(ID);
+				((FunRefContext)_localctx).name = match(ID);
 				setState(334);
 				match(T__9);
 				setState(336);
@@ -2832,7 +2930,7 @@ public class TestSuiteParser extends Parser {
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 6755399441056768L) != 0) || ((((_la - 88)) & ~0x3f) == 0 && ((1L << (_la - 88)) & 59L) != 0)) {
 					{
 					setState(335);
-					exprList();
+					((FunRefContext)_localctx).exprs = exprList();
 					}
 				}
 
@@ -2845,7 +2943,7 @@ public class TestSuiteParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(339);
-				match(ID);
+				((VarRefContext)_localctx).name = match(ID);
 				}
 				break;
 			}
@@ -2875,6 +2973,8 @@ public class TestSuiteParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class ArgListContext extends ExprListContext {
+		public ExprContext expr;
+		public List<ExprContext> exprs = new ArrayList<ExprContext>();
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
@@ -2906,7 +3006,8 @@ public class TestSuiteParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(342);
-			expr(0);
+			((ArgListContext)_localctx).expr = expr(0);
+			((ArgListContext)_localctx).exprs.add(((ArgListContext)_localctx).expr);
 			setState(347);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -2916,7 +3017,8 @@ public class TestSuiteParser extends Parser {
 				setState(343);
 				match(T__4);
 				setState(344);
-				expr(0);
+				((ArgListContext)_localctx).expr = expr(0);
+				((ArgListContext)_localctx).exprs.add(((ArgListContext)_localctx).expr);
 				}
 				}
 				setState(349);
@@ -3010,6 +3112,7 @@ public class TestSuiteParser extends Parser {
 		public BasicUnitContext numerator;
 		public BasicUnitContext denominator;
 		public Token exponent;
+		public BasicUnitContext unit;
 		public List<BasicUnitContext> basicUnit() {
 			return getRuleContexts(BasicUnitContext.class);
 		}
@@ -3080,7 +3183,7 @@ public class TestSuiteParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(365);
-				basicUnit();
+				((ComposedUnitContext)_localctx).unit = basicUnit();
 				}
 				break;
 			}
@@ -3098,30 +3201,76 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class BasicUnitContext extends ParserRuleContext {
-		public SiUnitContext siUnit() {
-			return getRuleContext(SiUnitContext.class,0);
-		}
-		public CustomUnitContext customUnit() {
-			return getRuleContext(CustomUnitContext.class,0);
-		}
-		public UnitSpecContext unitSpec() {
-			return getRuleContext(UnitSpecContext.class,0);
-		}
 		public BasicUnitContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_basicUnit; }
+	 
+		public BasicUnitContext() { }
+		public void copyFrom(BasicUnitContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class CustomUnitTypeContext extends BasicUnitContext {
+		public CustomUnitContext type;
+		public CustomUnitContext customUnit() {
+			return getRuleContext(CustomUnitContext.class,0);
+		}
+		public CustomUnitTypeContext(BasicUnitContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterBasicUnit(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterCustomUnitType(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitBasicUnit(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitCustomUnitType(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitBasicUnit(this);
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitCustomUnitType(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class SiUnitTypeContext extends BasicUnitContext {
+		public SiUnitContext type;
+		public SiUnitContext siUnit() {
+			return getRuleContext(SiUnitContext.class,0);
+		}
+		public SiUnitTypeContext(BasicUnitContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterSiUnitType(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitSiUnitType(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitSiUnitType(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ComposedUnitTypeContext extends BasicUnitContext {
+		public UnitSpecContext type;
+		public UnitSpecContext unitSpec() {
+			return getRuleContext(UnitSpecContext.class,0);
+		}
+		public ComposedUnitTypeContext(BasicUnitContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterComposedUnitType(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitComposedUnitType(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitComposedUnitType(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3167,26 +3316,29 @@ public class TestSuiteParser extends Parser {
 			case T__84:
 			case T__85:
 			case T__86:
+				_localctx = new SiUnitTypeContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(368);
-				siUnit();
+				((SiUnitTypeContext)_localctx).type = siUnit();
 				}
 				break;
 			case STRING:
+				_localctx = new CustomUnitTypeContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(369);
-				customUnit();
+				((CustomUnitTypeContext)_localctx).type = customUnit();
 				}
 				break;
 			case T__9:
+				_localctx = new ComposedUnitTypeContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(370);
 				match(T__9);
 				setState(371);
-				unitSpec();
+				((ComposedUnitTypeContext)_localctx).type = unitSpec();
 				setState(372);
 				match(T__10);
 				}
@@ -3312,46 +3464,463 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class UnitPrefixContext extends ParserRuleContext {
-		public Token noP;
-		public Token quetta;
-		public Token ronna;
-		public Token yotta;
-		public Token zetta;
-		public Token exa;
-		public Token peta;
-		public Token tera;
-		public Token giga;
-		public Token mega;
-		public Token kilo;
-		public Token hecto;
-		public Token deca;
-		public Token deci;
-		public Token centi;
-		public Token mili;
-		public Token micro;
-		public Token nano;
-		public Token pico;
-		public Token femto;
-		public Token atto;
-		public Token zepto;
-		public Token yocto;
-		public Token ronto;
-		public Token quecto;
 		public UnitPrefixContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_unitPrefix; }
+	 
+		public UnitPrefixContext() { }
+		public void copyFrom(UnitPrefixContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class MegaContext extends UnitPrefixContext {
+		public Token value;
+		public MegaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterUnitPrefix(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterMega(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitUnitPrefix(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitMega(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitUnitPrefix(this);
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitMega(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class AttoContext extends UnitPrefixContext {
+		public Token value;
+		public AttoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterAtto(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitAtto(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitAtto(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class FemtoContext extends UnitPrefixContext {
+		public Token value;
+		public FemtoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterFemto(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitFemto(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitFemto(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ZeptoContext extends UnitPrefixContext {
+		public Token value;
+		public ZeptoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterZepto(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitZepto(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitZepto(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class NanoContext extends UnitPrefixContext {
+		public Token value;
+		public NanoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterNano(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitNano(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitNano(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class DeciContext extends UnitPrefixContext {
+		public Token value;
+		public DeciContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterDeci(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitDeci(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitDeci(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class GigaContext extends UnitPrefixContext {
+		public Token value;
+		public GigaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterGiga(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitGiga(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitGiga(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class QuectoContext extends UnitPrefixContext {
+		public Token value;
+		public QuectoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterQuecto(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitQuecto(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitQuecto(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ExaContext extends UnitPrefixContext {
+		public Token value;
+		public ExaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterExa(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitExa(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitExa(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class PicoContext extends UnitPrefixContext {
+		public Token value;
+		public PicoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterPico(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitPico(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitPico(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class KiloContext extends UnitPrefixContext {
+		public Token value;
+		public KiloContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterKilo(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitKilo(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitKilo(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class YoctoContext extends UnitPrefixContext {
+		public Token value;
+		public YoctoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterYocto(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitYocto(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitYocto(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class YottaContext extends UnitPrefixContext {
+		public Token value;
+		public YottaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterYotta(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitYotta(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitYotta(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class PetaContext extends UnitPrefixContext {
+		public Token value;
+		public PetaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterPeta(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitPeta(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitPeta(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class TeraContext extends UnitPrefixContext {
+		public Token value;
+		public TeraContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterTera(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitTera(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitTera(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class CentiContext extends UnitPrefixContext {
+		public Token value;
+		public CentiContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterCenti(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitCenti(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitCenti(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class HectoContext extends UnitPrefixContext {
+		public Token value;
+		public HectoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterHecto(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitHecto(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitHecto(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class MiliContext extends UnitPrefixContext {
+		public Token value;
+		public MiliContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterMili(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitMili(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitMili(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class NoPContext extends UnitPrefixContext {
+		public Token value;
+		public NoPContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterNoP(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitNoP(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitNoP(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ZettaContext extends UnitPrefixContext {
+		public Token value;
+		public ZettaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterZetta(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitZetta(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitZetta(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class DecaContext extends UnitPrefixContext {
+		public Token value;
+		public DecaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterDeca(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitDeca(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitDeca(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class QuettaContext extends UnitPrefixContext {
+		public Token value;
+		public QuettaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterQuetta(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitQuetta(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitQuetta(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class MicroContext extends UnitPrefixContext {
+		public Token value;
+		public MicroContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterMicro(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitMicro(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitMicro(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class RontoContext extends UnitPrefixContext {
+		public Token value;
+		public RontoContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterRonto(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitRonto(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitRonto(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class RonnaContext extends UnitPrefixContext {
+		public Token value;
+		public RonnaContext(UnitPrefixContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterRonna(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitRonna(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitRonna(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3364,178 +3933,203 @@ public class TestSuiteParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__53:
+				_localctx = new NoPContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(383);
-				((UnitPrefixContext)_localctx).noP = match(T__53);
+				((NoPContext)_localctx).value = match(T__53);
 				}
 				break;
 			case T__54:
+				_localctx = new QuettaContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(384);
-				((UnitPrefixContext)_localctx).quetta = match(T__54);
+				((QuettaContext)_localctx).value = match(T__54);
 				}
 				break;
 			case T__55:
+				_localctx = new RonnaContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(385);
-				((UnitPrefixContext)_localctx).ronna = match(T__55);
+				((RonnaContext)_localctx).value = match(T__55);
 				}
 				break;
 			case T__56:
+				_localctx = new YottaContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(386);
-				((UnitPrefixContext)_localctx).yotta = match(T__56);
+				((YottaContext)_localctx).value = match(T__56);
 				}
 				break;
 			case T__57:
+				_localctx = new ZettaContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(387);
-				((UnitPrefixContext)_localctx).zetta = match(T__57);
+				((ZettaContext)_localctx).value = match(T__57);
 				}
 				break;
 			case T__58:
+				_localctx = new ExaContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(388);
-				((UnitPrefixContext)_localctx).exa = match(T__58);
+				((ExaContext)_localctx).value = match(T__58);
 				}
 				break;
 			case T__59:
+				_localctx = new PetaContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(389);
-				((UnitPrefixContext)_localctx).peta = match(T__59);
+				((PetaContext)_localctx).value = match(T__59);
 				}
 				break;
 			case T__60:
+				_localctx = new TeraContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(390);
-				((UnitPrefixContext)_localctx).tera = match(T__60);
+				((TeraContext)_localctx).value = match(T__60);
 				}
 				break;
 			case T__61:
+				_localctx = new GigaContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(391);
-				((UnitPrefixContext)_localctx).giga = match(T__61);
+				((GigaContext)_localctx).value = match(T__61);
 				}
 				break;
 			case T__62:
+				_localctx = new MegaContext(_localctx);
 				enterOuterAlt(_localctx, 10);
 				{
 				setState(392);
-				((UnitPrefixContext)_localctx).mega = match(T__62);
+				((MegaContext)_localctx).value = match(T__62);
 				}
 				break;
 			case T__63:
+				_localctx = new KiloContext(_localctx);
 				enterOuterAlt(_localctx, 11);
 				{
 				setState(393);
-				((UnitPrefixContext)_localctx).kilo = match(T__63);
+				((KiloContext)_localctx).value = match(T__63);
 				}
 				break;
 			case T__64:
+				_localctx = new HectoContext(_localctx);
 				enterOuterAlt(_localctx, 12);
 				{
 				setState(394);
-				((UnitPrefixContext)_localctx).hecto = match(T__64);
+				((HectoContext)_localctx).value = match(T__64);
 				}
 				break;
 			case T__65:
+				_localctx = new DecaContext(_localctx);
 				enterOuterAlt(_localctx, 13);
 				{
 				setState(395);
-				((UnitPrefixContext)_localctx).deca = match(T__65);
+				((DecaContext)_localctx).value = match(T__65);
 				}
 				break;
 			case T__66:
+				_localctx = new DeciContext(_localctx);
 				enterOuterAlt(_localctx, 14);
 				{
 				setState(396);
-				((UnitPrefixContext)_localctx).deci = match(T__66);
+				((DeciContext)_localctx).value = match(T__66);
 				}
 				break;
 			case T__67:
+				_localctx = new CentiContext(_localctx);
 				enterOuterAlt(_localctx, 15);
 				{
 				setState(397);
-				((UnitPrefixContext)_localctx).centi = match(T__67);
+				((CentiContext)_localctx).value = match(T__67);
 				}
 				break;
 			case T__68:
+				_localctx = new MiliContext(_localctx);
 				enterOuterAlt(_localctx, 16);
 				{
 				setState(398);
-				((UnitPrefixContext)_localctx).mili = match(T__68);
+				((MiliContext)_localctx).value = match(T__68);
 				}
 				break;
 			case T__69:
+				_localctx = new MicroContext(_localctx);
 				enterOuterAlt(_localctx, 17);
 				{
 				setState(399);
-				((UnitPrefixContext)_localctx).micro = match(T__69);
+				((MicroContext)_localctx).value = match(T__69);
 				}
 				break;
 			case T__70:
+				_localctx = new NanoContext(_localctx);
 				enterOuterAlt(_localctx, 18);
 				{
 				setState(400);
-				((UnitPrefixContext)_localctx).nano = match(T__70);
+				((NanoContext)_localctx).value = match(T__70);
 				}
 				break;
 			case T__71:
+				_localctx = new PicoContext(_localctx);
 				enterOuterAlt(_localctx, 19);
 				{
 				setState(401);
-				((UnitPrefixContext)_localctx).pico = match(T__71);
+				((PicoContext)_localctx).value = match(T__71);
 				}
 				break;
 			case T__72:
+				_localctx = new FemtoContext(_localctx);
 				enterOuterAlt(_localctx, 20);
 				{
 				setState(402);
-				((UnitPrefixContext)_localctx).femto = match(T__72);
+				((FemtoContext)_localctx).value = match(T__72);
 				}
 				break;
 			case T__73:
+				_localctx = new AttoContext(_localctx);
 				enterOuterAlt(_localctx, 21);
 				{
 				setState(403);
-				((UnitPrefixContext)_localctx).atto = match(T__73);
+				((AttoContext)_localctx).value = match(T__73);
 				}
 				break;
 			case T__74:
+				_localctx = new ZeptoContext(_localctx);
 				enterOuterAlt(_localctx, 22);
 				{
 				setState(404);
-				((UnitPrefixContext)_localctx).zepto = match(T__74);
+				((ZeptoContext)_localctx).value = match(T__74);
 				}
 				break;
 			case T__75:
+				_localctx = new YoctoContext(_localctx);
 				enterOuterAlt(_localctx, 23);
 				{
 				setState(405);
-				((UnitPrefixContext)_localctx).yocto = match(T__75);
+				((YoctoContext)_localctx).value = match(T__75);
 				}
 				break;
 			case T__76:
+				_localctx = new RontoContext(_localctx);
 				enterOuterAlt(_localctx, 24);
 				{
 				setState(406);
-				((UnitPrefixContext)_localctx).ronto = match(T__76);
+				((RontoContext)_localctx).value = match(T__76);
 				}
 				break;
 			case T__77:
+				_localctx = new QuectoContext(_localctx);
 				enterOuterAlt(_localctx, 25);
 				{
 				setState(407);
-				((UnitPrefixContext)_localctx).quecto = match(T__77);
+				((QuectoContext)_localctx).value = match(T__77);
 				}
 				break;
 			default:
@@ -3555,31 +4149,193 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class SiTypeContext extends ParserRuleContext {
-		public Token second;
-		public Token metre;
-		public Token gram;
-		public Token ampere;
-		public Token kelvin;
-		public Token mole;
-		public Token candela;
-		public Token pascal;
-		public Token joule;
-		public Token ton;
 		public SiTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_siType; }
+	 
+		public SiTypeContext() { }
+		public void copyFrom(SiTypeContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class MetreContext extends SiTypeContext {
+		public Token value;
+		public MetreContext(SiTypeContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterSiType(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterMetre(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitSiType(this);
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitMetre(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitSiType(this);
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitMetre(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class JouleContext extends SiTypeContext {
+		public Token value;
+		public JouleContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterJoule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitJoule(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitJoule(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class KelvinContext extends SiTypeContext {
+		public Token value;
+		public KelvinContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterKelvin(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitKelvin(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitKelvin(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class TonContext extends SiTypeContext {
+		public Token value;
+		public TonContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterTon(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitTon(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitTon(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class GramContext extends SiTypeContext {
+		public Token value;
+		public GramContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterGram(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitGram(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitGram(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class PascalContext extends SiTypeContext {
+		public Token value;
+		public PascalContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterPascal(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitPascal(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitPascal(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class MoleContext extends SiTypeContext {
+		public Token value;
+		public MoleContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterMole(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitMole(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitMole(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class CandelaContext extends SiTypeContext {
+		public Token value;
+		public CandelaContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterCandela(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitCandela(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitCandela(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class AmpereContext extends SiTypeContext {
+		public Token value;
+		public AmpereContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterAmpere(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitAmpere(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitAmpere(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class SecondContext extends SiTypeContext {
+		public Token value;
+		public SecondContext(SiTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).enterSecond(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TestSuiteListener ) ((TestSuiteListener)listener).exitSecond(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TestSuiteVisitor ) return ((TestSuiteVisitor<? extends T>)visitor).visitSecond(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -3592,73 +4348,83 @@ public class TestSuiteParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__78:
+				_localctx = new SecondContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(410);
-				((SiTypeContext)_localctx).second = match(T__78);
+				((SecondContext)_localctx).value = match(T__78);
 				}
 				break;
 			case T__68:
+				_localctx = new MetreContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(411);
-				((SiTypeContext)_localctx).metre = match(T__68);
+				((MetreContext)_localctx).value = match(T__68);
 				}
 				break;
 			case T__79:
+				_localctx = new GramContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(412);
-				((SiTypeContext)_localctx).gram = match(T__79);
+				((GramContext)_localctx).value = match(T__79);
 				}
 				break;
 			case T__80:
+				_localctx = new AmpereContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(413);
-				((SiTypeContext)_localctx).ampere = match(T__80);
+				((AmpereContext)_localctx).value = match(T__80);
 				}
 				break;
 			case T__81:
+				_localctx = new KelvinContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(414);
-				((SiTypeContext)_localctx).kelvin = match(T__81);
+				((KelvinContext)_localctx).value = match(T__81);
 				}
 				break;
 			case T__82:
+				_localctx = new MoleContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(415);
-				((SiTypeContext)_localctx).mole = match(T__82);
+				((MoleContext)_localctx).value = match(T__82);
 				}
 				break;
 			case T__83:
+				_localctx = new CandelaContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(416);
-				((SiTypeContext)_localctx).candela = match(T__83);
+				((CandelaContext)_localctx).value = match(T__83);
 				}
 				break;
 			case T__84:
+				_localctx = new PascalContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(417);
-				((SiTypeContext)_localctx).pascal = match(T__84);
+				((PascalContext)_localctx).value = match(T__84);
 				}
 				break;
 			case T__85:
+				_localctx = new JouleContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(418);
-				((SiTypeContext)_localctx).joule = match(T__85);
+				((JouleContext)_localctx).value = match(T__85);
 				}
 				break;
 			case T__86:
+				_localctx = new TonContext(_localctx);
 				enterOuterAlt(_localctx, 10);
 				{
 				setState(419);
-				((SiTypeContext)_localctx).ton = match(T__86);
+				((TonContext)_localctx).value = match(T__86);
 				}
 				break;
 			default:

@@ -29,7 +29,7 @@ from jinja2 import Environment, FileSystemLoader
 # @dataclass
 # class Callable:
 #     """
-#     Subroutine for unit tests
+#     Subroutine for unit test case
 #     """
 #     name: str
 #     type: CallableType
@@ -37,7 +37,7 @@ from jinja2 import Environment, FileSystemLoader
 
 class CallableType( Enum ):
     """
-    Types of callable for unit tests
+    Types of callable for unit test case
     """
     Function = 'function'
     Subroutine = 'subroutine'
@@ -46,7 +46,7 @@ class CallableType( Enum ):
 @dataclass
 class Callable:
     """
-    Subroutine for unit tests
+    Subroutine for unit test case
     """
     name: str
     _type: CallableType
@@ -63,7 +63,7 @@ class Callable:
 @dataclass
 class Module:
     """
-    Module for unit tests
+    Module for unit test case
     """
     name: str
 
@@ -71,7 +71,7 @@ class Module:
 @dataclass
 class Assertion:
     """
-    pFUnit assertions for unit tests
+    pFUnit assertions for unit test case
     """
     name: str
     input: int
@@ -79,9 +79,9 @@ class Assertion:
 
 
 @dataclass
-class Utest:
+class TestCase:
     """
-    Unit-test
+    Test Case for a Unit-test
     """
     fn: str
     callable: Callable
@@ -107,7 +107,7 @@ def merge_file_content(file_content_0:str, file_content_1:str) -> str:
         if not lines.startswith("?")
     )
 
-def gen_test_data(num_files: int = 1, num_mods: int = 1, num_ass: int = 1) -> List[Utest]:
+def gen_test_data(num_files: int = 1, num_mods: int = 1, num_ass: int = 1) -> List[TestCase]:
     '''
     Generate test data for jinja_tdd
 
@@ -130,12 +130,12 @@ def gen_test_data(num_files: int = 1, num_mods: int = 1, num_ass: int = 1) -> Li
 
         # list_tests.append( {'fn': f"file_{i}", 'sub': {'name': f"sub_{i}"}, 'mods': list_mods, 'assertions':
         # list_ass} )
-        list_tests.append( Utest( f"file_{i}", Callable( f"sub_{i}", CallableType.Subroutine ), list_mods, list_ass ) )
+        list_tests.append( TestCase( f"file_{i}", Callable( f"sub_{i}", CallableType.Subroutine ), list_mods, list_ass ) )
 
     return list_tests
 
 
-def write_tdd(list_tests: List[Utest], template_path: str = 'templates/', template_file: str = 'tdd_pf_template.txt',
+def write_tdd(list_tests: List[TestCase], template_path: str = 'templates/', template_file: str = 'tdd_pf_template.txt',
               test_path: str = 'gen', test_folder: str = 'test', test_file_pr: str = 'test_') -> None:
     '''
     Write pFUnit files using Jinja2 Template files.

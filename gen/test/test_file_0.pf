@@ -1,0 +1,9 @@
+@test
+subroutine sub_0()
+   use module_0_0
+   use module_0_1
+   use funit
+
+   @assertion_0_0( 0 == 0 )
+   
+end subroutine sub_0

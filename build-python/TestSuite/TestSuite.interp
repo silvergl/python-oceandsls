@@ -210,12 +210,12 @@ test_assertion
 pubAttributes
 test_input
 test_output
-parameter
+test_parameter
 optionalDesc
 optionalComment
 parameterDeclaration
 f90StdKey
-directive
+test_directive
 paramType
 typeRef
 enumType

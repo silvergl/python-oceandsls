@@ -1,8 +1,8 @@
-@test #  {# TODO case.assertions[0].test_input().parameter()[0].expr().value.ID() #}
-{{ test.callable.type }} {{ test.ID().getText() }}()
-   {% for mod in test.scope.test_modules().modules %}use {{ mod.module.text }}
-   {% endfor %}use funit
+@test
+SUBROUTINE {{ name }}(){# TODO add TEST type subroutine function? #}
+{{ scope }}
 
-   {% for assertion in test.assertions %}@{{ assertion.directive().ppDirective.text }}( {{ assertion.input }} == {{ assertion.output }} )
-   {% endfor %}
-end {{ test.callable.type }} {{ test.callable.name }}
+{{ vars }}
+
+{{ assertions }}
+END SUBROUTINE {{ name }}()

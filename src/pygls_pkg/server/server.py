@@ -33,6 +33,7 @@ if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
 from utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
 from utils.suggestVariables import suggestVariables
 from SymbolTableVisitor import SymbolTableVisitor
+from FileGeneratorVisitor import FileGeneratorVisitor
 from DiagnosticListener import DiagnosticListener
 
 # antlr4
@@ -291,7 +292,12 @@ def did_save(server: ODslLanguageServer, params: DidSaveTextDocumentParams):
     Top_levelContext = TestSuiteParser.Test_suiteContext
     parseTree: Top_levelContext = odsl_server.parser.test_suite()
 
-    # TODO call file generator visitor
+    # TODO add parameters to visitor
+    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor()
+
+    fileContent: str = fileGeneratorVisitor.visit( parseTree )
+
+    # TODO call file writer from jinja2 module
 
     server.show_message( 'Text Document Did Save' )
     logger.info( '\n---------------------------------\n             END SAVE            \n---------------------------------\n\n' )

@@ -26,7 +26,7 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         return self._symbolTable
 
     def visitParamAssignStat(self, ctx: DeclarationParser.ParamAssignStatContext):
-        return self._symbolTable.addNewSymbolOfType(VariableSymbol, self._scope, ctx.ID().getText())
+        return self.withScope(ctx, VariableSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
         
     def visitParamGroupAssignStat(self, ctx: DeclarationParser.ParamGroupAssignStatContext):
         return self.withScope(ctx, VariableSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
@@ -35,7 +35,7 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
         
     def visitFeatureGroupAssignStat(self, ctx: DeclarationParser.FeatureGroupAssignStatContext):
-        return self.withScope(ctx, VariableSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
 
     # def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
     #     self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID().getText() )
@@ -43,7 +43,7 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
 
     # def visitFuncExpr(self, ctx: TestGrammarParser.FuncExprContext):
     #     return self.withScope( ctx, RoutineSymbol, lambda: self.visitChildren( ctx ), ctx.ID().getText() )
-
+    
     def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None,
                   **my_kwargs: P.kwargs or None) -> T:
         scope = self._symbolTable.addNewSymbolOfType( t, self._scope, *my_args, **my_kwargs )

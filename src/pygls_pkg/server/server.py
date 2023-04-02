@@ -32,7 +32,6 @@ if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) )
 from utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
 from utils.suggestVariables import suggestVariables
-from TestSuiteListenerImpl import TestSuiteListenerImpl
 from SymbolTableVisitor import SymbolTableVisitor
 from DiagnosticListener import DiagnosticListener
 
@@ -164,7 +163,7 @@ def lookup_symbol(uri, name):
 @odsl_server.feature( TEXT_DOCUMENT_COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
-    logger.info( '\n---------------------------------\n             START               \n---------------------------------' )
+    logger.info( '\n---------------------------------\n             START Completion    \n---------------------------------' )
 
     # set input stream of characters for lexer
     text_doc: Document = odsl_server.workspace.get_document( params.text_document.uri )
@@ -233,7 +232,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     logger.info( '\n' )
     # return completion candidates labels
     logger.info( 'Return complete completionList...' )
-    logger.info( '\n---------------------------------\n             END                 \n---------------------------------\n\n' )
+    logger.info( '\n---------------------------------\n             END Completion      \n---------------------------------\n\n' )
     return completionList
 
 
@@ -292,10 +291,7 @@ def did_save(server: ODslLanguageServer, params: DidSaveTextDocumentParams):
     Top_levelContext = TestSuiteParser.Test_suiteContext
     parseTree: Top_levelContext = odsl_server.parser.test_suite()
 
-
-    listener = TestSuiteListenerImpl()
-    walker = ParseTreeWalker()
-    walker.walk(listener, parseTree)
+    # TODO call file generator visitor
 
     server.show_message( 'Text Document Did Save' )
     logger.info( '\n---------------------------------\n             END SAVE            \n---------------------------------\n\n' )

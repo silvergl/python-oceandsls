@@ -135,7 +135,7 @@ def gen_test_data(num_files: int = 1, num_mods: int = 1, num_ass: int = 1) -> Li
     return list_tests
 
 
-def write_tdd(list_tests: List[TestCase], template_path: str = 'templates/', template_files: List[str] = ['tdd_pf_template.txt','tdd_module_template.txt','tdd_assertion_template.txt'],
+def write_tdd(list_tests: List[TestCase], template_path: str = 'templates/tdd/dev', template_files: List[str] = ['tdd_pf_template.txt','tdd_module_template.txt','tdd_assertion_template.txt'],
               test_path: str = 'gen', test_folder: str = 'test', test_file_pr: str = 'test_') -> None:
     '''
     Write pFUnit files using Jinja2 Template files.

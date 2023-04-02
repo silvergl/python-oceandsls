@@ -31,7 +31,7 @@ test_suite              : cases+=test_case
                         ;
 
 /** test case*/
-test_case               : 'test' ID ':' NEWLINE
+test_case               : 'test' name=ID ':' NEWLINE
                           scope=test_scope
                           vars=test_vars
                           assertions+=test_assertion

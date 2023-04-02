@@ -135,7 +135,7 @@ def gen_test_data(num_files: int = 1, num_mods: int = 1, num_ass: int = 1) -> Li
     return list_tests
 
 
-def write_tdd(list_tests: List[TestCase], template_path: str = 'templates/', template_file: str = 'tdd_pf_template.txt',
+def write_tdd(list_tests: List[TestCase], template_path: str = 'templates/', template_files: List[str] = ['tdd_pf_template.txt','tdd_module_template.txt','tdd_assertion_template.txt'],
               test_path: str = 'gen', test_folder: str = 'test', test_file_pr: str = 'test_') -> None:
     '''
     Write pFUnit files using Jinja2 Template files.
@@ -151,12 +151,17 @@ def write_tdd(list_tests: List[TestCase], template_path: str = 'templates/', tem
     # Load Jinja2 template
     environment = Environment( loader=FileSystemLoader( template_path ) )
     # Use test_template.txt
-    template = environment.get_template( template_file )
+    template = environment.get_template( template_files[0] )
+    templateMod = environment.get_template( template_files[1] )
+    templateAss = environment.get_template( template_files[2] )
+
 
     # Loop through each test
     for test in list_tests:
         # Render template
-        content = template.render( test=test )
+        modules = templateMod.render( test=test )
+        assertions = templateAss.render( test=test )
+        content = template.render( test=test, modules=modules, assertions=assertions )
 
         # Define the folder and filename
         path = os.path.join( os.getcwd(), test_path, test_folder )

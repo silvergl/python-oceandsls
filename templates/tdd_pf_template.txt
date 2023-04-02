@@ -1,8 +1,6 @@
 @test
 {{ test.callable.type }} {{ test.callable.name }}()
-   {% for mod in test.mods %}use {{ mod.name }}
-   {% endfor %}use funit
+{{ modules }}
 
-   {% for assertion in test.assertions %}@{{ assertion.name }}( {{ assertion.input }} == {{ assertion.output }} )
-   {% endfor %}
+{{ assertions }}
 end {{ test.callable.type }} {{ test.callable.name }}

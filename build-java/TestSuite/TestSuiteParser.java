@@ -224,15 +224,16 @@ public class TestSuiteParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Test_caseContext extends ParserRuleContext {
+		public Token name;
 		public Test_scopeContext scope;
 		public Test_varsContext vars;
 		public Test_assertionContext test_assertion;
 		public List<Test_assertionContext> assertions = new ArrayList<Test_assertionContext>();
-		public TerminalNode ID() { return getToken(TestSuiteParser.ID, 0); }
 		public List<TerminalNode> NEWLINE() { return getTokens(TestSuiteParser.NEWLINE); }
 		public TerminalNode NEWLINE(int i) {
 			return getToken(TestSuiteParser.NEWLINE, i);
 		}
+		public TerminalNode ID() { return getToken(TestSuiteParser.ID, 0); }
 		public Test_scopeContext test_scope() {
 			return getRuleContext(Test_scopeContext.class,0);
 		}
@@ -274,7 +275,7 @@ public class TestSuiteParser extends Parser {
 			setState(86);
 			match(T__0);
 			setState(87);
-			match(ID);
+			((Test_caseContext)_localctx).name = match(ID);
 			setState(88);
 			match(T__1);
 			setState(89);

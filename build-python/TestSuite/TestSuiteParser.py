@@ -472,19 +472,20 @@ class TestSuiteParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.name = None # Token
             self.scope = None # Test_scopeContext
             self.vars_ = None # Test_varsContext
             self._test_assertion = None # Test_assertionContext
             self.assertions = list() # of Test_assertionContexts
-
-        def ID(self):
-            return self.getToken(TestSuiteParser.ID, 0)
 
         def NEWLINE(self, i:int=None):
             if i is None:
                 return self.getTokens(TestSuiteParser.NEWLINE)
             else:
                 return self.getToken(TestSuiteParser.NEWLINE, i)
+
+        def ID(self):
+            return self.getToken(TestSuiteParser.ID, 0)
 
         def test_scope(self):
             return self.getTypedRuleContext(TestSuiteParser.Test_scopeContext,0)
@@ -530,7 +531,7 @@ class TestSuiteParser ( Parser ):
             self.state = 86
             self.match(TestSuiteParser.T__0)
             self.state = 87
-            self.match(TestSuiteParser.ID)
+            localctx.name = self.match(TestSuiteParser.ID)
             self.state = 88
             self.match(TestSuiteParser.T__1)
             self.state = 89

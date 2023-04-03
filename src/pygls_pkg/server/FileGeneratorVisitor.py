@@ -54,9 +54,9 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         # Render template
         name = ctx.ID().getText()
         scope = self.visit( ctx.test_scope() )
-        test_vars = self.visitChildren( ctx.test_vars() )
+        test_vars = self.visit( ctx.test_vars() )
         # TODO get assertions
-        assertions = self.visitChildren( ctx.test_assertion() )
+        assertions = self.visit( ctx.test_assertion() )
         # TODO get comment
         content = template.render( name=name, scope=scope, vars=test_vars, assertions=assertions )
         return self.visitChildren( ctx )
@@ -85,3 +85,12 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
     def visitTest_assertion(self, ctx:TestSuiteParser.Test_assertionContext):
         # TODO note case.assertions[0].test_input().parameter()[0].expr().value.ID()
         return 'assertion'
+
+    def writefile(self, path=None, filename=None):
+        path = os.path.join( os.getcwd(), path, filename )
+        if not os.path.exists( path ):
+            # Write rendered and optional merged content to file
+            with open( path, mode='w', encoding='utf-8' ) as f:
+                f.write()
+                # TODO add to debug info
+                print( f'... wrote {path}' )

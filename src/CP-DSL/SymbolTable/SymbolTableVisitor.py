@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
 from antlr4.tree.Tree import ParseTree
 
-from SymbolTable.SymbolTable import ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol, SymbolTableOptions
+from SymbolTable.SymbolTable import ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol, SymbolTableOptions, BlockSymbol
 from Configuration.DeclarationParser import DeclarationParser
 from Configuration.DeclarationVisitor import DeclarationVisitor
 
@@ -26,16 +26,26 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         return self._symbolTable
 
     def visitParamAssignStat(self, ctx: DeclarationParser.ParamAssignStatContext):
-        return self.withScope(ctx, VariableSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        
+        # define the given Parameter
+        t = type # set and get the type of param here
+        varName = ctx.ID().getText() # set and get the variable name here
+        value = value # set and get the Value here
+        
+        scope = self._symbolTable.addNewSymbolOfType(t, self._scope, varName, value)
+        scope.context = ctx
+        self._scope = scope
+        self._scope = scope.parent()
+        return scope
         
     def visitParamGroupAssignStat(self, ctx: DeclarationParser.ParamGroupAssignStatContext):
-        return self.withScope(ctx, VariableSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        return self.withScope(ctx, BlockSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
         
     def visitFeatureAssignStat(self, ctx: DeclarationParser.FeatureAssignStatContext):
         return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
         
     def visitFeatureGroupAssignStat(self, ctx: DeclarationParser.FeatureGroupAssignStatContext):
-        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        return self.withScope(ctx, BlockSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
 
     # def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
     #     self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID().getText() )

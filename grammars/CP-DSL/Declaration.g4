@@ -37,7 +37,7 @@ featureDeclaration          :   (required='required')? 'feature' name=ID ':' des
                    	            '}')? # featureAssignStat
                             ;
 
-featureGroupDeclaration     :   'sub' kind=eKind featureDeclarations+=featureDeclaration*  # featureGAssignStat
+featureGroupDeclaration     :   'sub' kind=eKind featureDeclarations+=featureDeclaration*  # featureGroupAssignStat
                             ;
 
 eKind                       :   alternative = 'alternative'
@@ -47,9 +47,9 @@ eKind                       :   alternative = 'alternative'
 /**
  * Typing
  */
-paramType                   :   typeReference
-                            |   inlineEnumerationType
-                            |   arrayType
+paramType                   :   typeReference 
+                            |   inlineEnumerationType 
+                            |   arrayType 
                             ;
 
 inlineEnumerationType       :   '(' values+=enumeral ( ',' values+=enumeral)* ')' ;

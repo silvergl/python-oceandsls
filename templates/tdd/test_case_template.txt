@@ -1,0 +1,8 @@
+@test
+SUBROUTINE {{ name }}(){# TODO add TEST type subroutine function? #}
+{{ scope }}
+
+{{ vars }}
+
+{{ assertions }}
+END SUBROUTINE {{ name }}()

@@ -77,11 +77,73 @@ class ReferenceKind( Enum ):
     # 'Type' as such and default for all value types.
     Instance = 3
 
+class UnitKind:
+    """
+    Rough categorization of a unit from SI units.
+    """
+    Unknown = 0
+    Second = 1
+    Metre = 2
+    # TODO si unit is kilogram | added to FundamentalUnit
+    Gram = 3
+    Ampere = 4
+    Kelvin = 5
+    Mole = 6
+    Candela = 7
+    # TODO add non si units?
+    Pascal = 8
+    Joule = 9
+    ton = 10
+
+class UnitPrefix:
+    """
+    Rough categorization of a unit from SI prefixes.
+    """
+    NoP = 0
+    Quetta = 1
+    Ronna = 2
+    Yotta = 3
+    Zetta = 4
+    Exa = 5
+    Peta = 6
+    Tera = 7
+    Giga = 8
+    Mega = 9
+    Kilo = 10
+    Hecto = 11
+    Deca = 12
+    Deci = 13
+    Centi = 14
+    Mili = 15
+    Micro = 16
+    Nano = 17
+    Pico = 18
+    Femto = 19
+    Atto = 20
+    Zepto = 21
+    Yocto = 22
+    Ronto = 23
+    Quecto = 24
+
+@dataclass
+class Unit:
+    """
+    The root unit. Used for unit symbols
+    """
+    name: str
+
+    # The super unit of this unit or empty if this is a SI unit such as second.
+    # TODO add units
+    # TODO add aliases?
+    baseTypes: List[Unit]
+    prefix: UnitPrefix
+    kind: UnitKind
+    reference: ReferenceKind
 
 @dataclass
 class Type:
     """
-    The root type interface. Used for typed symbols and type aliases.
+    The root type. Used for typed symbols and type aliases.
     """
     name: str
 
@@ -95,6 +157,80 @@ class Type:
 @dataclass
 class SymbolTableOptions:
     allowDuplicateSymbols: Optional[bool] = None
+
+class FundamentalUnit( Unit ):
+    """
+    A single class for all fundamental units which are mostly SI units. They are distinguished via the kind field.
+    """
+    name: str
+
+    def __init__(self, name: str, unitPrefix=UnitPrefix.NoP, unitKind=UnitKind.Unknown, referenceKind=ReferenceKind.Irrelevant):
+        super().__init__(self, kind = unitKind, reference = referenceKind, prefix = unitPrefix)
+        self.name = name
+
+    @property
+    def secondUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="second", unitKind=UnitKind.Second )
+
+    @property
+    def metreUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="metre", unitKind=UnitKind.Metre )
+
+    # TODO si unit is kilogram but unitKind has gram
+    @property
+    def gramUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="gram", unitKind=UnitKind.Gram )
+
+    # TODO si unit is kilogram but unitKind has gram
+    @property
+    def kilogramUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="kilogram", unitPrefix=UnitPrefix.Kilo, unitKind=UnitKind.Gram )
+
+    @property
+    def AmpereUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="ampere", unitKind=UnitKind.Ampere )
+
+    @property
+    def KelvinUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="Kelvin", unitKind=UnitKind.Kelvin )
+
+    @property
+    def MoleUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="Mole", unitKind=UnitKind.Mole )
+
+    @property
+    def CandelaUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="Candela", unitKind=UnitKind.Candela )
+
+    @property
+    def PascalUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="Pascal", unitKind=UnitKind.Pascal )
+
+    @property
+    def JouleUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="Joule", unitKind=UnitKind.Joule )
+
+    # TODO si unit is kilogram. unitKind has gram but could include ton
+    @property
+    def TonUnit(self) -> FundamentalUnit:
+        return FundamentalUnit( name="Ton",unitPrefix=UnitPrefix.Mega, unitKind=UnitKind.Gram )
+
+
+    @property
+    def baseUnits(self) -> List[Unit]:
+        return []
+
+    @property
+    def kind(self) -> UnitKind:
+        return self.kind
+
+    @property
+    def reference(self) -> ReferenceKind:
+        return self.reference
+
+    @property
+    def prefix(self) -> UnitPrefix:
+        return self.prefix
 
 
 class FundamentalType( Type ):
@@ -113,19 +249,19 @@ class FundamentalType( Type ):
 
     @property
     def integerType(self) -> FundamentalType:
-        return FundamentalType( "int", TypeKind.Integer, ReferenceKind.Instance )
+        return FundamentalType( "int", TypeKind.Integer )
 
     @property
     def floatType(self) -> FundamentalType:
-        return FundamentalType( "float", TypeKind.Float, ReferenceKind.Instance )
+        return FundamentalType( "float", TypeKind.Float )
 
     @property
     def stringType(self) -> FundamentalType:
-        return FundamentalType( "string", TypeKind.String, ReferenceKind.Instance )
+        return FundamentalType( "string", TypeKind.String )
 
     @property
     def boolType(self) -> FundamentalType:
-        return FundamentalType( "bool", TypeKind.Boolean, ReferenceKind.Instance )
+        return FundamentalType( "bool", TypeKind.Boolean )
 
     @property
     def baseTypes(self) -> List[Type]:
@@ -351,6 +487,15 @@ class TypedSymbol( Symbol ):
         super().__init__( name )
         self.attached_type = attached_type
 
+class UnitSymbol( TypedSymbol ):
+    """
+    A symbol with an attached unit (physical units such as second, metre, gram etc.).
+    """
+    attached_unit: Optional[Unit]
+
+    def __init__(self, name: str, attached_unit: Unit, attached_type: Type = None):
+        super().__init__( name, attached_type )
+        self.attached_unit = attached_unit
 
 class TypeAlias( Symbol, Type ):
     """
@@ -743,7 +888,7 @@ class BlockSymbol( ScopedSymbol ):
     pass
 
 
-class VariableSymbol( TypedSymbol ):
+class VariableSymbol( UnitSymbol ):
 
     def __init__(self, name: str, value=None, attached_type: Type = None):
         super().__init__( name, attached_type )
@@ -751,7 +896,7 @@ class VariableSymbol( TypedSymbol ):
         self.value = value
 
 
-class LiteralSymbol( TypedSymbol ):
+class LiteralSymbol( UnitSymbol ):
 
     def __init__(self, name: str, value=None, attached_type: Type = None):
         super().__init__( name, attached_type )

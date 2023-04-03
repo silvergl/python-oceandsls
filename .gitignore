@@ -4,6 +4,7 @@ docs/build/
 bench/results/
 bench/env/
 bench/trio/
+.idea/codeStyles/
 
 # Byte-compiled / optimized / DLL files / editor temp files
 __pycache__/

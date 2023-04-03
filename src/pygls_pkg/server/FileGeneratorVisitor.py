@@ -54,10 +54,9 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         # Render template
         name = ctx.ID().getText()
         scope = self.visit( ctx.test_scope() )
-        # TODO get vars
-        test_vars = self.visitChildren( ctx )
+        test_vars = self.visitChildren( ctx.test_vars() )
         # TODO get assertions
-        assertions = self.visitChildren( ctx )
+        assertions = self.visitChildren( ctx.test_assertion() )
         # TODO get comment
         content = template.render( name=name, scope=scope, vars=test_vars, assertions=assertions )
         return self.visitChildren( ctx )
@@ -78,7 +77,9 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
 
     # Visit a parse tree produced by TestSuiteParser#test_vars.
     def visitTest_vars(self, ctx:TestSuiteParser.Test_varsContext):
-        return 'vars'
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        # TODO add template
+        return template.render( vars=ctx.vars )
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion(self, ctx:TestSuiteParser.Test_assertionContext):

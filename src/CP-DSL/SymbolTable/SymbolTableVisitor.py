@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
 from antlr4.tree.Tree import ParseTree
 
-from SymbolTable.SymbolTable import ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol, SymbolTableOptions, BlockSymbol
+from SymbolTable.SymbolTable import ScopedSymbol, SymbolTable, P, T, BlockSymbol, RoutineSymbol, SymbolTableOptions, ParameterSymbol
 from Configuration.DeclarationParser import DeclarationParser
 from Configuration.DeclarationVisitor import DeclarationVisitor
 
@@ -28,11 +28,10 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
     def visitParamAssignStat(self, ctx: DeclarationParser.ParamAssignStatContext):
         
         # define the given Parameter
-        t = type # set and get the type of param here
+        t = ParameterSymbol # set and get the type of param here
         varName = ctx.ID().getText() # set and get the variable name here
-        value = value # set and get the Value here
         
-        scope = self._symbolTable.addNewSymbolOfType(t, self._scope, varName, value)
+        scope = self._symbolTable.addNewSymbolOfType(t, self._scope, varName)
         scope.context = ctx
         self._scope = scope
         self._scope = scope.parent()

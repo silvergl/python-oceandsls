@@ -98,10 +98,10 @@ basicUnit                   :   sIUnit
                             |   '(' unitSpecification ')'
                             ;
 
-sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType ;
+sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType #siunit; 
 
 //TODO {CustomUnit} enforce Type and return object of CustomUnit
-customUnit                  :   name=STRING ;
+customUnit                  :   name=STRING #customunit;
 
 composedUnit                :   numerator=basicUnit (('/' denominator=basicUnit) | ('**' exponent=ELONG))
                             |   basicUnit

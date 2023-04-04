@@ -26,12 +26,23 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         return self._symbolTable
 
     # Visit a parse tree produced by DeclarationParser#paramAssignStat.
+    # 'def' name=ID type=paramType ':' unit=unitSpecification (',' description=STRING)? ('=' defaultValue=arithmeticExpression)?
     def visitParamAssignStat(self, ctx:DeclarationParser.ParamAssignStatContext):
         
         # define the given Parameter
         # TODO merge UnitSymbol from main and change t to UnitSymbol
         t = VariableSymbol # set and get the type of param here
-        varName = ctx.ID().getText() # set and get the variable name here
+        varName = ctx.name.text # set and get the variable name here
+        temp = self.visit(ctx.unit)
+        # TODO: get the default Value -> defaultValue=arithmeticExpression
+        defaultValue = self.visit(ctx.defaultValue)
+        description = ctx.description.text
+        if isinstance(temp, tuple):
+            # SI Unit
+            unit, unitType = temp
+        else:
+            # Custom Unit
+            unitName = temp
 
 
         # TODO add defaultValue and unit see
@@ -40,11 +51,14 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         #  or example : media.pragprog.com/titles/tpantlr2/code/tour/EvalVisitor.java
         # TODO backlog add description as comment to SymbolTable?
         scope = self._symbolTable.addNewSymbolOfType(t, self._scope, varName)
-        # scope.context = ctx
-        # self._scope = scope
-        # self._scope = scope.parent()
-        # return scope
         return self.visitChildren( ctx )
+    
+    # sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType #siUnit; 
+    def visitSiunit(self, ctx:DeclarationParser.sIUnitContext):
+        return (ctx.prefix.text, ctx.type.text)
+    # customUnit                  :   name=STRING #customunit;
+    def visitCustomunit(self, ctx:DeclarationParser.customUnit):
+        return ctx.name.text
 
     # TODO backlog visitParamGroupAssignStat as BlockSymbol is not implemented and do we need it?
     # def visitParamGroupAssignStat(self, ctx: DeclarationParser.ParamGroupAssignStatContext):

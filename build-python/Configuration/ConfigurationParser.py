@@ -1,4 +1,4 @@
-# Generated from Configuration.g4 by ANTLR 4.10.1
+# Generated from Configuration.g4 by ANTLR 4.12.0
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -10,7 +10,7 @@ else:
 
 def serializedATN():
     return [
-        4,1,30,212,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,31,212,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,
         7,20,2,21,7,21,2,22,7,22,2,23,7,23,1,0,1,0,1,0,1,0,1,0,5,0,54,8,
@@ -104,7 +104,7 @@ class ConfigurationParser ( Parser ):
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "ID", "QualifiedName", "ELONG", "EDOUBLE", 
-                      "EBoolean", "INT", "STRING", "ML_COMMENT", "SL_COMMENT", 
+                      "EBoolean", "INT", "STRING", "WS", "ML_COMMENT", "SL_COMMENT", 
                       "ANY_OTHER" ]
 
     RULE_configurationModel = 0
@@ -169,13 +169,14 @@ class ConfigurationParser ( Parser ):
     EBoolean=25
     INT=26
     STRING=27
-    ML_COMMENT=28
-    SL_COMMENT=29
-    ANY_OTHER=30
+    WS=28
+    ML_COMMENT=29
+    SL_COMMENT=30
+    ANY_OTHER=31
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.10.1")
+        self.checkVersion("4.12.0")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -271,7 +272,7 @@ class ConfigurationParser ( Parser ):
             self.state = 55
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==ConfigurationParser.T__4:
+            while _la==5:
                 self.state = 52
                 localctx._include = self.include()
                 localctx.includes.append(localctx._include)
@@ -282,7 +283,7 @@ class ConfigurationParser ( Parser ):
             self.state = 67
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==ConfigurationParser.T__2:
+            if _la==3:
                 self.state = 58
                 self.match(ConfigurationParser.T__2)
                 self.state = 59
@@ -291,7 +292,7 @@ class ConfigurationParser ( Parser ):
                 self.state = 64
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==ConfigurationParser.T__3:
+                while _la==4:
                     self.state = 60
                     self.match(ConfigurationParser.T__3)
                     self.state = 61
@@ -306,16 +307,16 @@ class ConfigurationParser ( Parser ):
             self.state = 73
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==ConfigurationParser.T__6 or _la==ConfigurationParser.T__9:
+            while _la==7 or _la==10:
                 self.state = 71
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
-                if token in [ConfigurationParser.T__9]:
+                if token in [10]:
                     self.state = 69
                     localctx._parameterGroup = self.parameterGroup()
                     localctx.parameterGroups.append(localctx._parameterGroup)
                     pass
-                elif token in [ConfigurationParser.T__6]:
+                elif token in [7]:
                     self.state = 70
                     localctx._featureConfiguration = self.featureConfiguration()
                     localctx.featureConfigurations.append(localctx._featureConfiguration)
@@ -428,7 +429,7 @@ class ConfigurationParser ( Parser ):
             self.state = 80
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==ConfigurationParser.T__5:
+            if _la==6:
                 self.state = 79
                 localctx.deactivated = self.match(ConfigurationParser.T__5)
 
@@ -518,7 +519,7 @@ class ConfigurationParser ( Parser ):
             self.state = 96
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==ConfigurationParser.T__2:
+            if _la==3:
                 self.state = 87
                 self.match(ConfigurationParser.T__2)
                 self.state = 88
@@ -527,7 +528,7 @@ class ConfigurationParser ( Parser ):
                 self.state = 93
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==ConfigurationParser.T__3:
+                while _la==4:
                     self.state = 89
                     self.match(ConfigurationParser.T__3)
                     self.state = 90
@@ -542,16 +543,16 @@ class ConfigurationParser ( Parser ):
             self.state = 102
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==ConfigurationParser.T__6 or _la==ConfigurationParser.T__9:
+            while _la==7 or _la==10:
                 self.state = 100
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
-                if token in [ConfigurationParser.T__9]:
+                if token in [10]:
                     self.state = 98
                     localctx._parameterGroup = self.parameterGroup()
                     localctx.parameterGroups.append(localctx._parameterGroup)
                     pass
-                elif token in [ConfigurationParser.T__6]:
+                elif token in [7]:
                     self.state = 99
                     localctx._featureConfiguration = self.featureConfiguration()
                     localctx.featureConfigurations.append(localctx._featureConfiguration)
@@ -630,7 +631,7 @@ class ConfigurationParser ( Parser ):
             self.state = 113
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==ConfigurationParser.QualifiedName:
+            while _la==22:
                 self.state = 110
                 localctx._parameterAssignment = self.parameterAssignment()
                 localctx.parameters.append(localctx._parameterAssignment)
@@ -711,7 +712,7 @@ class ConfigurationParser ( Parser ):
             self.state = 130
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==ConfigurationParser.T__10:
+            if _la==11:
                 self.state = 119
                 self.match(ConfigurationParser.T__10)
                 self.state = 120
@@ -720,7 +721,7 @@ class ConfigurationParser ( Parser ):
                 self.state = 125
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==ConfigurationParser.T__3:
+                while _la==4:
                     self.state = 121
                     self.match(ConfigurationParser.T__3)
                     self.state = 122
@@ -741,7 +742,7 @@ class ConfigurationParser ( Parser ):
             self.state = 135
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==ConfigurationParser.ID:
+            if _la==21:
                 self.state = 134
                 localctx.unit = self.unitSpecification()
 
@@ -1085,7 +1086,7 @@ class ConfigurationParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 156
             _la = self._input.LA(1)
-            if not(_la==ConfigurationParser.T__12 or _la==ConfigurationParser.T__13):
+            if not(_la==13 or _la==14):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -1212,7 +1213,7 @@ class ConfigurationParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 165
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << ConfigurationParser.T__14) | (1 << ConfigurationParser.T__15) | (1 << ConfigurationParser.T__16))) != 0)):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 229376) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -1277,22 +1278,22 @@ class ConfigurationParser ( Parser ):
             self.state = 171
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [ConfigurationParser.T__17]:
+            if token in [18]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 167
                 self.parenthesisExpression()
                 pass
-            elif token in [ConfigurationParser.ID]:
+            elif token in [21]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 168
                 self.namedElementReference()
                 pass
-            elif token in [ConfigurationParser.T__10]:
+            elif token in [11]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 169
                 self.arrayExpression()
                 pass
-            elif token in [ConfigurationParser.ELONG, ConfigurationParser.EDOUBLE, ConfigurationParser.EBoolean, ConfigurationParser.STRING]:
+            elif token in [23, 24, 25, 27]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 170
                 self.literalExpression()
@@ -1409,22 +1410,22 @@ class ConfigurationParser ( Parser ):
             self.state = 179
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [ConfigurationParser.STRING]:
+            if token in [27]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 175
                 self.stringValue()
                 pass
-            elif token in [ConfigurationParser.ELONG]:
+            elif token in [23]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 176
                 self.longValue()
                 pass
-            elif token in [ConfigurationParser.EDOUBLE]:
+            elif token in [24]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 177
                 self.doubleValue()
                 pass
-            elif token in [ConfigurationParser.EBoolean]:
+            elif token in [25]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 178
                 self.booleanValue()
@@ -1542,14 +1543,14 @@ class ConfigurationParser ( Parser ):
             self.state = 194
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << ConfigurationParser.T__10) | (1 << ConfigurationParser.T__17) | (1 << ConfigurationParser.ID) | (1 << ConfigurationParser.ELONG) | (1 << ConfigurationParser.EDOUBLE) | (1 << ConfigurationParser.EBoolean) | (1 << ConfigurationParser.STRING))) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 195299328) != 0):
                 self.state = 186
                 localctx._arithmeticExpression = self.arithmeticExpression()
                 localctx.elements.append(localctx._arithmeticExpression)
                 self.state = 191
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==ConfigurationParser.T__3:
+                while _la==4:
                     self.state = 187
                     self.match(ConfigurationParser.T__3)
                     self.state = 188
@@ -1619,7 +1620,7 @@ class ConfigurationParser ( Parser ):
             self.state = 201
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==ConfigurationParser.T__19:
+            if _la==20:
                 self.state = 199
                 self.match(ConfigurationParser.T__19)
                 self.state = 200

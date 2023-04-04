@@ -1,4 +1,5 @@
-// Generated from Declaration.g4 by ANTLR 4.10.1
+// Generated from Declaration.g4 by ANTLR 4.12.0
+package Declaration;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -9,6 +10,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
+@SuppressWarnings("CheckReturnValue")
 public class DeclarationBaseListener implements DeclarationListener {
 	/**
 	 * {@inheritDoc}
@@ -39,49 +41,49 @@ public class DeclarationBaseListener implements DeclarationListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParameterGroupDeclaration(DeclarationParser.ParameterGroupDeclarationContext ctx) { }
+	@Override public void enterParamGroupAssignStat(DeclarationParser.ParamGroupAssignStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParameterGroupDeclaration(DeclarationParser.ParameterGroupDeclarationContext ctx) { }
+	@Override public void exitParamGroupAssignStat(DeclarationParser.ParamGroupAssignStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParameterDeclaration(DeclarationParser.ParameterDeclarationContext ctx) { }
+	@Override public void enterParamAssignStat(DeclarationParser.ParamAssignStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParameterDeclaration(DeclarationParser.ParameterDeclarationContext ctx) { }
+	@Override public void exitParamAssignStat(DeclarationParser.ParamAssignStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFeatureDeclaration(DeclarationParser.FeatureDeclarationContext ctx) { }
+	@Override public void enterFeatureAssignStat(DeclarationParser.FeatureAssignStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFeatureDeclaration(DeclarationParser.FeatureDeclarationContext ctx) { }
+	@Override public void exitFeatureAssignStat(DeclarationParser.FeatureAssignStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFeatureGroupDeclaration(DeclarationParser.FeatureGroupDeclarationContext ctx) { }
+	@Override public void enterFeatureGroupAssignStat(DeclarationParser.FeatureGroupAssignStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFeatureGroupDeclaration(DeclarationParser.FeatureGroupDeclarationContext ctx) { }
+	@Override public void exitFeatureGroupAssignStat(DeclarationParser.FeatureGroupAssignStatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

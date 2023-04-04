@@ -1,4 +1,5 @@
-// Generated from Configuration.g4 by ANTLR 4.10.1
+// Generated from Configuration.g4 by ANTLR 4.12.0
+package Configuration;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -8,9 +9,9 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class ConfigurationParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -19,7 +20,7 @@ public class ConfigurationParser extends Parser {
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
 		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
 		T__17=18, T__18=19, T__19=20, ID=21, QualifiedName=22, ELONG=23, EDOUBLE=24, 
-		EBoolean=25, INT=26, STRING=27, ML_COMMENT=28, SL_COMMENT=29, ANY_OTHER=30;
+		EBoolean=25, INT=26, STRING=27, WS=28, ML_COMMENT=29, SL_COMMENT=30, ANY_OTHER=31;
 	public static final int
 		RULE_configurationModel = 0, RULE_include = 1, RULE_featureActivation = 2, 
 		RULE_featureConfiguration = 3, RULE_parameterGroup = 4, RULE_parameterAssignment = 5, 
@@ -53,8 +54,8 @@ public class ConfigurationParser extends Parser {
 		return new String[] {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, "ID", "QualifiedName", 
-			"ELONG", "EDOUBLE", "EBoolean", "INT", "STRING", "ML_COMMENT", "SL_COMMENT", 
-			"ANY_OTHER"
+			"ELONG", "EDOUBLE", "EBoolean", "INT", "STRING", "WS", "ML_COMMENT", 
+			"SL_COMMENT", "ANY_OTHER"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -108,6 +109,7 @@ public class ConfigurationParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ConfigurationModelContext extends ParserRuleContext {
 		public Token name;
 		public Token declarationModel;
@@ -158,6 +160,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitConfigurationModel(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitConfigurationModel(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -264,6 +271,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IncludeContext extends ParserRuleContext {
 		public Token importedNamespace;
 		public TerminalNode QualifiedName() { return getToken(ConfigurationParser.QualifiedName, 0); }
@@ -278,6 +286,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitInclude(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitInclude(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -304,6 +317,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class FeatureActivationContext extends ParserRuleContext {
 		public Token deactivated;
 		public Token declaration;
@@ -319,6 +333,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitFeatureActivation(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitFeatureActivation(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -354,6 +373,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class FeatureConfigurationContext extends ParserRuleContext {
 		public Token declaration;
 		public FeatureActivationContext featureActivation;
@@ -392,6 +412,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitFeatureConfiguration(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitFeatureConfiguration(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -483,6 +508,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ParameterGroupContext extends ParserRuleContext {
 		public Token declaration;
 		public ParameterAssignmentContext parameterAssignment;
@@ -505,6 +531,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitParameterGroup(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitParameterGroup(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -551,6 +582,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ParameterAssignmentContext extends ParserRuleContext {
 		public Token declaration;
 		public SelectorContext selector;
@@ -581,6 +613,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitParameterAssignment(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitParameterAssignment(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -652,6 +689,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class SelectorContext extends ParserRuleContext {
 		public ElementSelectorContext elementSelector() {
 			return getRuleContext(ElementSelectorContext.class,0);
@@ -670,6 +708,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitSelector(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitSelector(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -707,6 +750,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ElementSelectorContext extends ParserRuleContext {
 		public Token element;
 		public TerminalNode ELONG() { return getToken(ConfigurationParser.ELONG, 0); }
@@ -721,6 +765,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitElementSelector(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitElementSelector(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -745,6 +794,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class RangeSelectorContext extends ParserRuleContext {
 		public Token lowerBound;
 		public Token upperBound;
@@ -763,6 +813,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitRangeSelector(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitRangeSelector(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -791,6 +846,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class UnitSpecificationContext extends ParserRuleContext {
 		public Token unit;
 		public TerminalNode ID() { return getToken(ConfigurationParser.ID, 0); }
@@ -805,6 +861,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitUnitSpecification(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitUnitSpecification(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -829,6 +890,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ArithmeticExpressionContext extends ParserRuleContext {
 		public MultiplicationExpressionContext left;
 		public EAdditionOperatorContext op;
@@ -853,6 +915,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitArithmeticExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitArithmeticExpression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -894,6 +961,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EAdditionOperatorContext extends ParserRuleContext {
 		public EAdditionOperatorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -906,6 +974,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitEAdditionOperator(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitEAdditionOperator(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -939,6 +1012,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class MultiplicationExpressionContext extends ParserRuleContext {
 		public ValueExpressionContext left;
 		public EMultiplicationOperatorContext op;
@@ -963,6 +1037,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitMultiplicationExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitMultiplicationExpression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1004,6 +1083,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EMultiplicationOperatorContext extends ParserRuleContext {
 		public EMultiplicationOperatorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1017,6 +1097,11 @@ public class ConfigurationParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitEMultiplicationOperator(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitEMultiplicationOperator(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EMultiplicationOperatorContext eMultiplicationOperator() throws RecognitionException {
@@ -1028,7 +1113,7 @@ public class ConfigurationParser extends Parser {
 			{
 			setState(165);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__14) | (1L << T__15) | (1L << T__16))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 229376L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -1049,6 +1134,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ValueExpressionContext extends ParserRuleContext {
 		public ParenthesisExpressionContext parenthesisExpression() {
 			return getRuleContext(ParenthesisExpressionContext.class,0);
@@ -1073,6 +1159,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitValueExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitValueExpression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1129,6 +1220,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class LiteralExpressionContext extends ParserRuleContext {
 		public LiteralContext value;
 		public LiteralContext literal() {
@@ -1145,6 +1237,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitLiteralExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitLiteralExpression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1169,6 +1266,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class LiteralContext extends ParserRuleContext {
 		public StringValueContext stringValue() {
 			return getRuleContext(StringValueContext.class,0);
@@ -1193,6 +1291,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitLiteral(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitLiteral(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1246,6 +1349,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ParenthesisExpressionContext extends ParserRuleContext {
 		public ArithmeticExpressionContext expression;
 		public ArithmeticExpressionContext arithmeticExpression() {
@@ -1262,6 +1366,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitParenthesisExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitParenthesisExpression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1290,6 +1399,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ArrayExpressionContext extends ParserRuleContext {
 		public ArithmeticExpressionContext arithmeticExpression;
 		public List<ArithmeticExpressionContext> elements = new ArrayList<ArithmeticExpressionContext>();
@@ -1311,6 +1421,11 @@ public class ConfigurationParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitArrayExpression(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitArrayExpression(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ArrayExpressionContext arrayExpression() throws RecognitionException {
@@ -1325,7 +1440,7 @@ public class ConfigurationParser extends Parser {
 			setState(194);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__10) | (1L << T__17) | (1L << ID) | (1L << ELONG) | (1L << EDOUBLE) | (1L << EBoolean) | (1L << STRING))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 195299328L) != 0)) {
 				{
 				setState(186);
 				((ArrayExpressionContext)_localctx).arithmeticExpression = arithmeticExpression();
@@ -1365,6 +1480,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class NamedElementReferenceContext extends ParserRuleContext {
 		public Token element;
 		public Token attribute;
@@ -1383,6 +1499,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitNamedElementReference(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitNamedElementReference(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1420,6 +1541,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class StringValueContext extends ParserRuleContext {
 		public Token value;
 		public TerminalNode STRING() { return getToken(ConfigurationParser.STRING, 0); }
@@ -1434,6 +1556,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitStringValue(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitStringValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1458,6 +1585,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class LongValueContext extends ParserRuleContext {
 		public Token value;
 		public TerminalNode ELONG() { return getToken(ConfigurationParser.ELONG, 0); }
@@ -1472,6 +1600,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitLongValue(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitLongValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1496,6 +1629,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class DoubleValueContext extends ParserRuleContext {
 		public Token value;
 		public TerminalNode EDOUBLE() { return getToken(ConfigurationParser.EDOUBLE, 0); }
@@ -1510,6 +1644,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitDoubleValue(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitDoubleValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1534,6 +1673,7 @@ public class ConfigurationParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class BooleanValueContext extends ParserRuleContext {
 		public Token value;
 		public TerminalNode EBoolean() { return getToken(ConfigurationParser.EBoolean, 0); }
@@ -1548,6 +1688,11 @@ public class ConfigurationParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ConfigurationListener ) ((ConfigurationListener)listener).exitBooleanValue(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ConfigurationVisitor ) return ((ConfigurationVisitor<? extends T>)visitor).visitBooleanValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1573,7 +1718,7 @@ public class ConfigurationParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\u001e\u00d4\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
+		"\u0004\u0001\u001f\u00d4\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
 		"\u0002\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004"+
 		"\u0002\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007"+
 		"\u0002\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b"+

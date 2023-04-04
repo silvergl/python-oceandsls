@@ -1,4 +1,4 @@
-# Generated from Declaration.g4 by ANTLR 4.10.1
+# Generated from Declaration.g4 by ANTLR 4.12.0
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .DeclarationParser import DeclarationParser
@@ -19,23 +19,23 @@ class DeclarationVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by DeclarationParser#parameterGroupDeclaration.
-    def visitParameterGroupDeclaration(self, ctx:DeclarationParser.ParameterGroupDeclarationContext):
+    # Visit a parse tree produced by DeclarationParser#paramGroupAssignStat.
+    def visitParamGroupAssignStat(self, ctx:DeclarationParser.ParamGroupAssignStatContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by DeclarationParser#parameterDeclaration.
-    def visitParameterDeclaration(self, ctx:DeclarationParser.ParameterDeclarationContext):
+    # Visit a parse tree produced by DeclarationParser#paramAssignStat.
+    def visitParamAssignStat(self, ctx:DeclarationParser.ParamAssignStatContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by DeclarationParser#featureDeclaration.
-    def visitFeatureDeclaration(self, ctx:DeclarationParser.FeatureDeclarationContext):
+    # Visit a parse tree produced by DeclarationParser#featureAssignStat.
+    def visitFeatureAssignStat(self, ctx:DeclarationParser.FeatureAssignStatContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by DeclarationParser#featureGroupDeclaration.
-    def visitFeatureGroupDeclaration(self, ctx:DeclarationParser.FeatureGroupDeclarationContext):
+    # Visit a parse tree produced by DeclarationParser#featureGroupAssignStat.
+    def visitFeatureGroupAssignStat(self, ctx:DeclarationParser.FeatureGroupAssignStatContext):
         return self.visitChildren(ctx)
 
 

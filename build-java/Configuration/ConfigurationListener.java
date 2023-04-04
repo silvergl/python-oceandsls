@@ -1,4 +1,5 @@
-// Generated from Configuration.g4 by ANTLR 4.10.1
+// Generated from Configuration.g4 by ANTLR 4.12.0
+package Configuration;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**

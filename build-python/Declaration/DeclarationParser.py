@@ -1,4 +1,4 @@
-# Generated from Declaration.g4 by ANTLR 4.10.1
+# Generated from Declaration.g4 by ANTLR 4.12.0
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -10,7 +10,7 @@ else:
 
 def serializedATN():
     return [
-        4,1,69,377,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,70,377,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,
         7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,
@@ -189,7 +189,8 @@ class DeclarationParser ( Parser ):
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "ELONG", "EDOUBLE", "EBoolean", "ID", 
-                      "INT", "STRING", "ML_COMMENT", "SL_COMMENT", "ANY_OTHER" ]
+                      "INT", "STRING", "WS", "ML_COMMENT", "SL_COMMENT", 
+                      "ANY_OTHER" ]
 
     RULE_declarationModel = 0
     RULE_namedElement = 1
@@ -310,13 +311,14 @@ class DeclarationParser ( Parser ):
     ID=64
     INT=65
     STRING=66
-    ML_COMMENT=67
-    SL_COMMENT=68
-    ANY_OTHER=69
+    WS=67
+    ML_COMMENT=68
+    SL_COMMENT=69
+    ANY_OTHER=70
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.10.1")
+        self.checkVersion("4.12.0")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -395,13 +397,13 @@ class DeclarationParser ( Parser ):
             self.state = 87
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.T__1:
+            if _la==2:
                 self.state = 80
                 self.match(DeclarationParser.T__1)
                 self.state = 84
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==DeclarationParser.T__20 or _la==DeclarationParser.T__21:
+                while _la==21 or _la==22:
                     self.state = 81
                     localctx._declaredType = self.declaredType()
                     localctx.types.append(localctx._declaredType)
@@ -414,16 +416,16 @@ class DeclarationParser ( Parser ):
             self.state = 93
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DeclarationParser.T__2) | (1 << DeclarationParser.T__9) | (1 << DeclarationParser.T__10))) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 3080) != 0):
                 self.state = 91
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
-                if token in [DeclarationParser.T__2]:
+                if token in [3]:
                     self.state = 89
                     localctx._parameterGroupDeclaration = self.parameterGroupDeclaration()
                     localctx.parameterGroupDeclarations.append(localctx._parameterGroupDeclaration)
                     pass
-                elif token in [DeclarationParser.T__9, DeclarationParser.T__10]:
+                elif token in [10, 11]:
                     self.state = 90
                     localctx._featureDeclaration = self.featureDeclaration()
                     localctx.featureDeclarations.append(localctx._featureDeclaration)
@@ -491,17 +493,17 @@ class DeclarationParser ( Parser ):
             self.state = 99
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [DeclarationParser.T__6]:
+            if token in [7]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 96
                 self.parameterDeclaration()
                 pass
-            elif token in [DeclarationParser.T__2]:
+            elif token in [3]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 97
                 self.parameterGroupDeclaration()
                 pass
-            elif token in [DeclarationParser.T__9, DeclarationParser.T__10]:
+            elif token in [10, 11]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 98
                 self.featureDeclaration()
@@ -524,17 +526,31 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+
+
+        def getRuleIndex(self):
+            return DeclarationParser.RULE_parameterGroupDeclaration
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class ParamGroupAssignStatContext(ParameterGroupDeclarationContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.ParameterGroupDeclarationContext
+            super().__init__(parser)
             self.name = None # Token
             self.description = None # Token
             self._parameterDeclaration = None # ParameterDeclarationContext
             self.parameterDeclarations = list() # of ParameterDeclarationContexts
+            self.copyFrom(ctx)
 
         def ID(self):
             return self.getToken(DeclarationParser.ID, 0)
-
         def STRING(self):
             return self.getToken(DeclarationParser.STRING, 0)
-
         def parameterDeclaration(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(DeclarationParser.ParameterDeclarationContext)
@@ -542,23 +558,19 @@ class DeclarationParser ( Parser ):
                 return self.getTypedRuleContext(DeclarationParser.ParameterDeclarationContext,i)
 
 
-        def getRuleIndex(self):
-            return DeclarationParser.RULE_parameterGroupDeclaration
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterParameterGroupDeclaration" ):
-                listener.enterParameterGroupDeclaration(self)
+            if hasattr( listener, "enterParamGroupAssignStat" ):
+                listener.enterParamGroupAssignStat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitParameterGroupDeclaration" ):
-                listener.exitParameterGroupDeclaration(self)
+            if hasattr( listener, "exitParamGroupAssignStat" ):
+                listener.exitParamGroupAssignStat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParameterGroupDeclaration" ):
-                return visitor.visitParameterGroupDeclaration(self)
+            if hasattr( visitor, "visitParamGroupAssignStat" ):
+                return visitor.visitParamGroupAssignStat(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -568,6 +580,7 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 4, self.RULE_parameterGroupDeclaration)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.ParamGroupAssignStatContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 101
             self.match(DeclarationParser.T__2)
@@ -582,7 +595,7 @@ class DeclarationParser ( Parser ):
             self.state = 109
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==DeclarationParser.T__6:
+            while _la==7:
                 self.state = 106
                 localctx._parameterDeclaration = self.parameterDeclaration()
                 localctx.parameterDeclarations.append(localctx._parameterDeclaration)
@@ -607,47 +620,55 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.name = None # Token
-            self.type_ = None # ParamTypeContext
-            self.unit = None # UnitSpecificationContext
-            self.description = None # Token
-            self.defaultValue = None # ArithmeticExpressionContext
-
-        def ID(self):
-            return self.getToken(DeclarationParser.ID, 0)
-
-        def paramType(self):
-            return self.getTypedRuleContext(DeclarationParser.ParamTypeContext,0)
-
-
-        def unitSpecification(self):
-            return self.getTypedRuleContext(DeclarationParser.UnitSpecificationContext,0)
-
-
-        def STRING(self):
-            return self.getToken(DeclarationParser.STRING, 0)
-
-        def arithmeticExpression(self):
-            return self.getTypedRuleContext(DeclarationParser.ArithmeticExpressionContext,0)
 
 
         def getRuleIndex(self):
             return DeclarationParser.RULE_parameterDeclaration
 
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class ParamAssignStatContext(ParameterDeclarationContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.ParameterDeclarationContext
+            super().__init__(parser)
+            self.name = None # Token
+            self.type_ = None # ParamTypeContext
+            self.unit = None # UnitSpecificationContext
+            self.description = None # Token
+            self.defaultValue = None # ArithmeticExpressionContext
+            self.copyFrom(ctx)
+
+        def ID(self):
+            return self.getToken(DeclarationParser.ID, 0)
+        def paramType(self):
+            return self.getTypedRuleContext(DeclarationParser.ParamTypeContext,0)
+
+        def unitSpecification(self):
+            return self.getTypedRuleContext(DeclarationParser.UnitSpecificationContext,0)
+
+        def STRING(self):
+            return self.getToken(DeclarationParser.STRING, 0)
+        def arithmeticExpression(self):
+            return self.getTypedRuleContext(DeclarationParser.ArithmeticExpressionContext,0)
+
+
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterParameterDeclaration" ):
-                listener.enterParameterDeclaration(self)
+            if hasattr( listener, "enterParamAssignStat" ):
+                listener.enterParamAssignStat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitParameterDeclaration" ):
-                listener.exitParameterDeclaration(self)
+            if hasattr( listener, "exitParamAssignStat" ):
+                listener.exitParamAssignStat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParameterDeclaration" ):
-                return visitor.visitParameterDeclaration(self)
+            if hasattr( visitor, "visitParamAssignStat" ):
+                return visitor.visitParamAssignStat(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -657,6 +678,7 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 6, self.RULE_parameterDeclaration)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.ParamAssignStatContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 114
             self.match(DeclarationParser.T__6)
@@ -671,7 +693,7 @@ class DeclarationParser ( Parser ):
             self.state = 121
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.T__7:
+            if _la==8:
                 self.state = 119
                 self.match(DeclarationParser.T__7)
                 self.state = 120
@@ -681,7 +703,7 @@ class DeclarationParser ( Parser ):
             self.state = 125
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.T__8:
+            if _la==9:
                 self.state = 123
                 self.match(DeclarationParser.T__8)
                 self.state = 124
@@ -703,6 +725,21 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+
+
+        def getRuleIndex(self):
+            return DeclarationParser.RULE_featureDeclaration
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class FeatureAssignStatContext(FeatureDeclarationContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.FeatureDeclarationContext
+            super().__init__(parser)
             self.required = None # Token
             self.name = None # Token
             self.description = None # Token
@@ -713,22 +750,20 @@ class DeclarationParser ( Parser ):
             self.parameterGroupDeclarations = list() # of ParameterGroupDeclarationContexts
             self._featureGroupDeclaration = None # FeatureGroupDeclarationContext
             self.featureGroupDeclarations = list() # of FeatureGroupDeclarationContexts
+            self.copyFrom(ctx)
 
         def ID(self, i:int=None):
             if i is None:
                 return self.getTokens(DeclarationParser.ID)
             else:
                 return self.getToken(DeclarationParser.ID, i)
-
         def STRING(self):
             return self.getToken(DeclarationParser.STRING, 0)
-
         def parameterGroupDeclaration(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(DeclarationParser.ParameterGroupDeclarationContext)
             else:
                 return self.getTypedRuleContext(DeclarationParser.ParameterGroupDeclarationContext,i)
-
 
         def featureGroupDeclaration(self, i:int=None):
             if i is None:
@@ -737,23 +772,19 @@ class DeclarationParser ( Parser ):
                 return self.getTypedRuleContext(DeclarationParser.FeatureGroupDeclarationContext,i)
 
 
-        def getRuleIndex(self):
-            return DeclarationParser.RULE_featureDeclaration
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFeatureDeclaration" ):
-                listener.enterFeatureDeclaration(self)
+            if hasattr( listener, "enterFeatureAssignStat" ):
+                listener.enterFeatureAssignStat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFeatureDeclaration" ):
-                listener.exitFeatureDeclaration(self)
+            if hasattr( listener, "exitFeatureAssignStat" ):
+                listener.exitFeatureAssignStat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFeatureDeclaration" ):
-                return visitor.visitFeatureDeclaration(self)
+            if hasattr( visitor, "visitFeatureAssignStat" ):
+                return visitor.visitFeatureAssignStat(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -763,11 +794,12 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 8, self.RULE_featureDeclaration)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.FeatureAssignStatContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 128
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.T__9:
+            if _la==10:
                 self.state = 127
                 localctx.required = self.match(DeclarationParser.T__9)
 
@@ -783,13 +815,13 @@ class DeclarationParser ( Parser ):
             self.state = 157
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.T__4:
+            if _la==5:
                 self.state = 134
                 self.match(DeclarationParser.T__4)
                 self.state = 139
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==DeclarationParser.T__11:
+                while _la==12:
                     self.state = 135
                     self.match(DeclarationParser.T__11)
                     self.state = 136
@@ -802,7 +834,7 @@ class DeclarationParser ( Parser ):
                 self.state = 146
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==DeclarationParser.T__12:
+                while _la==13:
                     self.state = 142
                     self.match(DeclarationParser.T__12)
                     self.state = 143
@@ -815,16 +847,16 @@ class DeclarationParser ( Parser ):
                 self.state = 153
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==DeclarationParser.T__2 or _la==DeclarationParser.T__13:
+                while _la==3 or _la==14:
                     self.state = 151
                     self._errHandler.sync(self)
                     token = self._input.LA(1)
-                    if token in [DeclarationParser.T__2]:
+                    if token in [3]:
                         self.state = 149
                         localctx._parameterGroupDeclaration = self.parameterGroupDeclaration()
                         localctx.parameterGroupDeclarations.append(localctx._parameterGroupDeclaration)
                         pass
-                    elif token in [DeclarationParser.T__13]:
+                    elif token in [14]:
                         self.state = 150
                         localctx._featureGroupDeclaration = self.featureGroupDeclaration()
                         localctx.featureGroupDeclarations.append(localctx._featureGroupDeclaration)
@@ -855,13 +887,28 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+
+
+        def getRuleIndex(self):
+            return DeclarationParser.RULE_featureGroupDeclaration
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class FeatureGroupAssignStatContext(FeatureGroupDeclarationContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.FeatureGroupDeclarationContext
+            super().__init__(parser)
             self.kind = None # EKindContext
             self._featureDeclaration = None # FeatureDeclarationContext
             self.featureDeclarations = list() # of FeatureDeclarationContexts
+            self.copyFrom(ctx)
 
         def eKind(self):
             return self.getTypedRuleContext(DeclarationParser.EKindContext,0)
-
 
         def featureDeclaration(self, i:int=None):
             if i is None:
@@ -870,23 +917,19 @@ class DeclarationParser ( Parser ):
                 return self.getTypedRuleContext(DeclarationParser.FeatureDeclarationContext,i)
 
 
-        def getRuleIndex(self):
-            return DeclarationParser.RULE_featureGroupDeclaration
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFeatureGroupDeclaration" ):
-                listener.enterFeatureGroupDeclaration(self)
+            if hasattr( listener, "enterFeatureGroupAssignStat" ):
+                listener.enterFeatureGroupAssignStat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFeatureGroupDeclaration" ):
-                listener.exitFeatureGroupDeclaration(self)
+            if hasattr( listener, "exitFeatureGroupAssignStat" ):
+                listener.exitFeatureGroupAssignStat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFeatureGroupDeclaration" ):
-                return visitor.visitFeatureGroupDeclaration(self)
+            if hasattr( visitor, "visitFeatureGroupAssignStat" ):
+                return visitor.visitFeatureGroupAssignStat(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -896,6 +939,7 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 10, self.RULE_featureGroupDeclaration)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.FeatureGroupAssignStatContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 159
             self.match(DeclarationParser.T__13)
@@ -904,7 +948,7 @@ class DeclarationParser ( Parser ):
             self.state = 164
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==DeclarationParser.T__9 or _la==DeclarationParser.T__10:
+            while _la==10 or _la==11:
                 self.state = 161
                 localctx._featureDeclaration = self.featureDeclaration()
                 localctx.featureDeclarations.append(localctx._featureDeclaration)
@@ -959,12 +1003,12 @@ class DeclarationParser ( Parser ):
             self.state = 169
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [DeclarationParser.T__14]:
+            if token in [15]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 167
                 localctx.alternative = self.match(DeclarationParser.T__14)
                 pass
-            elif token in [DeclarationParser.T__15]:
+            elif token in [16]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 168
                 localctx.multiple = self.match(DeclarationParser.T__15)
@@ -1107,7 +1151,7 @@ class DeclarationParser ( Parser ):
             self.state = 182
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==DeclarationParser.T__7:
+            while _la==8:
                 self.state = 178
                 self.match(DeclarationParser.T__7)
                 self.state = 179
@@ -1233,7 +1277,7 @@ class DeclarationParser ( Parser ):
             self.state = 196
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==DeclarationParser.T__7:
+            while _la==8:
                 self.state = 192
                 self.match(DeclarationParser.T__7)
                 self.state = 193
@@ -1360,7 +1404,7 @@ class DeclarationParser ( Parser ):
             self.state = 206
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.ELONG:
+            if _la==61:
                 self.state = 205
                 localctx.size = self.match(DeclarationParser.ELONG)
 
@@ -1419,7 +1463,7 @@ class DeclarationParser ( Parser ):
             self.state = 209
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.ELONG:
+            if _la==61:
                 self.state = 208
                 localctx.lowerBound = self.match(DeclarationParser.ELONG)
 
@@ -1429,7 +1473,7 @@ class DeclarationParser ( Parser ):
             self.state = 213
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.ELONG:
+            if _la==61:
                 self.state = 212
                 localctx.upperBound = self.match(DeclarationParser.ELONG)
 
@@ -1486,12 +1530,12 @@ class DeclarationParser ( Parser ):
             self.state = 217
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [DeclarationParser.T__20]:
+            if token in [21]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 215
                 self.rangeType()
                 pass
-            elif token in [DeclarationParser.T__21]:
+            elif token in [22]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 216
                 self.enumerationType()
@@ -1642,7 +1686,7 @@ class DeclarationParser ( Parser ):
             self.state = 236
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==DeclarationParser.T__7:
+            while _la==8:
                 self.state = 232
                 self.match(DeclarationParser.T__7)
                 self.state = 233
@@ -1710,7 +1754,7 @@ class DeclarationParser ( Parser ):
             self.state = 244
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.T__8:
+            if _la==9:
                 self.state = 242
                 self.match(DeclarationParser.T__8)
                 self.state = 243
@@ -1775,7 +1819,7 @@ class DeclarationParser ( Parser ):
             self.state = 251
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==DeclarationParser.T__22:
+            while _la==23:
                 self.state = 247
                 self.match(DeclarationParser.T__22)
                 self.state = 248
@@ -1841,17 +1885,17 @@ class DeclarationParser ( Parser ):
             self.state = 260
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [DeclarationParser.T__25, DeclarationParser.T__26, DeclarationParser.T__27, DeclarationParser.T__28, DeclarationParser.T__29, DeclarationParser.T__30, DeclarationParser.T__31, DeclarationParser.T__32, DeclarationParser.T__33, DeclarationParser.T__34, DeclarationParser.T__35, DeclarationParser.T__36, DeclarationParser.T__37, DeclarationParser.T__38, DeclarationParser.T__39, DeclarationParser.T__40, DeclarationParser.T__41, DeclarationParser.T__42, DeclarationParser.T__43, DeclarationParser.T__44, DeclarationParser.T__45, DeclarationParser.T__46, DeclarationParser.T__47, DeclarationParser.T__48, DeclarationParser.T__49, DeclarationParser.T__50, DeclarationParser.T__51, DeclarationParser.T__52, DeclarationParser.T__53, DeclarationParser.T__54, DeclarationParser.T__55]:
+            if token in [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 254
                 self.sIUnit()
                 pass
-            elif token in [DeclarationParser.STRING]:
+            elif token in [66]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 255
                 self.customUnit()
                 pass
-            elif token in [DeclarationParser.T__16]:
+            elif token in [17]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 256
                 self.match(DeclarationParser.T__16)
@@ -1919,7 +1963,7 @@ class DeclarationParser ( Parser ):
             self.state = 263
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DeclarationParser.T__25) | (1 << DeclarationParser.T__26) | (1 << DeclarationParser.T__27) | (1 << DeclarationParser.T__28) | (1 << DeclarationParser.T__29) | (1 << DeclarationParser.T__30) | (1 << DeclarationParser.T__31) | (1 << DeclarationParser.T__32) | (1 << DeclarationParser.T__33) | (1 << DeclarationParser.T__34) | (1 << DeclarationParser.T__35) | (1 << DeclarationParser.T__36) | (1 << DeclarationParser.T__37) | (1 << DeclarationParser.T__38) | (1 << DeclarationParser.T__39) | (1 << DeclarationParser.T__40) | (1 << DeclarationParser.T__41) | (1 << DeclarationParser.T__42) | (1 << DeclarationParser.T__43) | (1 << DeclarationParser.T__44) | (1 << DeclarationParser.T__45))) != 0):
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 140737421246464) != 0):
                 self.state = 262
                 localctx.prefix = self.ePrefix()
 
@@ -2038,13 +2082,13 @@ class DeclarationParser ( Parser ):
                 self.state = 274
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
-                if token in [DeclarationParser.T__23]:
+                if token in [24]:
                     self.state = 270
                     self.match(DeclarationParser.T__23)
                     self.state = 271
                     localctx.denominator = self.basicUnit()
                     pass
-                elif token in [DeclarationParser.T__24]:
+                elif token in [25]:
                     self.state = 272
                     self.match(DeclarationParser.T__24)
                     self.state = 273
@@ -2128,107 +2172,107 @@ class DeclarationParser ( Parser ):
             self.state = 300
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [DeclarationParser.T__25]:
+            if token in [26]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 279
                 localctx.noP = self.match(DeclarationParser.T__25)
                 pass
-            elif token in [DeclarationParser.T__26]:
+            elif token in [27]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 280
                 localctx.yotta = self.match(DeclarationParser.T__26)
                 pass
-            elif token in [DeclarationParser.T__27]:
+            elif token in [28]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 281
                 localctx.zetta = self.match(DeclarationParser.T__27)
                 pass
-            elif token in [DeclarationParser.T__28]:
+            elif token in [29]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 282
                 localctx.exa = self.match(DeclarationParser.T__28)
                 pass
-            elif token in [DeclarationParser.T__29]:
+            elif token in [30]:
                 self.enterOuterAlt(localctx, 5)
                 self.state = 283
                 localctx.peta = self.match(DeclarationParser.T__29)
                 pass
-            elif token in [DeclarationParser.T__30]:
+            elif token in [31]:
                 self.enterOuterAlt(localctx, 6)
                 self.state = 284
                 localctx.tera = self.match(DeclarationParser.T__30)
                 pass
-            elif token in [DeclarationParser.T__31]:
+            elif token in [32]:
                 self.enterOuterAlt(localctx, 7)
                 self.state = 285
                 localctx.giga = self.match(DeclarationParser.T__31)
                 pass
-            elif token in [DeclarationParser.T__32]:
+            elif token in [33]:
                 self.enterOuterAlt(localctx, 8)
                 self.state = 286
                 localctx.mega = self.match(DeclarationParser.T__32)
                 pass
-            elif token in [DeclarationParser.T__33]:
+            elif token in [34]:
                 self.enterOuterAlt(localctx, 9)
                 self.state = 287
                 localctx.kilo = self.match(DeclarationParser.T__33)
                 pass
-            elif token in [DeclarationParser.T__34]:
+            elif token in [35]:
                 self.enterOuterAlt(localctx, 10)
                 self.state = 288
                 localctx.hecto = self.match(DeclarationParser.T__34)
                 pass
-            elif token in [DeclarationParser.T__35]:
+            elif token in [36]:
                 self.enterOuterAlt(localctx, 11)
                 self.state = 289
                 localctx.deca = self.match(DeclarationParser.T__35)
                 pass
-            elif token in [DeclarationParser.T__36]:
+            elif token in [37]:
                 self.enterOuterAlt(localctx, 12)
                 self.state = 290
                 localctx.deci = self.match(DeclarationParser.T__36)
                 pass
-            elif token in [DeclarationParser.T__37]:
+            elif token in [38]:
                 self.enterOuterAlt(localctx, 13)
                 self.state = 291
                 localctx.centi = self.match(DeclarationParser.T__37)
                 pass
-            elif token in [DeclarationParser.T__38]:
+            elif token in [39]:
                 self.enterOuterAlt(localctx, 14)
                 self.state = 292
                 localctx.mili = self.match(DeclarationParser.T__38)
                 pass
-            elif token in [DeclarationParser.T__39]:
+            elif token in [40]:
                 self.enterOuterAlt(localctx, 15)
                 self.state = 293
                 localctx.micro = self.match(DeclarationParser.T__39)
                 pass
-            elif token in [DeclarationParser.T__40]:
+            elif token in [41]:
                 self.enterOuterAlt(localctx, 16)
                 self.state = 294
                 localctx.nano = self.match(DeclarationParser.T__40)
                 pass
-            elif token in [DeclarationParser.T__41]:
+            elif token in [42]:
                 self.enterOuterAlt(localctx, 17)
                 self.state = 295
                 localctx.pico = self.match(DeclarationParser.T__41)
                 pass
-            elif token in [DeclarationParser.T__42]:
+            elif token in [43]:
                 self.enterOuterAlt(localctx, 18)
                 self.state = 296
                 localctx.femto = self.match(DeclarationParser.T__42)
                 pass
-            elif token in [DeclarationParser.T__43]:
+            elif token in [44]:
                 self.enterOuterAlt(localctx, 19)
                 self.state = 297
                 localctx.atto = self.match(DeclarationParser.T__43)
                 pass
-            elif token in [DeclarationParser.T__44]:
+            elif token in [45]:
                 self.enterOuterAlt(localctx, 20)
                 self.state = 298
                 localctx.zepto = self.match(DeclarationParser.T__44)
                 pass
-            elif token in [DeclarationParser.T__45]:
+            elif token in [46]:
                 self.enterOuterAlt(localctx, 21)
                 self.state = 299
                 localctx.yocto = self.match(DeclarationParser.T__45)
@@ -2291,52 +2335,52 @@ class DeclarationParser ( Parser ):
             self.state = 312
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [DeclarationParser.T__46]:
+            if token in [47]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 302
                 localctx.meter = self.match(DeclarationParser.T__46)
                 pass
-            elif token in [DeclarationParser.T__47]:
+            elif token in [48]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 303
                 localctx.gram = self.match(DeclarationParser.T__47)
                 pass
-            elif token in [DeclarationParser.T__48]:
+            elif token in [49]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 304
                 localctx.ton = self.match(DeclarationParser.T__48)
                 pass
-            elif token in [DeclarationParser.T__49]:
+            elif token in [50]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 305
                 localctx.second = self.match(DeclarationParser.T__49)
                 pass
-            elif token in [DeclarationParser.T__50]:
+            elif token in [51]:
                 self.enterOuterAlt(localctx, 5)
                 self.state = 306
                 localctx.ampere = self.match(DeclarationParser.T__50)
                 pass
-            elif token in [DeclarationParser.T__51]:
+            elif token in [52]:
                 self.enterOuterAlt(localctx, 6)
                 self.state = 307
                 localctx.kelvin = self.match(DeclarationParser.T__51)
                 pass
-            elif token in [DeclarationParser.T__52]:
+            elif token in [53]:
                 self.enterOuterAlt(localctx, 7)
                 self.state = 308
                 localctx.mole = self.match(DeclarationParser.T__52)
                 pass
-            elif token in [DeclarationParser.T__53]:
+            elif token in [54]:
                 self.enterOuterAlt(localctx, 8)
                 self.state = 309
                 localctx.candela = self.match(DeclarationParser.T__53)
                 pass
-            elif token in [DeclarationParser.T__54]:
+            elif token in [55]:
                 self.enterOuterAlt(localctx, 9)
                 self.state = 310
                 localctx.pascal = self.match(DeclarationParser.T__54)
                 pass
-            elif token in [DeclarationParser.T__55]:
+            elif token in [56]:
                 self.enterOuterAlt(localctx, 10)
                 self.state = 311
                 localctx.joul = self.match(DeclarationParser.T__55)
@@ -2466,7 +2510,7 @@ class DeclarationParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 321
             _la = self._input.LA(1)
-            if not(_la==DeclarationParser.T__56 or _la==DeclarationParser.T__57):
+            if not(_la==57 or _la==58):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -2593,7 +2637,7 @@ class DeclarationParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 330
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DeclarationParser.T__22) | (1 << DeclarationParser.T__23) | (1 << DeclarationParser.T__58))) != 0)):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 576460752328589312) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -2658,22 +2702,22 @@ class DeclarationParser ( Parser ):
             self.state = 336
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [DeclarationParser.T__16]:
+            if token in [17]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 332
                 self.parenthesisExpression()
                 pass
-            elif token in [DeclarationParser.ID]:
+            elif token in [64]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 333
                 self.namedElementReference()
                 pass
-            elif token in [DeclarationParser.T__18]:
+            elif token in [19]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 334
                 self.arrayExpression()
                 pass
-            elif token in [DeclarationParser.ELONG, DeclarationParser.EDOUBLE, DeclarationParser.EBoolean, DeclarationParser.STRING]:
+            elif token in [61, 62, 63, 66]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 335
                 self.literalExpression()
@@ -2790,22 +2834,22 @@ class DeclarationParser ( Parser ):
             self.state = 344
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [DeclarationParser.STRING]:
+            if token in [66]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 340
                 self.stringValue()
                 pass
-            elif token in [DeclarationParser.ELONG]:
+            elif token in [61]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 341
                 self.longValue()
                 pass
-            elif token in [DeclarationParser.EDOUBLE]:
+            elif token in [62]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 342
                 self.doubleValue()
                 pass
-            elif token in [DeclarationParser.EBoolean]:
+            elif token in [63]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 343
                 self.booleanValue()
@@ -2923,14 +2967,14 @@ class DeclarationParser ( Parser ):
             self.state = 359
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if ((((_la - 17)) & ~0x3f) == 0 and ((1 << (_la - 17)) & ((1 << (DeclarationParser.T__16 - 17)) | (1 << (DeclarationParser.T__18 - 17)) | (1 << (DeclarationParser.ELONG - 17)) | (1 << (DeclarationParser.EDOUBLE - 17)) | (1 << (DeclarationParser.EBoolean - 17)) | (1 << (DeclarationParser.ID - 17)) | (1 << (DeclarationParser.STRING - 17)))) != 0):
+            if ((((_la - 17)) & ~0x3f) == 0 and ((1 << (_la - 17)) & 826832744087557) != 0):
                 self.state = 351
                 localctx._arithmeticExpression = self.arithmeticExpression()
                 localctx.elements.append(localctx._arithmeticExpression)
                 self.state = 356
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==DeclarationParser.T__7:
+                while _la==8:
                     self.state = 352
                     self.match(DeclarationParser.T__7)
                     self.state = 353
@@ -3000,7 +3044,7 @@ class DeclarationParser ( Parser ):
             self.state = 366
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==DeclarationParser.T__59:
+            if _la==60:
                 self.state = 364
                 self.match(DeclarationParser.T__59)
                 self.state = 365

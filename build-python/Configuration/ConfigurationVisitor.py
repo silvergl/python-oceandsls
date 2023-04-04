@@ -1,4 +1,4 @@
-# Generated from Configuration.g4 by ANTLR 4.10.1
+# Generated from Configuration.g4 by ANTLR 4.12.0
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .ConfigurationParser import ConfigurationParser

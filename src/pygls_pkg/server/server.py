@@ -27,11 +27,13 @@ import sys, os, logging
 from antlr4.IntervalSet import IntervalSet
 from pygls.workspace import Document
 
+
 if not os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'src', 'pygls_pkg', 'server' ) )
 from utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
 from utils.suggestVariables import suggestVariables
 from SymbolTableVisitor import SymbolTableVisitor
+from FileGeneratorVisitor import FileGeneratorVisitor
 from DiagnosticListener import DiagnosticListener
 
 # antlr4
@@ -67,18 +69,16 @@ from pygls.server import LanguageServer
 # Migrating to pygls v1.0
 # https://pygls.readthedocs.io/en/latest/pages/migrating-to-v1.html
 from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE,
-                              TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
-                              CompletionItem, CompletionList, CompletionOptions, CompletionParams, ConfigurationItem,
-                              ConfigurationParams, Diagnostic,
-                              DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-                              MessageType, Position, Range, Registration,
-                              RegistrationParams, SemanticTokens, SemanticTokensLegend, SemanticTokensParams,
-                              Unregistration, UnregistrationParams,
-                              WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport)
+                              TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, CompletionItem,
+                              CompletionList, CompletionOptions, CompletionParams, ConfigurationItem,
+                              ConfigurationParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams,
+                              DidOpenTextDocumentParams, MessageType, Registration, RegistrationParams, SemanticTokens,
+                              SemanticTokensLegend, SemanticTokensParams, Unregistration, UnregistrationParams,
+                              WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport,
+                              TEXT_DOCUMENT_DID_SAVE, DidSaveTextDocumentParams)
 
 COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1
-
 
 class ODslLanguageServer( LanguageServer ):
     CMD_COUNT_DOWN_BLOCKING = 'countDownBlocking'
@@ -158,9 +158,17 @@ def _validate_format(ls: ODslLanguageServer, source: str):
     return ls.error_listener.diagnostics
 
 
+def get_symbol_name_at_position(uri, position):
+    logger.info( 'uri: %s\n', uri, 'position: %s\n', position )
+
+
+def lookup_symbol(uri, name):
+    logger.info( 'uri: %s\n', uri, 'name: %s\n', name )
+
 @odsl_server.feature( TEXT_DOCUMENT_COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
+    logger.info( '\n---------------------------------\n             START Completion    \n---------------------------------' )
 
     # set input stream of characters for lexer
     text_doc: Document = odsl_server.workspace.get_document( params.text_document.uri )
@@ -195,7 +203,6 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         logger.info( 'Return empty completionList...' )
         return completionList
 
-
     # launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore( odsl_server.parser )
 
@@ -216,7 +223,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         logger.info( 'variables candidates: %s\n', variables )
 
         for variable in variables:
-            completionList.items.append( CompletionItem(label=variable))
+            completionList.items.append( CompletionItem( label=variable ) )
 
     logger.info( 'candidates: %s\n', candidates )
 
@@ -230,6 +237,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     logger.info( '\n' )
     # return completion candidates labels
     logger.info( 'Return complete completionList...' )
+    logger.info( '\n---------------------------------\n             END Completion      \n---------------------------------\n\n' )
     return completionList
 
 
@@ -267,6 +275,36 @@ def did_close(server: ODslLanguageServer, params: DidCloseTextDocumentParams):
     """Text document did close notification."""
     server.show_message( 'Text Document Did Close' )
 
+@odsl_server.feature( TEXT_DOCUMENT_DID_SAVE )
+def did_save(server: ODslLanguageServer, params: DidSaveTextDocumentParams):
+    """Text document did save notification."""
+
+    """Returns completion items."""
+    logger.info( '\n---------------------------------\n             START SAVE          \n---------------------------------' )
+
+    # set input stream of characters for lexer
+    text_doc: Document = odsl_server.workspace.get_document( params.text_document.uri )
+    source: str = text_doc.source
+    input_stream: InputStream = InputStream( source )
+
+    # reset the lexer/parser
+    odsl_server.error_listener.reset()
+    odsl_server.lexer.inputStream = input_stream
+    odsl_server.tokenStream = CommonTokenStream( odsl_server.lexer )
+    odsl_server.parser.setInputStream( odsl_server.tokenStream )
+
+    Top_levelContext = DeclarationParser.Test_suiteContext
+    parseTree: Top_levelContext = odsl_server.parser.test_suite()
+
+    # TODO add parameters to visitor
+    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor()
+
+    fileContent: str = fileGeneratorVisitor.visit( parseTree )
+
+    # TODO call file writer from jinja2 module
+
+    server.show_message( 'Text Document Did Save' )
+    logger.info( '\n---------------------------------\n             END SAVE            \n---------------------------------\n\n' )
 
 @odsl_server.feature( TEXT_DOCUMENT_DID_OPEN )
 async def did_open(ls, params: DidOpenTextDocumentParams):
@@ -362,7 +400,7 @@ def show_configuration_callback(ls: ODslLanguageServer, *args):
 
     ls.get_configuration( ConfigurationParams(
         items=[ConfigurationItem( scope_uri='', section=ODslLanguageServer.CONFIGURATION_SECTION )] ),
-                          _config_callback )
+        _config_callback )
 
 
 @odsl_server.thread()

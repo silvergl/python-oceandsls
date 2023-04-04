@@ -13,15 +13,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:oceandsl"
+    "onLanguage:oceandsl_tdd", "onLanguage:oceandsl"
   ],
 
   "contributes": {
     "languages": [
       {
-         "id": "oceandsl",
-         "extensions": [ ".odsl" ]
-      }
+         "id": "oceandsl_tdd",
+         "extensions": [ ".tdd" ]
+      },
+      {
+        "id": "oceandsl",
+        "extensions": [ ".odsl" ]
+     }
     ],
     "commands": [
       {

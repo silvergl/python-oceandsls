@@ -1,0 +1,33 @@
+suite('setkmp test suite')
+
+subroutine(setkmp_test)
+
+  use test_fixture_module
+  
+  type(test_fixture_type) :: tf
+
+  ! Define test parameters
+  real, parameter :: alat1 = 0.0, slon1 = 0.0, alat2 = 10.0, elon1 = 10.0, slon2 = 0.0, elon2 = 10.0
+  integer, parameter :: num = 1
+
+  ! Initialize test fixture
+  call tf%setup()
+
+  ! Call setkmp subroutine
+  call setkmp(alat1, slon1, elon1, alat2, slon2, elon2, num)
+
+  ! Verify that kmt array is filled with num within the defined area
+  assertEquals(1, tf%kmt(1, 1))
+  assertEquals(1, tf%kmt(10, 10))
+  assertEquals(1, tf%kmt(5, 5))
+
+  ! Verify that kmt array is not filled with num outside of the defined area
+  assertNotEquals(1, tf%kmt(1, 2))
+  assertNotEquals(1, tf%kmt(2, 1))
+  assertNotEquals(1, tf%kmt(10, 11))
+  assertNotEquals(1, tf%kmt(11, 10))
+
+  ! Cleanup test fixture
+  call tf%teardown()
+
+end subroutine setkmp_test

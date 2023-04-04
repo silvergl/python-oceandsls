@@ -1,0 +1,27 @@
+test test_fT_ME :
+    scope :
+        filepath : '/pfunit_example'
+        modules :
+            cfo_example
+    var :
+        dp : int, PARAMETER = KIND( 0D0 )
+        xIntercept : real( dp ) = 283D0 / 19D0
+        yIntercept : real( dp ) = - ( 283D0 / 520D0 )
+    assert Equal (
+        in :
+            fT_ME( xIntercept ) , K # input in Kelvin
+        out :
+            0D0 , K # output 0 Kelvin
+        tolerance : 1D-12
+        failmessage : 'fails x-Intercept at 14.89D0'
+        # asserts x-Intercept
+        )
+    assert Equal (
+        in :
+            fT_ME( 0D0 ) , K # input 0 Kelvin
+        out :
+            yIntercept , K # output in Kelvin
+        tolerance : 1D-12
+        failmessage : 'fails y-Intercept at -54.42D-2'
+        # asserts y-Intercept
+        )

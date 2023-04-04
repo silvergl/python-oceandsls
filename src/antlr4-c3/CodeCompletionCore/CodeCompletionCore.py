@@ -616,7 +616,7 @@ class CodeCompletionCore:
             Transition.PREDICATE : lambda: self.callPREDICATE(),
             Transition.PRECEDENCE: lambda: self.callPRECEDENCE(),
             Transition.WILDCARD  : lambda: self.callWILDCARD()
-        }.get( serializationType, lambda: self.callDEFAULT() )  # callDEFAULT will be returned default if serializationType is not found
+        }.get( serializationType, lambda: self.callDEFAULT() )  # callDEFAULT will be returned default if serializationType is not found (https://docs.python.org/3/library/stdtypes.html#dict.get)
 
     def callRULE( self ):
         pass

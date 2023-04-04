@@ -5,7 +5,6 @@
       <list>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/CP-DSL/Configuration.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -15,7 +14,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/CP-DSL/Declaration.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -25,7 +23,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/CP-DSL/Expression.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -35,7 +32,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/CP-DSL/Terminals.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -45,7 +41,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/ArrayInit.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -55,7 +50,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/TestGrammar.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -65,7 +59,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/TestExpr.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$/" />
           <option name="encoding" value="" />
@@ -75,7 +68,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/CommonLexerRules.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$/" />
           <option name="encoding" value="" />
@@ -85,7 +77,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/TestExprCore.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$/" />
           <option name="encoding" value="" />
@@ -95,7 +86,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/TestMath.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$/" />
           <option name="encoding" value="" />
@@ -105,7 +95,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/KotlinExample/KotlinParser.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -115,7 +104,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/KotlinExample/KotlinLexer.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -125,7 +113,6 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/KotlinExample/UnicodeClasses.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
@@ -135,11 +122,100 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammars/dev/SimpleGrammar.g4" />
-          <option name="autoGen" value="true" />
           <option name="outputDir" value="$PROJECT_DIR$/build-python" />
           <option name="libDir" value="$PROJECT_DIR$" />
           <option name="encoding" value="" />
           <option name="pkg" value="SimpleGrammar" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/TestDrivenDev.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="TestDrivenDev" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/Assertion.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="Assertion" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/PhysicalUnits.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="PhysicalUnits" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/Typing.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="Typing" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/CommonLexerRules.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="CommonLexerRules" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/sut_version/CommonLexerRules.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="CommonLexerRules" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/sut_version/TestDrivenDev_DSL.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="TestDrivenDev" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/TDDLexerRules.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="TDDLexerRules" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/Keyword.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="Keyword" />
+          <option name="language" value="Python3" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/grammars/TDD-DSL/Reference.g4" />
+          <option name="outputDir" value="$PROJECT_DIR$/build-python" />
+          <option name="libDir" value="$PROJECT_DIR$/" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="Reference" />
           <option name="language" value="Python3" />
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
@@ -148,6 +224,9 @@
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="Python 3.10 (antlr4-python)" project-jdk-type="Python SDK">
     <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="PyPackaging">
+    <option name="earlyReleasesAsUpgrades" value="true" />
   </component>
   <component name="PythonCompatibilityInspectionAdvertiser">
     <option name="version" value="3" />

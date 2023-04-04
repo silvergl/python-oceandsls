@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/src/CP-DSL_pkg/CP_DSL/CP_DSL.iml" filepath="$PROJECT_DIR$/src/CP-DSL_pkg/CP_DSL/CP_DSL.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/antlr4-c3/CodeCompletionCore/CodeCompletionCore.iml" filepath="$PROJECT_DIR$/src/antlr4-c3/CodeCompletionCore/CodeCompletionCore.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/antlr4-c3/SymbolTable/SymbolTable.iml" filepath="$PROJECT_DIR$/src/antlr4-c3/SymbolTable/SymbolTable.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/antlr4-python.iml" filepath="$PROJECT_DIR$/.idea/antlr4-python.iml" />

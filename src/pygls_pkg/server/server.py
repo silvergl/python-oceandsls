@@ -38,13 +38,17 @@ from DiagnosticListener import DiagnosticListener
 if not os.path.join( sys.path[0], 'build-python' ) in sys.path:
     sys.path.append( os.path.join( sys.path[0], 'build-python' ) )
 from antlr4 import InputStream, CommonTokenStream, Token
-from TestGrammar.TestGrammarLexer import TestGrammarLexer
-from TestGrammar.TestGrammarParser import TestGrammarParser
-from TestGrammar.TestGrammarVisitor import TestGrammarVisitor
+from Declaration.DeclarationLexer import DeclarationLexer
+from Declaration.DeclarationParser import DeclarationParser
+from Declaration.DeclarationVisitor import DeclarationVisitor
 # antlr4-c3
 from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 # pygls
 from typing import List
+# CP-DSL
+if not os.path.join( sys.path[0], 'src', 'CP-DSL', 'CP-DSL' ) in sys.path:
+    sys.path.append( os.path.join( sys.path[0], 'src', 'CP-DSL', 'CP-DSL' ) )
+from CP_DSL.CP_DSLSymbolTableVisitor import CP_DSLSymbolTableVisitor
 
 # debug import
 # from pprint import pprint
@@ -96,7 +100,7 @@ class ODslLanguageServer( LanguageServer ):
         input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: TestGrammarLexer = TestGrammarLexer( input_stream )
+        self.lexer: DeclarationLexer = DeclarationLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener( self.error_listener )
@@ -105,7 +109,7 @@ class ODslLanguageServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: TestGrammarParser = TestGrammarParser( self.tokenStream )
+        self.parser: DeclarationParser = DeclarationParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )
@@ -143,7 +147,7 @@ def _validate_format(ls: ODslLanguageServer, source: str):
 
     try:
         # launch parser by invoking startrule
-        ls.parser.prog()
+        ls.parser.declarationModel()
     except OSError as err:
         # TODO add exception
         msg = err.filename.msg
@@ -173,8 +177,8 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # launches parser by invoking startrule
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
 
-    StartProgContext = TestGrammarParser.StartProgContext
-    parseTree: StartProgContext = odsl_server.parser.prog()
+    TopLevelContext = DeclarationParser.DeclarationModelContext
+    parseTree: TopLevelContext = odsl_server.parser.declarationModel()
 
     tokenIndex: TokenPosition = computeTokenPosition( parseTree, odsl_server.tokenStream,
                                                       CaretPosition( params.position.line + 1,
@@ -196,14 +200,14 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     core: CodeCompletionCore = CodeCompletionCore( odsl_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {TestGrammarParser.RULE_variableRef,TestGrammarParser.RULE_functionRef}
+    core.preferredRules = {DeclarationParser.RULE_parameterDeclaration,DeclarationParser.RULE_parameterGroupDeclaration,DeclarationParser.RULE_featureDeclaration,DeclarationParser.RULE_featureGroupDeclaration}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
 
-    if any(rule in candidates.rules for rule in [TestGrammarParser.RULE_variableRef,TestGrammarParser.RULE_functionRef]):
+    if any(rule in candidates.rules for rule in [DeclarationParser.RULE_parameterDeclaration,DeclarationParser.RULE_parameterGroupDeclaration,DeclarationParser.RULE_featureDeclaration,DeclarationParser.RULE_featureGroupDeclaration]):
 
-        symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor('completions')
+        symbolTableVisitor: CP_DSLSymbolTableVisitor = CP_DSLSymbolTableVisitor('CP-DSL_completions')
 
         symbolTable = symbolTableVisitor.visit( parseTree )
 

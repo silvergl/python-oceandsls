@@ -254,11 +254,6 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#argList.
-    def visitArgList(self, ctx:TestSuiteParser.ArgListContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by TestSuiteParser#unitSpec.
     def visitUnitSpec(self, ctx:TestSuiteParser.UnitSpecContext):
         return self.visitChildren(ctx)

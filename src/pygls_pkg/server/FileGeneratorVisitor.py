@@ -78,8 +78,107 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
     # Visit a parse tree produced by TestSuiteParser#test_vars.
     def visitTest_vars(self, ctx:TestSuiteParser.Test_varsContext):
         template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
-        # TODO add template
-        return template.render( vars=ctx.vars )
+        vars = []
+        for var in ctx.vars_:
+            vars.append(self.visit(var))
+        return template.render( vars=vars )
+
+    # Visit a parse tree produced by TestSuiteParser#test_vars.
+    def visitTest_var(self, ctx:TestSuiteParser.Test_varContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        decl = self.visit(ctx.varDeclaration())
+        value = self.visit(ctx.expr())
+        comment = self.visit(ctx.optionalDesc())
+        return template.render( decl=decl, value=value, comment=comment )
+
+    # Visit a parse tree produced by TestSuiteParser#varDeclaration.
+    def visitVarDeclaration(self, ctx:TestSuiteParser.VarDeclarationContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        name = ctx.ID().getText()
+        type = self.visit(ctx.type_)
+        keys = []
+        for key in ctx.keys:
+            key.append(key.keyword.text)
+        return template.render( name=name, type=type, keys=keys )
+
+    # Visit a parse tree produced by TestSuiteParser#ref.
+    def visitRef(self, ctx:TestSuiteParser.RefContext):
+        return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by TestSuiteParser#funRef.
+    def visitFunRef(self, ctx:TestSuiteParser.FunRefContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        name = ctx.ID().getText()
+        args = []
+        for arg in ctx.args:
+            args.append(self.visit(arg))
+        return template.render( name= name, args = args)
+
+
+    # Visit a parse tree produced by TestSuiteParser#varRef.
+    def visitVarRef(self, ctx:TestSuiteParser.VarRefContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        name = ctx.ID().getText()
+        return template.render( name= name )
+
+
+
+    # Visit a parse tree produced by TestSuiteParser#enm.
+    def visitEnm(self, ctx:TestSuiteParser.EnmContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#array.
+    def visitArray(self, ctx:TestSuiteParser.ArrayContext):
+        return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by TestSuiteParser#strExpr.
+    def visitStrExpr(self, ctx:TestSuiteParser.StrExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#intExpr.
+    def visitIntExpr(self, ctx:TestSuiteParser.IntExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#addSubExpr.
+    def visitAddSubExpr(self, ctx:TestSuiteParser.AddSubExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#refExpr.
+    def visitRefExpr(self, ctx:TestSuiteParser.RefExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#numberExpr.
+    def visitNumberExpr(self, ctx:TestSuiteParser.NumberExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#testExpr.
+    def visitTestExpr(self, ctx:TestSuiteParser.TestExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#parensExpr.
+    def visitParensExpr(self, ctx:TestSuiteParser.ParensExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#mulDivExpr.
+    def visitMulDivExpr(self, ctx:TestSuiteParser.MulDivExprContext):
+        return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by TestSuiteParser#emptyDesc.
+    def visitEmptyDesc(self, ctx:TestSuiteParser.EmptyDescContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#specDesc.
+    def visitSpecDesc(self, ctx:TestSuiteParser.SpecDescContext):
+        return self.visitChildren(ctx)
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion(self, ctx:TestSuiteParser.Test_assertionContext):

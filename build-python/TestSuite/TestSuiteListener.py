@@ -449,15 +449,6 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#argList.
-    def enterArgList(self, ctx:TestSuiteParser.ArgListContext):
-        pass
-
-    # Exit a parse tree produced by TestSuiteParser#argList.
-    def exitArgList(self, ctx:TestSuiteParser.ArgListContext):
-        pass
-
-
     # Enter a parse tree produced by TestSuiteParser#unitSpec.
     def enterUnitSpec(self, ctx:TestSuiteParser.UnitSpecContext):
         pass

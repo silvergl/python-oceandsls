@@ -333,13 +333,6 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarRef(TestSuiteParser.VarRefContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code argList}
-	 * labeled alternative in {@link TestSuiteParser#exprList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArgList(TestSuiteParser.ArgListContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

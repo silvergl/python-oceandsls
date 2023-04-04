@@ -554,18 +554,6 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitVarRef(TestSuiteParser.VarRefContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code argList}
-	 * labeled alternative in {@link TestSuiteParser#exprList}.
-	 * @param ctx the parse tree
-	 */
-	void enterArgList(TestSuiteParser.ArgListContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code argList}
-	 * labeled alternative in {@link TestSuiteParser#exprList}.
-	 * @param ctx the parse tree
-	 */
-	void exitArgList(TestSuiteParser.ArgListContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */

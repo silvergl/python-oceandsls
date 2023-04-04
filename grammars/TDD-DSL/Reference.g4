@@ -37,9 +37,6 @@ expr                    : '(' inner=expr ')'                    # parensExpr    
                         ;
 
 /** function or variables to lookup in the symboltable */
-reference               : name=ID '(' exprs=exprList? ')'       # funRef        /** function call like f(), f(x), f(1,2) */
-                        | name=ID                               # varRef
-                        ;
-
-exprList                :  exprs+=expr(',' exprs+=expr)*        # argList // list of function arguments
+reference               : name=ID '(' (args+=expr(',' args+=expr)*)? ')'  # funRef        /** function call like f(), f(x), f(1,2) */
+                        | name=ID                                           # varRef
                         ;

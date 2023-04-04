@@ -48,7 +48,7 @@ test_var                : decl=varDeclaration ('=' value=expr)? comment=optional
                         ;
 
 /** declaration of variables used in test cases  */
-varDeclaration          : name=reference ':' type=paramType (',' keys+=f90StdKey (',' keys+=f90StdKey)*)?
+varDeclaration          : name=ID ':' type=paramType (',' keys+=f90StdKey (',' keys+=f90StdKey)*)?
                         ;
 
 /** scope of test case*/

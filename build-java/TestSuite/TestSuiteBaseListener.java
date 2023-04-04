@@ -605,18 +605,6 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArgList(TestSuiteParser.ArgListContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArgList(TestSuiteParser.ArgListContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterUnitSpec(TestSuiteParser.UnitSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}

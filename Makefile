@@ -1,5 +1,5 @@
 # enable ANTLR support
-antlr4 := java -jar /usr/local/lib/antlr-4.11.1-complete.jar
+antlr4 := java -jar /usr/local/lib/antlr-4.12.0-complete.jar
 
 PKGTARGETS = Terminals Expression Configuration Declaration TestExprCore TestGrammar allstar
 
@@ -9,7 +9,7 @@ VER = $(strip $(shell cat version))
 PYVERDIR = $(PACKAGE)-$(VER)
 PYBUILDDIR = build/$(PYVERDIR)
 OBJDIR = build
-SRCDIR = grammars/dev
+SRCDIR = grammars/CP-DSL
 GRAMMAR = $(PACKAGE).g4
 
 all: clean $(OBJDIR)-python/$(PACKAGE) $(OBJDIR)-java/$(PACKAGE)

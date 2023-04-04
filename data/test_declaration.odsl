@@ -19,3 +19,8 @@ types
                     def segtim float : "" = 5.0 // 1/(coupling frequency) (d)
                 }
         }
+        feature even_fluxes : "Atmosphere ocean coupling. Every other flux used for conservative coupling.  See embm/embm.F and mom/mom.F."
+        feature sun : "" {
+           excludes super_nova
+        }
+        feature super_nova : ""

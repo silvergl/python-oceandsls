@@ -27,7 +27,7 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
 
     # Visit a parse tree produced by DeclarationParser#paramAssignStat.
     def visitParamAssignStat(self, ctx:DeclarationParser.ParamAssignStatContext):
-
+        
         # define the given Parameter
         # TODO merge UnitSymbol from main and change t to UnitSymbol
         t = VariableSymbol # set and get the type of param here
@@ -66,7 +66,7 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
 
     # def visitFuncExpr(self, ctx: TestGrammarParser.FuncExprContext):
     #     return self.withScope( ctx, RoutineSymbol, lambda: self.visitChildren( ctx ), ctx.ID().getText() )
-
+    
     def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None,
                   **my_kwargs: P.kwargs or None) -> T:
         scope = self._symbolTable.addNewSymbolOfType( t, self._scope, *my_args, **my_kwargs )

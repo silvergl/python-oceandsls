@@ -1,2 +1,1 @@
-   {% for var in vars %}@{{ var }} :
-   {% endfor %}
+ {{ vars|join('\n ') }}

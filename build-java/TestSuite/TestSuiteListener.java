@@ -118,26 +118,6 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitPubAttributes(TestSuiteParser.PubAttributesContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TestSuiteParser#test_input}.
-	 * @param ctx the parse tree
-	 */
-	void enterTest_input(TestSuiteParser.Test_inputContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TestSuiteParser#test_input}.
-	 * @param ctx the parse tree
-	 */
-	void exitTest_input(TestSuiteParser.Test_inputContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TestSuiteParser#test_output}.
-	 * @param ctx the parse tree
-	 */
-	void enterTest_output(TestSuiteParser.Test_outputContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TestSuiteParser#test_output}.
-	 * @param ctx the parse tree
-	 */
-	void exitTest_output(TestSuiteParser.Test_outputContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#test_parameter}.
 	 * @param ctx the parse tree
 	 */
@@ -470,6 +450,18 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitAddSubExpr(TestSuiteParser.AddSubExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code signExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterSignExpr(TestSuiteParser.SignExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code signExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitSignExpr(TestSuiteParser.SignExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code refExpr}
 	 * labeled alternative in {@link TestSuiteParser#expr}.
 	 * @param ctx the parse tree
@@ -493,18 +485,6 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNumberExpr(TestSuiteParser.NumberExprContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code testExpr}
-	 * labeled alternative in {@link TestSuiteParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterTestExpr(TestSuiteParser.TestExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code testExpr}
-	 * labeled alternative in {@link TestSuiteParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitTestExpr(TestSuiteParser.TestExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code parensExpr}
 	 * labeled alternative in {@link TestSuiteParser#expr}.

@@ -55,10 +55,11 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         name = ctx.ID().getText()
         scope = self.visit( ctx.test_scope() )
         test_vars = self.visit( ctx.test_vars() )
-        # TODO get assertions
-        assertions = self.visit( ctx.test_assertion() )
+        assertions = []
+        for assertion in ctx.assertions:
+            assertions.append(self.visit(assertion))
         # TODO get comment
-        content = template.render( name=name, scope=scope, vars=test_vars, assertions=assertions )
+        content = template.render( name=name, scope=scope, test_vars=test_vars, assertions=assertions )
         return self.visitChildren( ctx )
 
     # Visit a parse tree produced by TestSuiteParser#test_scope.
@@ -98,7 +99,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         type = self.visit(ctx.type_)
         keys = []
         for key in ctx.keys:
-            key.append(key.keyword.text)
+            keys.append(key.keyword.text)
         return template.render( name=name, type=type, keys=keys )
 
     # Visit a parse tree produced by TestSuiteParser#ref.
@@ -121,69 +122,102 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         name = ctx.ID().getText()
         return template.render( name= name )
 
-
-
     # Visit a parse tree produced by TestSuiteParser#enm.
     def visitEnm(self, ctx:TestSuiteParser.EnmContext):
+        # TODO type ENUM
         return self.visitChildren(ctx)
-
 
     # Visit a parse tree produced by TestSuiteParser#array.
     def visitArray(self, ctx:TestSuiteParser.ArrayContext):
+        # TODO type ARRAY
         return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by TestSuiteParser#strExpr.
-    def visitStrExpr(self, ctx:TestSuiteParser.StrExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#intExpr.
-    def visitIntExpr(self, ctx:TestSuiteParser.IntExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#addSubExpr.
-    def visitAddSubExpr(self, ctx:TestSuiteParser.AddSubExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#refExpr.
-    def visitRefExpr(self, ctx:TestSuiteParser.RefExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#numberExpr.
-    def visitNumberExpr(self, ctx:TestSuiteParser.NumberExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#testExpr.
-    def visitTestExpr(self, ctx:TestSuiteParser.TestExprContext):
-        return self.visitChildren(ctx)
-
 
     # Visit a parse tree produced by TestSuiteParser#parensExpr.
     def visitParensExpr(self, ctx:TestSuiteParser.ParensExprContext):
-        return self.visitChildren(ctx)
-
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        inner = self.visit(ctx.inner)
+        return template.render( inner= inner )
 
     # Visit a parse tree produced by TestSuiteParser#mulDivExpr.
     def visitMulDivExpr(self, ctx:TestSuiteParser.MulDivExprContext):
-        return self.visitChildren(ctx)
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        left = self.visit(ctx.left)
+        right = self.visit(ctx.right)
+        op = ctx.op.text
+        return template.render( left= left, right= right, op= op )
+
+    # Visit a parse tree produced by TestSuiteParser#addSubExpr.
+    def visitAddSubExpr(self, ctx:TestSuiteParser.AddSubExprContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        left = self.visit(ctx.left)
+        right = self.visit(ctx.right)
+        op = ctx.op.text
+        return template.render( left= left, right= right, op= op )
+
+    # Visit a parse tree produced by TestSuiteParser#signExpr.
+    def visitSignExpr(self, ctx:TestSuiteParser.SignExprContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        inner = self.visit(ctx.inner)
+        op = ctx.op.text
+        return template.render( inner= inner, op= op )
+
+    # Visit a parse tree produced by TestSuiteParser#numberExpr.
+    def visitNumberExpr(self, ctx:TestSuiteParser.NumberExprContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        value = ctx.value.text
+        return template.render( value= value )
+
+    # Visit a parse tree produced by TestSuiteParser#strExpr.
+    def visitStrExpr(self, ctx:TestSuiteParser.StrExprContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        value = ctx.value.text
+        return template.render( value= value )
+
+    # Visit a parse tree produced by TestSuiteParser#intExpr.
+    def visitIntExpr(self, ctx:TestSuiteParser.IntExprContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        value = ctx.value.text
+        return template.render( value= value )
+
+    # Visit a parse tree produced by TestSuiteParser#refExpr.
+    def visitRefExpr(self, ctx:TestSuiteParser.RefExprContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        value = self.visit(ctx.value)
+        return template.render( value= value )
 
     # Visit a parse tree produced by TestSuiteParser#emptyDesc.
     def visitEmptyDesc(self, ctx:TestSuiteParser.EmptyDescContext):
+        # TODO type empty comment
         return self.visitChildren(ctx)
-
 
     # Visit a parse tree produced by TestSuiteParser#specDesc.
     def visitSpecDesc(self, ctx:TestSuiteParser.SpecDescContext):
+        # TODO type comment
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion(self, ctx:TestSuiteParser.Test_assertionContext):
-        # TODO note case.assertions[0].test_input().parameter()[0].expr().value.ID()
-        return 'assertion'
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        directive = self.visit(ctx.directive)
+        input_ = self.visit(ctx.input_)
+        output = self.visit(ctx.output)
+        pubAttributes = self.visit(ctx.comment)
+        test = template.render( directive= directive, input_= input_, output= output, pubAttributes= pubAttributes )
+        return template.render( directive= directive, input_= input_, output= output, pubAttributes= pubAttributes )
+
+    # Visit a parse tree produced by TestSuiteParser#test_directive.
+    def visitTest_directive(self, ctx:TestSuiteParser.Test_directiveContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        # TODO use decl and comment in upper template
+        ppDirective = ctx.ppDirective.text
+        return template.render( ppDirective = ppDirective )
+
+    # Visit a parse tree produced by TestSuiteParser#test_parameter.
+    def visitTest_parameter(self, ctx:TestSuiteParser.Test_parameterContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        # TODO use decl and comment in upper template
+        value = self.visit(ctx.value)
+        return template.render( value = value )
 
     def writefile(self, path=None, filename=None):
         path = os.path.join( os.getcwd(), path, filename )

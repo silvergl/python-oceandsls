@@ -149,30 +149,6 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTest_input(TestSuiteParser.Test_inputContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTest_input(TestSuiteParser.Test_inputContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTest_output(TestSuiteParser.Test_outputContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTest_output(TestSuiteParser.Test_outputContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterTest_parameter(TestSuiteParser.Test_parameterContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -521,6 +497,18 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSignExpr(TestSuiteParser.SignExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSignExpr(TestSuiteParser.SignExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterRefExpr(TestSuiteParser.RefExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -540,18 +528,6 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNumberExpr(TestSuiteParser.NumberExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTestExpr(TestSuiteParser.TestExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTestExpr(TestSuiteParser.TestExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -73,7 +73,9 @@ test_module             : name=ID NEWLINE
 
 /** test assertion; ends on newline */
 test_assertion          : 'assert' directive=test_directive '(' NEWLINE
-                          input=test_input output=test_output attr=pubAttributes (comment=COMMENT)?     /** ends on newline */
+                          'in' ':' NEWLINE input=test_parameter     /** ends on newline */
+                          'out' ':' NEWLINE output=test_parameter   /** ends on newline */
+                          attr=pubAttributes (comment=COMMENT)?     /** ends on newline */
                           ')'
                         ;
 
@@ -83,19 +85,8 @@ pubAttributes           : ('tolerance' ':' tol=expr NEWLINE)?
                           ('whitespace' '=' ign='IGNORE_DIFFERENCES')?       /** option for assertEqual */
                         ;
 
-/** test input; ends on newline*/
-//TODO check # parameter for arg # of ppDirective
-test_input              : 'in' ':' NEWLINE
-                          parameter=test_parameter+    /** ends on newline */
-                        ;
-
-/** test output; ends on newline */
-test_output             : 'out' ':' NEWLINE
-                          parameter=test_parameter+     /** ends on newline */
-                        ;
-
 /** IO parameter; ends on newline */
-test_parameter               : (decl=parameterDeclaration '=')? expr optionalDesc  /** ends on newline */
+test_parameter               : (decl=parameterDeclaration '=')? value=expr comment=optionalDesc  /** ends on newline */
                         ;
 
 /** optional description for declarations; ensures non description to be newline */

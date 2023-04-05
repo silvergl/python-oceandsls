@@ -4,7 +4,7 @@ test test_fT_ME :
         modules :
             cfo_example
     var :
-        dp : int, PARAMETER = KIND( 0D0 )
+        dp : integer, PARAMETER = KIND( 0D0 )
         xIntercept : real( dp ) = 283D0 / 19D0
         yIntercept : real( dp ) = - ( 283D0 / 520D0 )
     assert Equal (

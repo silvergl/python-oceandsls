@@ -1,1 +1,1 @@
-   {% for key in keys %}@{{ key }}, {% endfor %} :: {{ name }} {{ type }}
+{{ type }}, {{ keys|join(', ') }} :: {{ name }}

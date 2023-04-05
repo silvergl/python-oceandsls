@@ -1,1 +1,1 @@
-{{ name }}{% if keys is defined %} ( {% for key in keys %}@{{ key }}, {% endfor %} ){% endif %}{# TODO split template for labels? #}
+{{ name }}{% if args is defined %} ( {{ args|join(', ') }} ){% endif %}

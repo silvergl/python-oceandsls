@@ -1,1 +1,1 @@
-{{ type }}, {{ keys|join(', ') }} :: {{ name }}
+{{ type }}{% if keys is defined %}, {{ keys|join(', ') }}{% endif %} :: {{ name }}

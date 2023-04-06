@@ -1,1 +1,1 @@
-{{ decl }} = {{ value }} ! {{ comment }}
+{{ decl }} = {{ value }}{% if comment is defined %} ! {{ comment }}{% endif %}{# TODO alternative test if comment is not none and ((comment is none) is false) #}

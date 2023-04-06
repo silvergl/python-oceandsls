@@ -52,14 +52,14 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         # Load Jinja2 template
         template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
         # Render template
-        name = ctx.ID().getText()
-        scope = self.visit( ctx.test_scope() )
-        test_vars = self.visit( ctx.test_vars() )
+        name = ctx.name.text
+        scope = self.visit( ctx.scope )
+        vars_ = self.visit( ctx.vars_ )
         assertions = []
         for assertion in ctx.assertions:
             assertions.append(self.visit(assertion))
-        # TODO get comment
-        content = template.render( name=name, scope=scope, test_vars=test_vars, assertions=assertions )
+        content = template.render( name=name, scope=scope, vars_=vars_, assertions=assertions )
+        print(content)
         return self.visitChildren( ctx )
 
     # Visit a parse tree produced by TestSuiteParser#test_scope.
@@ -90,7 +90,16 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         decl = self.visit(ctx.varDeclaration())
         value = self.visit(ctx.expr())
         comment = self.visit(ctx.optionalDesc())
-        return template.render( decl=decl, value=value, comment=comment )
+        # match comment:
+        #     case None:
+        #         template.render( decl=decl, value=value)
+        #     case _:
+        #         template.render( decl=decl, value=value, comment=comment )
+        if comment :
+            return template.render( decl=decl, value=value, comment=comment )
+        else :
+            return template.render( decl=decl, value=value)
+
 
     # Visit a parse tree produced by TestSuiteParser#varDeclaration.
     def visitVarDeclaration(self, ctx:TestSuiteParser.VarDeclarationContext):
@@ -100,7 +109,15 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         keys = []
         for key in ctx.keys:
             keys.append(key.keyword.text)
-        return template.render( name=name, type=type, keys=keys )
+        # match keys:
+        #     case []:
+        #         return template.render( name=name, type=type )
+        #     case _:
+        #         return template.render( name=name, type=type, keys=keys )
+        if keys :
+            return template.render( name=name, type=type, keys=keys )
+        else :
+            return template.render( name=name, type=type )
 
     # Visit a parse tree produced by TestSuiteParser#ref.
     def visitRef(self, ctx:TestSuiteParser.RefContext):
@@ -187,13 +204,24 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
 
     # Visit a parse tree produced by TestSuiteParser#emptyDesc.
     def visitEmptyDesc(self, ctx:TestSuiteParser.EmptyDescContext):
-        # TODO type empty comment
-        return self.visitChildren(ctx)
+        return None
 
     # Visit a parse tree produced by TestSuiteParser#specDesc.
     def visitSpecDesc(self, ctx:TestSuiteParser.SpecDescContext):
-        # TODO type comment
-        return self.visitChildren(ctx)
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        type = self.visit(ctx.value)
+        comment = self.visit(ctx.value)
+        return template.render( type= type, comment = comment )
+
+    # Visit a parse tree produced by TestSuiteParser#emptyComment.
+    def visitEmptyComment(self, ctx:TestSuiteParser.EmptyCommentContext):
+        return None
+
+    # Visit a parse tree produced by TestSuiteParser#specComment.
+    def visitSpecComment(self, ctx:TestSuiteParser.SpecCommentContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        comment = ctx.comment.text
+        return template.render( comment = comment )
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion(self, ctx:TestSuiteParser.Test_assertionContext):
@@ -201,14 +229,22 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         directive = self.visit(ctx.directive)
         input_ = self.visit(ctx.input_)
         output = self.visit(ctx.output)
-        pubAttributes = self.visit(ctx.comment)
-        test = template.render( directive= directive, input_= input_, output= output, pubAttributes= pubAttributes )
-        return template.render( directive= directive, input_= input_, output= output, pubAttributes= pubAttributes )
+        pubAttributes = self.visit(ctx.attr)
+        comment = ctx.comment.text.rstrip('\n') if ctx.comment is not None else None
+        match (pubAttributes,comment):
+            case [None, None]:
+                return template.render( directive= directive, input_= input_, output= output)
+            case [None, _]:
+                return template.render( directive= directive, input_= input_, output= output, comment= comment)
+            case [_, None]:
+                return template.render( directive= directive, input_= input_, output= output, pubAttributes= pubAttributes)
+            case _:
+                return template.render( directive= directive, input_= input_, output= output, pubAttributes= pubAttributes, comment= comment )
+
 
     # Visit a parse tree produced by TestSuiteParser#test_directive.
     def visitTest_directive(self, ctx:TestSuiteParser.Test_directiveContext):
         template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
-        # TODO use decl and comment in upper template
         ppDirective = ctx.ppDirective.text
         return template.render( ppDirective = ppDirective )
 
@@ -218,6 +254,21 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         # TODO use decl and comment in upper template
         value = self.visit(ctx.value)
         return template.render( value = value )
+
+    # Visit a parse tree produced by TestSuiteParser#pubAttributes.
+    def visitPubAttributes(self, ctx:TestSuiteParser.PubAttributesContext):
+        template = self.environment.get_template( self.fileTemplates[ctx.getRuleIndex()] )
+        msg = ctx.msg.text if ctx.msg is not None else None
+        tol = self.visit(ctx.tol) if ctx.tol is not None else None
+        match (msg,tol):
+            case [None, None]:
+                return None
+            case [None, _]:
+                return template.render( tol = tol )
+            case [_, None]:
+                return template.render( msg = msg )
+            case _:
+                return template.render( msg = msg, tol = tol )
 
     def writefile(self, path=None, filename=None):
         path = os.path.join( os.getcwd(), path, filename )

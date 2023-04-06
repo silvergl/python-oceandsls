@@ -2,7 +2,7 @@
 SUBROUTINE {{ name }}(){# TODO add TEST type subroutine function? #}
 {{ scope }}
 
-{{ test_vars }}
+{{ vars_ }}
 
-{{ test_assertion }}
+{{ assertions|join('\n') }}
 END SUBROUTINE {{ name }}()

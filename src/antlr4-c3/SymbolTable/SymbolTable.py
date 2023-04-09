@@ -77,7 +77,7 @@ class ReferenceKind( Enum ):
     # 'Type' as such and default for all value types.
     Instance = 3
 
-class UnitKind:
+class UnitKind( Enum ):
     """
     Rough categorization of a unit from SI units.
     """
@@ -158,122 +158,89 @@ class Type:
 class SymbolTableOptions:
     allowDuplicateSymbols: Optional[bool] = None
 
+class classproperty(property):
+    # TODO use metaclass factory https://stackoverflow.com/q/6760685/
+    def __get__(self, cls, owner):
+        return classmethod(self.fget).__get__(None, owner)()
+
 class FundamentalUnit( Unit ):
     """
     A single class for all fundamental units which are mostly SI units. They are distinguished via the kind field.
     """
-    name: str
 
-    def __init__(self, name: str, unitPrefix=UnitPrefix.NoP, unitKind=UnitKind.Unknown, referenceKind=ReferenceKind.Irrelevant):
-        super().__init__(self, kind = unitKind, reference = referenceKind, prefix = unitPrefix)
-        self.name = name
+    def __init__(self, name: str, baseTypes = [], unitPrefix=UnitPrefix.NoP, unitKind=UnitKind.Unknown, referenceKind=ReferenceKind.Irrelevant):
+        super().__init__(name = name, baseTypes = baseTypes, kind = unitKind, reference = referenceKind, prefix = unitPrefix)
 
-    @property
+    @classproperty
     def secondUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="second", unitKind=UnitKind.Second )
 
-    @property
+    @classproperty
     def metreUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="metre", unitKind=UnitKind.Metre )
 
     # TODO si unit is kilogram but unitKind has gram
-    @property
+    @classproperty
     def gramUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="gram", unitKind=UnitKind.Gram )
 
     # TODO si unit is kilogram but unitKind has gram
-    @property
+    @classproperty
     def kilogramUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="kilogram", unitPrefix=UnitPrefix.Kilo, unitKind=UnitKind.Gram )
 
-    @property
+    @classproperty
     def AmpereUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="ampere", unitKind=UnitKind.Ampere )
 
-    @property
+    @classproperty
     def KelvinUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="Kelvin", unitKind=UnitKind.Kelvin )
 
-    @property
+    @classproperty
     def MoleUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="Mole", unitKind=UnitKind.Mole )
 
-    @property
+    @classproperty
     def CandelaUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="Candela", unitKind=UnitKind.Candela )
 
-    @property
+    @classproperty
     def PascalUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="Pascal", unitKind=UnitKind.Pascal )
 
-    @property
+    @classproperty
     def JouleUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="Joule", unitKind=UnitKind.Joule )
 
     # TODO si unit is kilogram. unitKind has gram but could include ton
-    @property
+    @classproperty
     def TonUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="Ton",unitPrefix=UnitPrefix.Mega, unitKind=UnitKind.Gram )
-
-
-    @property
-    def baseUnits(self) -> List[Unit]:
-        return []
-
-    @property
-    def kind(self) -> UnitKind:
-        return self.kind
-
-    @property
-    def reference(self) -> ReferenceKind:
-        return self.reference
-
-    @property
-    def prefix(self) -> UnitPrefix:
-        return self.prefix
-
 
 class FundamentalType( Type ):
     """
     A single class for all fundamental types. They are distinguished via the kind field.
     """
-    name: str
 
-    __typeKind: TypeKind
-    __referenceKind: ReferenceKind
+    def __init__(self, name: str, baseTypes = [], typeKind=TypeKind.Unknown, referenceKind=ReferenceKind.Irrelevant):
+        super().__init__(name = name, baseTypes = baseTypes, kind = typeKind, reference = referenceKind)
 
-    def __init__(self, name: str, typeKind=TypeKind.Unknown, referenceKind=ReferenceKind.Irrelevant):
-        self.name = name
-        self.__typeKind = typeKind
-        self.__referenceKind = referenceKind
-
-    @property
+    @classproperty
     def integerType(self) -> FundamentalType:
-        return FundamentalType( "int", TypeKind.Integer )
+        return FundamentalType( name = "int", typeKind = TypeKind.Integer )
 
-    @property
+    @classproperty
     def floatType(self) -> FundamentalType:
-        return FundamentalType( "float", TypeKind.Float )
+        return FundamentalType( name = "float", typeKind = TypeKind.Float )
 
-    @property
+    @classproperty
     def stringType(self) -> FundamentalType:
-        return FundamentalType( "string", TypeKind.String )
+        return FundamentalType( name = "string", typeKind = TypeKind.String )
 
-    @property
+    @classproperty
     def boolType(self) -> FundamentalType:
-        return FundamentalType( "bool", TypeKind.Boolean )
-
-    @property
-    def baseTypes(self) -> List[Type]:
-        return []
-
-    @property
-    def kind(self) -> TypeKind:
-        return self.__typeKind
-
-    @property
-    def reference(self) -> ReferenceKind:
-        return self.__referenceKind
+        return FundamentalType( name = "bool", typeKind = TypeKind.Boolean )
 
 
 class Symbol:

@@ -107,24 +107,6 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#test_input.
-    def enterTest_input(self, ctx:TestSuiteParser.Test_inputContext):
-        pass
-
-    # Exit a parse tree produced by TestSuiteParser#test_input.
-    def exitTest_input(self, ctx:TestSuiteParser.Test_inputContext):
-        pass
-
-
-    # Enter a parse tree produced by TestSuiteParser#test_output.
-    def enterTest_output(self, ctx:TestSuiteParser.Test_outputContext):
-        pass
-
-    # Exit a parse tree produced by TestSuiteParser#test_output.
-    def exitTest_output(self, ctx:TestSuiteParser.Test_outputContext):
-        pass
-
-
     # Enter a parse tree produced by TestSuiteParser#test_parameter.
     def enterTest_parameter(self, ctx:TestSuiteParser.Test_parameterContext):
         pass
@@ -386,6 +368,15 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TestSuiteParser#signExpr.
+    def enterSignExpr(self, ctx:TestSuiteParser.SignExprContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#signExpr.
+    def exitSignExpr(self, ctx:TestSuiteParser.SignExprContext):
+        pass
+
+
     # Enter a parse tree produced by TestSuiteParser#refExpr.
     def enterRefExpr(self, ctx:TestSuiteParser.RefExprContext):
         pass
@@ -401,15 +392,6 @@ class TestSuiteListener(ParseTreeListener):
 
     # Exit a parse tree produced by TestSuiteParser#numberExpr.
     def exitNumberExpr(self, ctx:TestSuiteParser.NumberExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TestSuiteParser#testExpr.
-    def enterTestExpr(self, ctx:TestSuiteParser.TestExprContext):
-        pass
-
-    # Exit a parse tree produced by TestSuiteParser#testExpr.
-    def exitTestExpr(self, ctx:TestSuiteParser.TestExprContext):
         pass
 
 
@@ -446,15 +428,6 @@ class TestSuiteListener(ParseTreeListener):
 
     # Exit a parse tree produced by TestSuiteParser#varRef.
     def exitVarRef(self, ctx:TestSuiteParser.VarRefContext):
-        pass
-
-
-    # Enter a parse tree produced by TestSuiteParser#argList.
-    def enterArgList(self, ctx:TestSuiteParser.ArgListContext):
-        pass
-
-    # Exit a parse tree produced by TestSuiteParser#argList.
-    def exitArgList(self, ctx:TestSuiteParser.ArgListContext):
         pass
 
 

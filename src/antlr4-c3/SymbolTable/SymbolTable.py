@@ -215,7 +215,6 @@ class FundamentalUnit( Unit ):
     def TonUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="Ton",unitPrefix=UnitPrefix.Mega, unitKind=UnitKind.Gram )
 
-
     @property
     def baseUnits(self) -> List[Unit]:
         return []
@@ -496,6 +495,7 @@ class UnitSymbol( TypedSymbol ):
     def __init__(self, name: str, attached_unit: Unit, attached_type: Type = None):
         super().__init__( name, attached_type )
         self.attached_unit = attached_unit
+        
 
 class TypeAlias( Symbol, Type ):
     """
@@ -889,10 +889,11 @@ class BlockSymbol( ScopedSymbol ):
 
 
 class VariableSymbol( UnitSymbol ):
-
-    def __init__(self, name: str, value=None, attached_type: Type = None):
-        super().__init__( name, attached_type )
-
+    is_tree = False
+    
+    def __init__(self, name: str, value = None, attached_unit : Unit = None, attached_type: Type = None):
+        super().__init__( name, attached_unit, attached_type )
+        self.is_tree = isinstance(value, ParseTree)
         self.value = value
 
 

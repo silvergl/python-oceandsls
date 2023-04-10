@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
 from antlr4.tree.Tree import ParseTree
 
-from SymbolTable.SymbolTable import SymbolTable, P, T, BlockSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol
+from SymbolTable.SymbolTable import SymbolTable, P, T, BlockSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind
 from Declaration.DeclarationParser import DeclarationParser
 from Declaration.DeclarationVisitor import DeclarationVisitor
 
@@ -33,16 +33,9 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         # TODO merge UnitSymbol from main and change t to UnitSymbol
         t = VariableSymbol # set and get the type of param here
         varName = ctx.name.text # set and get the variable name here
-        temp = self.visit(ctx.unit)
-        # TODO: get the default Value -> defaultValue=arithmeticExpression
-        defaultValue = self.visit(ctx.defaultValue)
+        unit = self.visit(ctx.unit)
         description = ctx.description.text
-        if isinstance(temp, tuple):
-            # SI Unit
-            unit, unitType = temp
-        else:
-            # Custom Unit
-            unitName = temp
+        scope = self._symbolTable.addNewSymbolOfType(VariableSymbol, varName, ctx, unit)
 
 
         # TODO add defaultValue and unit see
@@ -50,15 +43,44 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         #       https://git.se.informatik.uni-kiel.de/oceandsl/organization/-/wikis/uploads/30c8a43db807b74d17147b69360e1566/The_Definitive_ANTLR_4_Reference.pdf
         #  or example : media.pragprog.com/titles/tpantlr2/code/tour/EvalVisitor.java
         # TODO backlog add description as comment to SymbolTable?
-        scope = self._symbolTable.addNewSymbolOfType(t, self._scope, varName)
-        return self.visitChildren( ctx )
+        return scope
+    
+    def stringToPrefix(input : str):
+            prefixes = [("nop", UnitPrefix.NoP), ("yotta", UnitPrefix.Yotta), ("zetta", UnitPrefix.Zetta),
+                        ("exa", UnitPrefix.Exa), ("petra", UnitPrefix.Petra), ("tera", UnitPrefix.Tera),
+                        ("giga", UnitPrefix.Giga), ("mega", UnitPrefix.Mega), ("kilo", UnitPrefix.Kilo),
+                        ("hecto", UnitPrefix.Hecto), ("deca", UnitPrefix.Deca), ("deci", UnitPrefix.Deci),
+                        ("centi", UnitPrefix.Centi), ("mili", UnitPrefix.Mili), ("micro", UnitPrefix.Micro),
+                        ("nano", UnitPrefix.Nano), ("pico", UnitPrefix.Pico), ("femto", UnitPrefix.Femto),
+                        ("atto", UnitPrefix.Atto), ("atto", UnitPrefix.Atto), ("zepto", UnitPrefix.Zepto),
+                        ("yocto", UnitPrefix.Yocto)]
+            for prefixname, prefixType in prefixes:
+                if input.lower() == prefixname:
+                    return prefixType
+            return UnitPrefix.NoP
+    
+    
+    def stringToUnitType(input : str):
+        kinds = [("", UnitKind.Unknown), ("meter", UnitKind.Metre), ("gram", UnitKind.Gram),
+                 ("ton", UnitKind.ton), ("second", UnitKind.Second), ("ampere", UnitKind.Ampere),
+                 ("kelvin", UnitKind.Kelvin), ("mole", UnitKind.Mole), ("candela", UnitKind.Candela),
+                 ("pascal", UnitKind.Pascal), ("joul", UnitKind.Joul),
+                ]
+        for unitName, unitType in kinds:
+            if input.lower() == unitName:
+                return unitType
+        return UnitKind.Unknown
     
     # sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType #siUnit; 
     def visitSiunit(self, ctx:DeclarationParser.sIUnitContext):
-        return (ctx.prefix.text, ctx.type.text)
+        return FundamentalUnit(name = ctx.type.text, unitPrefix = stringToPrefix(ctx.prefix.text), unitKind = stringToUnitType(ctx.type.text))
+    
     # customUnit                  :   name=STRING #customunit;
     def visitCustomunit(self, ctx:DeclarationParser.customUnit):
-        return ctx.name.text
+        # TODO: Set Prefix and type in customUnit also
+        return FundamentalUnit(name = ctx.name.text)
+    
+        
 
     # TODO backlog visitParamGroupAssignStat as BlockSymbol is not implemented and do we need it?
     # def visitParamGroupAssignStat(self, ctx: DeclarationParser.ParamGroupAssignStatContext):

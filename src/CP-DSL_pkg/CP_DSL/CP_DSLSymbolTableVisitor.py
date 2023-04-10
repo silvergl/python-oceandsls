@@ -46,29 +46,16 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         return scope
     
     def stringToPrefix(input : str):
-            prefixes = [("nop", UnitPrefix.NoP), ("yotta", UnitPrefix.Yotta), ("zetta", UnitPrefix.Zetta),
-                        ("exa", UnitPrefix.Exa), ("petra", UnitPrefix.Petra), ("tera", UnitPrefix.Tera),
-                        ("giga", UnitPrefix.Giga), ("mega", UnitPrefix.Mega), ("kilo", UnitPrefix.Kilo),
-                        ("hecto", UnitPrefix.Hecto), ("deca", UnitPrefix.Deca), ("deci", UnitPrefix.Deci),
-                        ("centi", UnitPrefix.Centi), ("mili", UnitPrefix.Mili), ("micro", UnitPrefix.Micro),
-                        ("nano", UnitPrefix.Nano), ("pico", UnitPrefix.Pico), ("femto", UnitPrefix.Femto),
-                        ("atto", UnitPrefix.Atto), ("atto", UnitPrefix.Atto), ("zepto", UnitPrefix.Zepto),
-                        ("yocto", UnitPrefix.Yocto)]
-            for prefixname, prefixType in prefixes:
-                if input.lower() == prefixname:
-                    return prefixType
+            for prefix in UnitPrefix:
+                if vars(prefix)["_name_"].lower() == input.lower():
+                    return prefix
             return UnitPrefix.NoP
     
     
     def stringToUnitType(input : str):
-        kinds = [("", UnitKind.Unknown), ("meter", UnitKind.Metre), ("gram", UnitKind.Gram),
-                 ("ton", UnitKind.ton), ("second", UnitKind.Second), ("ampere", UnitKind.Ampere),
-                 ("kelvin", UnitKind.Kelvin), ("mole", UnitKind.Mole), ("candela", UnitKind.Candela),
-                 ("pascal", UnitKind.Pascal), ("joul", UnitKind.Joul),
-                ]
-        for unitName, unitType in kinds:
-            if input.lower() == unitName:
-                return unitType
+        for kind in UnitKind:
+            if vars(kind)["_name_"].lower() == input.lower():
+                return kind
         return UnitKind.Unknown
     
     # sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType #siUnit; 

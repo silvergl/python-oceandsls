@@ -64,16 +64,6 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#test_input.
-    def visitTest_input(self, ctx:TestSuiteParser.Test_inputContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#test_output.
-    def visitTest_output(self, ctx:TestSuiteParser.Test_outputContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by TestSuiteParser#test_parameter.
     def visitTest_parameter(self, ctx:TestSuiteParser.Test_parameterContext):
         return self.visitChildren(ctx)
@@ -219,6 +209,11 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TestSuiteParser#signExpr.
+    def visitSignExpr(self, ctx:TestSuiteParser.SignExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TestSuiteParser#refExpr.
     def visitRefExpr(self, ctx:TestSuiteParser.RefExprContext):
         return self.visitChildren(ctx)
@@ -226,11 +221,6 @@ class TestSuiteVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TestSuiteParser#numberExpr.
     def visitNumberExpr(self, ctx:TestSuiteParser.NumberExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#testExpr.
-    def visitTestExpr(self, ctx:TestSuiteParser.TestExprContext):
         return self.visitChildren(ctx)
 
 
@@ -251,11 +241,6 @@ class TestSuiteVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TestSuiteParser#varRef.
     def visitVarRef(self, ctx:TestSuiteParser.VarRefContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#argList.
-    def visitArgList(self, ctx:TestSuiteParser.ArgListContext):
         return self.visitChildren(ctx)
 
 

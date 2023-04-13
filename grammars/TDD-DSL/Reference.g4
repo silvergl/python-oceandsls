@@ -26,20 +26,17 @@ grammar Reference;
 import CommonLexerRules;
 
 /** arithmetic expression for value calculation */
-expr                    : '(' inner=expr ')'                    # parensExpr    /** Parenthesized expression */
-                        | left=expr op=('*' | '/') right=expr   # mulDivExpr    /** Multiplication, Division have precedence */
-                        | left=expr op=('+' | '-') right=expr   # addSubExpr    /** Addition, Subtraction have not precedence */
-                        | op=('+' | '-') right=expr             # testExpr
-                        | value=(NUM | DP)                      # numberExpr
-                        | value=STRING                          # strExpr
-                        | value=INT                             # intExpr
-                        | value=reference                       # refExpr
+expr                    : '(' inner=expr ')'                                # parensExpr    /** Parenthesized expression */
+                        | left=expr op=('*' | '/') right=expr               # mulDivExpr    /** Multiplication, Division have precedence */
+                        | left=expr op=('+' | '-') right=expr               # addSubExpr    /** Addition, Subtraction have not precedence */
+                        | op=('+' | '-') inner=expr                         # signExpr
+                        | value=(NUM | DP)                                  # numberExpr
+                        | value=STRING                                      # strExpr
+                        | value=INT                                         # intExpr
+                        | value=reference                                   # refExpr
                         ;
 
 /** function or variables to lookup in the symboltable */
-reference               : name=ID '(' exprs=exprList? ')'       # funRef        /** function call like f(), f(x), f(1,2) */
-                        | name=ID                               # varRef
-                        ;
-
-exprList                :  exprs+=expr(',' exprs+=expr)*        # argList // list of function arguments
+reference               : name=ID '(' (args+=expr(',' args+=expr)*)? ')'    # funRef        /** function call like f(), f(x), f(1,2) */
+                        | name=ID                                           # varRef
                         ;

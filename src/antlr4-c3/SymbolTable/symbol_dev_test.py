@@ -13,7 +13,8 @@ from antlr4.Token import CommonToken
 from antlr4.tree.Tree import TerminalNodeImpl
 
 from SymbolTable import Symbol, SymbolTable, NamespaceSymbol, ClassSymbol, InterfaceSymbol, FieldSymbol, MethodSymbol, \
-    BlockSymbol, FundamentalType, VariableSymbol, LiteralSymbol, ScopedSymbol
+    BlockSymbol, FundamentalType, VariableSymbol, LiteralSymbol, ScopedSymbol, SymbolTableOptions, UnitSymbol, \
+    FundamentalUnit, UnitPrefix, UnitKind
 
 # class Symbol:
 #     name: str
@@ -28,6 +29,8 @@ P = ParamSpec( "P" )
 
 
 class Foobar:
+    def addSymbol(self, *my_args: P.args or None, **my_kwargs: P.kwargs or None):
+        pass
     pass
 
 
@@ -115,11 +118,11 @@ def getAllSymbolsOfType(scope: ScopedSymbol, symbolType: type):
 
 
 if __name__ == "__main__":
-    # symbolTable = SymbolTable( Bar )
+    # symbolTable = SymbolTable( Bar, SymbolTableOptions( False ) )
     # parent = Foobar()
     #
-    # scope = symbolTable.addNewSymbolOfType( ScopedSymbol, parent, "name", 'zero', 'one', 'two', zero='zeroArg',
-    #                                         one='oneArg' )
+    # scope = symbolTable.addNewSymbolOfType( ScopedSymbol, parent, "my_name")
+    # # scope = symbolTable.addNewSymbolOfType( ScopedSymbol, parent, "name", 'zero', 'one', 'two', zero='zeroArg',
     #
     # result: List[T] = []
     #
@@ -163,6 +166,16 @@ if __name__ == "__main__":
     #     print ("preferredRules is empty")
     # else:
     #     print ("preferredRules is not empty")
+
+    #########################################
+
+    # Test singleton
+
+    integerType = FundamentalType.integerType
+
+    secondUnit = FundamentalUnit.secondUnit
+
+    custom_kilogram = FundamentalUnit(name="my_kilogram", unitPrefix=UnitPrefix.Kilo, unitKind=UnitKind.Gram)
 
     #########################################
 

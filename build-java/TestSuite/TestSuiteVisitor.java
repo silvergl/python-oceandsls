@@ -77,18 +77,6 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPubAttributes(TestSuiteParser.PubAttributesContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#test_input}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTest_input(TestSuiteParser.Test_inputContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#test_output}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTest_output(TestSuiteParser.Test_outputContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#test_parameter}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -284,6 +272,13 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAddSubExpr(TestSuiteParser.AddSubExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code signExpr}
+	 * labeled alternative in {@link TestSuiteParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSignExpr(TestSuiteParser.SignExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code refExpr}
 	 * labeled alternative in {@link TestSuiteParser#expr}.
 	 * @param ctx the parse tree
@@ -297,13 +292,6 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNumberExpr(TestSuiteParser.NumberExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code testExpr}
-	 * labeled alternative in {@link TestSuiteParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTestExpr(TestSuiteParser.TestExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code parensExpr}
 	 * labeled alternative in {@link TestSuiteParser#expr}.
@@ -332,13 +320,6 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVarRef(TestSuiteParser.VarRefContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code argList}
-	 * labeled alternative in {@link TestSuiteParser#exprList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArgList(TestSuiteParser.ArgListContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree

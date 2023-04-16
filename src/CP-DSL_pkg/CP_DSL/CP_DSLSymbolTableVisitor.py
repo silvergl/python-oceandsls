@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
 from antlr4.tree.Tree import ParseTree
 
-from SymbolTable.SymbolTable import SymbolTable, P, T, BlockSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind
+from SymbolTable.SymbolTable import SymbolTable, P, T, BlockSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, ScopedSymbol
 from Declaration.DeclarationParser import DeclarationParser
 from Declaration.DeclarationVisitor import DeclarationVisitor
 
@@ -68,10 +68,11 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
 
     def visitFeatureAssignStat(self, ctx: DeclarationParser.FeatureAssignStatContext):
         description = ctx.description.text
-        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
+        return self.withScope(ctx, ScopedSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
 
     def visitFeatureGroupAssignStat(self, ctx: DeclarationParser.FeatureGroupAssignStatContext):
-        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        description = ctx.description.text
+        return self.withScope(ctx, ScopedSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
 
     # def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
     #     self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID().getText() )

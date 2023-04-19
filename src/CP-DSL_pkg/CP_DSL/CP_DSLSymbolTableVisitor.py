@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
 from antlr4.tree.Tree import ParseTree
 
-from SymbolTable.SymbolTable import SymbolTable, P, T, BlockSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, ScopedSymbol
+from SymbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind
 from Declaration.DeclarationParser import DeclarationParser
 from Declaration.DeclarationVisitor import DeclarationVisitor
 
@@ -33,7 +33,7 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         varName = ctx.name.text # set and get the variable name here
         unit = self.visit(ctx.unit)
         description = ctx.description.text
-        scope = self._symbolTable.addNewSymbolOfType(VariableSymbol, varName, ctx, unit)
+        scope = self._symbolTable.addNewSymbolOfType(VariableSymbol, varName, description, ctx, unit)
         # TODO backlog add description as comment to SymbolTable?
         return scope
     
@@ -61,18 +61,18 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
     
         
     def visitParamGroupAssignStat(self, ctx: DeclarationParser.ParamGroupAssignStatContext):
-        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        description = ctx.description.text
+        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.name.text, VariableSymbol, description)
 
     # CHANGES sgu:
     #   featureDeclaration ID is saved as attribute 'name'
 
     def visitFeatureAssignStat(self, ctx: DeclarationParser.FeatureAssignStatContext):
-        description = ctx.description.text
-        return self.withScope(ctx, ScopedSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
+        return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
 
     def visitFeatureGroupAssignStat(self, ctx: DeclarationParser.FeatureGroupAssignStatContext):
         description = ctx.description.text
-        return self.withScope(ctx, ScopedSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), ctx.name.text, RoutineSymbol, description)
 
     # def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
     #     self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID().getText() )

@@ -914,6 +914,12 @@ class RoutineSymbol( ScopedSymbol ):
     def getParameters(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getSymbolsOfType( ParameterSymbol )
 
+    def getUnits(self, localOnly=True) -> Coroutine[List[T]]:
+        return self.getSymbolsOfType(UnitSymbol)
+    
+    def getFeatures(self, localOnly=True) -> Coroutine[List[T]]:
+        return self.getSymbolsOfType(RoutineSymbol)
+
 
 class MethodFlags( Enum ):
     NoneFL = 0

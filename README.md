@@ -1,48 +1,22 @@
-# antlr4-python
+# OceanDSL Python-based DSL Implementation
 
-ANTLR4 Python Stack
--------
 - Mattermost Ticket https://maui.se.informatik.uni-kiel.de:8065/boards/workspace/jqpyx1h7jp87mryt1ofrdqnurw/bkrkg93uc6pdrfdg6cqz5pm8zaa/vesxnw4xt9i8iucfzg1g8yimzaa/c7gonutfo1ib53p3u5oo5yqjqhy
 
-## Getting started
+## Name
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+oceandsl-languages
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Description
 
-## Add your files
+This project contains multiple DSLs for ocean and earth system models.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- CP-DSL including Declaration-DSL, Configuration-DSL and Template-DSL
+- TDD-DSL testing DSL for test-driven development
+- BGC-DSL language to specify biogeochemical models
 
-```
-cd existing_repo
-git remote add origin https://git.se.informatik.uni-kiel.de/oceandsl/antlr4-python.git
-git branch -M main
-git push -uf origin main
-```
+## License
 
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://git.se.informatik.uni-kiel.de/oceandsl/antlr4-python/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Apache 2.0
 
 ***
 

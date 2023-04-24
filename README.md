@@ -1,7 +1,5 @@
 # OceanDSL Python-based DSL Implementation
 
-- Mattermost Ticket https://maui.se.informatik.uni-kiel.de:8065/boards/workspace/jqpyx1h7jp87mryt1ofrdqnurw/bkrkg93uc6pdrfdg6cqz5pm8zaa/vesxnw4xt9i8iucfzg1g8yimzaa/c7gonutfo1ib53p3u5oo5yqjqhy
-
 ## Name
 
 oceandsl-languages

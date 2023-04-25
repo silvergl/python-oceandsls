@@ -29,6 +29,8 @@ from typing import List, Optional
 from antlr4.IntervalSet import IntervalSet
 from antlr4 import InputStream, CommonTokenStream, Token, ParseTreeWalker
 # antlr4-c3
+# TODO fail relative import beyond top-level package
+# from ...antlrLib.CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 from CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 
 # pygls

@@ -21,10 +21,12 @@ import logging
 
 from .server import example_server
 
+#debug
+from pprint import pprint
 if "." in __name__:
-    print(f'.{__name__}')
+    pprint(f'.{__name__}')
 else:
-    print(__name__)
+    pprint(__name__)
 
 logging.basicConfig( filename="pygls.log", level=logging.DEBUG, filemode="w" )
 

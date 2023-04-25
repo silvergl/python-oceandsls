@@ -13,7 +13,7 @@
 - activate virtual environment `.venv`
   - `source .venv/bin/activate`
 - install `antlr4-python3-runtime`, `pygls` and `Jinja2` package into virtual environment `.venv`
-  - `python -m pip install antlr4-python3-runtime pygls Jinja2`
+  - `python -m pip install antlr4-python3-runtime Jinja2 mock pygls pytest`
 
 ## Optional: update npm and node
 - check npm version
@@ -27,24 +27,20 @@
 
 ## Install Client Dependencies
 
-- Goto extension directory `antlr4-python`
+- Goto extension directory `antlr4-python/example-dsl`
 - Install the dependencies to the local node_modules 
   - `npm install`
 
 ## Run Example using VSCode
 
 - Open `json-vscode-extension` in VSCode
-  - ![Screenshot](uploads/f4a729acfaeff7fba98674b08550a531/Screenshot_from_2023-04-18_15-59-12.png)
 - Trust author files in `json-vscode-extension`
-  - ![Screenshot](uploads/be6b85e4dbecc95b8f433f67a0b223c1/Screenshot_from_2023-04-18_12-27-02.png)
 - Goto Run and Debug
   - `Ctrl/Cmd+Shift+D`
 - Select `Server + Client`
-  - ![Screenshot](uploads/9e2362f519ddf9f3b40b72d7f4288dfb/Screenshot_from_2023-04-18_15-56-53.png)
 - Start Debugging via `F5` or GUI
 - Open a `*.json` file
 - If server is working correctly notification shows `Text Document Did Open`
-  - ![Screenshot](uploads/b879416c6a36484acc5943230814042a/Screenshot_from_2023-04-18_12-32-48.png)
 
 ## Troubleshooting
 
@@ -53,8 +49,8 @@
   `Ctrl/Cmd+Shift+P`
     - Run select interpreter command
   `Python: Select Interpreter`
-  - Alternative create `.vscode/settings.json` file in `json-vscode-extension` directory and set `python.defaultInterpreterPath` to point to the virtual environment
-    - [settings.json]([settings.json](uploads/7aba21af411551c0ac867bc713eb9766/settings.json)
+  - Alternative create `.vscode/settings.json` file in `antlr4-python/example-dsl` directory and set `python.defaultInterpreterPath` to point to the virtual environment
+    - settings.json
 
           {
               "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"

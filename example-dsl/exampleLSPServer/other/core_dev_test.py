@@ -1,23 +1,30 @@
-#!/usr/bin/env python3
+"""CodeCompletionCore example module."""
+
 __author__ = 'sgu'
 
+# TODO license
+
+# utils
 import sys, os
-if not os.path.join(sys.path[0],'..','..','..','build-python') in sys.path:
-    sys.path.append(os.path.join(sys.path[0],'..','..','..','build-python'))
+import logging
+
+# antlr4
+from antlr4 import CommonTokenStream
+from antlr4.InputStream import InputStream
+
+# antlr4-c3
+from codeCompletionCore.CodeCompletionCore import CodeCompletionCore
+
+# user relative imports
+from ..gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
+from ..gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
+from ..gen.python.TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
+from ..cst.DiagnosticListener import DiagnosticListener
 
 # debug import
 from pprint import pprint
-pprint(sys.path)
 
-import logging
-
-from antlr4 import *
-from antlr4.InputStream import InputStream
-from TestExprCore.TestExprCoreLexer import TestExprCoreLexer
-from TestExprCore.TestExprCoreParser import TestExprCoreParser
-from TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
-
-from CodeCompletionCore import CodeCompletionCore
+pprint( sys.path )
 
 if __name__ == "__main__":
     # create input stream of characters for lexer
@@ -26,15 +33,15 @@ if __name__ == "__main__":
         input_stream = InputStream( "var c = a + b()" )
     else:
         # TODO move parameters into file
-        input_stream = InputStream(sys.stdin.readline())
+        input_stream = InputStream( sys.stdin.readline() )
 
     # create lexer and parser objects and token stream pipe between them
-    lexer = TestExprCoreLexer(input_stream)
-    tokenStream = CommonTokenStream(lexer)
-    parser = TestExprCoreParser(tokenStream)
+    lexer = TestExprCoreLexer( input_stream )
+    tokenStream = CommonTokenStream( lexer )
+    parser = TestExprCoreParser( tokenStream )
 
     parser.removeErrorListeners()
-    parser.addErrorListener(DiagnosticErrorListener)
+    parser.addErrorListener( DiagnosticListener )
 
     listener = parser.getErrorListenerDispatch()
 
@@ -42,7 +49,7 @@ if __name__ == "__main__":
     try:
         ast = parser.expression()
     except SyntaxError as syn_inst:
-        logging.exception("parser raised syntax exception")
+        logging.exception( "parser raised syntax exception" )
     except Exception as inst:
         # print(type(inst))    # the exception instance
         # print(inst.args)     # arguments stored in .args
@@ -52,22 +59,21 @@ if __name__ == "__main__":
         # print('x =', x)
         # print('y =', y)
 
-        logging.exception("parser raised exception")
+        logging.exception( "parser raised exception" )
         # logging.exception("the exception instance '" + str(type(inst)) + "'")
         # logging.exception("arguments stored in .args '" + str(inst.args) + "'")
         # logging.exception("__str__ allows args to be printed directly '" + str(inst) + "'")
 
-
     # print parse tree
-    lisp_tree_str = ast.toStringTree(recog=parser)
-    print(lisp_tree_str)
+    lisp_tree_str = ast.toStringTree( recog=parser )
+    print( lisp_tree_str )
 
     # launch c3 core with parser:Parser, preferredRules:tuple, ignoredTokens:tuple
-    core = CodeCompletionCore(parser)
+    core = CodeCompletionCore( parser )
 
-    candidates = core.collectCandidates(0)
+    candidates = core.collectCandidates( 0 )
 
-    print(candidates)
+    print( candidates )
 
     # evaluator - walk parse tree
     # visitor = TestExprCoreVisitor

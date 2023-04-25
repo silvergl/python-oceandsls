@@ -7,7 +7,7 @@ sys.path.insert( 1, '../other/build-python' )
 from antlr4 import InputStream, CommonTokenStream, DiagnosticErrorListener
 from TestExprCore.TestExprCoreLexer import TestExprCoreLexer
 from TestExprCore.TestExprCoreParser import TestExprCoreParser
-from CodeCompletionCore import CodeCompletionCore
+from codeCompletionCore import CodeCompletionCore
 
 
 class CodeCompletionCoreTest( TestCase ):

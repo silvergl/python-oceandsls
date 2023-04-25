@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2bcb254-efcf-4c07-a288-0bf1697bb74f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/antlr4-python.iml" beforeDir="false" afterPath="$PROJECT_DIR$/python-oceandsls.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example-dsl/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/.vscode/launch.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example-dsl/client/src/extension.ts" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/client/src/extension.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example-dsl/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

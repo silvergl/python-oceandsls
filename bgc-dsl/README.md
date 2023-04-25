@@ -14,7 +14,7 @@
   - alternative use `virtualenv`, see optional python packages
 - activate virtual environment `.venv`
   - `source .venv/bin/activate`
-- install `antlr4-python3-runtime`, `pygls` and `Jinja2` package into virtual environment `.venv`
+- install `antlr4-python3-runtime`, `pygls`, `Jinja2` and `pytest` package into virtual environment `.venv`
   - `python -m pip install antlr4-python3-runtime Jinja2 mock pygls pytest`
 
 ## Optional: update npm and node

@@ -33,8 +33,7 @@ function getClientOptions(): LanguageClientOptions {
     return {
         // Register the server for plain text documents
         //  documentSelector: [{ scheme: 'file', language: 'plaintext' }],
-        // Register the server for oceandsl_tdd as defined in package.json
-        //  src 'A language server example using language services to support embedded languages'
+        // Register the server for oceandsl_example as defined in package.json
         documentSelector: [
             { scheme: "file", language: "oceandsl" },
             { scheme: "untitled", language: "oceandsl" },

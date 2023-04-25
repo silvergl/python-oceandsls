@@ -1,6 +1,6 @@
 .vscode
 .gitignore
-client/out/*.map
+typescript-build/client/out/*.map
 client/src/
 tsconfig.json
 tslint.json

@@ -109,7 +109,7 @@ class bgcLSPServer( LanguageServer ):
         self.parser.addErrorListener( self.error_listener )
 
 
-example_server = bgcLSPServer( 'pygls-odsl-bgc-prototype', 'v0.1' )
+bgc_server = bgcLSPServer( 'pygls-odsl-bgc-prototype', 'v0.1' )
 
 logger = logging.getLogger( __name__ )
 
@@ -160,29 +160,29 @@ def lookup_symbol(uri, name):
     logger.info( 'uri: %s\n', uri, 'name: %s\n', name )
 
 
-@example_server.feature( TEXT_DOCUMENT_COMPLETION, CompletionOptions( trigger_characters=[','] ) )
+@bgc_server.feature( TEXT_DOCUMENT_COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
     # set input stream of characters for lexer
-    text_doc: Document = example_server.workspace.get_document( params.text_document.uri )
+    text_doc: Document = bgc_server.workspace.get_document( params.text_document.uri )
     source: str = text_doc.source
     input_stream: InputStream = InputStream( source )
 
     # reset the lexer/parser
-    example_server.error_listener.reset()
-    example_server.lexer.inputStream = input_stream
-    example_server.tokenStream = CommonTokenStream( example_server.lexer )
-    example_server.parser.setInputStream( example_server.tokenStream )
+    bgc_server.error_listener.reset()
+    bgc_server.lexer.inputStream = input_stream
+    bgc_server.tokenStream = CommonTokenStream( bgc_server.lexer )
+    bgc_server.parser.setInputStream( bgc_server.tokenStream )
 
 
     # launches parser by invoking top-level rule
     Top_levelContext = BgcDslParser.BgcModelContext
-    parseTree: Top_levelContext = example_server.parser.bgcModel()
+    parseTree: Top_levelContext = bgc_server.parser.bgcModel()
 
     # get token index under caret position
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
-    tokenIndex: TokenPosition = computeTokenPosition( parseTree, example_server.tokenStream,
+    tokenIndex: TokenPosition = computeTokenPosition( parseTree, bgc_server.tokenStream,
                                                       CaretPosition( params.position.line + 1,
                                                                      params.position.character ) )
 
@@ -195,7 +195,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         return completionList
 
     # launch c3 core with parser
-    core: CodeCompletionCore = CodeCompletionCore( example_server.parser )
+    core: CodeCompletionCore = CodeCompletionCore( bgc_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
     core.preferredRules = {BgcDslParser, BgcDslParser}
@@ -219,57 +219,57 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     labels_list: List[str] = []
     for key, valueList in candidates.tokens.items():
         completionList.items.append( CompletionItem(
-            label=IntervalSet.elementName( IntervalSet, example_server.parser.literalNames,
-                                           example_server.parser.symbolicNames, key ) ) )
+            label=IntervalSet.elementName( IntervalSet, bgc_server.parser.literalNames,
+                                           bgc_server.parser.symbolicNames, key ) ) )
 
     # return completion candidates labels
     return completionList
 
 
-@example_server.feature( TEXT_DOCUMENT_DID_CHANGE )
+@bgc_server.feature( TEXT_DOCUMENT_DID_CHANGE )
 def did_change(ls, params: DidChangeTextDocumentParams):
     """Text document did change notification."""
     _validate( ls, params )
 
 
-@example_server.feature( TEXT_DOCUMENT_DID_CLOSE )
+@bgc_server.feature( TEXT_DOCUMENT_DID_CLOSE )
 def did_close(server: bgcLSPServer, params: DidCloseTextDocumentParams):
     """Text document did close notification."""
     server.show_message( 'Text Document Did Close' )
 
 
-@example_server.feature( TEXT_DOCUMENT_DID_SAVE )
+@bgc_server.feature( TEXT_DOCUMENT_DID_SAVE )
 def did_save(server: bgcLSPServer, params: DidSaveTextDocumentParams):
     """Text document did save notification."""
 
     # set input stream of characters for lexer
-    text_doc: Document = example_server.workspace.get_document( params.text_document.uri )
+    text_doc: Document = bgc_server.workspace.get_document( params.text_document.uri )
     source: str = text_doc.source
     input_stream: InputStream = InputStream( source )
 
     # reset the lexer/parser
-    example_server.error_listener.reset()
-    example_server.lexer.inputStream = input_stream
-    example_server.tokenStream = CommonTokenStream( example_server.lexer )
-    example_server.parser.setInputStream( example_server.tokenStream )
+    bgc_server.error_listener.reset()
+    bgc_server.lexer.inputStream = input_stream
+    bgc_server.tokenStream = CommonTokenStream( bgc_server.lexer )
+    bgc_server.parser.setInputStream( bgc_server.tokenStream )
 
     Top_levelContext = BgcDslParser.BgcModelContext
-    parseTree: Top_levelContext = example_server.parser.bgcModel()
+    parseTree: Top_levelContext = bgc_server.parser.bgcModel()
 
     # TODO
 
     server.show_message( 'Text Document Did Save' )
 
 
-@example_server.feature( TEXT_DOCUMENT_DID_OPEN )
+@bgc_server.feature( TEXT_DOCUMENT_DID_OPEN )
 async def did_open(ls, params: DidOpenTextDocumentParams):
     """Text document did open notification."""
     ls.show_message( 'Text Document Did Open' )
     _validate( ls, params )
 
 
-@example_server.feature( TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
-                         SemanticTokensLegend( token_types=["operator"], token_modifiers=[] ) )
+@bgc_server.feature( TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
+                     SemanticTokensLegend( token_types=["operator"], token_modifiers=[] ) )
 def semantic_tokens(ls: bgcLSPServer, params: SemanticTokensParams):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
     for details on how semantic tokens are encoded."""
@@ -297,7 +297,7 @@ def semantic_tokens(ls: bgcLSPServer, params: SemanticTokensParams):
     return SemanticTokens( data=data )
 
 
-@example_server.command( bgcLSPServer.CMD_PROGRESS )
+@bgc_server.command( bgcLSPServer.CMD_PROGRESS )
 async def progress(ls: bgcLSPServer, *args):
     """Create and start the progress on the client."""
     token = 'token'
@@ -313,7 +313,7 @@ async def progress(ls: bgcLSPServer, *args):
     ls.progress.end( token, WorkDoneProgressEnd( message='Finished' ) )
 
 
-@example_server.command( bgcLSPServer.CMD_REGISTER_COMPLETIONS )
+@bgc_server.command( bgcLSPServer.CMD_REGISTER_COMPLETIONS )
 async def register_completions(ls: bgcLSPServer, *args):
     """Register completions method on the client."""
     params = RegistrationParams( registrations=[Registration( id=str( uuid.uuid4() ), method=TEXT_DOCUMENT_COMPLETION,
@@ -325,7 +325,7 @@ async def register_completions(ls: bgcLSPServer, *args):
         ls.show_message( 'Error happened during completions registration.', MessageType.Error )
 
 
-@example_server.command( bgcLSPServer.CMD_UNREGISTER_COMPLETIONS )
+@bgc_server.command( bgcLSPServer.CMD_UNREGISTER_COMPLETIONS )
 async def unregister_completions(ls: bgcLSPServer, *args):
     """Unregister completions method on the client."""
     params = UnregistrationParams(

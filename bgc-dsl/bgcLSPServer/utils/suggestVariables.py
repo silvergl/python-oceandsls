@@ -11,10 +11,10 @@ from typing import List, ParamSpec
 from antlr4 import ParserRuleContext
 
 # user relative imports
-from ..gen.python.exampleDsl.exampleDslParser import exampleDslParser
+from ..gen.python.BgcDsl.BgcDslParser import BgcDslParser
 
-StatContext = exampleDslParser.StatContext
-del exampleDslParser
+BgcModelContext = BgcDslParser.BgcModelContext
+del BgcDslParser
 from ..symbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 from .computeTokenIndex import TokenPosition
 
@@ -85,7 +85,7 @@ def suggestVariables(symbolTable: SymbolTable, position: TokenPosition):
         symbols = run_async( symbolTable.getSymbolsOfType, VariableSymbol )
 
     variable = position.context
-    while not isinstance( variable, StatContext ) and variable.parentCtx is not None:
+    while not isinstance( variable, BgcModelContext ) and variable.parentCtx is not None:
         variable = variable.parentCtx
 
     return filterTokens( position.text if variable is not None else '', list( map( lambda s: s.name, symbols ) ) )

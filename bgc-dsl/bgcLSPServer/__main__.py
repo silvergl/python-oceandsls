@@ -19,7 +19,7 @@
 import argparse
 import logging
 
-from .server import example_server
+from .server import bgc_server
 
 #debug
 from pprint import pprint
@@ -58,11 +58,11 @@ def main():
     args = parser.parse_args()
 
     if args.tcp:
-        example_server.start_tcp( args.host, args.port )
+        bgc_server.start_tcp( args.host, args.port )
     elif args.ws:
-        example_server.start_ws( args.host, args.port )
+        bgc_server.start_ws( args.host, args.port )
     else:
-        example_server.start_io()
+        bgc_server.start_io()
 
 
 if __name__ == '__main__':

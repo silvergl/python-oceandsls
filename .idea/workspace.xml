@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c2bcb254-efcf-4c07-a288-0bf1697bb74f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bgc-dsl/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/bgc-dsl/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cp-dsl/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/cp-dsl/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example-dsl/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/tdd-dsl.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/tdd-dsl.iml" afterDir="false" />
-    </list>
+    <list default="true" id="c2bcb254-efcf-4c07-a288-0bf1697bb74f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -68,94 +60,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.tddLSPServer">
-    <configuration name="bgcLSPServer" type="PythonConfigurationType" factoryName="Python">
-      <module name="bgc-dsl" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
-      <option name="SDK_NAME" value="Python 3.10 (python-oceandsls)" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="bgc-dsl.bgcLSPServer" />
-      <option name="PARAMETERS" value="--tcp" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="true" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="cpLSPServer" type="PythonConfigurationType" factoryName="Python">
-      <module name="cp-dsl" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
-      <option name="SDK_NAME" value="Python 3.10 (python-oceandsls)" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="cp-dsl.cpLSPServer" />
-      <option name="PARAMETERS" value="--tcp" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="true" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="exampleLSPServer" type="PythonConfigurationType" factoryName="Python">
-      <module name="example-dsl" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
-      <option name="SDK_NAME" value="Python 3.10 (python-oceandsls)" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="example-dsl.exampleLSPServer" />
-      <option name="PARAMETERS" value="--tcp" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="true" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="tddLSPServer" type="PythonConfigurationType" factoryName="Python">
-      <module name="tdd-dsl" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
-      <option name="SDK_NAME" value="Python 3.10 (python-oceandsls)" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="tdd-dsl.tddLSPServer" />
-      <option name="PARAMETERS" value="--tcp" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="true" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.exampleLSPServer" />
       <item itemvalue="Python.bgcLSPServer" />

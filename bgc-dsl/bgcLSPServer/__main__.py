@@ -21,18 +21,11 @@ import logging
 
 from .server import bgc_server
 
-#debug
-from pprint import pprint
-if "." in __name__:
-    pprint(f'.{__name__}')
-else:
-    pprint(__name__)
-
-logging.basicConfig( filename="pygls.log", level=logging.DEBUG, filemode="w" )
+logging.basicConfig( filename="bgcDSL_pygls.log", level=logging.DEBUG, filemode="w" )
 
 
 def add_arguments(parser):
-    parser.description = "simple json server example"
+    parser.description = "bgc-dsl server"
 
     parser.add_argument(
         "--tcp", action="store_true",

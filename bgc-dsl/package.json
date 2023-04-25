@@ -23,6 +23,10 @@
          "extensions": [ ".odsl" ]
       },
       {
+        "id": "oceandsl_cp",
+        "extensions": [ ".odsl" ]
+      },
+      {
         "id": "oceandsl_tdd",
         "extensions": [ ".tdd" ]
      },
@@ -33,14 +37,6 @@
     ],
     "commands": [
       {
-        "command": "countDownBlocking",
-        "title": "Count down 10 seconds [Blocking]"
-      },
-      {
-        "command": "countDownNonBlocking",
-        "title": "Count down 10 seconds [Non Blocking]"
-      },
-      {
         "command": "progress",
         "title": "Start the progress"
       },
@@ -49,36 +45,10 @@
         "title": "Register completions"
       },
       {
-        "command": "showConfigurationAsync",
-        "title": "Show Example Configuration [Async]"
-      },
-      {
-        "activationEvents": [
-          "onLanguage:oceandsl", "onLanguage:oceandsl_tdd", "onLanguage:oceandsl_bgc"
-        ],
-        "command": "showConfigurationCallback",
-        "title": "Show Example Configuration [Callback]"
-      },
-      {
-        "command": "showConfigurationThread",
-        "title": "Show Example Configuration [Thread]"
-      },
-      {
         "command": "unregisterCompletions",
         "title": "Unregister completions"
       }
-    ],
-    "configuration": {
-      "type": "object",
-      "title": "ODSL Server Configuration",
-      "properties": {
-        "odslServer.exampleConfiguration": {
-          "scope": "resource",
-          "type": "string",
-          "default": "Test message."
-        }
-      }
-    }
+    ]
   },
   "main": "./typescript-build/client/out/extension",
   "scripts": {

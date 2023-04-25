@@ -28,11 +28,11 @@ if "." in __name__:
 else:
     pprint(__name__)
 
-logging.basicConfig( filename="pygls.log", level=logging.DEBUG, filemode="w" )
+logging.basicConfig( filename="exampleDSL_pygls.log", level=logging.DEBUG, filemode="w" )
 
 
 def add_arguments(parser):
-    parser.description = "simple json server example"
+    parser.description = "dsl server example"
 
     parser.add_argument(
         "--tcp", action="store_true",

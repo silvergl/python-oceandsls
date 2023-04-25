@@ -23,6 +23,10 @@
          "extensions": [ ".odsl" ]
       },
       {
+        "id": "oceandsl_cp",
+        "extensions": [ ".odsl" ]
+      },
+      {
         "id": "oceandsl_tdd",
         "extensions": [ ".tdd" ]
      },

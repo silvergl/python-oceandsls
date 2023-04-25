@@ -1,3 +1,5 @@
+# exampleDSL for reference
+
 ## Optional: check python packages
 - update package manager tools
   - `python -m pip install --upgrade pip setuptools wheel`
@@ -27,19 +29,19 @@
 
 ## Install Client Dependencies
 
-- Goto extension directory `antlr4-python/example-dsl`
+- Goto extension directory `python-oceandsls/example-dsl`
 - Install the dependencies to the local node_modules 
   - `npm install`
 
 ## Run Example using VSCode
 
-- Open `json-vscode-extension` in VSCode
-- Trust author files in `json-vscode-extension`
+- Open `python-oceandsls/example-dsl` in VSCode
+- Trust author files in `python-oceandsls/example-dsl`
 - Goto Run and Debug
   - `Ctrl/Cmd+Shift+D`
 - Select `Server + Client`
 - Start Debugging via `F5` or GUI
-- Open a `*.json` file
+- Open a `*.odsl` file
 - If server is working correctly notification shows `Text Document Did Open`
 
 ## Troubleshooting
@@ -49,12 +51,32 @@
   `Ctrl/Cmd+Shift+P`
     - Run select interpreter command
   `Python: Select Interpreter`
-  - Alternative create `.vscode/settings.json` file in `antlr4-python/example-dsl` directory and set `python.defaultInterpreterPath` to point to the virtual environment
+  - Alternative create `.vscode/settings.json` file in `python-oceandsls/example-dsl` directory and set `python.defaultInterpreterPath` to point to the virtual environment
     - settings.json
 
-          {
-              "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
-          }
+    {
+        // set Python Interpreter relative to workspaceFolder to virtual environment '.venv'
+        "python.defaultInterpreterPath": "${workspaceFolder}/../.venv/bin/python",
+        // alternative
+        //"python.defaultInterpreterPath": "../.venv",
+        // deprecated
+        // "python.pythonPath": "${workspaceFolder}/../.venv/bin/python",
+
+        // Pylance VSCode code analysis and auto-completion
+        "python.analysis.extraPaths": [
+            "{workspaceFolder}/../.venv/lib/python3.10/site-packages/:${workspaceFolder}/../antlrLib/"
+        ],
+
+
+        // Object with environment variables that will be added to the VS Code process to be used by the terminal on OS X
+        "terminal.integrated.env.osx": {"PYTHONPATH": "${workspaceFolder}/.."},
+
+        // Object with environment variables that will be added to the VS Code process to be used by the terminal on Linux
+        "terminal.integrated.env.linux": {"PYTHONPATH": "${workspaceFolder}/.."},
+
+        // Object with environment variables that will be added to the VS Code process to be used by the terminal on Windows
+        "terminal.integrated.env.windows": {"PYTHONPATH": "${workspaceFolder}/.."},
+    }
 
 - If npm version conflicts exists change npm to the required version
   - E.g. reset npm version to 9.2.0

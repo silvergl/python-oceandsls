@@ -89,7 +89,7 @@ class exampleLSPServer( LanguageServer ):
     CMD_SHOW_CONFIGURATION_THREAD = 'showConfigurationThread'
     CMD_UNREGISTER_COMPLETIONS = 'unregisterCompletions'
 
-    CONFIGURATION_SECTION = 'ODslServer'
+    CONFIGURATION_SECTION = 'ODslExampleServer'
 
     def __init__(self, *args):
         super().__init__( *args )
@@ -145,7 +145,7 @@ def _validate_format(ls: exampleLSPServer, source: str):
     ls.parser.setInputStream( ls.tokenStream )
 
     try:
-        # launch parser by invoking startrule
+        # launch parser by invoking top-level rule
         ls.parser.stat()
     except OSError as err:
         # TODO add exception
@@ -168,8 +168,7 @@ def lookup_symbol(uri, name):
 @example_server.feature( TEXT_DOCUMENT_COMPLETION, CompletionOptions( trigger_characters=[','] ) )
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
-    # logger.info( '\n---------------------------------\n             START Completion
-    # \n---------------------------------' )
+
 
     # set input stream of characters for lexer
     text_doc: Document = example_server.workspace.get_document( params.text_document.uri )
@@ -182,18 +181,16 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     example_server.tokenStream = CommonTokenStream( example_server.lexer )
     example_server.parser.setInputStream( example_server.tokenStream )
 
-    # get token index under caret position
-    # launches parser by invoking startrule
-    # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
 
+    # launches parser by invoking top-level rule
     Top_levelContext = exampleDslParser.StatContext
     parseTree: Top_levelContext = example_server.parser.stat()
 
+    # get token index under caret position
+    # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
     tokenIndex: TokenPosition = computeTokenPosition( parseTree, example_server.tokenStream,
                                                       CaretPosition( params.position.line + 1,
                                                                      params.position.character ) )
-
-    # logger.info( 'tokenIndex: %s\n', tokenIndex )
 
     # set emtpy return list
     completionList: CompletionList = CompletionList( is_incomplete=False, items=[] )
@@ -201,7 +198,6 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # return if no index could be determined
     if tokenIndex is None:
         # TODO add exception
-        # logger.info( 'Return empty completionList...' )
         return completionList
 
     # launch c3 core with parser
@@ -222,25 +218,17 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
         variables = suggestVariables( symbolTable, tokenIndex )
 
-        # logger.info( 'variables candidates: %s\n', variables )
-
         for variable in variables:
             completionList.items.append( CompletionItem( label=variable ) )
-
-    # logger.info( 'candidates: %s\n', candidates )
 
     # get labels of completion candidates to return
     labels_list: List[str] = []
     for key, valueList in candidates.tokens.items():
-        # logger.info( 'key: %s, valueList: %s', key, valueList )
         completionList.items.append( CompletionItem(
             label=IntervalSet.elementName( IntervalSet, example_server.parser.literalNames,
                                            example_server.parser.symbolicNames, key ) ) )
-    # logger.info( '\n' )
+        
     # return completion candidates labels
-    # logger.info( 'Return complete completionList...' )
-    # logger.info( '\n---------------------------------\n             END Completion
-    # \n---------------------------------\n\n' )
     return completionList
 
 
@@ -283,10 +271,6 @@ def did_close(server: exampleLSPServer, params: DidCloseTextDocumentParams):
 def did_save(server: exampleLSPServer, params: DidSaveTextDocumentParams):
     """Text document did save notification."""
 
-    """Returns completion items."""
-    # logger.info( '\n---------------------------------\n             START SAVE
-    # \n---------------------------------' )
-
     # set input stream of characters for lexer
     text_doc: Document = example_server.workspace.get_document( params.text_document.uri )
     source: str = text_doc.source
@@ -301,16 +285,10 @@ def did_save(server: exampleLSPServer, params: DidSaveTextDocumentParams):
     Top_levelContext = exampleDslParser.StatContext
     parseTree: Top_levelContext = example_server.parser.stat()
 
-    # TODO add parameters to visitor
-    # fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor()
-
-    # fileContent: str = fileGeneratorVisitor.visit( parseTree )
-
-    # TODO call file writer from jinja2 module
+    # TODO 
 
     server.show_message( 'Text Document Did Save' )
-    # logger.info( '\n---------------------------------\n             END SAVE
-    # \n---------------------------------\n\n' )
+
 
 
 @example_server.feature( TEXT_DOCUMENT_DID_OPEN )

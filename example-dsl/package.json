@@ -50,18 +50,18 @@
       },
       {
         "command": "showConfigurationAsync",
-        "title": "Show Json Example Configuration [Async]"
+        "title": "Show Example Configuration [Async]"
       },
       {
         "activationEvents": [
           "onLanguage:oceandsl", "onLanguage:oceandsl_tdd", "onLanguage:oceandsl_bgc"
         ],
         "command": "showConfigurationCallback",
-        "title": "Show Json Example Configuration [Callback]"
+        "title": "Show Example Configuration [Callback]"
       },
       {
         "command": "showConfigurationThread",
-        "title": "Show Json Example Configuration [Thread]"
+        "title": "Show Example Configuration [Thread]"
       },
       {
         "command": "unregisterCompletions",
@@ -72,7 +72,7 @@
       "type": "object",
       "title": "ODSL Server Configuration",
       "properties": {
-        "jsonServer.exampleConfiguration": {
+        "odslServer.exampleConfiguration": {
           "scope": "resource",
           "type": "string",
           "default": "Test message."

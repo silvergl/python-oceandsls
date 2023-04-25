@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2bcb254-efcf-4c07-a288-0bf1697bb74f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/anltrLib/anltrLib.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bgc-dsl/bgc-dsl.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cp-dsl/cp-dsl.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example-dsl/example-dsl.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-dsl/.vscode/settings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/other/template_simple_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-dsl/setup.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tdd-dsl/fileWriter/tdd_gen_dev.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/tdd-dsl/tdd-dsl.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/antlr4-python.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/antlr4-python.iml" afterDir="false" />
@@ -17,42 +18,42 @@
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/.vscode/launch.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/tasks.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/tasks.json" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/.vscode/tasks.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/antlr4-python.iml" beforeDir="false" afterPath="$PROJECT_DIR$/antlr4-python.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bgc-dsl/src/grammar/.antlr/CommonLexerRulesLexer.interp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/bgc-dsl/src/grammar/.antlr/CommonLexerRulesLexer.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/bgc-dsl/src/grammar/.antlr/CommonLexerRulesLexer.tokens" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/CodeCompletionCore.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/CodeCompletionCore.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/core_dev_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/tests/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/tests/test_CodeCompletionCore_with_unittest.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/CodeCompletionCore.iml" beforeDir="false" afterPath="$PROJECT_DIR$/anltrLib/anltrLib.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/CodeCompletionCore.py" beforeDir="false" afterPath="$PROJECT_DIR$/anltrLib/CodeCompletionCore/CodeCompletionCore.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/anltrLib/CodeCompletionCore/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/core_dev_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/anltrLib/tmp/core_dev_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/anltrLib/CodeCompletionCore/tests/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/CodeCompletionCore/tests/test_CodeCompletionCore_with_unittest.py" beforeDir="false" afterPath="$PROJECT_DIR$/anltrLib/CodeCompletionCore/tests/test_CodeCompletionCore_with_unittest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/anltrLib/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/LICENSE.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/cst/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/client/src/extension.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/DiagnosticListener.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/DiagnosticListener.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/cst/DiagnosticListener.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/FileGeneratorVisitor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/SymbolTableVisitor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/server.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/server.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/server_dev_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/tests/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/SymbolTableVisitor.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/cst/SymbolTableVisitor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/bgc-dsl/bgc-dsl.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/server_dev_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/other/server_dev_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/tests/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/tests/unit/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/tests/unit/test_VerboseListener.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/tests/unit/test_features.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/utils/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/utils/computeTokenIndex.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/utils/suggestVariables.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lspLib/req_packages.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/tests/unit/test_VerboseListener.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/tests/test_VerboseListener.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/tests/unit/test_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/tests/test_features.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/utils/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/utils/computeTokenIndex.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/utils/computeTokenIndex.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/pygls_pkg/server/utils/suggestVariables.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/utils/suggestVariables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lspLib/req_packages.txt" beforeDir="false" afterPath="$PROJECT_DIR$/other/req_packages.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-java/Configuration/Configuration.interp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-java/Configuration/Configuration.tokens" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-java/Configuration/ConfigurationBaseListener.java" beforeDir="false" />
@@ -100,16 +101,16 @@
       <change beforePath="$PROJECT_DIR$/other/build-java/TestGrammar/TestGrammarListener.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-java/TestGrammar/TestGrammarParser.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-java/TestGrammar/TestGrammarVisitor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuite.interp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuite.tokens" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteBaseListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteBaseVisitor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteLexer.interp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteLexer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteLexer.tokens" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteParser.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuite.interp" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuite.interp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuite.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuite.tokens" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteBaseListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuiteBaseListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteBaseVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuiteBaseVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteLexer.interp" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuiteLexer.interp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteLexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuiteLexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteLexer.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuiteLexer.tokens" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuiteListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuiteParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-java/TestSuite/TestSuiteVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/java/TestSuite/TestSuiteVisitor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-java/allstar/allstar.interp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-java/allstar/allstar.tokens" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-java/allstar/allstarBaseListener.java" beforeDir="false" />
@@ -123,7 +124,7 @@
       <change beforePath="$PROJECT_DIR$/other/build-java/build-java.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/Kotlin/KotlinLexer.interp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/Kotlin/KotlinLexer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/Kotlin/KotlinLexer.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/Kotlin/KotlinLexer.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/depr/KotlinExample/KotlinLexer.tokens" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/Kotlin/KotlinParser.interp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/Kotlin/KotlinParser.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/Kotlin/KotlinParser.tokens" beforeDir="false" />
@@ -154,14 +155,14 @@
       <change beforePath="$PROJECT_DIR$/other/build-python/TestGrammar/TestGrammarListener.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/TestGrammar/TestGrammarParser.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/TestGrammar/TestGrammarVisitor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuite.interp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuite.tokens" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteLexer.interp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteLexer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteLexer.tokens" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteListener.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteParser.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteVisitor.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuite.interp" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/python/TestSuite/TestSuite.interp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuite.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/python/TestSuite/TestSuite.tokens" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteLexer.interp" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/python/TestSuite/TestSuiteLexer.interp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteLexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/python/TestSuite/TestSuiteLexer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteLexer.tokens" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/python/TestSuite/TestSuiteLexer.tokens" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteListener.py" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/python/TestSuite/TestSuiteListener.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/python/TestSuite/TestSuiteParser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/build-python/TestSuite/TestSuiteVisitor.py" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/gen/python/TestSuite/TestSuiteVisitor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/allstar/allstar.interp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/allstar/allstar.tokens" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/allstar/allstarLexer.interp" beforeDir="false" />
@@ -171,84 +172,84 @@
       <change beforePath="$PROJECT_DIR$/other/build-python/allstar/allstarParser.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/build-python/allstar/allstarVisitor.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/data/TDD-workspace.code-workspace" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/square.tdd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/src0.dsl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/SHAPE_MOD.F90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/build_with_cmake_and_run.x" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/src/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/src/cfo_sut_example.f90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/src/stdunits.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/tests/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/tests/test_fT_ME.pf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/tests/test_simple.pf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/tests/test_zxrex.pf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/coord.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/levind.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/param.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/pconst.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/setkmp.F" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/size.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/stdunits.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/test_setkmp.pf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/example.f90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/example_construct.f90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/fortrantut.f90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/global_rd.f90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/global_var.f90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/mult_mod.f90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/build_with_cmake_and_run.x" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/src/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/src/square.f90" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/tests/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/tests/test_all_assertion.pf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/tests/test_square.pf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/test_ArrayInit_init" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/test_AutoCompletion_TestGrammar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/test_CompletionCore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/test_Expr.expr" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/test_allstar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/test_fT_ME.tdd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/test_scope.expr" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/data/test_scope_fun.odsl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/square.tdd" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/square.tdd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/src0.dsl" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/depr/src0.dsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/SHAPE_MOD.F90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/SHAPE_MOD.F90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/build_with_cmake_and_run.x" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/build_with_cmake_and_run.x" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/src/cfo_sut_example.f90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/src/cfo_sut_example.f90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/src/stdunits.h" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/src/stdunits.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/tests/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/tests/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/tests/test_fT_ME.pf" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/tests/test_fT_ME.pf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/tests/test_simple.pf" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/tests/test_simple.pf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/UVic_example_opem/tests/test_zxrex.pf" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/UVic_example_opem/tests/test_zxrex.pf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/coord.h" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/dpr/UVic_example_broken_pf_f77/coord.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/levind.h" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/dpr/UVic_example_broken_pf_f77/levind.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/param.h" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/dpr/UVic_example_broken_pf_f77/param.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/pconst.h" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/dpr/UVic_example_broken_pf_f77/pconst.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/setkmp.F" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/dpr/UVic_example_broken_pf_f77/setkmp.F" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/size.h" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/dpr/UVic_example_broken_pf_f77/size.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/stdunits.h" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/dpr/UVic_example_broken_pf_f77/stdunits.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/dpr/UVic_example_broken_pf_f77/test_setkmp.pf" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/dpr/UVic_example_broken_pf_f77/test_setkmp.pf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/example.f90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/example.f90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/example_construct.f90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/example_construct.f90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/fortrantut.f90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/fortrantut.f90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/global_rd.f90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/global_rd.f90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/global_var.f90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/global_var.f90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/mult_mod.f90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/mult_mod.f90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/pfunit_example/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/build_with_cmake_and_run.x" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/pfunit_example/build_with_cmake_and_run.x" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/pfunit_example/src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/src/square.f90" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/pfunit_example/src/square.f90" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/tests/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/pfunit_example/tests/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/tests/test_all_assertion.pf" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/pfunit_example/tests/test_all_assertion.pf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/tdd_dev/pfunit_example/tests/test_square.pf" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/tdd_dev/pfunit_example/tests/test_square.pf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/test_ArrayInit_init" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/input/depr/test_ArrayInit_init" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/test_AutoCompletion_TestGrammar" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/input/test_AutoCompletion_TestGrammar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/test_CompletionCore" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/input/test_CompletionCore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/test_Expr.expr" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/input/test_Expr.expr" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/test_allstar" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/input/depr/test_allstar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/test_fT_ME.tdd" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/data/test_fT_ME.tdd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/test_scope.expr" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/input/test_scope.expr" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/data/test_scope_fun.odsl" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/input/depr/test_scope_fun.odsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other/grammars/dev/.antlr/CommonLexerRulesLexer.interp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/grammars/dev/.antlr/CommonLexerRulesLexer.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/grammars/dev/.antlr/CommonLexerRulesLexer.tokens" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/CommonLexerRules.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/KotlinExample/KotlinLexer.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/CommonLexerRules.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/CommonLexerRules.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/KotlinExample/KotlinLexer.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/depr/KotlinExample/KotlinLexer.g4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other/grammars/dev/KotlinExample/KotlinLexer.tokens" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/KotlinExample/KotlinParser.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/KotlinExample/UnicodeClasses.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/TestExprCore.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/TestGrammar.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/Tim_bgc_test.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/depr/ArrayInit.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/depr/Math.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/depr/TestExpr.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/KotlinExample/KotlinParser.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/depr/KotlinExample/KotlinParser.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/KotlinExample/UnicodeClasses.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/depr/KotlinExample/UnicodeClasses.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/TestExprCore.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/TestExprCore.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/TestGrammar.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/exampleDsl.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/Tim_bgc_test.g4" beforeDir="false" afterPath="$PROJECT_DIR$/bgc-dsl/src/grammar/Tim_bgc_test.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/depr/ArrayInit.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/depr/ArrayInit.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/depr/Math.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/depr/Math.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/depr/TestExpr.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/depr/TestExpr.g4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other/grammars/dev/depr/TestGrammar.g4" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/other/grammars/dev/depr/test_TestGrammar.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/example.bgc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/dev/example2.bgc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/grammars/pres/allstar.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/other/src/fxtran/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/example.bgc" beforeDir="false" afterPath="$PROJECT_DIR$/bgc-dsl/data/example.bgc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/dev/example2.bgc" beforeDir="false" afterPath="$PROJECT_DIR$/bgc-dsl/data/example2.bgc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/grammars/pres/allstar.g4" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/grammars/depr/allstar.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/other/src/fxtran/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/fileWriter/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other/src/fxtran/fxtran_call.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/req_antlr4-python.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/SymbolTable.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/SymbolTable.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/symbol_dev_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/tests/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/tests/test_SymbolTable.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/req_antlr4-python.txt" beforeDir="false" afterPath="$PROJECT_DIR$/other/req_antlr4-python.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/SymbolTable.iml" beforeDir="false" afterPath="$PROJECT_DIR$/cp-dsl/cp-dsl.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/SymbolTable.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/symbolTable/SymbolTable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/symbol_dev_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/other/symbol_dev_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/fileWriter/jinja-templates/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symbolTableLib/SymbolTable/tests/test_SymbolTable.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/tests/test_SymbolTable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/symbolTableLib/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/CommonLexerRules.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/CommonLexerRules.g4" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/src/grammars/CommonLexerRules.g4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/CommonLexerRules.tokens" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/Keyword.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/PhysicalUnits.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/Reference.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/TestSuite.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/Typing.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/depr/CommonLexerRules.g4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/depr/TestDrivenDev_DSL.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/Keyword.g4" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/src/grammars/Keyword.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/PhysicalUnits.g4" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/src/grammars/PhysicalUnits.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/Reference.g4" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/src/grammars/Reference.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/TestSuite.g4" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/src/grammars/TestSuite.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/Typing.g4" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/src/grammars/Typing.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/depr/CommonLexerRules.g4" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/src/grammars/depr/CommonLexerRules.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tdd-dsl/src/grammar/depr/TestDrivenDev_DSL.g4" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/src/grammars/depr/TestDrivenDev_DSL.g4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tdd-dsl/src/scoping/__init__.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -267,60 +268,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "/home/sgu/IdeaProjects/antlr4-python/example-dsl",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.3507371",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/sgu/IdeaProjects/antlr4-python/example-dsl&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.3507371&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/example-dsl/src/lspExampleServer" />
-      <recent name="$PROJECT_DIR$/example-dsl/src" />
+      <recent name="$PROJECT_DIR$/tdd-dsl" />
       <recent name="$PROJECT_DIR$/example-dsl" />
+      <recent name="$PROJECT_DIR$/example-dsl/src/client" />
+      <recent name="$PROJECT_DIR$/example-dsl/exampleLSPServer/tests" />
+      <recent name="$PROJECT_DIR$/example-dsl/src" />
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="antlr4-python" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="antlr4-python" />
-      <option name="filePath" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="antlr4-python" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="exampleDSL_LSP_server" type="PythonConfigurationType" factoryName="Python">
       <module name="antlr4-python" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -343,81 +312,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <module name="antlr4-python" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="docs" factoryName="Docutils task">
-      <module name="antlr4-python" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="docutils_input_file" value="" />
-      <option name="docutils_output_file" value="" />
-      <option name="docutils_params" value="" />
-      <option name="docutils_task" value="" />
-      <option name="docutils_open_in_browser" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="docs" factoryName="Sphinx task">
-      <module name="antlr4-python" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="docutils_input_file" value="" />
-      <option name="docutils_output_file" value="" />
-      <option name="docutils_params" value="" />
-      <option name="docutils_task" value="" />
-      <option name="docutils_open_in_browser" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Autodetect">
-      <module name="antlr4-python" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <module name="antlr4-python" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method v="2" />
-    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -429,5 +323,16 @@
       <updated>1682336179234</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/example-dsl/exampleLSPServer/gen/python/exampleDsl/exampleDslParser.py</url>
+          <line>2</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

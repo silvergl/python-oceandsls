@@ -8,12 +8,12 @@ antlr4 := java -jar /usr/local/lib/antlr-4.12.0-complete.jar
 EXPPKGTARGETS = exampleDsl TestExprCore
 
 # Release version used by release targets
-EXPPACKAGE = example-dsl
+EXPPACKAGE = example-dsl/exampleLSPServer
 EXPVER = $(strip $(shell cat version))
 EXPPYEXPVERDIR = $(EXPPACKAGE)-$(EXPVER)
-EXPPYBUILDDIR = $(EXPPACKAGE)/build/$(EXPPYEXPVERDIR)
+EXPPYBUILDDIR = $(EXPPACKAGE)/../build/$(EXPPYEXPVERDIR)
 EXPOBJDIR = $(EXPPACKAGE)/gen
-EXPSRCDIR = $(EXPPACKAGE)/src/grammars
+EXPSRCDIR = $(EXPPACKAGE)/grammars
 EXPGRAMMAR = $(EXPPACKAGE).g4
 
 all_EXP: clean $(EXPOBJDIR)/python/$(EXPPACKAGE) $(EXPOBJDIR)/java/$(EXPPACKAGE)
@@ -51,12 +51,12 @@ release_EXP: $(EXPGRAMMAR).tar.gz
 BGCPKGTARGETS = BgcDsl
 
 # Release version used by release targets
-BGCPACKAGE = bgc-dsl
+BGCPACKAGE = bgc-dsl/bgcLSPServer
 BGCVER = $(strip $(shell cat version))
 BGCPYBGCVERDIR = $(BGCPACKAGE)-$(BGCVER)
-BGCPYBUILDDIR = $(BGCPACKAGE)/build/$(BGCPYBGCVERDIR)
+BGCPYBUILDDIR = $(BGCPACKAGE)/../build/$(BGCPYBGCVERDIR)
 BGCOBJDIR = $(BGCPACKAGE)/gen
-BGCSRCDIR = $(BGCPACKAGE)/src/grammars
+BGCSRCDIR = $(BGCPACKAGE)/grammars
 BGCGRAMMAR = $(BGCPACKAGE).g4
 
 all_BGC: clean $(BGCOBJDIR)/python/$(BGCPACKAGE) $(BGCOBJDIR)/java/$(BGCPACKAGE)
@@ -94,12 +94,12 @@ release_BGC: $(BGCGRAMMAR).tar.gz
 CPPKGTARGETS = Terminals Expression Configuration Declaration
 
 # Release version used by release targets
-CPPACKAGE = cp-dsl
+CPPACKAGE = cp-dsl/cpLSPServer
 CPVER = $(strip $(shell cat version))
 CPPYCPVERDIR = $(CPPACKAGE)-$(CPVER)
-CPPYBUILDDIR = $(CPPACKAGE)/build/$(CPPYCPVERDIR)
+CPPYBUILDDIR = $(CPPACKAGE)/../build/$(CPPYCPVERDIR)
 CPOBJDIR = $(CPPACKAGE)/gen
-CPSRCDIR = $(CPPACKAGE)/src/grammars
+CPSRCDIR = $(CPPACKAGE)/grammars
 CPGRAMMAR = $(CPPACKAGE).g4
 
 all_CP: clean $(CPOBJDIR)/python/$(CPPACKAGE) $(CPOBJDIR)/java/$(CPPACKAGE)
@@ -137,12 +137,12 @@ release_CP: $(CPGRAMMAR).tar.gz
 TDDPKGTARGETS = TestSuite
 
 # Release version used by release targets
-TDDPACKAGE = tdd-dsl
+TDDPACKAGE = tdd-dsl/tddLSPServer
 TDDVER = $(strip $(shell cat version))
 TDDPYTDDVERDIR = $(TDDPACKAGE)-$(TDDVER)
-TDDPYBUILDDIR = $(TDDPACKAGE)/build/$(TDDPYTDDVERDIR)
+TDDPYBUILDDIR = $(TDDPACKAGE)/../build/$(TDDPYTDDVERDIR)
 TDDOBJDIR = $(TDDPACKAGE)/gen
-TDDSRCDIR = $(TDDPACKAGE)/src/grammars
+TDDSRCDIR = $(TDDPACKAGE)/grammars
 TDDGRAMMAR = $(TDDPACKAGE).g4
 
 all_TDD: clean $(TDDOBJDIR)/python/$(TDDPACKAGE) $(TDDOBJDIR)/java/$(TDDPACKAGE)
@@ -183,7 +183,6 @@ release_TDD: $(TDDGRAMMAR).tar.gz
 #                    CLEAN
 #########################################################
 
-# DEBUG
 # echo "$(PWD)"
 
 #.PHONY: clean

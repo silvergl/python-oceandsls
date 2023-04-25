@@ -40,7 +40,6 @@ function getClientOptions(): LanguageClientOptions {
         ],
         outputChannelName: "[pygls] ODslBGCLanguageServer",
         synchronize: {
-            // TODO https://stackoverflow.com/q/54954427
             // Notify the server about file changes to '.clientrc files contain in the workspace
             fileEvents: workspace.createFileSystemWatcher("**/*.*"),
         },

@@ -7,20 +7,10 @@
     <list default="true" id="c2bcb254-efcf-4c07-a288-0bf1697bb74f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/anltrLib/CodeCompletionCore/CodeCompletionCore.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/anltrLib/CodeCompletionCore/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/anltrLib/CodeCompletionCore/tests/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/anltrLib/CodeCompletionCore/tests/test_CodeCompletionCore_with_unittest.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/anltrLib/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/anltrLib/anltrLib.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/anltrLib/tmp/core_dev_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/antlr4-python.iml" beforeDir="false" afterPath="$PROJECT_DIR$/antlr4-python.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bgc-dsl/bgc-dsl.iml" beforeDir="false" afterPath="$PROJECT_DIR$/bgc-dsl/bgc-dsl.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cp-dsl/cp-dsl.iml" beforeDir="false" afterPath="$PROJECT_DIR$/cp-dsl/cp-dsl.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example-dsl/example-dsl.iml" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/example-dsl.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example-dsl/exampleLSPServer/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example-dsl/exampleLSPServer/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/exampleLSPServer/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tdd-dsl/tdd-dsl.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tdd-dsl/tdd-dsl.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/antlr4-python.iml" beforeDir="false" afterPath="$PROJECT_DIR$/python-oceandsls.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-dsl/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-dsl/client/src/extension.ts" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/client/src/extension.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-dsl/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/example-dsl/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

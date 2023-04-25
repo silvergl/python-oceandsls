@@ -1,10 +1,10 @@
 {
   "name": "odsl-extension",
   "description": "ODSL extension prototype",
-  "author": "TODO",
-  "repository": "https://git.se.informatik.uni-kiel.de/oceandsl/antlr4-python",
+  "author": "sgu",
+  "repository": "https://git.se.informatik.uni-kiel.de/oceandsl/python-oceandsls",
   "license": "TODO",
-  "version": "0.20.0",
+  "version": "0.40.0",
   "publisher": "TODO",
   "engines": {
     "vscode": "^1.62.0"
@@ -13,19 +13,23 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:oceandsl_tdd", "onLanguage:oceandsl"
+    "onLanguage:oceandsl", "onLanguage:oceandsl_tdd", "onLanguage:oceandsl_bgc"
   ],
 
   "contributes": {
     "languages": [
       {
-         "id": "oceandsl_tdd",
-         "extensions": [ ".tdd" ]
+         "id": "oceandsl",
+         "extensions": [ ".odsl" ]
       },
       {
-        "id": "oceandsl",
-        "extensions": [ ".odsl" ]
-     }
+        "id": "oceandsl_tdd",
+        "extensions": [ ".tdd" ]
+     },
+     {
+       "id": "oceandsl_bgc",
+       "extensions": [ ".bgc" ]
+    }
     ],
     "commands": [
       {
@@ -49,6 +53,9 @@
         "title": "Show Json Example Configuration [Async]"
       },
       {
+        "activationEvents": [
+          "onLanguage:oceandsl", "onLanguage:oceandsl_tdd", "onLanguage:oceandsl_bgc"
+        ],
         "command": "showConfigurationCallback",
         "title": "Show Json Example Configuration [Callback]"
       },

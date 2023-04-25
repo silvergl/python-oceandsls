@@ -36,10 +36,10 @@ function getClientOptions(): LanguageClientOptions {
         // Register the server for oceandsl_tdd as defined in package.json
         //  src 'A language server example using language services to support embedded languages'
         documentSelector: [
-            { scheme: "file", language: "oceandsl_tdd" },
-            { scheme: "untitled", language: "oceandsl_tdd" },
+            { scheme: "file", language: "oceandsl" },
+            { scheme: "untitled", language: "oceandsl" },
         ],
-        outputChannelName: "[pygls] ODslLanguageServer",
+        outputChannelName: "[pygls] ODslExampleLanguageServer",
         synchronize: {
             // TODO https://stackoverflow.com/q/54954427
             // Notify the server about file changes to '.clientrc files contain in the workspace

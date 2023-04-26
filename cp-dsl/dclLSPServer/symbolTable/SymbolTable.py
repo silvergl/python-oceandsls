@@ -2,19 +2,17 @@
 
 from __future__ import annotations
 
-__author__ = 'sgu'
+__author__ = 'stu222808'
 
 # TODO license
 
-#
-#  Port of antlr-c3 typescript symbol table implementation to python
-#
-
+# utils import
 import asyncio
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional, List, TypeVar, ParamSpec, Set, Coroutine
 
+# antlr4
 from antlr4.tree.Tree import ParseTree
 
 

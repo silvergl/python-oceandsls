@@ -792,7 +792,7 @@ class ScopedSymbol( Symbol ):
                 return None
 
             child: Optional[Symbol] = next(
-                filter( lambda candidate: candidate.name == elements[index], result.children() ), None )
+                    filter( lambda candidate: candidate.name == elements[index], result.children() ), None )
             if child is None:
                 return None
 
@@ -1161,7 +1161,7 @@ class SymbolTable( ScopedSymbol ):
             # TODO alternative
             # dependencyResults = await asyncio.gather(*[x.getAllSymbols(t, localOnly) for x in self.dependencies])
             dependencyResults = await asyncio.gather(
-                *(map( (lambda x: x.getAllSymbols( t, localOnly )), self.dependencies )) )
+                    *(map( (lambda x: x.getAllSymbols( t, localOnly )), self.dependencies )) )
 
             for value in dependencyResults:
                 result.extend( value )

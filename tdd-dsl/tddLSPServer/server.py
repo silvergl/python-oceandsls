@@ -35,7 +35,7 @@ from lsprotocol.types import (
     CompletionItem, CompletionList, CompletionOptions, CompletionParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, MessageType, Registration, RegistrationParams,
     SemanticTokens, SemanticTokensLegend, SemanticTokensParams, TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_DID_SAVE, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, Unregistration,
     UnregistrationParams, WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport
-)
+    )
 from pygls.server import LanguageServer
 from pygls.workspace import Document
 
@@ -76,7 +76,7 @@ class tddLSPServer( LanguageServer ):
         input_stream: InputStream = InputStream( str( ) )
 
         # set lexer
-        self.lexer: DeclarationLexer = DeclarationLexer( input_stream )
+        self.lexer: TestSuiteLexer = TestSuiteLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners( )
         self.lexer.addErrorListener( self.error_listener )
@@ -85,7 +85,7 @@ class tddLSPServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: DeclarationParser = DeclarationParser( self.tokenStream )
+        self.parser: TestSuiteParser = TestSuiteParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners( )
         self.parser.addErrorListener( self.error_listener )
@@ -168,8 +168,8 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
             CaretPosition(
                     params.position.line + 1,
                     params.position.character
+                    )
             )
-    )
 
     # set emtpy return list
     completionList: CompletionList = CompletionList( is_incomplete = False, items = [ ] )
@@ -187,7 +187,7 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
     core: CodeCompletionCore = CodeCompletionCore( tdd_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {DeclarationParser.RULE_parameterDeclaration,DeclarationParser.RULE_parameterGroupDeclaration,DeclarationParser.RULE_featureDeclaration,DeclarationParser.RULE_featureGroupDeclaration}
+    core.preferredRules = {TestSuiteParser, TestSuiteParser}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
@@ -196,7 +196,7 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
     if any(
             rule in candidates.rules for rule in
             [ TestSuiteParser.RULE_reference ]
-    ):
+            ):
 
         variables = suggestVariables( symbolTable, tokenIndex )
 
@@ -211,9 +211,9 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
                         label = IntervalSet.elementName(
                                 IntervalSet, tdd_server.parser.literalNames,
                                 tdd_server.parser.symbolicNames, key
+                                )
                         )
                 )
-        )
 
     # return completion candidates labels
     return completionList
@@ -268,7 +268,7 @@ async def did_open( ls, params: DidOpenTextDocumentParams ):
 @tdd_server.feature(
         TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
         SemanticTokensLegend( token_types = [ "operator" ], token_modifiers = [ ] )
-)
+        )
 def semantic_tokens( ls: tddLSPServer, params: SemanticTokensParams ):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
     for details on how semantic tokens are encoded."""
@@ -319,8 +319,8 @@ async def register_completions( ls: tddLSPServer, *args ):
             registrations = [ Registration(
                     id = str( uuid.uuid4( ) ), method = TEXT_DOCUMENT_COMPLETION,
                     register_options = {"triggerCharacters": "[':']"}
-            ) ]
-    )
+                    ) ]
+            )
     response = await ls.register_capability_async( params )
     if response is None:
         ls.show_message( 'Successfully registered completions method' )
@@ -333,7 +333,7 @@ async def unregister_completions( ls: tddLSPServer, *args ):
     """Unregister completions method on the client."""
     params = UnregistrationParams(
             unregisterations = [ Unregistration( id = str( uuid.uuid4( ) ), method = TEXT_DOCUMENT_COMPLETION ) ]
-    )
+            )
     response = await ls.unregister_capability_async( params )
     if response is None:
         ls.show_message( 'Successfully unregistered completions method' )

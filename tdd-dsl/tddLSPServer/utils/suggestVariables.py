@@ -22,26 +22,26 @@ P = ParamSpec( 'P' )
 
 
 class RunThread( threading.Thread ):
-    def __init__(self, func, *args: P.args or None, **kwargs: P.kwargs or None):
+    def __init__( self, func, *args: P.args or None, **kwargs: P.kwargs or None ):
         self.func = func
         self.args = args
         self.kwargs = kwargs
         self.result = None
-        super().__init__()
+        super( ).__init__( )
 
-    def run(self):
+    def run( self ):
         self.result = asyncio.run( self.func( *self.args, **self.kwargs ) )
 
 
-def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
+def run_async( func, *args: P.args or None, **kwargs: P.kwargs or None ):
     try:
-        loop = asyncio.get_running_loop()
+        loop = asyncio.get_running_loop( )
     except RuntimeError:  # 'RuntimeError: There is no current event loop...'
         loop = None
-    if loop and loop.is_running():
+    if loop and loop.is_running( ):
         thread = RunThread( func, *args, **kwargs )
-        thread.start()
-        thread.join()
+        thread.start( )
+        thread.join( )
         return thread.result
 
         # print('Async event loop already running. Adding coroutine to the event loop.')
@@ -53,7 +53,7 @@ def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
         return asyncio.run( func( *args, **kwargs ) )
 
 
-def getScope(context: ParserRuleContext, symbolTable: SymbolTable):
+def getScope( context: ParserRuleContext, symbolTable: SymbolTable ):
     if context is None:
         return None
 
@@ -65,20 +65,20 @@ def getScope(context: ParserRuleContext, symbolTable: SymbolTable):
         return getScope( context.parentCtx, symbolTable )
 
 
-def getAllSymbolsOfType(scope: ScopedSymbol, symbolType: type):
-    symbols: List[Symbol] = run_async( scope.getSymbolsOfType, symbolType )
-    parent = scope.parent()
+def getAllSymbolsOfType( scope: ScopedSymbol, symbolType: type ):
+    symbols: List[ Symbol ] = run_async( scope.getSymbolsOfType, symbolType )
+    parent = scope.parent( )
     while parent is not None and not isinstance( parent, ScopedSymbol ):
-        parent = parent.parent()
+        parent = parent.parent( )
     if parent is not None:
         symbols.extend( getAllSymbolsOfType( parent, symbolType ) )
     return symbols
 
 
-def suggestVariables(symbolTable: SymbolTable, position: TokenPosition):
+def suggestVariables( symbolTable: SymbolTable, position: TokenPosition ):
     context = position.context
     scope = getScope( context, symbolTable )
-    symbols: List[Symbol]
+    symbols: List[ Symbol ]
     if isinstance( scope, ScopedSymbol ):  # Local scope
         symbols = getAllSymbolsOfType( scope, VariableSymbol )
     else:  # Global scope
@@ -91,8 +91,8 @@ def suggestVariables(symbolTable: SymbolTable, position: TokenPosition):
     return filterTokens( position.text if variable is not None else '', list( map( lambda s: s.name, symbols ) ) )
 
 
-def filterTokens(text: str, candidates: List[str]):
-    if len( text.strip() ) == 0:
+def filterTokens( text: str, candidates: List[ str ] ):
+    if len( text.strip( ) ) == 0:
         return candidates
     else:
-        return list( filter( lambda c: c.lower().startswith( text.lower() ), candidates ) )
+        return list( filter( lambda c: c.lower( ).startswith( text.lower( ) ), candidates ) )

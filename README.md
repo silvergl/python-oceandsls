@@ -32,7 +32,7 @@ Apache 2.0
   - alternative use `virtualenv`, see optional python packages
 - activate virtual environment `.venv`
   - `source .venv/bin/activate`
-- install `antlr4-python3-runtime`, `pygls` and `Jinja2` package into virtual environment `.venv`
+- install `antlr4-python3-runtime`, `pygls`, `Jinja2` and `pytest` package into virtual environment `.venv`
   - `python -m pip install antlr4-python3-runtime Jinja2 mock pygls pytest`
 
 ### Optional: update npm and node
@@ -45,7 +45,7 @@ Apache 2.0
 - Install the dependencies to the global mode (-g or --global)
   - `sudo npm update -g`
 
-### Install Client Dependencies
+### Install Client Dependencies e.g. cp-dsl
 
 - Goto extension directory `python-oceandsls/cp-dsl`
 - Install the dependencies to the local node_modules 

@@ -1,6 +1,6 @@
 """SymbolTableVisitor module."""
 
-__author__ = 'sgu'
+__author__ = 'stu222808'
 
 # util imports
 from typing import TypeVar, Generic, Dict, Optional, Callable, Any

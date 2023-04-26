@@ -3,28 +3,28 @@
 ## Optional: check python packages
 - update package manager tools
   - `python -m pip install --upgrade pip setuptools wheel`
-- check if python package `virtualenv` is installed if Python < 3.3 is used else a subset of it has been integrated into the standard library under the venv
+- check if python package `virtualenv` is installed if Python < 3.3 is used else a subset of it has been integrated into the standard library under `venv`
   - `python -m pip show virtualenv`
   - if not install package `virtualenv` into global system environment
     - `python -m pip install virtualenv`
 
 ## Install Server Dependencies
-- generate virtual environment in directory `.venv` using the standard library 'venv'
+- generate virtual environment in directory `.venv` using the standard library `venv`
   - `python -m venv .venv`
   - alternative use `virtualenv`, see optional python packages
 - activate virtual environment `.venv`
   - `source .venv/bin/activate`
-- install `antlr4-python3-runtime`, `graphviz`, `pygls`, `Jinja2`, `pygraphviz` and `pytest` package into virtual environment `.venv`
+- install `antlr4-python3-runtime`, `graphviz`, `Jinja2`, `mock`, `pygls`, `pygraphviz` and `pytest` package into virtual environment `.venv`
   - `python -m pip install antlr4-python3-runtime graphviz Jinja2 mock pygls pygraphviz pytest`
 
 ## Optional: update npm and node
-- check npm version
+- check `npm` version
   - `npm --version`
-- install latest npm version globally (-g or --global)
+- install latest `npm` version globally (`-g` or `--global`)
   - `sudo npm install -g npm@latest`
-- install latest node version
+- install latest `node` version
   - `sudo n latest`
-- Install the dependencies to the global mode (-g or --global)
+- Install the dependencies to the global mode (`-g` or `--global`)
   - `sudo npm update -g`
 
 ## Install Client Dependencies

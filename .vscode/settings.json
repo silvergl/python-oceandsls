@@ -1,4 +1,0 @@
-{
-    "python.pythonPath": "/home/sgu/IdeaProjects/antlr4-python/venv_antlr4-python/bin/python",
-    "terminal.integrated.env.osx": {"PYTHONPATH": "${workspaceFolder}"}
-}

@@ -14,11 +14,11 @@ if [ -f /usr/local/lib/antlr-4.12.0-complete.jar ] && [ -f /usr/local/lib/antlrw
     #>diagrun TestExprCore expression data/test_CompletionCore
     diagrun() {
       pushd .  > /dev/null
-      grammarName="${1}"
-      pkgName="${grammarName}"
-      startRuleName="${2}"
-      testDataFile=`readlink -f $3`
-      cd "build-java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -diagnostics < "${testDataFile}"
+      grammarName="${1}" # e.g. exampleDsl
+      pkgName="${2}" # e.g. example-dsl/exampleLSPServer
+      startRuleName="${3}" # e.g. prog
+      testDataFile=`readlink -f $4` # e.g. example-dsl/input/test.odsl
+      cd "${pkgName}/gen/java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -diagnostics < "${testDataFile}"
       popd > /dev/null
     }
 
@@ -28,9 +28,9 @@ if [ -f /usr/local/lib/antlr-4.12.0-complete.jar ] && [ -f /usr/local/lib/antlrw
       pushd .  > /dev/null
       grammarName="${1}"
       pkgName="${grammarName}"
-      startRuleName="${2}"
-      testDataFile=`readlink -f $3`
-      cd "build-java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -gui < "${testDataFile}"
+      startRuleName="${3}"
+      testDataFile=`readlink -f $4`
+      cd "${pkgName}/gen/java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -gui < "${testDataFile}"
       popd > /dev/null
     }
 
@@ -40,9 +40,9 @@ if [ -f /usr/local/lib/antlr-4.12.0-complete.jar ] && [ -f /usr/local/lib/antlrw
       pushd .  > /dev/null
       grammarName="${1}"
       pkgName="${grammarName}"
-      startRuleName="${2}"
-      testDataFile=`readlink -f $3`
-      cd "build-java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -ps "${testDataFile}".ps < "${testDataFile}"
+      startRuleName="${3}"
+      testDataFile=`readlink -f $4`
+      cd "${pkgName}/gen/java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -ps "${testDataFile}".ps < "${testDataFile}"
       popd > /dev/null
     }
 
@@ -52,9 +52,9 @@ if [ -f /usr/local/lib/antlr-4.12.0-complete.jar ] && [ -f /usr/local/lib/antlrw
       pushd .  > /dev/null
       grammarName="${1}"
       pkgName="${grammarName}"
-      startRuleName="${2}"
-      testDataFile=`readlink -f $3`
-      cd "build-java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -tokens < "${testDataFile}"
+      startRuleName="${3}"
+      testDataFile=`readlink -f $4`
+      cd "${pkgName}/gen/java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -tokens < "${testDataFile}"
       popd > /dev/null
     }
 
@@ -64,9 +64,9 @@ if [ -f /usr/local/lib/antlr-4.12.0-complete.jar ] && [ -f /usr/local/lib/antlrw
       pushd .  > /dev/null
       grammarName="${1}"
       pkgName="${grammarName}"
-      startRuleName="${2}"
-      testDataFile=`readlink -f $3`
-      cd "build-java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -tree < "${testDataFile}"
+      startRuleName="${3}"
+      testDataFile=`readlink -f $4`
+      cd "${pkgName}/gen/java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -tree < "${testDataFile}"
       popd > /dev/null
     }
     
@@ -76,9 +76,9 @@ if [ -f /usr/local/lib/antlr-4.12.0-complete.jar ] && [ -f /usr/local/lib/antlrw
       pushd .  > /dev/null
       grammarName="${1}"
       pkgName="${grammarName}"
-      startRuleName="${2}"
-      testDataFile=`readlink -f $3`
-      cd "build-java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -trace < "${testDataFile}"
+      startRuleName="${3}"
+      testDataFile=`readlink -f $4`
+      cd "${pkgName}/gen/java/${grammarName}"/ && ${GRUN_CMD} "${pkgName}"."${grammarName}" "${startRuleName}" -trace < "${testDataFile}"
       popd > /dev/null
     }
 fi

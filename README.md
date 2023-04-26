@@ -1,48 +1,104 @@
-# antlr4-python
+# OceanDSL Python-based DSL Implementation
 
-ANTLR4 Python Stack
--------
-- Mattermost Ticket https://maui.se.informatik.uni-kiel.de:8065/boards/workspace/jqpyx1h7jp87mryt1ofrdqnurw/bkrkg93uc6pdrfdg6cqz5pm8zaa/vesxnw4xt9i8iucfzg1g8yimzaa/c7gonutfo1ib53p3u5oo5yqjqhy
+## Name
 
-## Getting started
+oceandsl-languages
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Description
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+This project contains multiple DSLs for ocean and earth system models.
 
-## Add your files
+- CP-DSL including Declaration-DSL, Configuration-DSL and Template-DSL
+- TDD-DSL testing DSL for test-driven development
+- BGC-DSL language to specify biogeochemical models
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## License
 
-```
-cd existing_repo
-git remote add origin https://git.se.informatik.uni-kiel.de/oceandsl/antlr4-python.git
-git branch -M main
-git push -uf origin main
-```
+Apache 2.0
 
-## Integrate with your tools
+## Install
 
-- [ ] [Set up project integrations](https://git.se.informatik.uni-kiel.de/oceandsl/antlr4-python/-/settings/integrations)
+### Optional: check python packages
+- update package manager tools
+  - `python -m pip install --upgrade pip setuptools wheel`
+- check if python package `virtualenv` is installed if Python < 3.3 is used else a subset of it has been integrated into the standard library under `venv`
+  - `python -m pip show virtualenv`
+  - if not install package `virtualenv` into global system environment
+    - `python -m pip install virtualenv`
 
-## Collaborate with your team
+### Install Server Dependencies
+- generate virtual environment in directory `.venv` using the standard library `venv`
+  - `python -m venv .venv`
+  - alternative use `virtualenv`, see optional python packages
+- activate virtual environment `.venv`
+  - `source .venv/bin/activate`
+- install `antlr4-python3-runtime`, `Jinja2`, `mock`, `pygls` and `pytest` package into virtual environment `.venv`
+  - `python -m pip install antlr4-python3-runtime Jinja2 mock pygls pytest`
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+## Optional: update npm and node
+- check `npm` version
+  - `npm --version`
+- install latest `npm` version globally (`-g` or `--global`)
+  - `sudo npm install -g npm@latest`
+- install latest `node` version
+  - `sudo n latest`
+- Install the dependencies to the global mode (`-g` or `--global`)
+  - `sudo npm update -g`
 
-## Test and Deploy
+### Install Client Dependencies e.g. cp-dsl
 
-Use the built-in continuous integration in GitLab.
+- Goto extension directory `python-oceandsls/cp-dsl`
+- Install the dependencies to the local node_modules 
+  - `npm install`
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### Run Example using VSCode
+
+- Open `python-oceandsls/cp-dsl` in VSCode
+- Trust author files in `python-oceandsls/cp-dsl`
+- Goto Run and Debug
+  - `Ctrl/Cmd+Shift+D`
+- Select `Server + Client`
+- Start Debugging via `F5` or GUI
+- Open a `*.odsl` file
+- If server is working correctly notification shows `Text Document Did Open`
+
+### Troubleshooting
+
+- If VS Code doesn`t automatically locate the interpreter of the virtual environment. [Set it manually](https://code.visualstudio.com/docs/python/environments#_manually-specify-an-interpreter)
+  - Open Command prompt
+  `Ctrl/Cmd+Shift+P`
+    - Run select interpreter command
+  `Python: Select Interpreter`
+  - Alternative create `.vscode/settings.json` file in `python-oceandsls/cp-dsl` directory and set `python.defaultInterpreterPath` to point to the virtual environment
+    - settings.json
+
+          {
+              // set Python Interpreter relative to workspaceFolder to virtual environment '.venv'
+              "python.defaultInterpreterPath": "${workspaceFolder}/../.venv/bin/python",
+              // alternative
+              //"python.defaultInterpreterPath": "../.venv",
+              // deprecated
+              // "python.pythonPath": "${workspaceFolder}/../.venv/bin/python",
+
+              // Pylance VSCode code analysis and auto-completion using Python 3.10
+              "python.analysis.extraPaths": [
+                  "{workspaceFolder}/../.venv/lib/python3.10/site-packages/:${workspaceFolder}/../antlrLib/"
+              ],
+
+
+              // Object with environment variables that will be added to the VS Code process to be used by the terminal on OS X
+              "terminal.integrated.env.osx": {"PYTHONPATH": "${workspaceFolder}/.."},
+
+              // Object with environment variables that will be added to the VS Code process to be used by the terminal on Linux
+              "terminal.integrated.env.linux": {"PYTHONPATH": "${workspaceFolder}/.."},
+
+              // Object with environment variables that will be added to the VS Code process to be used by the terminal on Windows
+              "terminal.integrated.env.windows": {"PYTHONPATH": "${workspaceFolder}/.."},
+          }
+
+- If npm version conflicts exists change npm to the required version
+  - E.g. reset npm version to 9.2.0
+    - `sudo npm install -g npm@9.2.0`
 
 ***
 

@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/src/CP-DSL_pkg/CP_DSL/CP_DSL.iml" filepath="$PROJECT_DIR$/src/CP-DSL_pkg/CP_DSL/CP_DSL.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/antlr4-c3/CodeCompletionCore/CodeCompletionCore.iml" filepath="$PROJECT_DIR$/src/antlr4-c3/CodeCompletionCore/CodeCompletionCore.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/antlr4-c3/SymbolTable/SymbolTable.iml" filepath="$PROJECT_DIR$/src/antlr4-c3/SymbolTable/SymbolTable.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/antlr4-python.iml" filepath="$PROJECT_DIR$/.idea/antlr4-python.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/jinja2/jinja_tdd/jinja_tdd.iml" filepath="$PROJECT_DIR$/src/jinja2/jinja_tdd/jinja_tdd.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/pygls_pkg/server/server.iml" filepath="$PROJECT_DIR$/src/pygls_pkg/server/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/antlrLib/antlrLib.iml" filepath="$PROJECT_DIR$/antlrLib/antlrLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bgc-dsl/bgc-dsl.iml" filepath="$PROJECT_DIR$/bgc-dsl/bgc-dsl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cp-dsl/cp-dsl.iml" filepath="$PROJECT_DIR$/cp-dsl/cp-dsl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example-dsl/example-dsl.iml" filepath="$PROJECT_DIR$/example-dsl/example-dsl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/python-oceandsls.iml" filepath="$PROJECT_DIR$/python-oceandsls.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tdd-dsl/tdd-dsl.iml" filepath="$PROJECT_DIR$/tdd-dsl/tdd-dsl.iml" />
     </modules>
   </component>
 </project>

@@ -19,13 +19,13 @@
 import argparse
 import logging
 
-from .server import cp_server
+from .server import dcl_server
 
-logging.basicConfig( filename="cpDSL_pygls.log", level=logging.DEBUG, filemode="w" )
+logging.basicConfig( filename="dclDSL_pygls.log", level=logging.DEBUG, filemode="w" )
 
 
 def add_arguments(parser):
-    parser.description = "cp-dsl server"
+    parser.description = "dcl-dsl server"
 
     parser.add_argument(
         "--tcp", action="store_true",
@@ -51,11 +51,11 @@ def main():
     args = parser.parse_args()
 
     if args.tcp:
-        cp_server.start_tcp( args.host, args.port )
+        dcl_server.start_tcp( args.host, args.port )
     elif args.ws:
-        cp_server.start_ws( args.host, args.port )
+        dcl_server.start_ws( args.host, args.port )
     else:
-        cp_server.start_io()
+        dcl_server.start_io()
 
 
 if __name__ == '__main__':

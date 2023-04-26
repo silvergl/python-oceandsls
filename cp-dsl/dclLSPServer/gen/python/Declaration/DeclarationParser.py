@@ -10,7 +10,7 @@ else:
 
 def serializedATN():
     return [
-        4,1,69,377,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,70,377,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,
         7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,
@@ -189,7 +189,8 @@ class DeclarationParser ( Parser ):
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "ELONG", "EDOUBLE", "EBoolean", "ID", 
-                      "INT", "STRING", "ML_COMMENT", "SL_COMMENT", "ANY_OTHER" ]
+                      "INT", "STRING", "WS", "ML_COMMENT", "SL_COMMENT", 
+                      "ANY_OTHER" ]
 
     RULE_declarationModel = 0
     RULE_namedElement = 1
@@ -310,9 +311,10 @@ class DeclarationParser ( Parser ):
     ID=64
     INT=65
     STRING=66
-    ML_COMMENT=67
-    SL_COMMENT=68
-    ANY_OTHER=69
+    WS=67
+    ML_COMMENT=68
+    SL_COMMENT=69
+    ANY_OTHER=70
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -524,17 +526,31 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+
+
+        def getRuleIndex(self):
+            return DeclarationParser.RULE_parameterGroupDeclaration
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class ParamGroupAssignStatContext(ParameterGroupDeclarationContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.ParameterGroupDeclarationContext
+            super().__init__(parser)
             self.name = None # Token
             self.description = None # Token
             self._parameterDeclaration = None # ParameterDeclarationContext
             self.parameterDeclarations = list() # of ParameterDeclarationContexts
+            self.copyFrom(ctx)
 
         def ID(self):
             return self.getToken(DeclarationParser.ID, 0)
-
         def STRING(self):
             return self.getToken(DeclarationParser.STRING, 0)
-
         def parameterDeclaration(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(DeclarationParser.ParameterDeclarationContext)
@@ -542,23 +558,19 @@ class DeclarationParser ( Parser ):
                 return self.getTypedRuleContext(DeclarationParser.ParameterDeclarationContext,i)
 
 
-        def getRuleIndex(self):
-            return DeclarationParser.RULE_parameterGroupDeclaration
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterParameterGroupDeclaration" ):
-                listener.enterParameterGroupDeclaration(self)
+            if hasattr( listener, "enterParamGroupAssignStat" ):
+                listener.enterParamGroupAssignStat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitParameterGroupDeclaration" ):
-                listener.exitParameterGroupDeclaration(self)
+            if hasattr( listener, "exitParamGroupAssignStat" ):
+                listener.exitParamGroupAssignStat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParameterGroupDeclaration" ):
-                return visitor.visitParameterGroupDeclaration(self)
+            if hasattr( visitor, "visitParamGroupAssignStat" ):
+                return visitor.visitParamGroupAssignStat(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -568,6 +580,7 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 4, self.RULE_parameterGroupDeclaration)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.ParamGroupAssignStatContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 101
             self.match(DeclarationParser.T__2)
@@ -607,47 +620,55 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.name = None # Token
-            self.type_ = None # ParamTypeContext
-            self.unit = None # UnitSpecificationContext
-            self.description = None # Token
-            self.defaultValue = None # ArithmeticExpressionContext
-
-        def ID(self):
-            return self.getToken(DeclarationParser.ID, 0)
-
-        def paramType(self):
-            return self.getTypedRuleContext(DeclarationParser.ParamTypeContext,0)
-
-
-        def unitSpecification(self):
-            return self.getTypedRuleContext(DeclarationParser.UnitSpecificationContext,0)
-
-
-        def STRING(self):
-            return self.getToken(DeclarationParser.STRING, 0)
-
-        def arithmeticExpression(self):
-            return self.getTypedRuleContext(DeclarationParser.ArithmeticExpressionContext,0)
 
 
         def getRuleIndex(self):
             return DeclarationParser.RULE_parameterDeclaration
 
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class ParamAssignStatContext(ParameterDeclarationContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.ParameterDeclarationContext
+            super().__init__(parser)
+            self.name = None # Token
+            self.type_ = None # ParamTypeContext
+            self.unit = None # UnitSpecificationContext
+            self.description = None # Token
+            self.defaultValue = None # ArithmeticExpressionContext
+            self.copyFrom(ctx)
+
+        def ID(self):
+            return self.getToken(DeclarationParser.ID, 0)
+        def paramType(self):
+            return self.getTypedRuleContext(DeclarationParser.ParamTypeContext,0)
+
+        def unitSpecification(self):
+            return self.getTypedRuleContext(DeclarationParser.UnitSpecificationContext,0)
+
+        def STRING(self):
+            return self.getToken(DeclarationParser.STRING, 0)
+        def arithmeticExpression(self):
+            return self.getTypedRuleContext(DeclarationParser.ArithmeticExpressionContext,0)
+
+
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterParameterDeclaration" ):
-                listener.enterParameterDeclaration(self)
+            if hasattr( listener, "enterParamAssignStat" ):
+                listener.enterParamAssignStat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitParameterDeclaration" ):
-                listener.exitParameterDeclaration(self)
+            if hasattr( listener, "exitParamAssignStat" ):
+                listener.exitParamAssignStat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParameterDeclaration" ):
-                return visitor.visitParameterDeclaration(self)
+            if hasattr( visitor, "visitParamAssignStat" ):
+                return visitor.visitParamAssignStat(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -657,6 +678,7 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 6, self.RULE_parameterDeclaration)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.ParamAssignStatContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 114
             self.match(DeclarationParser.T__6)
@@ -703,6 +725,21 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+
+
+        def getRuleIndex(self):
+            return DeclarationParser.RULE_featureDeclaration
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class FeatureAssignStatContext(FeatureDeclarationContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.FeatureDeclarationContext
+            super().__init__(parser)
             self.required = None # Token
             self.name = None # Token
             self.description = None # Token
@@ -713,22 +750,20 @@ class DeclarationParser ( Parser ):
             self.parameterGroupDeclarations = list() # of ParameterGroupDeclarationContexts
             self._featureGroupDeclaration = None # FeatureGroupDeclarationContext
             self.featureGroupDeclarations = list() # of FeatureGroupDeclarationContexts
+            self.copyFrom(ctx)
 
         def ID(self, i:int=None):
             if i is None:
                 return self.getTokens(DeclarationParser.ID)
             else:
                 return self.getToken(DeclarationParser.ID, i)
-
         def STRING(self):
             return self.getToken(DeclarationParser.STRING, 0)
-
         def parameterGroupDeclaration(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(DeclarationParser.ParameterGroupDeclarationContext)
             else:
                 return self.getTypedRuleContext(DeclarationParser.ParameterGroupDeclarationContext,i)
-
 
         def featureGroupDeclaration(self, i:int=None):
             if i is None:
@@ -737,23 +772,19 @@ class DeclarationParser ( Parser ):
                 return self.getTypedRuleContext(DeclarationParser.FeatureGroupDeclarationContext,i)
 
 
-        def getRuleIndex(self):
-            return DeclarationParser.RULE_featureDeclaration
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFeatureDeclaration" ):
-                listener.enterFeatureDeclaration(self)
+            if hasattr( listener, "enterFeatureAssignStat" ):
+                listener.enterFeatureAssignStat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFeatureDeclaration" ):
-                listener.exitFeatureDeclaration(self)
+            if hasattr( listener, "exitFeatureAssignStat" ):
+                listener.exitFeatureAssignStat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFeatureDeclaration" ):
-                return visitor.visitFeatureDeclaration(self)
+            if hasattr( visitor, "visitFeatureAssignStat" ):
+                return visitor.visitFeatureAssignStat(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -763,6 +794,7 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 8, self.RULE_featureDeclaration)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.FeatureAssignStatContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 128
             self._errHandler.sync(self)
@@ -855,13 +887,28 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+
+
+        def getRuleIndex(self):
+            return DeclarationParser.RULE_featureGroupDeclaration
+
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class FeatureGroupAssignStatContext(FeatureGroupDeclarationContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.FeatureGroupDeclarationContext
+            super().__init__(parser)
             self.kind = None # EKindContext
             self._featureDeclaration = None # FeatureDeclarationContext
             self.featureDeclarations = list() # of FeatureDeclarationContexts
+            self.copyFrom(ctx)
 
         def eKind(self):
             return self.getTypedRuleContext(DeclarationParser.EKindContext,0)
-
 
         def featureDeclaration(self, i:int=None):
             if i is None:
@@ -870,23 +917,19 @@ class DeclarationParser ( Parser ):
                 return self.getTypedRuleContext(DeclarationParser.FeatureDeclarationContext,i)
 
 
-        def getRuleIndex(self):
-            return DeclarationParser.RULE_featureGroupDeclaration
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFeatureGroupDeclaration" ):
-                listener.enterFeatureGroupDeclaration(self)
+            if hasattr( listener, "enterFeatureGroupAssignStat" ):
+                listener.enterFeatureGroupAssignStat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFeatureGroupDeclaration" ):
-                listener.exitFeatureGroupDeclaration(self)
+            if hasattr( listener, "exitFeatureGroupAssignStat" ):
+                listener.exitFeatureGroupAssignStat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFeatureGroupDeclaration" ):
-                return visitor.visitFeatureGroupDeclaration(self)
+            if hasattr( visitor, "visitFeatureGroupAssignStat" ):
+                return visitor.visitFeatureGroupAssignStat(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -896,6 +939,7 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 10, self.RULE_featureGroupDeclaration)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.FeatureGroupAssignStatContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 159
             self.match(DeclarationParser.T__13)

@@ -20,7 +20,7 @@ public class ConfigurationParser extends Parser {
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
 		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
 		T__17=18, T__18=19, T__19=20, ID=21, QualifiedName=22, ELONG=23, EDOUBLE=24, 
-		EBoolean=25, INT=26, STRING=27, ML_COMMENT=28, SL_COMMENT=29, ANY_OTHER=30;
+		EBoolean=25, INT=26, STRING=27, WS=28, ML_COMMENT=29, SL_COMMENT=30, ANY_OTHER=31;
 	public static final int
 		RULE_configurationModel = 0, RULE_include = 1, RULE_featureActivation = 2, 
 		RULE_featureConfiguration = 3, RULE_parameterGroup = 4, RULE_parameterAssignment = 5, 
@@ -54,8 +54,8 @@ public class ConfigurationParser extends Parser {
 		return new String[] {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, "ID", "QualifiedName", 
-			"ELONG", "EDOUBLE", "EBoolean", "INT", "STRING", "ML_COMMENT", "SL_COMMENT", 
-			"ANY_OTHER"
+			"ELONG", "EDOUBLE", "EBoolean", "INT", "STRING", "WS", "ML_COMMENT", 
+			"SL_COMMENT", "ANY_OTHER"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -1718,7 +1718,7 @@ public class ConfigurationParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\u001e\u00d4\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
+		"\u0004\u0001\u001f\u00d4\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
 		"\u0002\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004"+
 		"\u0002\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007"+
 		"\u0002\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b"+

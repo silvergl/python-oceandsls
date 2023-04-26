@@ -22,9 +22,10 @@ namedElement                :   parameterDeclaration
                             ;
 
 //TODO {ParameterGroupDeclaration} enforce Type and return object of ParameterGroupDeclaration
-parameterGroupDeclaration   :   'group' name=ID ':' description=STRING '{' parameterDeclarations+=parameterDeclaration* '}' ;
+parameterGroupDeclaration   :   'group' name=ID ':' description=STRING '{' parameterDeclarations+=parameterDeclaration* '}' # paramGroupAssignStat
+                            ;
 
-parameterDeclaration        :   'def' name=ID type=paramType ':' unit=unitSpecification (',' description=STRING)? ('=' defaultValue=arithmeticExpression)?
+parameterDeclaration        :   'def' name=ID type=paramType ':' unit=unitSpecification (',' description=STRING)? ('=' defaultValue=arithmeticExpression)? # paramAssignStat
                             ;
 
 //TODO required? set required to true if '!' else to false
@@ -33,10 +34,11 @@ featureDeclaration          :   (required='required')? 'feature' name=ID ':' des
                                 ('requires' requires+=ID)*
                                 ('excludes' excludes+=ID)*
                                 (parameterGroupDeclarations+=parameterGroupDeclaration | featureGroupDeclarations+=featureGroupDeclaration)*
-                   	            '}')?
+                   	            '}')? # featureAssignStat
                             ;
 
-featureGroupDeclaration     :   'sub' kind=eKind featureDeclarations+=featureDeclaration* ;
+featureGroupDeclaration     :   'sub' kind=eKind featureDeclarations+=featureDeclaration*  # featureGroupAssignStat
+                            ;
 
 eKind                       :   alternative = 'alternative'
                             |   multiple = 'multiple'
@@ -45,9 +47,9 @@ eKind                       :   alternative = 'alternative'
 /**
  * Typing
  */
-paramType                   :   typeReference
-                            |   inlineEnumerationType
-                            |   arrayType
+paramType                   :   typeReference 
+                            |   inlineEnumerationType 
+                            |   arrayType 
                             ;
 
 inlineEnumerationType       :   '(' values+=enumeral ( ',' values+=enumeral)* ')' ;
@@ -96,10 +98,10 @@ basicUnit                   :   sIUnit
                             |   '(' unitSpecification ')'
                             ;
 
-sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType ;
+sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType #siunit; 
 
 //TODO {CustomUnit} enforce Type and return object of CustomUnit
-customUnit                  :   name=STRING ;
+customUnit                  :   name=STRING #customunit;
 
 composedUnit                :   numerator=basicUnit (('/' denominator=basicUnit) | ('**' exponent=ELONG))
                             |   basicUnit

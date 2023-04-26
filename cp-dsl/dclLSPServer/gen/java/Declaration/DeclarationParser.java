@@ -26,7 +26,7 @@ public class DeclarationParser extends Parser {
 		T__45=46, T__46=47, T__47=48, T__48=49, T__49=50, T__50=51, T__51=52, 
 		T__52=53, T__53=54, T__54=55, T__55=56, T__56=57, T__57=58, T__58=59, 
 		T__59=60, ELONG=61, EDOUBLE=62, EBoolean=63, ID=64, INT=65, STRING=66, 
-		ML_COMMENT=67, SL_COMMENT=68, ANY_OTHER=69;
+		WS=67, ML_COMMENT=68, SL_COMMENT=69, ANY_OTHER=70;
 	public static final int
 		RULE_declarationModel = 0, RULE_namedElement = 1, RULE_parameterGroupDeclaration = 2, 
 		RULE_parameterDeclaration = 3, RULE_featureDeclaration = 4, RULE_featureGroupDeclaration = 5, 
@@ -76,7 +76,7 @@ public class DeclarationParser extends Parser {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, "ELONG", "EDOUBLE", "EBoolean", "ID", "INT", "STRING", "ML_COMMENT", 
+			null, "ELONG", "EDOUBLE", "EBoolean", "ID", "INT", "STRING", "WS", "ML_COMMENT", 
 			"SL_COMMENT", "ANY_OTHER"
 		};
 	}
@@ -334,6 +334,18 @@ public class DeclarationParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class ParameterGroupDeclarationContext extends ParserRuleContext {
+		public ParameterGroupDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_parameterGroupDeclaration; }
+	 
+		public ParameterGroupDeclarationContext() { }
+		public void copyFrom(ParameterGroupDeclarationContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ParamGroupAssignStatContext extends ParameterGroupDeclarationContext {
 		public Token name;
 		public Token description;
 		public ParameterDeclarationContext parameterDeclaration;
@@ -346,17 +358,19 @@ public class DeclarationParser extends Parser {
 		public ParameterDeclarationContext parameterDeclaration(int i) {
 			return getRuleContext(ParameterDeclarationContext.class,i);
 		}
-		public ParameterGroupDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_parameterGroupDeclaration; }
+		public ParamGroupAssignStatContext(ParameterGroupDeclarationContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterParameterGroupDeclaration(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterParamGroupAssignStat(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitParameterGroupDeclaration(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitParamGroupAssignStat(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitParamGroupAssignStat(this);
+			else return visitor.visitChildren(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -370,16 +384,17 @@ public class DeclarationParser extends Parser {
 		enterRule(_localctx, 4, RULE_parameterGroupDeclaration);
 		int _la;
 		try {
+			_localctx = new ParamGroupAssignStatContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(101);
 			match(T__2);
 			setState(102);
-			((ParameterGroupDeclarationContext)_localctx).name = match(ID);
+			((ParamGroupAssignStatContext)_localctx).name = match(ID);
 			setState(103);
 			match(T__3);
 			setState(104);
-			((ParameterGroupDeclarationContext)_localctx).description = match(STRING);
+			((ParamGroupAssignStatContext)_localctx).description = match(STRING);
 			setState(105);
 			match(T__4);
 			setState(109);
@@ -389,8 +404,8 @@ public class DeclarationParser extends Parser {
 				{
 				{
 				setState(106);
-				((ParameterGroupDeclarationContext)_localctx).parameterDeclaration = parameterDeclaration();
-				((ParameterGroupDeclarationContext)_localctx).parameterDeclarations.add(((ParameterGroupDeclarationContext)_localctx).parameterDeclaration);
+				((ParamGroupAssignStatContext)_localctx).parameterDeclaration = parameterDeclaration();
+				((ParamGroupAssignStatContext)_localctx).parameterDeclarations.add(((ParamGroupAssignStatContext)_localctx).parameterDeclaration);
 				}
 				}
 				setState(111);
@@ -414,6 +429,18 @@ public class DeclarationParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class ParameterDeclarationContext extends ParserRuleContext {
+		public ParameterDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_parameterDeclaration; }
+	 
+		public ParameterDeclarationContext() { }
+		public void copyFrom(ParameterDeclarationContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ParamAssignStatContext extends ParameterDeclarationContext {
 		public Token name;
 		public ParamTypeContext type;
 		public UnitSpecificationContext unit;
@@ -430,17 +457,19 @@ public class DeclarationParser extends Parser {
 		public ArithmeticExpressionContext arithmeticExpression() {
 			return getRuleContext(ArithmeticExpressionContext.class,0);
 		}
-		public ParameterDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_parameterDeclaration; }
+		public ParamAssignStatContext(ParameterDeclarationContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterParameterDeclaration(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterParamAssignStat(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitParameterDeclaration(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitParamAssignStat(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitParamAssignStat(this);
+			else return visitor.visitChildren(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -454,18 +483,19 @@ public class DeclarationParser extends Parser {
 		enterRule(_localctx, 6, RULE_parameterDeclaration);
 		int _la;
 		try {
+			_localctx = new ParamAssignStatContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(114);
 			match(T__6);
 			setState(115);
-			((ParameterDeclarationContext)_localctx).name = match(ID);
+			((ParamAssignStatContext)_localctx).name = match(ID);
 			setState(116);
-			((ParameterDeclarationContext)_localctx).type = paramType();
+			((ParamAssignStatContext)_localctx).type = paramType();
 			setState(117);
 			match(T__3);
 			setState(118);
-			((ParameterDeclarationContext)_localctx).unit = unitSpecification();
+			((ParamAssignStatContext)_localctx).unit = unitSpecification();
 			setState(121);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -474,7 +504,7 @@ public class DeclarationParser extends Parser {
 				setState(119);
 				match(T__7);
 				setState(120);
-				((ParameterDeclarationContext)_localctx).description = match(STRING);
+				((ParamAssignStatContext)_localctx).description = match(STRING);
 				}
 			}
 
@@ -486,7 +516,7 @@ public class DeclarationParser extends Parser {
 				setState(123);
 				match(T__8);
 				setState(124);
-				((ParameterDeclarationContext)_localctx).defaultValue = arithmeticExpression();
+				((ParamAssignStatContext)_localctx).defaultValue = arithmeticExpression();
 				}
 			}
 
@@ -505,6 +535,18 @@ public class DeclarationParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class FeatureDeclarationContext extends ParserRuleContext {
+		public FeatureDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_featureDeclaration; }
+	 
+		public FeatureDeclarationContext() { }
+		public void copyFrom(FeatureDeclarationContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class FeatureAssignStatContext extends FeatureDeclarationContext {
 		public Token required;
 		public Token name;
 		public Token description;
@@ -532,17 +574,19 @@ public class DeclarationParser extends Parser {
 		public FeatureGroupDeclarationContext featureGroupDeclaration(int i) {
 			return getRuleContext(FeatureGroupDeclarationContext.class,i);
 		}
-		public FeatureDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_featureDeclaration; }
+		public FeatureAssignStatContext(FeatureDeclarationContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterFeatureDeclaration(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterFeatureAssignStat(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitFeatureDeclaration(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitFeatureAssignStat(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitFeatureAssignStat(this);
+			else return visitor.visitChildren(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -556,6 +600,7 @@ public class DeclarationParser extends Parser {
 		enterRule(_localctx, 8, RULE_featureDeclaration);
 		int _la;
 		try {
+			_localctx = new FeatureAssignStatContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(128);
@@ -564,18 +609,18 @@ public class DeclarationParser extends Parser {
 			if (_la==T__9) {
 				{
 				setState(127);
-				((FeatureDeclarationContext)_localctx).required = match(T__9);
+				((FeatureAssignStatContext)_localctx).required = match(T__9);
 				}
 			}
 
 			setState(130);
 			match(T__10);
 			setState(131);
-			((FeatureDeclarationContext)_localctx).name = match(ID);
+			((FeatureAssignStatContext)_localctx).name = match(ID);
 			setState(132);
 			match(T__3);
 			setState(133);
-			((FeatureDeclarationContext)_localctx).description = match(STRING);
+			((FeatureAssignStatContext)_localctx).description = match(STRING);
 			setState(157);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -592,8 +637,8 @@ public class DeclarationParser extends Parser {
 					setState(135);
 					match(T__11);
 					setState(136);
-					((FeatureDeclarationContext)_localctx).ID = match(ID);
-					((FeatureDeclarationContext)_localctx).requires.add(((FeatureDeclarationContext)_localctx).ID);
+					((FeatureAssignStatContext)_localctx).ID = match(ID);
+					((FeatureAssignStatContext)_localctx).requires.add(((FeatureAssignStatContext)_localctx).ID);
 					}
 					}
 					setState(141);
@@ -609,8 +654,8 @@ public class DeclarationParser extends Parser {
 					setState(142);
 					match(T__12);
 					setState(143);
-					((FeatureDeclarationContext)_localctx).ID = match(ID);
-					((FeatureDeclarationContext)_localctx).excludes.add(((FeatureDeclarationContext)_localctx).ID);
+					((FeatureAssignStatContext)_localctx).ID = match(ID);
+					((FeatureAssignStatContext)_localctx).excludes.add(((FeatureAssignStatContext)_localctx).ID);
 					}
 					}
 					setState(148);
@@ -628,15 +673,15 @@ public class DeclarationParser extends Parser {
 					case T__2:
 						{
 						setState(149);
-						((FeatureDeclarationContext)_localctx).parameterGroupDeclaration = parameterGroupDeclaration();
-						((FeatureDeclarationContext)_localctx).parameterGroupDeclarations.add(((FeatureDeclarationContext)_localctx).parameterGroupDeclaration);
+						((FeatureAssignStatContext)_localctx).parameterGroupDeclaration = parameterGroupDeclaration();
+						((FeatureAssignStatContext)_localctx).parameterGroupDeclarations.add(((FeatureAssignStatContext)_localctx).parameterGroupDeclaration);
 						}
 						break;
 					case T__13:
 						{
 						setState(150);
-						((FeatureDeclarationContext)_localctx).featureGroupDeclaration = featureGroupDeclaration();
-						((FeatureDeclarationContext)_localctx).featureGroupDeclarations.add(((FeatureDeclarationContext)_localctx).featureGroupDeclaration);
+						((FeatureAssignStatContext)_localctx).featureGroupDeclaration = featureGroupDeclaration();
+						((FeatureAssignStatContext)_localctx).featureGroupDeclarations.add(((FeatureAssignStatContext)_localctx).featureGroupDeclaration);
 						}
 						break;
 					default:
@@ -667,6 +712,18 @@ public class DeclarationParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class FeatureGroupDeclarationContext extends ParserRuleContext {
+		public FeatureGroupDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_featureGroupDeclaration; }
+	 
+		public FeatureGroupDeclarationContext() { }
+		public void copyFrom(FeatureGroupDeclarationContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class FeatureGroupAssignStatContext extends FeatureGroupDeclarationContext {
 		public EKindContext kind;
 		public FeatureDeclarationContext featureDeclaration;
 		public List<FeatureDeclarationContext> featureDeclarations = new ArrayList<FeatureDeclarationContext>();
@@ -679,17 +736,19 @@ public class DeclarationParser extends Parser {
 		public FeatureDeclarationContext featureDeclaration(int i) {
 			return getRuleContext(FeatureDeclarationContext.class,i);
 		}
-		public FeatureGroupDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_featureGroupDeclaration; }
+		public FeatureGroupAssignStatContext(FeatureGroupDeclarationContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterFeatureGroupDeclaration(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterFeatureGroupAssignStat(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitFeatureGroupDeclaration(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitFeatureGroupAssignStat(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitFeatureGroupAssignStat(this);
+			else return visitor.visitChildren(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -703,12 +762,13 @@ public class DeclarationParser extends Parser {
 		enterRule(_localctx, 10, RULE_featureGroupDeclaration);
 		int _la;
 		try {
+			_localctx = new FeatureGroupAssignStatContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(159);
 			match(T__13);
 			setState(160);
-			((FeatureGroupDeclarationContext)_localctx).kind = eKind();
+			((FeatureGroupAssignStatContext)_localctx).kind = eKind();
 			setState(164);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -716,8 +776,8 @@ public class DeclarationParser extends Parser {
 				{
 				{
 				setState(161);
-				((FeatureGroupDeclarationContext)_localctx).featureDeclaration = featureDeclaration();
-				((FeatureGroupDeclarationContext)_localctx).featureDeclarations.add(((FeatureGroupDeclarationContext)_localctx).featureDeclaration);
+				((FeatureGroupAssignStatContext)_localctx).featureDeclaration = featureDeclaration();
+				((FeatureGroupAssignStatContext)_localctx).featureDeclarations.add(((FeatureGroupAssignStatContext)_localctx).featureDeclaration);
 				}
 				}
 				setState(166);
@@ -3049,7 +3109,7 @@ public class DeclarationParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001E\u0179\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u0001F\u0179\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
 		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+

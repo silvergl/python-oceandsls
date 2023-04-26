@@ -19,12 +19,12 @@ STRING      : '"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */
             | ~('\\'|'\'') )* '\''
             ;
 
+WS      : [ \r\t\n]+ -> skip ;                              // skip whitespaces, carriage returns, tabs and newlines
 // -----------------------------------------------------------------------
 // ANTLR p.281 lexical modes are only allowed in lexer. Not in combined grammars via import
 // -----------------------------------------------------------------------
 /*
 LQUOTE  : '"'   -> more, mode(STR) ;
-WS      : [ \r\t\n]+ -> skip ;                              // skip whitespaces, carriage returns, tabs and newlines
 
 mode STR;
 

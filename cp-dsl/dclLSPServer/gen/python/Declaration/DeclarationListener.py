@@ -26,39 +26,39 @@ class DeclarationListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by DeclarationParser#parameterGroupDeclaration.
-    def enterParameterGroupDeclaration(self, ctx:DeclarationParser.ParameterGroupDeclarationContext):
+    # Enter a parse tree produced by DeclarationParser#paramGroupAssignStat.
+    def enterParamGroupAssignStat(self, ctx:DeclarationParser.ParamGroupAssignStatContext):
         pass
 
-    # Exit a parse tree produced by DeclarationParser#parameterGroupDeclaration.
-    def exitParameterGroupDeclaration(self, ctx:DeclarationParser.ParameterGroupDeclarationContext):
-        pass
-
-
-    # Enter a parse tree produced by DeclarationParser#parameterDeclaration.
-    def enterParameterDeclaration(self, ctx:DeclarationParser.ParameterDeclarationContext):
-        pass
-
-    # Exit a parse tree produced by DeclarationParser#parameterDeclaration.
-    def exitParameterDeclaration(self, ctx:DeclarationParser.ParameterDeclarationContext):
+    # Exit a parse tree produced by DeclarationParser#paramGroupAssignStat.
+    def exitParamGroupAssignStat(self, ctx:DeclarationParser.ParamGroupAssignStatContext):
         pass
 
 
-    # Enter a parse tree produced by DeclarationParser#featureDeclaration.
-    def enterFeatureDeclaration(self, ctx:DeclarationParser.FeatureDeclarationContext):
+    # Enter a parse tree produced by DeclarationParser#paramAssignStat.
+    def enterParamAssignStat(self, ctx:DeclarationParser.ParamAssignStatContext):
         pass
 
-    # Exit a parse tree produced by DeclarationParser#featureDeclaration.
-    def exitFeatureDeclaration(self, ctx:DeclarationParser.FeatureDeclarationContext):
+    # Exit a parse tree produced by DeclarationParser#paramAssignStat.
+    def exitParamAssignStat(self, ctx:DeclarationParser.ParamAssignStatContext):
         pass
 
 
-    # Enter a parse tree produced by DeclarationParser#featureGroupDeclaration.
-    def enterFeatureGroupDeclaration(self, ctx:DeclarationParser.FeatureGroupDeclarationContext):
+    # Enter a parse tree produced by DeclarationParser#featureAssignStat.
+    def enterFeatureAssignStat(self, ctx:DeclarationParser.FeatureAssignStatContext):
         pass
 
-    # Exit a parse tree produced by DeclarationParser#featureGroupDeclaration.
-    def exitFeatureGroupDeclaration(self, ctx:DeclarationParser.FeatureGroupDeclarationContext):
+    # Exit a parse tree produced by DeclarationParser#featureAssignStat.
+    def exitFeatureAssignStat(self, ctx:DeclarationParser.FeatureAssignStatContext):
+        pass
+
+
+    # Enter a parse tree produced by DeclarationParser#featureGroupAssignStat.
+    def enterFeatureGroupAssignStat(self, ctx:DeclarationParser.FeatureGroupAssignStatContext):
+        pass
+
+    # Exit a parse tree produced by DeclarationParser#featureGroupAssignStat.
+    def exitFeatureGroupAssignStat(self, ctx:DeclarationParser.FeatureGroupAssignStatContext):
         pass
 
 

@@ -23,29 +23,33 @@ public interface DeclarationVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNamedElement(DeclarationParser.NamedElementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link DeclarationParser#parameterGroupDeclaration}.
+	 * Visit a parse tree produced by the {@code paramGroupAssignStat}
+	 * labeled alternative in {@link DeclarationParser#parameterGroupDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParameterGroupDeclaration(DeclarationParser.ParameterGroupDeclarationContext ctx);
+	T visitParamGroupAssignStat(DeclarationParser.ParamGroupAssignStatContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link DeclarationParser#parameterDeclaration}.
+	 * Visit a parse tree produced by the {@code paramAssignStat}
+	 * labeled alternative in {@link DeclarationParser#parameterDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParameterDeclaration(DeclarationParser.ParameterDeclarationContext ctx);
+	T visitParamAssignStat(DeclarationParser.ParamAssignStatContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link DeclarationParser#featureDeclaration}.
+	 * Visit a parse tree produced by the {@code featureAssignStat}
+	 * labeled alternative in {@link DeclarationParser#featureDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFeatureDeclaration(DeclarationParser.FeatureDeclarationContext ctx);
+	T visitFeatureAssignStat(DeclarationParser.FeatureAssignStatContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link DeclarationParser#featureGroupDeclaration}.
+	 * Visit a parse tree produced by the {@code featureGroupAssignStat}
+	 * labeled alternative in {@link DeclarationParser#featureGroupDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFeatureGroupDeclaration(DeclarationParser.FeatureGroupDeclarationContext ctx);
+	T visitFeatureGroupAssignStat(DeclarationParser.FeatureGroupAssignStatContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link DeclarationParser#eKind}.
 	 * @param ctx the parse tree

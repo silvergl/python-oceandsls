@@ -32,28 +32,28 @@ public class DeclarationBaseVisitor<T> extends AbstractParseTreeVisitor<T> imple
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParameterGroupDeclaration(DeclarationParser.ParameterGroupDeclarationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParamGroupAssignStat(DeclarationParser.ParamGroupAssignStatContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParameterDeclaration(DeclarationParser.ParameterDeclarationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParamAssignStat(DeclarationParser.ParamAssignStatContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFeatureDeclaration(DeclarationParser.FeatureDeclarationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFeatureAssignStat(DeclarationParser.FeatureAssignStatContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFeatureGroupDeclaration(DeclarationParser.FeatureGroupDeclarationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFeatureGroupAssignStat(DeclarationParser.FeatureGroupAssignStatContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

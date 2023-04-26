@@ -28,45 +28,53 @@ public interface DeclarationListener extends ParseTreeListener {
 	 */
 	void exitNamedElement(DeclarationParser.NamedElementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DeclarationParser#parameterGroupDeclaration}.
+	 * Enter a parse tree produced by the {@code paramGroupAssignStat}
+	 * labeled alternative in {@link DeclarationParser#parameterGroupDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterParameterGroupDeclaration(DeclarationParser.ParameterGroupDeclarationContext ctx);
+	void enterParamGroupAssignStat(DeclarationParser.ParamGroupAssignStatContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link DeclarationParser#parameterGroupDeclaration}.
+	 * Exit a parse tree produced by the {@code paramGroupAssignStat}
+	 * labeled alternative in {@link DeclarationParser#parameterGroupDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitParameterGroupDeclaration(DeclarationParser.ParameterGroupDeclarationContext ctx);
+	void exitParamGroupAssignStat(DeclarationParser.ParamGroupAssignStatContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DeclarationParser#parameterDeclaration}.
+	 * Enter a parse tree produced by the {@code paramAssignStat}
+	 * labeled alternative in {@link DeclarationParser#parameterDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterParameterDeclaration(DeclarationParser.ParameterDeclarationContext ctx);
+	void enterParamAssignStat(DeclarationParser.ParamAssignStatContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link DeclarationParser#parameterDeclaration}.
+	 * Exit a parse tree produced by the {@code paramAssignStat}
+	 * labeled alternative in {@link DeclarationParser#parameterDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitParameterDeclaration(DeclarationParser.ParameterDeclarationContext ctx);
+	void exitParamAssignStat(DeclarationParser.ParamAssignStatContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DeclarationParser#featureDeclaration}.
+	 * Enter a parse tree produced by the {@code featureAssignStat}
+	 * labeled alternative in {@link DeclarationParser#featureDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterFeatureDeclaration(DeclarationParser.FeatureDeclarationContext ctx);
+	void enterFeatureAssignStat(DeclarationParser.FeatureAssignStatContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link DeclarationParser#featureDeclaration}.
+	 * Exit a parse tree produced by the {@code featureAssignStat}
+	 * labeled alternative in {@link DeclarationParser#featureDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitFeatureDeclaration(DeclarationParser.FeatureDeclarationContext ctx);
+	void exitFeatureAssignStat(DeclarationParser.FeatureAssignStatContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DeclarationParser#featureGroupDeclaration}.
+	 * Enter a parse tree produced by the {@code featureGroupAssignStat}
+	 * labeled alternative in {@link DeclarationParser#featureGroupDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterFeatureGroupDeclaration(DeclarationParser.FeatureGroupDeclarationContext ctx);
+	void enterFeatureGroupAssignStat(DeclarationParser.FeatureGroupAssignStatContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link DeclarationParser#featureGroupDeclaration}.
+	 * Exit a parse tree produced by the {@code featureGroupAssignStat}
+	 * labeled alternative in {@link DeclarationParser#featureGroupDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitFeatureGroupDeclaration(DeclarationParser.FeatureGroupDeclarationContext ctx);
+	void exitFeatureGroupAssignStat(DeclarationParser.FeatureGroupAssignStatContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DeclarationParser#eKind}.
 	 * @param ctx the parse tree

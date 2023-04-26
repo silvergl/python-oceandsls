@@ -99,7 +99,7 @@ class tddLSPServer( LanguageServer ):
         input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: TestSuiteLexer = TestSuiteLexer( input_stream )
+        self.lexer: DeclarationLexer = DeclarationLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener( self.error_listener )
@@ -108,7 +108,7 @@ class tddLSPServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: TestSuiteParser = TestSuiteParser( self.tokenStream )
+        self.parser: DeclarationParser = DeclarationParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )
@@ -204,7 +204,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     core: CodeCompletionCore = CodeCompletionCore( tdd_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {TestSuiteParser, TestSuiteParser}
+    core.preferredRules = {DeclarationParser.RULE_parameterDeclaration,DeclarationParser.RULE_parameterGroupDeclaration,DeclarationParser.RULE_featureDeclaration,DeclarationParser.RULE_featureGroupDeclaration}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
@@ -212,7 +212,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     if any( rule in candidates.rules for rule in
             [TestSuiteParser.RULE_reference] ):
 
-        symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
+        symbolTableVisitor: CP_DSLSymbolTableVisitor = CP_DSLSymbolTableVisitor('CP-DSL_completions')
 
         symbolTable = symbolTableVisitor.visit( parseTree )
 

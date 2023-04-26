@@ -6,13 +6,15 @@ __author__ = 'sgu'
 
 # TODO license
 
-# utils import
+#
+#  Port of antlr-c3 typescript symbol table implementation to python
+#
+
 import asyncio
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional, List, TypeVar, ParamSpec, Set, Coroutine
 
-# antlr4
 from antlr4.tree.Tree import ParseTree
 
 
@@ -76,7 +78,6 @@ class ReferenceKind( Enum ):
     # 'Type' as such and default for all value types.
     Instance = 3
 
-
 class UnitKind( Enum ):
     """
     Rough categorization of a unit from SI units.
@@ -94,7 +95,6 @@ class UnitKind( Enum ):
     Pascal = 8
     Joule = 9
     ton = 10
-
 
 class UnitPrefix:
     """
@@ -126,7 +126,6 @@ class UnitPrefix:
     Ronto = 23
     Quecto = 24
 
-
 @dataclass
 class Unit:
     """
@@ -141,7 +140,6 @@ class Unit:
     prefix: UnitPrefix
     kind: UnitKind
     reference: ReferenceKind
-
 
 @dataclass
 class Type:
@@ -161,21 +159,18 @@ class Type:
 class SymbolTableOptions:
     allowDuplicateSymbols: Optional[bool] = None
 
-
-class classproperty( property ):
+class classproperty(property):
     # TODO use metaclass factory https://stackoverflow.com/q/6760685/
     def __get__(self, cls, owner):
-        return classmethod( self.fget ).__get__( None, owner )()
-
+        return classmethod(self.fget).__get__(None, owner)()
 
 class FundamentalUnit( Unit ):
     """
     A single class for all fundamental units which are mostly SI units. They are distinguished via the kind field.
     """
 
-    def __init__(self, name: str, baseTypes=[], unitPrefix=UnitPrefix.NoP, unitKind=UnitKind.Unknown,
-                 referenceKind=ReferenceKind.Irrelevant):
-        super().__init__( name=name, baseTypes=baseTypes, kind=unitKind, reference=referenceKind, prefix=unitPrefix )
+    def __init__(self, name: str, baseTypes = [], unitPrefix=UnitPrefix.NoP, unitKind=UnitKind.Unknown, referenceKind=ReferenceKind.Irrelevant):
+        super().__init__(name = name, baseTypes = baseTypes, kind = unitKind, reference = referenceKind, prefix = unitPrefix)
 
     @classproperty
     def secondUnit(self) -> FundamentalUnit:
@@ -222,32 +217,31 @@ class FundamentalUnit( Unit ):
     # TODO si unit is kilogram. unitKind has gram but could include ton
     @classproperty
     def TonUnit(self) -> FundamentalUnit:
-        return FundamentalUnit( name="Ton", unitPrefix=UnitPrefix.Mega, unitKind=UnitKind.Gram )
-
+        return FundamentalUnit( name="Ton",unitPrefix=UnitPrefix.Mega, unitKind=UnitKind.Gram )
 
 class FundamentalType( Type ):
     """
     A single class for all fundamental types. They are distinguished via the kind field.
     """
 
-    def __init__(self, name: str, baseTypes=[], typeKind=TypeKind.Unknown, referenceKind=ReferenceKind.Irrelevant):
-        super().__init__( name=name, baseTypes=baseTypes, kind=typeKind, reference=referenceKind )
+    def __init__(self, name: str, baseTypes = [], typeKind=TypeKind.Unknown, referenceKind=ReferenceKind.Irrelevant):
+        super().__init__(name = name, baseTypes = baseTypes, kind = typeKind, reference = referenceKind)
 
     @classproperty
     def integerType(self) -> FundamentalType:
-        return FundamentalType( name="int", typeKind=TypeKind.Integer )
+        return FundamentalType( name = "int", typeKind = TypeKind.Integer )
 
     @classproperty
     def floatType(self) -> FundamentalType:
-        return FundamentalType( name="float", typeKind=TypeKind.Float )
+        return FundamentalType( name = "float", typeKind = TypeKind.Float )
 
     @classproperty
     def stringType(self) -> FundamentalType:
-        return FundamentalType( name="string", typeKind=TypeKind.String )
+        return FundamentalType( name = "string", typeKind = TypeKind.String )
 
     @classproperty
     def boolType(self) -> FundamentalType:
-        return FundamentalType( name="bool", typeKind=TypeKind.Boolean )
+        return FundamentalType( name = "bool", typeKind = TypeKind.Boolean )
 
 
 class Symbol:
@@ -461,17 +455,18 @@ class TypedSymbol( Symbol ):
         super().__init__( name )
         self.attached_type = attached_type
 
-
 class UnitSymbol( TypedSymbol ):
     """
     A symbol with an attached unit (physical units such as second, metre, gram etc.).
     """
     attached_unit: Optional[Unit]
+    attached_description: Optional[str]
 
-    def __init__(self, name: str, attached_unit: Unit, attached_type: Type = None):
+    def __init__(self, name: str, attached_description: str, attached_unit: Unit, attached_type: Type = None):
         super().__init__( name, attached_type )
         self.attached_unit = attached_unit
-
+        self.attached_description = attached_description
+        
 
 class TypeAlias( Symbol, Type ):
     """
@@ -865,10 +860,11 @@ class BlockSymbol( ScopedSymbol ):
 
 
 class VariableSymbol( UnitSymbol ):
-
-    def __init__(self, name: str, value=None, attached_type: Type = None):
-        super().__init__( name, attached_type )
-
+    is_tree = False
+    
+    def __init__(self, name: str, description: str = "", value = None, attached_unit : Unit = None, attached_type: Type = None):
+        super().__init__( name, description, attached_unit, attached_type )
+        self.is_tree = isinstance(value, ParseTree)
         self.value = value
 
 
@@ -887,6 +883,21 @@ class LiteralSymbol( UnitSymbol ):
 class ParameterSymbol( VariableSymbol ):
     pass
 
+class GroupSymbol(ScopedSymbol):
+    """
+    A Class for Group Declarations
+    """
+    description: Optional[str]
+    groupType: Optional[T]
+    
+    def __init__(self, name: str, groupType: T, description: str = ""):
+        super().__init__(name)
+        self.description = description
+        self.groupType = groupType
+        
+    def getGroupVars(self, localOnly=True) -> Coroutine[List[T]]:
+        return self.getSymbolsOfType(self.groupType)
+
 
 class RoutineSymbol( ScopedSymbol ):
     """
@@ -903,6 +914,12 @@ class RoutineSymbol( ScopedSymbol ):
 
     def getParameters(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getSymbolsOfType( ParameterSymbol )
+
+    def getUnits(self, localOnly=True) -> Coroutine[List[T]]:
+        return self.getSymbolsOfType(UnitSymbol)
+    
+    def getFeatures(self, localOnly=True) -> Coroutine[List[T]]:
+        return self.getSymbolsOfType(RoutineSymbol)
 
 
 class MethodFlags( Enum ):

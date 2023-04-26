@@ -467,13 +467,10 @@ class UnitSymbol( TypedSymbol ):
     A symbol with an attached unit (physical units such as second, metre, gram etc.).
     """
     attached_unit: Optional[Unit]
-    attached_description: Optional[str]
 
-    def __init__(self, name: str, attached_description: str, attached_unit: Unit, attached_type: Type = None):
+    def __init__(self, name: str, attached_unit: Unit, attached_type: Type = None):
         super().__init__( name, attached_type )
         self.attached_unit = attached_unit
-        self.attached_description = attached_description
-        
 
 
 class TypeAlias( Symbol, Type ):
@@ -868,11 +865,10 @@ class BlockSymbol( ScopedSymbol ):
 
 
 class VariableSymbol( UnitSymbol ):
-    is_tree = False
-    
-    def __init__(self, name: str, description: str = "", value = None, attached_unit : Unit = None, attached_type: Type = None):
-        super().__init__( name, description, attached_unit, attached_type )
-        self.is_tree = isinstance(value, ParseTree)
+
+    def __init__(self, name: str, value=None, attached_type: Type = None):
+        super().__init__( name, attached_type )
+
         self.value = value
 
 
@@ -891,21 +887,6 @@ class LiteralSymbol( UnitSymbol ):
 class ParameterSymbol( VariableSymbol ):
     pass
 
-class GroupSymbol(ScopedSymbol):
-    """
-    A Class for Group Declarations
-    """
-    description: Optional[str]
-    groupType: Optional[T]
-    
-    def __init__(self, name: str, groupType: T, description: str = ""):
-        super().__init__(name)
-        self.description = description
-        self.groupType = groupType
-        
-    def getGroupVars(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType(self.groupType)
-
 
 class RoutineSymbol( ScopedSymbol ):
     """
@@ -922,12 +903,6 @@ class RoutineSymbol( ScopedSymbol ):
 
     def getParameters(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getSymbolsOfType( ParameterSymbol )
-
-    def getUnits(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType(UnitSymbol)
-    
-    def getFeatures(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType(RoutineSymbol)
 
 
 class MethodFlags( Enum ):

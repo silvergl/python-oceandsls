@@ -54,29 +54,29 @@
   - Alternative create `.vscode/settings.json` file in `python-oceandsls/tdd-dsl` directory and set `python.defaultInterpreterPath` to point to the virtual environment
     - settings.json
 
-    {
-        // set Python Interpreter relative to workspaceFolder to virtual environment '.venv'
-        "python.defaultInterpreterPath": "${workspaceFolder}/../.venv/bin/python",
-        // alternative
-        //"python.defaultInterpreterPath": "../.venv",
-        // deprecated
-        // "python.pythonPath": "${workspaceFolder}/../.venv/bin/python",
+          {
+              // set Python Interpreter relative to workspaceFolder to virtual environment '.venv'
+              "python.defaultInterpreterPath": "${workspaceFolder}/../.venv/bin/python",
+              // alternative
+              //"python.defaultInterpreterPath": "../.venv",
+              // deprecated
+              // "python.pythonPath": "${workspaceFolder}/../.venv/bin/python",
 
-        // Pylance VSCode code analysis and auto-completion
-        "python.analysis.extraPaths": [
-            "{workspaceFolder}/../.venv/lib/python3.10/site-packages/:${workspaceFolder}/../antlrLib/"
-        ],
+              // Pylance VSCode code analysis and auto-completion using Python 3.10
+              "python.analysis.extraPaths": [
+                  "{workspaceFolder}/../.venv/lib/python3.10/site-packages/:${workspaceFolder}/../antlrLib/"
+              ],
 
 
-        // Object with environment variables that will be added to the VS Code process to be used by the terminal on OS X
-        "terminal.integrated.env.osx": {"PYTHONPATH": "${workspaceFolder}/.."},
+              // Object with environment variables that will be added to the VS Code process to be used by the terminal on OS X
+              "terminal.integrated.env.osx": {"PYTHONPATH": "${workspaceFolder}/.."},
 
-        // Object with environment variables that will be added to the VS Code process to be used by the terminal on Linux
-        "terminal.integrated.env.linux": {"PYTHONPATH": "${workspaceFolder}/.."},
+              // Object with environment variables that will be added to the VS Code process to be used by the terminal on Linux
+              "terminal.integrated.env.linux": {"PYTHONPATH": "${workspaceFolder}/.."},
 
-        // Object with environment variables that will be added to the VS Code process to be used by the terminal on Windows
-        "terminal.integrated.env.windows": {"PYTHONPATH": "${workspaceFolder}/.."},
-    }
+              // Object with environment variables that will be added to the VS Code process to be used by the terminal on Windows
+              "terminal.integrated.env.windows": {"PYTHONPATH": "${workspaceFolder}/.."},
+          }
 
 - If npm version conflicts exists change npm to the required version
   - E.g. reset npm version to 9.2.0

@@ -72,7 +72,7 @@ def read_decorate_src_xml( fxtran_filepath: str = "" ):
     return root
 
 
-root_dir: str = "/home/sgu/IdeaProjects/antlr4-python/src/fxtran/"
+root_dir: str = "/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standalone"
 fxtran_path: str = "/home/sgu/IdeaProjects/fxtran/bin/fxtran"
 
 ns = {'fx': 'http://fxtran.net/#syntax'}

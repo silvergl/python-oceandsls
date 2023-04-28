@@ -61,7 +61,7 @@ function startLangServerTCP(addr: number): LanguageClient {
 
     return new LanguageClient(
         `tcp lang server (port ${addr})`,
-        serverOptions,
+        serverOptioMy_Sns,
         getClientOptions()
     );
 }

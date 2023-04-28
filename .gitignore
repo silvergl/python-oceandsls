@@ -1,5 +1,6 @@
 # src https://www.toptal.com/developers/gitignore/api/intellij
 # src https://www.toptal.com/developers/gitignore/api/python
+# src https://www.toptal.com/developers/gitignore/api/java,macos,maven,eclipse
 
 # Project-specific generated files
 docs/build/
@@ -161,3 +162,14 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+### macOS ###
+**/.DS_Store
+**/.AppleDouble
+**/.LSOverride
+
+# Eclipse Gradle plugin generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath

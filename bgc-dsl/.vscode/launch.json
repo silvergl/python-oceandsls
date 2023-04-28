@@ -26,6 +26,7 @@
             "justMyCode": false,
             "python": "${command:python.interpreterPath}",
             "cwd": "${workspaceFolder}",
+            "preLaunchTask": "print workspaceFolder",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/../antlrLib/"
             }

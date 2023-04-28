@@ -1,4 +1,3 @@
-
 grammar BgcDsl;
 
 import CommonLexerRules;
@@ -86,7 +85,7 @@ unitElement:
 	prefixUnit | groupUnit
 ;
 
-groupUnit: 
+groupUnit:
 	'(' elements+=unitElement* ')' ('^' exponent=NUMBER)?
 ;
 

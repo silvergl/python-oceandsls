@@ -71,13 +71,13 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         
     def visitParamGroupAssignStat(self, ctx: DeclarationParser.ParamGroupAssignStatContext):
         description = ctx.description.text
-        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.name.text, VariableSymbol, description)
+        return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), ctx.name.text, VariableSymbol, description)
 
     # CHANGES sgu:
     #   featureDeclaration ID is saved as attribute 'name'
 
     def visitFeatureAssignStat(self, ctx: DeclarationParser.FeatureAssignStatContext):
-        return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
+        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
 
     def visitFeatureGroupAssignStat(self, ctx: DeclarationParser.FeatureGroupAssignStatContext):
         description = ctx.description.text

@@ -1,4 +1,4 @@
-"""bgcLSPServer package."""
+"""cpdslLSPServer package."""
 
 ############################################################################
 # Copyright(c) Open Law Library. All rights reserved.                      #
@@ -201,6 +201,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
 
     # TODO add interesting rules
+
     if any( rule in candidates.rules for rule in [None] ):
 
         symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
@@ -214,7 +215,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
     # get labels of completion candidates to return
     labels_list: List[str] = []
-    for key, valueList in candidates.tokens.items():
+    for key, _ in candidates.tokens.items():
         completionList.items.append( CompletionItem(
             label=IntervalSet.elementName( IntervalSet, dcl_server.parser.literalNames,
                                            dcl_server.parser.symbolicNames, key ) ) )

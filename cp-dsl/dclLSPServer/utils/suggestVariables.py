@@ -11,10 +11,10 @@ from typing import List, ParamSpec
 from antlr4 import ParserRuleContext
 
 # user relative imports
-from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
+from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 
-Top_levelContext = ConfigurationParser.ConfigurationModelContext
-del ConfigurationParser
+Top_levelContext = DeclarationParser.DeclarationModelContext
+del DeclarationParser
 from ..symbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 from .computeTokenIndex import TokenPosition
 

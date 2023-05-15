@@ -16,7 +16,7 @@ from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
 
-class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
+class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
     _symbolTable: SymbolTable
 
     def __init__(self, name: str = '', ):
@@ -60,7 +60,7 @@ class CP_DSLSymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         return UnitKind.Unknown
     
     # sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType #siUnit; 
-    def visitSiunit(self, ctx:DeclarationParser.sIUnitContext):
+    def visitSiunit(self, ctx:DeclarationParser.SIUnitContext):
         return FundamentalUnit(name = ctx.type.text, unitPrefix = self.stringToPrefix(ctx.prefix.text), unitKind = self.stringToUnitType(ctx.type.text))
     
     # customUnit                  :   name=STRING #customunit;

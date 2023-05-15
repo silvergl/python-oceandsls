@@ -1,4 +1,4 @@
-"""exampleLSPServer package."""
+"""cp-dsl LSPServer package."""
 
 ############################################################################
 # Copyright(c) Open Law Library. All rights reserved.                      #
@@ -18,36 +18,35 @@
 ############################################################################
 import argparse
 import logging
+from setuptools import setup, find_packages
 
 from .server import dcl_server
 
 logging.basicConfig( filename="dclDSL_pygls.log", level=logging.DEBUG, filemode="w" )
 
 
-def add_arguments(parser):
-    parser.description = "dcl-dsl server"
-
+def main():
+    parser = argparse.ArgumentParser(
+        prog="DCL-Language-Server",
+        description="A program for a language server based on the declaration ocean-dsl",
+        epilog="DeclarationDSL Language Server"
+    )
     parser.add_argument(
-        "--tcp", action="store_true",
+        "--tcp", dest="tcp", action="store_true",
         help="Use TCP server"
     )
     parser.add_argument(
-        "--ws", action="store_true",
+        "--ws", dest="ws", action="store_true",
         help="Use WebSocket server"
     )
     parser.add_argument(
-        "--host", default="127.0.0.1",
+        "--host", dest="host", default="127.0.0.1",
         help="Bind to this address"
     )
     parser.add_argument(
-        "--port", type=int, default=2087,
+        "--port", dest="port", type=int, default=2087,
         help="Bind to this port"
     )
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    add_arguments(parser)
     args = parser.parse_args()
 
     if args.tcp:
@@ -55,6 +54,7 @@ def main():
     elif args.ws:
         dcl_server.start_ws( args.host, args.port )
     else:
+        parser.print_help()
         dcl_server.start_io()
 
 

@@ -30,9 +30,7 @@ from antlr4.IntervalSet import IntervalSet
 from antlr4 import InputStream, CommonTokenStream, Token, ParseTreeWalker
 
 # antlr4-c3
-# TODO fail relative import beyond top-level package
-# from ...antlrLib.CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
-from codeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
+from .cst.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 
 # pygls
 # Deprecated from 0.13
@@ -64,13 +62,8 @@ from .utils.suggestVariables import suggestVariables
 from .cst.SymbolTableVisitor import SymbolTableVisitor
 from .cst.DiagnosticListener import DiagnosticListener
 
-from .gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
-from .gen.python.Configuration.ConfigurationParser import ConfigurationParser
-from .gen.python.Configuration.ConfigurationVisitor import ConfigurationVisitor
-
 from .gen.python.Declaration.DeclarationLexer import DeclarationLexer
 from .gen.python.Declaration.DeclarationParser import DeclarationParser
-from .gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
 COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1
@@ -91,7 +84,7 @@ class dclLSPServer( LanguageServer ):
         input_stream: InputStream = InputStream( str() )
 
         # set lexer
-        self.lexer: ConfigurationLexer = ConfigurationLexer( input_stream )
+        self.lexer: DeclarationLexer = DeclarationLexer( input_stream )
         # set ErrorListener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener( self.error_listener )
@@ -100,7 +93,7 @@ class dclLSPServer( LanguageServer ):
         self.tokenStream: CommonTokenStream = CommonTokenStream( self.lexer )
 
         # set parser
-        self.parser: ConfigurationParser = ConfigurationParser( self.tokenStream )
+        self.parser: DeclarationParser = DeclarationParser( self.tokenStream )
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener( self.error_listener )
@@ -174,7 +167,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
 
     # launches parser by invoking top-level rule
-    Top_levelContext = ConfigurationParser.ConfigurationModelContext
+    Top_levelContext = DeclarationParser.DeclarationModelContext
     parseTree: Top_levelContext = dcl_server.parser.configurationModel()
 
     # get token index under caret position
@@ -195,7 +188,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     core: CodeCompletionCore = CodeCompletionCore( dcl_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {ConfigurationParser, ConfigurationParser}
+    core.preferredRules = {DeclarationParser, DeclarationParser}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
@@ -251,7 +244,7 @@ def did_save(server: dclLSPServer, params: DidSaveTextDocumentParams):
     dcl_server.tokenStream = CommonTokenStream( dcl_server.lexer )
     dcl_server.parser.setInputStream( dcl_server.tokenStream )
 
-    Top_levelContext = ConfigurationParser.ConfigurationModelContext
+    Top_levelContext = DeclarationParser.DeclarationModelContext
     parseTree: Top_levelContext = dcl_server.parser.configurationModel()
 
     # TODO

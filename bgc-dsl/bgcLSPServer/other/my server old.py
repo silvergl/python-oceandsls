@@ -1,4 +1,6 @@
-# altered, to react to bgc-file opening (not done, yet)
+"""altered, to react to bgc-file opening (not done, yet)"""
+
+__author__ = 'stu90642'
 
 import asyncio
 import json

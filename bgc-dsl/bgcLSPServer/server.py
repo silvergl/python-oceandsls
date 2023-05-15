@@ -142,6 +142,7 @@ def _validate_format(ls: bgcLSPServer, source: str):
     try:
         # launch parser by invoking top-level rule
         ls.parser.bgcModel()
+    
     except OSError as err:
         # TODO add exception
         msg = err.filename.msg

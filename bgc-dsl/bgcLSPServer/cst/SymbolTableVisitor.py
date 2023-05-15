@@ -31,36 +31,35 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
     def defaultResult(self) -> SymbolTable:
         return self._symbolTable
 
-    # 5 mal das gleiche; kann man das kürzer/eleganter schreiben?
+    # Visit a parse tree produced by BgcDslParser#substanceDeclaration.
     def visitSubstanceDeclaration(self, ctx:BgcDslParser.SubstanceDeclarationContext):
         # TODO
-        # save name, type
+        # save type
         # save unit as node
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
         return self.visitChildren( ctx )
 
     def visitParameterDeclaration(self, ctx:BgcDslParser.ParameterDeclarationContext):
         # TODO
-        # save name, type
+        # save type
         # save unit, expression as node
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
         return self.visitChildren( ctx )
 
     def visitEnvironmentVariableDeclaration(self, ctx:BgcDslParser.EnvironmentVariableDeclarationContext):
         # TODO
-        # save name, type
+        # save type
         # save unit, expression as node
-        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )     
+        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
         return self.visitChildren( ctx )
-             
+
     # Visit a parse tree produced by BgcDslParser#compartment.
     def visitCompartment(self, ctx:BgcDslParser.CompartmentContext):
         # TODO
-        # save name
         # save node as expression
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
         return self.visitChildren(ctx)
-    
+
     # Visit a parse tree produced by BgcDslParser#connection.
     def visitConnection(self, ctx:BgcDslParser.ConnectionContext):
         # TODO

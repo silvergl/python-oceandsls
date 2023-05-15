@@ -1,7 +1,7 @@
-#
-#
-# # # an example to try PyTest
-#
+"""an example to try PyTest"""
+
+__author__ = 'stu90642'
+
 # import unittest
 #
 # #

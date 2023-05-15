@@ -1,0 +1,6 @@
+The symbol table contents:
+N = [71]
+P = [71]
+Phy = [94]
+Ki = [94]
+assimilation from Phy to Ki = [95]

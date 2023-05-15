@@ -1,3 +1,6 @@
+.DS_Store
+**/.DS_Store
+
 # src https://www.toptal.com/developers/gitignore/api/intellij
 # src https://www.toptal.com/developers/gitignore/api/python
 # src https://www.toptal.com/developers/gitignore/api/java,macos,maven,eclipse

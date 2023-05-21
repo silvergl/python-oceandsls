@@ -131,7 +131,7 @@ def _validate_format(ls: dclLSPServer, source: str):
 
     try:
         # launch parser by invoking top-level rule
-        ls.parser.configurationModel()
+        ls.parser.declarationModel()
     except OSError as err:
         # TODO add exception
         msg = err.filename.msg
@@ -168,7 +168,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
     # launches parser by invoking top-level rule
     Top_levelContext = DeclarationParser.DeclarationModelContext
-    parseTree: Top_levelContext = dcl_server.parser.configurationModel()
+    parseTree: Top_levelContext = dcl_server.parser.declarationModel()
 
     # get token index under caret position
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
@@ -195,7 +195,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
     # TODO add interesting rules
 
-    if any( rule in candidates.rules for rule in [None] ):
+    if any( rule in candidates.rules for rule in [ DeclarationParser.declarationModel ] ):
 
         symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
 
@@ -245,7 +245,7 @@ def did_save(server: dclLSPServer, params: DidSaveTextDocumentParams):
     dcl_server.parser.setInputStream( dcl_server.tokenStream )
 
     Top_levelContext = DeclarationParser.DeclarationModelContext
-    parseTree: Top_levelContext = dcl_server.parser.configurationModel()
+    parseTree: Top_levelContext = dcl_server.parser.declarationModel()
 
     # TODO
 

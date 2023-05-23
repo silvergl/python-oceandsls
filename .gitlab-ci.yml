@@ -1,4 +1,6 @@
 pylint:
+  tags:
+    - exec-docker
   stage: test
   image: python:3.7-slim
   before_script:

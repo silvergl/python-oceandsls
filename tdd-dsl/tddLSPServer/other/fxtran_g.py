@@ -48,13 +48,30 @@ scope_stack = [ ]  # Stack to track the current scope
 #                     # Save the variable names with their respective types and scopes
 #                     variables.append( (variable_name, variable_type, current_scope) )
 
+# scope-changing elements
+scope_elements = ['subroutine-stmt', 'program-stmt', 'function-stmt']
+end_scope_elements = ['end-subroutine-stmt', 'end-program-stmt', 'end-function-stmt']
+
+
+# dynamically extracted scope-changing elements
+dyn_scope_elements = set()
+
 # Iterate over all elements in the XML tree
 for element in root.iter( ):
 
+    # TODO
+    # check for element is a scope-changing by searching for scope-ending element
+    # Extract the tag name without the namespace
+    tag = element.tag.rsplit('}', 1)[-1]
+    if tag.endswith('-stmt'):
+        end_tag = 'end-' + tag
+        if root.find( f".//fx:{'end-' + tag}", ns ) is not None:
+            dyn_scope_elements.add(tag)
+
     # Reduce the scope stack when leaving scopes
-    if element.tag.endswith( 'end-subroutine-stmt' ) or element.tag.endswith( 'end-program-stmt' ) or element.tag.endswith( 'end-function-stmt' ):
+    if element.tag.endswith(tuple(end_scope_elements)):
         scope_stack.pop( )
-    elif element.tag.endswith( 'subroutine-stmt' ) or element.tag.endswith( 'program-stmt' ) or element.tag.endswith( 'function-stmt' ):
+    elif element.tag.endswith(tuple(scope_elements)):
         # Find named element
         scope_name = element.find( './/fx:n', ns ).text
         scope_stack.append( scope_name )
@@ -79,4 +96,4 @@ for element in root.iter( ):
 # TODO Debug
 # Print the list of variable names with their respective types and scopes
 for variable, variable_type, scope in variables:
-    print( f"elIf Variable: {variable}\t Type: {variable_type}\t Scope: {scope}" )
+    print( f"Variable: {variable}\t Type: {variable_type}\t Scope: {scope}" )

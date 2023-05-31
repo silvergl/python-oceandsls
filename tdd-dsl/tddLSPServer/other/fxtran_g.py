@@ -50,11 +50,13 @@ scope_stack = [ ]  # Stack to track the current scope
 
 # scope-changing elements
 scope_elements = ['subroutine-stmt', 'program-stmt', 'function-stmt']
+scope_block_statement = ['do-stmt']
 end_scope_elements = ['end-subroutine-stmt', 'end-program-stmt', 'end-function-stmt']
 
 
 # dynamically extracted scope-changing elements
 dyn_scope_elements = set()
+dyn_end_scope_elements = set()
 
 # Iterate over all elements in the XML tree
 for element in root.iter( ):
@@ -63,17 +65,25 @@ for element in root.iter( ):
     # check for element is a scope-changing by searching for scope-ending element
     # Extract the tag name without the namespace
     tag = element.tag.rsplit('}', 1)[-1]
+
     if tag.endswith('-stmt'):
-        end_tag = 'end-' + tag
-        if root.find( f".//fx:{'end-' + tag}", ns ) is not None:
-            dyn_scope_elements.add(tag)
+        # Find scope name element
+        ltag = tag.rsplit('-', 1)[0]
+        name_element = element.find( f".//fx:{ltag}-N", ns )
+
+        if not tag in dyn_scope_elements and name_element is not None:
+            end_tag = 'end-' + tag
+            if root.find( f".//fx:{end_tag}", ns ) is not None:
+                dyn_scope_elements.add(tag)
+                dyn_end_scope_elements.add(end_tag)
 
     # Reduce the scope stack when leaving scopes
-    if element.tag.endswith(tuple(end_scope_elements)):
+    if element.tag.endswith(tuple(dyn_end_scope_elements)):
         scope_stack.pop( )
-    elif element.tag.endswith(tuple(scope_elements)):
-        # Find named element
-        scope_name = element.find( './/fx:n', ns ).text
+    # Extend the scope stack when entering scopes
+    elif element.tag.endswith(tuple(dyn_scope_elements)):
+        # Find scope name
+        scope_name = name_element.find( './/fx:n', ns ).text
         scope_stack.append( scope_name )
     elif element.tag.endswith( 'T-decl-stmt' ):
         # Check if variable is not an output
@@ -97,3 +107,6 @@ for element in root.iter( ):
 # Print the list of variable names with their respective types and scopes
 for variable, variable_type, scope in variables:
     print( f"Variable: {variable}\t Type: {variable_type}\t Scope: {scope}" )
+# Print the list of found named scopes
+for scope_name in dyn_scope_elements:
+    print( f"Named scope element: {scope_name}")

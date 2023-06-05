@@ -196,55 +196,72 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
 
-    # TODO add interesting rules
+    calcVariables = False
 
-    if any( rule in candidates.rules for rule in [ DeclarationParser.declarationModel ] ):
-        # for rule in candidates.rules:
-        #     # Had to hardcode some stuff
-        #     # example rule:
-        #     if rule == DeclarationParser.RULE_featureDeclaration:
-        #         completionItems = ["ID", ":", "{", "}", "group", "sub", "feature"]
-        #         for elem in completionItems:
-        #             completionList.items.append(CompletionItem(label=elem))
-            
-        #     # parameter rule
-        #     if rule == DeclarationParser.RULE_parameterDeclaration:
-        #         completionItems = ["ID", ":", "zetta", "exa", "peta", "tera", "giga", "mega", 
-        #              "kilo", "hecto", "deca", "deci", "centi", 
-        #              "mili", "micro", "nano", "pico", "femto", 
-        #              "atto", "zepto", "yocto", "meter", "gram", 
-        #              "ton", "second", "ampere", "kelvin", "mole", 
-        #              "candela", "pascal", "Joul"]
-        #         for elem in completionItems:
-        #             completionList.items.append(CompletionItem(label=elem))
-            
-            
-        #     #group rule
-        #     if rule == DeclarationParser.RULE_featureGroupDeclaration or rule == DeclarationParser.RULE_parameterGroupDeclaration:
-        #         completionItems = ["ID", ":", "{", "}", ]
-        #         for elem in completionItems:
-        #             completionList.items.append(CompletionItem(label=elem))
-            
-            
-        #     # types
-        #     if rule == DeclarationParser.RULE_declaredType or rule == DeclarationParser.RULE_typeReference:
-        #         completionItems = ["ID", "range", "float", "zetta", "exa", "peta", "tera", "giga", "mega", 
-        #              "kilo", "hecto", "deca", "deci", "centi", 
-        #              "mili", "micro", "nano", "pico", "femto", 
-        #              "atto", "zepto", "yocto", "meter", "gram", 
-        #              "ton", "second", "ampere", "kelvin", "mole", 
-        #              "candela", "pascal", "Joul", "ELONG", "EDOUBLE", "EBoolean", 
-        #               "INT", "STRING", "WS", "ML_COMMENT", "SL_COMMENT", 
-        #               "ANY_OTHER"]
-        #         for elem in completionItems:
-        #             completionList.items.append(CompletionItem(label=elem))
-            
+    def calcLitAndSymbNames(literalNames):
+        literalNames = []
+        symbolic_names = []
+        for i in literalNames:
+            if i in dcl_server.parser.literalNames:
+                literalNames.append(i)
+            else:
+                symbolic_names.append(i)
+        return (literalNames, symbolic_names)
 
-        #     # enums
-        #     if rule == DeclarationParser.RULE_enumeral:
-        #         completionItems = []
+    def addToCompletionList(literalNames):
+        #get labels of completion candidates to return
+        symbolic_names, literal_names = calcLitAndSymbNames(literalNames)
+        for key, _ in candidates.tokens.items():
+            completionList.items.append(CompletionItem(
+                label=IntervalSet.elementName(IntervalSet, literal_names,
+                                           symbolic_names, key)))
 
+    # Feature Declaration Rule
+    if any(rule in candidates.rules for rule in [DeclarationParser.RULE_featureDeclaration]):
+        completionItems = ["ID", ":", "{", "}", "sub", "feature", "def", "requires", "excludes", "sub", "alternative", 
+                     "multiple", "group"]
+        addToCompletionList(completionItems)
 
+    # Group Rule
+    if any(rule in candidates.rules for rule in [DeclarationParser.RULE_featureGroupDeclaration, DeclarationParser.RULE_parameterGroupDeclaration]):
+        completionItems = ["ID", ":", "{", "}", "sub", "feature", "def", "requires", "excludes", "sub", "alternative", 
+                     "multiple"]
+        addToCompletionList(completionItems)
+
+    # Parameter Declaration Rule
+    if any(rule in candidates.rules for rule in [DeclarationParser.RULE_parameterDeclaration]):
+        completionItems = ["ID", ":", "zetta", "exa", "peta", "tera", "giga", "mega", 
+                     "kilo", "hecto", "deca", "deci", "centi", 
+                     "mili", "micro", "nano", "pico", "femto", 
+                     "atto", "zepto", "yocto", "meter", "gram", 
+                     "ton", "second", "ampere", "kelvin", "mole", 
+                     "candela", "pascal", "Joul"]
+        addToCompletionList(completionItems)
+    
+    # types Declaration Rule
+    if any(rule in candidates.rules for rule in [DeclarationParser.RULE_typeReference]):
+        completionItems = ["ID", "range", "float", "zetta", "exa", "peta", "tera", "giga", "mega", 
+                     "kilo", "hecto", "deca", "deci", "centi", 
+                     "mili", "micro", "nano", "pico", "femto", 
+                     "atto", "zepto", "yocto", "meter", "gram", 
+                     "ton", "second", "ampere", "kelvin", "mole", 
+                     "candela", "pascal", "Joul", "ELONG", "EDOUBLE", "EBoolean", 
+                      "INT", "STRING", "WS"]
+        addToCompletionList(completionItems)
+
+    # enum Declaration Rule
+    if any(rule in candidates.rules for rule in [DeclarationParser.RULE_enumeral]):
+        completionItems = ["ID", "range", "float", "zetta", "exa", "peta", "tera", "giga", "mega", 
+                     "kilo", "hecto", "deca", "deci", "centi", 
+                     "mili", "micro", "nano", "pico", "femto", 
+                     "atto", "zepto", "yocto", "meter", "gram", 
+                     "ton", "second", "ampere", "kelvin", "mole", 
+                     "candela", "pascal", "Joul", "ELONG", "EDOUBLE", "EBoolean", 
+                      "INT", "STRING", "WS", "def"]
+        addToCompletionList(completionItems)
+
+    # Variables finding
+    if any( rule in candidates.rules for rule in [ DeclarationParser.declarationModel ] ) and calcVariables:
 
         symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
 
@@ -254,14 +271,6 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
         for variable in variables:
             completionList.items.append( CompletionItem( label=variable, kind = CompletionItemKind.Variable ) )
-
-    #get labels of completion candidates to return
-    labels_list: List[str] = []
-    literalNames = [x.replace("'", "") for x in dcl_server.parser.literalNames]
-    for key, _ in candidates.tokens.items():
-        completionList.items.append( CompletionItem(
-            label=IntervalSet.elementName( IntervalSet, literalNames,
-                                           dcl_server.parser.symbolicNames, key ) ) )
 
     # return completion candidates labels
     return completionList

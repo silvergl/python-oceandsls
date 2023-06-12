@@ -42,7 +42,8 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
         varName = ctx.name.text # set and get the variable name here
         unit = self.visit(ctx.unit)
         description = ctx.description.text
-        scope = self._symbolTable.addNewSymbolOfType(VariableSymbol, varName, description, ctx, unit)
+        symbol = VariableSymbol(name=varName, description=description, value=ctx, attached_unit=unit)
+        scope = self._symbolTable.addSymbol(symbol)
         # TODO backlog add description as comment to SymbolTable?
         return scope
     

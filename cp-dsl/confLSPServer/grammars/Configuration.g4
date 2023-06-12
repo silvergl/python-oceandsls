@@ -17,7 +17,7 @@ configurationModel          :   'configuration' name=ID ':' declarationModel=ID
                             ;
 
 
-include                     :   'include' importedNamespace = QualifiedName ;
+include                     :   'include' importedNamespace = QualifiedName #includeDecl;
 
 //TODO deactivated? set deactivated to true if '!' else to false
 //TODO add FeatureDeclaration reference for declaration = ID

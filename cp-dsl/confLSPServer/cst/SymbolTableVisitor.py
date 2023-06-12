@@ -5,10 +5,12 @@ __author__ = 'stu222808'
 # util imports
 from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
+
 # antlr4
 from antlr4.tree.Tree import ParseTree
 
 # user relative imports
+from ...dclLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor as DeclSymbolTableVisitor
 from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Configuration.ConfigurationVisitor import ConfigurationVisitor
@@ -24,6 +26,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
+        self.declVisitor = DeclSymbolTableVisitor(name + "_ConfDeclVisit")
 
     @property
     def symbolTable(self) -> SymbolTable:
@@ -34,7 +37,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
 
     # Visit a parse tree produced by DeclarationParser#paramAssignStat.
     # 'def' name=ID type=paramType ':' unit=unitSpecification (',' description=STRING)? ('=' defaultValue=arithmeticExpression)?
-    def visitParameterAssign(self, ctx:ConfigurationParser.ParameterAssign):
+    def visitParameterAssign(self, ctx: ConfigurationParser.ParameterAssign):
         
         # define the given Parameter
         varName = ctx.name.text # set and get the variable name here
@@ -48,13 +51,17 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         pass
 
     def visitUnitSpec(self, ctx : ConfigurationParser.UnitSpec):
-        pass
+        return self.stringToUnitType(ctx.name.text)
 
     def visitFeatureConfig(self, ctx: ConfigurationParser.FeatureConfig):
         pass
 
     def visitFeatureActivate(self, ctx : ConfigurationParser.FeatureActivate):
-        pass
+        self._symbolTable.addSymbol(VariableSymbol(name= ctx.declaration, value=ctx, attached_unit=self.visitUnitSpec(ctx.unit)))
+
+    def visitIncludeDecl(self, ctx: ConfigurationParser.includeDecl):
+        self.declVisitor.visit(ctx)
+        self.symbolTable.addDependencies(self.declVisitor.symbolTable)
 
     
     def stringToPrefix(input : str):

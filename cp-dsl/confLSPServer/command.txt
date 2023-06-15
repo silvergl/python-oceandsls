@@ -1,1 +1,1 @@
-python -m (cp-dsl.)dclLSPServer
+python -m (cp-dsl.)confLSPServer

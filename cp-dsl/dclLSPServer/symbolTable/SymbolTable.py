@@ -902,6 +902,7 @@ class RoutineSymbol( ScopedSymbol ):
     A standalone function/procedure/rule.
     """
     returnType: Optional[Type]  # Can be null if result is void.
+    is_activated: bool = True # set if the feature is activated
 
     def __init__(self, name: str, returnType: Type = None):
         super().__init__( name )

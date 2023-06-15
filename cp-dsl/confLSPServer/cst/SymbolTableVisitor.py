@@ -57,7 +57,15 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         pass
 
     def visitFeatureActivate(self, ctx : ConfigurationParser.FeatureActivate):
-        self._symbolTable.addSymbol(VariableSymbol(name= ctx.declaration, value=ctx, attached_unit=self.visitUnitSpec(ctx.unit)))
+        for feature in self._symbolTable.getAllSymbols(RoutineSymbol):
+            checkForFeatureAndSetActivation(feature, ctx.declaration.text, ctx.deactivated.text)
+        def checkForFeatureAndSetActivation(feature : RoutineSymbol, searchedFeatureName : str, activate : bool):
+            if feature.name == searchedFeatureName:
+                feature.is_activated = activate
+                return
+            for feature in feature.getFeatures():
+                checkForFeatureAndSetActivation(feature, searchedFeatureName)
+            
 
     def visitIncludeDecl(self, ctx: ConfigurationParser.includeDecl):
         self.declVisitor.visit(ctx)

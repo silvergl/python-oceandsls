@@ -40,28 +40,34 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
     def visitParameterAssign(self, ctx: ConfigurationParser.ParameterAssign):
         
         # define the given Parameter
-        varName = ctx.name.text # set and get the variable name here
-        unit = self.visit(ctx.unit)
-        description = ctx.description.text
-        scope = self._symbolTable.addNewSymbolOfType(VariableSymbol, varName, description, ctx, unit)
-        # TODO backlog add description as comment to SymbolTable?
-        return scope
+        varName = ctx.declaration.text # set and get the variable name here
+        #unit = self.visit(ctx.unit) if unit != None else UnitKind.Unknown
+        checkForParamAndEdit(varName, ctx)
+                
+        def checkForParamAndEdit(searchedParamName : str, ctx : ConfigurationParser.parameterAssignment):
+            for param in self._symbolTable.getSymbolsOfType(VariableSymbol):
+                if param.name == searchedParamName:
+                    param.value = ctx
+                    return
+            # TODO: add new symbol if not found in SymbolTable?
     
     def visitParamGroup(self, ctx: ConfigurationParser.ParamGroup):
-        pass
+        return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text, VariableSymbol)
 
     def visitUnitSpec(self, ctx : ConfigurationParser.UnitSpec):
         return self.stringToUnitType(ctx.name.text)
 
     def visitFeatureConfig(self, ctx: ConfigurationParser.FeatureConfig):
-        pass
+        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text)
 
     def visitFeatureActivate(self, ctx : ConfigurationParser.FeatureActivate):
         for feature in self._symbolTable.getAllSymbols(RoutineSymbol):
-            checkForFeatureAndSetActivation(feature, ctx.declaration.text, ctx.deactivated.text)
+            checkForFeatureAndSetActivation(feature, ctx.declaration.text, False if ctx.deactivated.text == '!' else True)
+            
         def checkForFeatureAndSetActivation(feature : RoutineSymbol, searchedFeatureName : str, activate : bool):
             if feature.name == searchedFeatureName:
                 feature.is_activated = activate
+                # TODO: Do we have to add the element again, or does it just save the changes?
                 return
             for feature in feature.getFeatures():
                 checkForFeatureAndSetActivation(feature, searchedFeatureName)

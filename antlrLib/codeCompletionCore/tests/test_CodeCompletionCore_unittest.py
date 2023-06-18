@@ -2,12 +2,18 @@
 
 __author__ = 'sgu'
 
+# util imports
 from unittest import TestCase
 
+# antlr4
 from antlr4 import InputStream, CommonTokenStream, DiagnosticErrorListener
+
+# antlr4-c3
+from codeCompletionCore.CodeCompletionCore import CodeCompletionCore
+
+# grammar imports (example-DSL module dependency)
 from exampleLSPServer.gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
 from exampleLSPServer.gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
-from codeCompletionCore.CodeCompletionCore import CodeCompletionCore
 
 
 class CodeCompletionCoreTest( TestCase ):

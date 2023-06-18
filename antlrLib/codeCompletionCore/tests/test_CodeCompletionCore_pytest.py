@@ -1,16 +1,22 @@
-'''pytest example for CodeCompletionCore'''
+"""pytest example for CodeCompletionCore"""
 
 __author__ = 'sgu'
 
+# util imports
+import pytest
 from typing import Set
 
-import pytest
+# antlr4
 from antlr4 import InputStream, CommonTokenStream, DiagnosticErrorListener
 
-from exampleLSPServer.gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
-from exampleLSPServer.gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
+# antlr4-c3
 from codeCompletionCore.CodeCompletionCore import CodeCompletionCore
 
+# grammar imports (example-DSL module dependency)
+from exampleLSPServer.gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
+from exampleLSPServer.gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
+
+# tokenIndexes for collect_candidates test parameterization
 inputTokenIndex: Set[ int ] = {0, 1, 2, 4, 6, 8}
 
 

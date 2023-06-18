@@ -24,7 +24,7 @@ inputTokenIndex: Set[ int ] = {0, 1, 2, 4, 6, 8}
 @pytest.fixture
 def codeCompletionCore( ) -> CodeCompletionCore:
     # create input stream of characters for lexer
-    # Most simple setup
+    # most simple setup
     input_stream = InputStream( "var c = a + b()" )
 
     # create lexer and parser objects and token stream pipe between them
@@ -37,7 +37,7 @@ def codeCompletionCore( ) -> CodeCompletionCore:
     # launch parser by invoking rule 'expression'
     ast = parser.expression( )
 
-    # launch c3 core with parser:Parser
+    # launch c3 core with parser
     return CodeCompletionCore( parser )
 
 

@@ -20,7 +20,7 @@ class CodeCompletionCoreTest( TestCase ):
 
     def setUp( self ) -> None:
         # create input stream of characters for lexer
-        # Most simple setup
+        # most simple setup
         self.input_stream = InputStream( "var c = a + b()" )
 
         # create lexer and parser objects and token stream pipe between them
@@ -33,7 +33,7 @@ class CodeCompletionCoreTest( TestCase ):
         # launch parser by invoking rule 'expression'
         self.ast = self.parser.expression( )
 
-        # launch c3 core with parser:Parser
+        # launch c3 core with parser
         self.core = CodeCompletionCore( self.parser )
 
     # 1) At the input start.

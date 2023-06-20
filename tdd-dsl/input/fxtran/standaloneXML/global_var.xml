@@ -1,4 +1,4 @@
-<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standalone/global_var.f90"><module-stmt>module <module-N><N n="GLOBAL_VAR"><n>global_var</n></N></module-N></module-stmt>
+<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="global_var.f90"><module-stmt>module <module-N><N n="GLOBAL_VAR"><n>global_var</n></N></module-N></module-stmt>
    <implicit-none-stmt>implicit none</implicit-none-stmt>
 
    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_> :: <EN-decl-LT><EN-decl><EN-N><N n="GL_A"><n>gl_a</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="GL_B"><n>gl_b</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>

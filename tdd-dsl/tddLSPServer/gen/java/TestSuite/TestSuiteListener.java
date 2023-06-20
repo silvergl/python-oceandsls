@@ -1,4 +1,4 @@
-// Generated from TestSuite.g4 by ANTLR 4.12.0
+// Generated from TestSuite.g4 by ANTLR 4.13.0
 package TestSuite;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -27,6 +27,16 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTest_case(TestSuiteParser.Test_caseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TestSuiteParser#src_path}.
+	 * @param ctx the parse tree
+	 */
+	void enterSrc_path(TestSuiteParser.Src_pathContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestSuiteParser#src_path}.
+	 * @param ctx the parse tree
+	 */
+	void exitSrc_path(TestSuiteParser.Src_pathContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#test_vars}.
 	 * @param ctx the parse tree
@@ -68,25 +78,15 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitTest_scope(TestSuiteParser.Test_scopeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TestSuiteParser#test_files}.
+	 * Enter a parse tree produced by {@link TestSuiteParser#use_modules}.
 	 * @param ctx the parse tree
 	 */
-	void enterTest_files(TestSuiteParser.Test_filesContext ctx);
+	void enterUse_modules(TestSuiteParser.Use_modulesContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TestSuiteParser#test_files}.
+	 * Exit a parse tree produced by {@link TestSuiteParser#use_modules}.
 	 * @param ctx the parse tree
 	 */
-	void exitTest_files(TestSuiteParser.Test_filesContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link TestSuiteParser#test_modules}.
-	 * @param ctx the parse tree
-	 */
-	void enterTest_modules(TestSuiteParser.Test_modulesContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TestSuiteParser#test_modules}.
-	 * @param ctx the parse tree
-	 */
-	void exitTest_modules(TestSuiteParser.Test_modulesContext ctx);
+	void exitUse_modules(TestSuiteParser.Use_modulesContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#test_module}.
 	 * @param ctx the parse tree

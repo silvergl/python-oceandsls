@@ -23,6 +23,7 @@ import logging
 import re
 import sys
 import uuid
+import os.path
 # debug import
 from pprint import pprint
 from typing import List, Optional
@@ -180,14 +181,14 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
         return completionList
 
     # TODO build symboltable
-    symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
+    symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions', os.getcwd( ) )
     symbolTable = symbolTableVisitor.visit( parseTree )
 
     # launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore( tdd_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {TestSuiteParser, TestSuiteParser}
+    core.preferredRules = {TestSuiteParser.RULE_reference}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
@@ -236,7 +237,8 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     """Text document did save notification."""
 
     # set input stream of characters for lexer
-    text_doc: Document = tdd_server.workspace.get_document( params.text_document.uri )
+    textURI = params.text_document.uri
+    text_doc: Document = tdd_server.workspace.get_document( textURI )
     source: str = text_doc.source
     input_stream: InputStream = InputStream( source )
 
@@ -249,7 +251,8 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     Top_levelContext = TestSuiteParser.Test_suiteContext
     parseTree: Top_levelContext = tdd_server.parser.test_suite( )
 
-    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor( )
+    # set current working directory as working directory for test files
+    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor(testWorkPath= os.getcwd( ))
 
     # TODO add arguments templatePath testPath testFolder
     # write files

@@ -12,7 +12,8 @@ import os
 # debug
 logging.basicConfig( level = logging.DEBUG )
 logger = logging.getLogger( __name__ )
-showDebugOutput: bool = False
+# TODO debug flag
+showDebugOutput: bool = True
 
 
 def merge_file_content( file_content_0: str, file_content_1: str ) -> str:
@@ -44,7 +45,7 @@ def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', f
     :return: None
     '''
 
-    # Define the folder and filename
+    # Define the folder and filename. Current working directory is ignored for absolut test_path
     path = os.path.join( os.getcwd( ), test_path, test_folder )
 
     # Create folder if it doesn't exist
@@ -57,6 +58,8 @@ def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', f
     filename = f"{filename.lower( )}.pf"
     path = os.path.join( os.getcwd( ), path, filename )
     if os.path.exists( path ):
+        if showDebugOutput and logger.isEnabledFor( logging.DEBUG):
+            logger.debug(f'...try merge {path}')
         with open( path, mode = 'r', encoding = 'utf-8' ) as f:
             content_org = f.read( )
         content = merge_file_content( content, content_org )

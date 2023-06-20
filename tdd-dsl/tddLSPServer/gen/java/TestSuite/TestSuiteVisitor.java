@@ -1,4 +1,4 @@
-// Generated from TestSuite.g4 by ANTLR 4.12.0
+// Generated from TestSuite.g4 by ANTLR 4.13.0
 package TestSuite;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -22,6 +22,12 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTest_case(TestSuiteParser.Test_caseContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#src_path}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSrc_path(TestSuiteParser.Src_pathContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#test_vars}.
 	 * @param ctx the parse tree
@@ -47,17 +53,11 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTest_scope(TestSuiteParser.Test_scopeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#test_files}.
+	 * Visit a parse tree produced by {@link TestSuiteParser#use_modules}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTest_files(TestSuiteParser.Test_filesContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#test_modules}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTest_modules(TestSuiteParser.Test_modulesContext ctx);
+	T visitUse_modules(TestSuiteParser.Use_modulesContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#test_module}.
 	 * @param ctx the parse tree

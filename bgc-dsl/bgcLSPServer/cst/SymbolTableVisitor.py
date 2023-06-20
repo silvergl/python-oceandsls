@@ -5,11 +5,20 @@ __author__ = 'stu90642'
 # util imports
 from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
+from bgc-dsl.bgcLSPServer.gen.python.BgcDsl.BgcDslParser import BgcDslParser
+
+from bgc-dsl.bgcLSPServer.gen.python.BgcDsl.BgcDslParser import BgcDslParser
+
+from bgc-dsl.bgcLSPServer.gen.python.BgcDsl.BgcDslParser import BgcDslParser
+
+from bgc-dsl.bgcLSPServer.gen.python.BgcDsl.BgcDslParser import BgcDslParser
+
 # antlr4
 from antlr4.tree.Tree import ParseTree
 
 # user relative imports
-from ..symbolTable.SymbolTable import ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol, SymbolTableOptions
+from ..symbolTable.SymbolTable import (ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol, SymbolTableOptions, UnitSymbol,
+                                       Unit)
 from ..gen.python.BgcDsl.BgcDslParser import BgcDslParser
 from ..gen.python.BgcDsl.BgcDslVisitor import BgcDslVisitor
 
@@ -31,18 +40,54 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
     def defaultResult(self) -> SymbolTable:
         return self._symbolTable
 
+
+    
+
+    def visitArithmeticExpression(self, ctx: BgcDslParser.ArithmeticExpressionContext):
+        return super().visitArithmeticExpression(ctx)
+    
+
+    def visitUnit(self, ctx:BgcDslParser.UnitContext):
+        element=self.visit(ctx.unitElement)
+        element_node = self.visitUnitElement(element)
+        return Unit(ctx.)
+
+    def visitUnitElement(self, ctx: BgcDslParser.UnitElementContext):
+        prefix = self.visit(ctx.prefixUnit)
+        group = self.visit(ctx.groupUnit)
+
+        prefix_ctx = self.visitPrefixUnit(prefix)
+        group_ctx = self.visitGroupUnit(group)
+
+        return super().visitUnitElement(ctx)
+    
+    def visitPrefixUnit(self, ctx: BgcDslParser.PrefixUnitContext):
+        ctx.
+        return super().visitPrefixUnit(ctx)
+    
+    def visitGroupUnit(self, ctx: BgcDslParser.GroupUnitContext):
+        return super().visitGroupUnit(ctx)
+
     # Visit a parse tree produced by BgcDslParser#substanceDeclaration.
     def visitSubstanceDeclaration(self, ctx:BgcDslParser.SubstanceDeclarationContext):
         # TODO
         # save type
         # save unit as node
-        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
+        unit =self.visit(ctx.unit)
+        ctx.
+        unit_node = self.visit_unit(unit)
+        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name, ctx=None, unit=unit_node, type=ctx.type_)
         return self.visitChildren( ctx )
 
     def visitParameterDeclaration(self, ctx:BgcDslParser.ParameterDeclarationContext):
         # TODO
         # save type
         # save unit, expression as node
+        ctx.ID
+        unit = ctx.unit()
+        unit_node = self.visit_unit()
+        expr = ctx.arithmeticExpression()
+        expr_node = self.visit_arithmeticExpression()
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
         return self.visitChildren( ctx )
 
@@ -50,7 +95,7 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
         # TODO
         # save type
         # save unit, expression as node
-        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
+        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx, ctx.name, ctx )
         return self.visitChildren( ctx )
 
     # Visit a parse tree produced by BgcDslParser#compartment.

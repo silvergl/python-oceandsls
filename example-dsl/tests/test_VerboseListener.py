@@ -2,71 +2,66 @@
 
 __author__ = 'sgu'
 
-# pytest
-from unittest import main, TestCase, SkipTest
-
-#utils
-import sys, os
-
-# debug import
-# from pprint import pprint
-# pprint(sys.path)
+# unittest
+from unittest import SkipTest, TestCase
 
 # antlr
-from antlr4.error.ErrorListener import ErrorListener
-from antlr4.Recognizer import Recognizer, RecognitionException
-from antlr4.InputStream import InputStream
 from antlr4.CommonTokenStream import CommonTokenStream
-from antlr4.Token import Token
+from antlr4.InputStream import InputStream
 
 # user relative imports
-try:
-    # fail relative import beyond top-level package
-    from ..exampleLSPServer.gen.python.exampleDsl.exampleDslLexer import exampleDslLexer, ParserRuleContext
-    from ..exampleLSPServer.gen.python.exampleDsl.exampleDslParser import exampleDslParser
-    from ..exampleLSPServer.gen.python.exampleDsl.exampleDslVisitor import exampleDslVisitor
-except Exception as inst:
-    # debug import
-    import sys, os
-    from pprint import pprint
-    pprint(sys.path)
-    raise SkipTest("Skipping all tests in test_feature.py")
+from cst.VerboseListener import VerboseListener
+from gen.python.exampleDsl.exampleDslLexer import exampleDslLexer
+from gen.python.exampleDsl.exampleDslParser import exampleDslParser
+
+# fail relative import beyond top-level package
+# try:
+#     from ..exampleLSPServer.cst.VerboseListener import VerboseListener
+#     from ..exampleLSPServer.gen.python.exampleDsl.exampleDslLexer import exampleDslLexer
+#     from ..exampleLSPServer.gen.python.exampleDsl.exampleDslParser import exampleDslParser
+# except Exception as inst:
+#     # debug import
+#     import sys, os
+#     from pprint import pprint
+#
+#     pprint( sys.path )
+#     raise SkipTest( "Skipping all tests in test_feature.py" )
 
 
+class VerboseListenerTest( TestCase ):
 
-class VerboseListener(ErrorListener):
-    def __init__(self):
-        super().__init__()
-
-    def test(self=None, msg:str="bar"):
-        print(msg)
-
-    def syntaxError(self, recognizer:Recognizer, offendingSymbol:Token, line:int, column:int, msg:str, e:RecognitionException = None):
-        print("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg), file=sys.stderr)
-        # raise Exception("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg))
-
-
-class TestMyParser(TestCase):
-    def test_with_testfile(self):
+    def setup( self, msg :str = "" ) -> exampleDslParser:
         # set listener
-        error_listener = VerboseListener()
+        self.errorListener = VerboseListener( )
         # create input stream of characters for lexer
-        input_stream = InputStream( "c = + b()\n" )
+        inputStream = InputStream( msg )
 
         # create lexer and parser objects and token stream pipe between them
-        lexer = exampleDslLexer(input_stream)
-        lexer.removeErrorListeners()
-        lexer.addErrorListener(error_listener)
+        lexer = exampleDslLexer( inputStream )
+        lexer.removeErrorListeners( )
+        lexer.addErrorListener( self.errorListener )
 
-        tokenStream = CommonTokenStream(lexer)
+        tokenStream = CommonTokenStream( lexer )
 
-        parser = exampleDslParser(tokenStream)
-        parser.removeErrorListeners()
-        parser.addErrorListener(error_listener)
+        parser = exampleDslParser( tokenStream )
+        parser.removeErrorListeners( )
+        parser.addErrorListener( self.errorListener )
 
+        print("run setup")
+
+        return parser
+
+    def test_valid_input(self):
         # launch parser by invoking rule 'prog'
-        ast = parser.prog()
+        parser = self.setup("c = a + b()\n")
+        ast = parser.prog( )
 
+        # check for no symbols in errorListener
+        self.assertEqual(len(self.errorListener.symbol), 0)
 
-if __name__ == '__main__':
-    main()
+    def test_invalid_input(self):
+        parser = self.setup("c = + b()\n")
+        ast = parser.prog( )
+
+        # check for '+' symbol in errorListener
+        self.assertEqual(self.errorListener.symbol, '+')

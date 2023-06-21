@@ -28,7 +28,7 @@ from gen.python.exampleDsl.exampleDslParser import exampleDslParser
 #     raise SkipTest( "Skipping all tests in test_feature.py" )
 
 
-class VerboseListenerTest( TestCase ):
+class TestVerboseListener( TestCase ):
 
     def setup( self, msg :str = "" ) -> exampleDslParser:
         # set listener
@@ -46,8 +46,6 @@ class VerboseListenerTest( TestCase ):
         parser = exampleDslParser( tokenStream )
         parser.removeErrorListeners( )
         parser.addErrorListener( self.errorListener )
-
-        print("run setup")
 
         return parser
 

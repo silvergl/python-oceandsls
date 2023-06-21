@@ -16,7 +16,7 @@ from exampleLSPServer.gen.python.TestExprCore.TestExprCoreLexer import TestExprC
 from exampleLSPServer.gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
 
 
-class CodeCompletionCoreTest( TestCase ):
+class TestCodeCompletionCore( TestCase ):
 
     def setUp( self ) -> None:
         # create input stream of characters for lexer

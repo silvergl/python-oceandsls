@@ -4,13 +4,13 @@ __author__ = 'sgu'
 
 # util imports
 import pytest
-from typing import Set
+from typing import List, Set
 
 # antlr4
-from antlr4 import InputStream, CommonTokenStream, DiagnosticErrorListener
+from antlr4 import CommonTokenStream, DiagnosticErrorListener, InputStream
 
 # antlr4-c3
-from codeCompletionCore.CodeCompletionCore import CodeCompletionCore
+from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
 
 # grammar imports (example-DSL module dependency)
 from exampleLSPServer.gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
@@ -18,15 +18,16 @@ from exampleLSPServer.gen.python.TestExprCore.TestExprCoreParser import TestExpr
 
 # tokenIndexes for collect_candidates test parameterization
 inputTokenIndex: Set[ int ] = {0, 1, 2, 4, 6, 8}
+# input stream for core
+inputStream: List[ str ] = [ "var c = a + b()" ]
 
 
 # Core set up
-@pytest.fixture
-def tester( streamInput: str = "var c = a + b()" ) -> CodeCompletionCore:
+@pytest.fixture( scope = "function" )
+def core( request ) -> CodeCompletionCore:
     # create input stream of characters for lexer
     # most simple setup
-    print( streamInput )
-    input_stream = InputStream( streamInput )
+    input_stream = InputStream( request.param )
 
     # create lexer and parser objects and token stream pipe between them
     lexer = TestExprCoreLexer( input_stream )
@@ -36,24 +37,24 @@ def tester( streamInput: str = "var c = a + b()" ) -> CodeCompletionCore:
     parser.addErrorListener( DiagnosticErrorListener )
 
     # launch parser by invoking rule 'expression'
-    ast = parser.expression( )
+    parser.expression( )
 
     # launch c3 core with parser
     return CodeCompletionCore( parser )
 
 
-class CodeCompletionCoreTest:
+class TestCodeCompletionCore:
+    @pytest.mark.parametrize( "core", inputStream, indirect = [ "core" ] )
     @pytest.mark.parametrize( "tokenIndex", inputTokenIndex )
-    @pytest.mark.parametrize( 'tester', {"var c = + b()"}, indirect = True )
-    def test_collect_candidates( self, tester, tokenIndex ) -> None:
+    def test_collect_candidates( self, core, tokenIndex ) -> None:
         """
         Test collected candidates for 'var c = a + b()' at tokenIndex
 
-        :param tester: test fixture
+        :param core: test fixture to set up the core
         :param tokenIndex: tokenIndex from caret
         :return:
         """
-        candidates = tester.collectCandidates( tokenIndex )
+        candidates: CandidatesCollection = core.collectCandidates( tokenIndex )
         match tokenIndex:
             # At the input start.
             case 0:

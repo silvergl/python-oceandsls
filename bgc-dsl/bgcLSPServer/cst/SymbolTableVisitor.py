@@ -17,8 +17,9 @@ from bgc-dsl.bgcLSPServer.gen.python.BgcDsl.BgcDslParser import BgcDslParser
 from antlr4.tree.Tree import ParseTree
 
 # user relative imports
-from ..symbolTable.SymbolTable import (ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol, SymbolTableOptions, UnitSymbol,
-                                       Unit)
+from ..symbolTable.SymbolTable import (ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol, 
+                                       SymbolTableOptions, UnitSymbol, FundamentalUnit, FundamentalType
+                                       )
 from ..gen.python.BgcDsl.BgcDslParser import BgcDslParser
 from ..gen.python.BgcDsl.BgcDslVisitor import BgcDslVisitor
 
@@ -50,7 +51,7 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
     def visitUnit(self, ctx:BgcDslParser.UnitContext):
         element=self.visit(ctx.unitElement)
         element_node = self.visitUnitElement(element)
-        return Unit(ctx.)
+        return FundamentalUnit(ctx.)
 
     def visitUnitElement(self, ctx: BgcDslParser.UnitElementContext):
         prefix = self.visit(ctx.prefixUnit)
@@ -62,9 +63,24 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
         return super().visitUnitElement(ctx)
     
     def visitPrefixUnit(self, ctx: BgcDslParser.PrefixUnitContext):
-        ctx.
-        return super().visitPrefixUnit(ctx)
+         prefix = extract_prefix(ctx.UNIT_STRING.txt)
+         unit = extract_unit(ctx.UNIT_STRING.txt)
+         return FundamentalUnit(ctx, unit_name, []. )
     
+    def stringToPrefix(input : str):
+        for prefix in UnitPrefix:
+            if vars(prefix)["_name_"].lower() == input.lower():
+                return prefix
+        return UnitPrefix.NoP
+    
+    
+    def stringToUnitType(input : str):
+        for kind in UnitKind:
+            if vars(kind)["_name_"].lower() == input.lower():
+                return kind
+        return UnitKind.Unknown
+
+
     def visitGroupUnit(self, ctx: BgcDslParser.GroupUnitContext):
         return super().visitGroupUnit(ctx)
 

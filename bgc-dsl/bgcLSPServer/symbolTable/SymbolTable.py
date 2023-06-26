@@ -96,7 +96,7 @@ class UnitKind( Enum ):
     ton = 10
 
 
-class UnitPrefix:
+class UnitPrefix(Enum):
     """
     Rough categorization of a unit from SI prefixes.
     """

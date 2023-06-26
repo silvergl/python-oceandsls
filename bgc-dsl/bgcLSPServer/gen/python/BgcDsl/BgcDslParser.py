@@ -1688,6 +1688,7 @@ class BgcDslParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.unit_string = None
             self.custom = None # Token
             self.substance = None # Token
             self.exponent = None # Token

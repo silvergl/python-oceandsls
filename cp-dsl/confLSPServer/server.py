@@ -170,7 +170,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
 
     # launches parser by invoking top-level rule
-    Top_levelContext = ConfigurationParser.DeclarationModelContext
+    Top_levelContext = ConfigurationParser.ConfigurationModelContext
     parseTree: Top_levelContext = conf_server.parser.configurationModel()
 
     # get token index under caret position
@@ -217,7 +217,10 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
                                            symbolic_names, key)))
 
     
-
+    #TODO: Add Rules
+    addToCompletionList(ConfigurationParser.literalNames)
+    addToCompletionList(ConfigurationParser.symbolicNames)
+    
     # Variables finding
     if any( rule in candidates.rules for rule in [ ConfigurationParser.configurationModel ] ):
 
@@ -236,8 +239,8 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 def get_lsp_symbol_type(nameOfType : str):
     # predefine some module and function keywords
     #TODO: Edit for ConfigurationDSL
-    module = ['model', 'types', 'group', 'required', 'requires', 'excludes', 'sub', 'alternative', 'enum']
-    function = ['feature', 'multiple', 'def']
+    module = ['include', 'configuration', 'group']
+    function = ['feature', 'multiple', 'def', 'activate']
     # Define a regex pattern for literalNames of the parser
     # regex_pattern = DeclarationParser.literalNames
     # regex_pattern = '|'.join(regex_pattern)
@@ -363,8 +366,8 @@ def did_save(server: confLSPServer, params: DidSaveTextDocumentParams):
     conf_server.tokenStream = CommonTokenStream( conf_server.lexer )
     conf_server.parser.setInputStream( conf_server.tokenStream )
 
-    Top_levelContext = ConfigurationParser.DeclarationModelContext
-    parseTree: Top_levelContext = conf_server.parser.declarationModel()
+    Top_levelContext = ConfigurationParser.ConfigurationModelContext
+    parseTree: Top_levelContext = conf_server.parser.configurationModel()
 
     # TODO
 

@@ -4,8 +4,9 @@ __author__ = 'sgu'
 
 # utils
 import asyncio
+import os.path
 import threading
-from typing import List, ParamSpec
+from typing import List, ParamSpec, Type
 
 # antlr4
 from antlr4 import ParserRuleContext
@@ -15,7 +16,7 @@ from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 
 Top_levelContext = TestSuiteParser.Test_suiteContext
 del TestSuiteParser
-from ..symbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
+from ..symbolTable.SymbolTable import FunctionSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 from .computeTokenIndex import TokenPosition
 
 P = ParamSpec( 'P' )
@@ -66,7 +67,7 @@ def getScope( context: ParserRuleContext, symbolTable: SymbolTable ):
 
 
 def getAllSymbolsOfType( scope: ScopedSymbol, symbolType: type ):
-    symbols: List[ Symbol ] = run_async( scope.getSymbolsOfType, symbolType )
+    symbols: List[ Symbol ] = run_async( scope.getSymbolsOfType, symbolType, True )
     parent = scope.parent( )
     while parent is not None and not isinstance( parent, ScopedSymbol ):
         parent = parent.parent( )
@@ -75,24 +76,38 @@ def getAllSymbolsOfType( scope: ScopedSymbol, symbolType: type ):
     return symbols
 
 
-def suggestVariables( symbolTable: SymbolTable, position: TokenPosition ):
+def suggestSymbols( symbolTable: SymbolTable, position: TokenPosition, symbolType: Type = VariableSymbol ) -> List[ str ]:
     context = position.context
     scope = getScope( context, symbolTable )
     symbols: List[ Symbol ]
     if isinstance( scope, ScopedSymbol ):  # Local scope
-        symbols = getAllSymbolsOfType( scope, VariableSymbol )
+        symbols = getAllSymbolsOfType( scope, symbolType )
     else:  # Global scope
-        symbols = run_async( symbolTable.getSymbolsOfType, VariableSymbol )
+        symbols = run_async( symbolTable.getSymbolsOfType, symbolType )
 
-    variable = position.context
-    while not isinstance( variable, Top_levelContext ) and variable.parentCtx is not None:
-        variable = variable.parentCtx
+    # TODO deprecated if not in preferred rule
+    # variable = position.context
+    # while not isinstance( variable, Top_levelContext ) and variable.parentCtx is not None:
+    #     variable = variable.parentCtx
+    #
+    # return filterSymbols( position.text if variable is not None else '', symbols, symbolType )
+    return filterSymbols( position.text, symbols, symbolType )
 
-    return filterTokens( position.text if variable is not None else '', list( map( lambda s: s.name, symbols ) ) )
 
+def filterSymbols( text: str, symbols: List[ Symbol ], symbolType: Type = VariableSymbol ) -> List[ str ]:
+    match symbolType:
+        case symbolType if issubclass( symbolType, PathSymbol ):
+            candidates = list( map( lambda s: s.value, symbols ) )
+            # Add os separator if missing at path end
+            # if not text.endswith(os.sep):
+            #     candidates = list( map( lambda c: f"{os.sep}{c}" , candidates ) )
 
-def filterTokens( text: str, candidates: List[ str ] ):
-    if len( text.strip( ) ) == 0:
-        return candidates
-    else:
-        return list( filter( lambda c: c.lower( ).startswith( text.lower( ) ), candidates ) )
+            return candidates
+        case symbolType if any( map( lambda sType: issubclass( symbolType, sType ), [ VariableSymbol, ModuleSymbol, RoutineSymbol ] ) ):
+            candidates = list( map( lambda s: s.name, symbols ) )
+            if len( text.strip( ) ) == 0:
+                return candidates
+            else:
+                return list( filter( lambda c: c.lower( ).startswith( text ), candidates ) )
+        case _:
+            return [ ]

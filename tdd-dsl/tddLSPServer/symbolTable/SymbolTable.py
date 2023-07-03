@@ -173,10 +173,7 @@ class FundamentalUnit( Unit ):
     A single class for all fundamental units which are mostly SI units. They are distinguished via the kind field.
     """
 
-    def __init__(
-            self, name: str, baseTypes = [ ], unitPrefix = UnitPrefix.NoP, unitKind = UnitKind.Unknown,
-            referenceKind = ReferenceKind.Irrelevant
-            ):
+    def __init__( self, name: str, baseTypes = [ ], unitPrefix = UnitPrefix.NoP, unitKind = UnitKind.Unknown, referenceKind = ReferenceKind.Irrelevant ):
         super( ).__init__( name = name, baseTypes = baseTypes, kind = unitKind, reference = referenceKind, prefix = unitPrefix )
 
     @classproperty
@@ -457,11 +454,22 @@ class TypedSymbol( Symbol ):
     """
     A symbol with an attached type (variables, fields etc.).
     """
-    attached_type: Optional[ Type ]
 
-    def __init__( self, name: str, attached_type: Type = None ):
+    # Type such as int
+    attached_type: Optional[ Type ]
+    # TODO make enum baseclass?
+    # List of keys such as parameter
+    attached_type_keys: Optional[ List[ str ] ]
+
+    def __init__( self, name: str, attached_type: Type = None, attached_type_keys = None ):
         super( ).__init__( name )
+
+        # mutable default argument
+        if attached_type_keys is None:
+            attached_type_keys = [ ]
+
         self.attached_type = attached_type
+        self.attached_type_keys = attached_type_keys
 
 
 class UnitSymbol( TypedSymbol ):
@@ -470,8 +478,8 @@ class UnitSymbol( TypedSymbol ):
     """
     attached_unit: Optional[ Unit ]
 
-    def __init__( self, name: str, attached_unit: Unit, attached_type: Type = None ):
-        super( ).__init__( name, attached_type )
+    def __init__( self, name: str, attached_type: Type = None, attached_keys = None, attached_unit: Unit = None ):
+        super( ).__init__( name, attached_type, attached_keys )
         self.attached_unit = attached_unit
 
 
@@ -637,7 +645,7 @@ class ScopedSymbol( Symbol ):
 
         return result
 
-    async def getSymbolsOfType( self, t: type ) -> List[ T ]:
+    async def getSymbolsOfType( self, t: type, localOnly = True ) -> List[ T ]:
         """
         :param t: The type of the objects to return.
         :return: A promise resolving to direct children of a given type.
@@ -646,6 +654,10 @@ class ScopedSymbol( Symbol ):
         for child in self.children( ):
             if isinstance( child, t ):
                 result.append( child )
+
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
+            localList: List[ T ] = await self.parent( ).getSymbolsOfType(t, True )
+            result.extend( localList )
 
         return result
 
@@ -867,12 +879,21 @@ class BlockSymbol( ScopedSymbol ):
     pass
 
 
+class ModuleSymbol( ScopedSymbol ):
+    pass
+
+
 class VariableSymbol( UnitSymbol ):
 
-    def __init__( self, name: str, value = None, attached_type: Type = None ):
-        super( ).__init__( name, attached_type )
+    # TODO add unit
+    def __init__( self, name: str, value = None, attached_type: Type = None, attached_keys: List[ str ] = None ):
+        super( ).__init__( name, attached_type, attached_keys )
 
         self.value = value
+
+
+class PathSymbol( VariableSymbol ):
+    pass
 
 
 class LiteralSymbol( UnitSymbol ):
@@ -906,6 +927,10 @@ class RoutineSymbol( ScopedSymbol ):
 
     def getParameters( self, localOnly = True ) -> Coroutine[ List[ T ] ]:
         return self.getSymbolsOfType( ParameterSymbol )
+
+
+class FunctionSymbol( RoutineSymbol ):
+    pass
 
 
 class MethodFlags( Enum ):
@@ -1091,7 +1116,7 @@ class SymbolTable( ScopedSymbol ):
     def addNewSymbolOfType(
             self, t: type, parent: Optional[ ScopedSymbol ] = None, *my_args: P.args or None,
             **my_kwargs: P.kwargs or None
-            ) -> T:
+    ) -> T:
         result = t( *my_args, **my_kwargs )
         if parent is None or parent is self:
             self.addSymbol( result )
@@ -1103,7 +1128,7 @@ class SymbolTable( ScopedSymbol ):
     async def addNewNamespaceFromPath(
             self, parent: Optional[ ScopedSymbol ], path: str,
             delimiter = "."
-            ) -> NamespaceSymbol:
+    ) -> NamespaceSymbol:
         """
         Asynchronously adds a new namespace to the symbol table or the given parent. The path parameter specifies a
         single namespace name or a chain of namespaces (which can be e.g. "outer.intermittent.inner.final"). If any of

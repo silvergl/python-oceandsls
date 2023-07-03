@@ -32,7 +32,7 @@ test_suite              : cases+=test_case
 
 /** test case*/
 test_case               : 'test' name=ID ':' NEWLINE
-                          srcpath=src_path
+                          'srcpath' ':' srcpath=src_path
                           scope=test_scope
                           vars=test_vars
                           assertions+=test_assertion
@@ -40,10 +40,9 @@ test_case               : 'test' name=ID ':' NEWLINE
                         ;
 
 // TODO use special literal for filepath eg FILEPATH : [-.a-zA-Z0-9:/\\]+ ;
-/** files containing the tests*/
-src_path              : 'srcpath' ':' path=STRING NEWLINE
+/** Placeholder for code completion of system path to source code files*/
+src_path                : path=STRING NEWLINE
                         ;
-
 
 /** variables used in test case; ends on newline*/
 test_vars               : 'var' ':' NEWLINE

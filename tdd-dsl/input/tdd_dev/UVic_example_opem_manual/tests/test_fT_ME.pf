@@ -8,7 +8,7 @@ SUBROUTINE test_fT_ME()
  REAL(dp) :: xIntercept, yIntercept
 
  xIntercept = 283D0/19D0
- yIntercept = -(283D0/520D0)
+ yIntercept = nprey
  
  ! asserts x-intercept
  @assertEqual( 0D0, fT_ME( xIntercept ), message='fails x-intercept at 14.89D0', tolerance=1D-12)

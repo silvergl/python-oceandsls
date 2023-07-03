@@ -284,30 +284,34 @@ public class TestSuiteParser extends Parser {
 			setState(83);
 			match(NEWLINE);
 			setState(84);
-			((Test_caseContext)_localctx).srcpath = src_path();
+			match(T__2);
 			setState(85);
-			((Test_caseContext)_localctx).scope = test_scope();
+			match(T__1);
 			setState(86);
-			((Test_caseContext)_localctx).vars = test_vars();
+			((Test_caseContext)_localctx).srcpath = src_path();
 			setState(87);
+			((Test_caseContext)_localctx).scope = test_scope();
+			setState(88);
+			((Test_caseContext)_localctx).vars = test_vars();
+			setState(89);
 			((Test_caseContext)_localctx).test_assertion = test_assertion();
 			((Test_caseContext)_localctx).assertions.add(((Test_caseContext)_localctx).test_assertion);
-			setState(92);
+			setState(94);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(88);
+					setState(90);
 					match(NEWLINE);
-					setState(89);
+					setState(91);
 					((Test_caseContext)_localctx).test_assertion = test_assertion();
 					((Test_caseContext)_localctx).assertions.add(((Test_caseContext)_localctx).test_assertion);
 					}
 					} 
 				}
-				setState(94);
+				setState(96);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
@@ -354,10 +358,6 @@ public class TestSuiteParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(95);
-			match(T__2);
-			setState(96);
-			match(T__1);
 			setState(97);
 			((Src_pathContext)_localctx).path = match(STRING);
 			setState(98);
@@ -4294,8 +4294,8 @@ public class TestSuiteParser extends Parser {
 		"\u0000\u0001\u0000\u0004\u0000H\b\u0000\u000b\u0000\f\u0000I\u0005\u0000"+
 		"L\b\u0000\n\u0000\f\u0000O\t\u0000\u0001\u0001\u0001\u0001\u0001\u0001"+
 		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
-		"\u0001\u0001\u0005\u0001[\b\u0001\n\u0001\f\u0001^\t\u0001\u0001\u0002"+
-		"\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0003\u0001\u0003"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0005\u0001]\b\u0001\n\u0001\f\u0001"+
+		"`\t\u0001\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0003\u0001\u0003"+
 		"\u0001\u0003\u0001\u0003\u0004\u0003i\b\u0003\u000b\u0003\f\u0003j\u0001"+
 		"\u0004\u0001\u0004\u0001\u0004\u0003\u0004p\b\u0004\u0001\u0004\u0001"+
 		"\u0004\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001"+
@@ -4344,7 +4344,7 @@ public class TestSuiteParser extends Parser {
 		"\u00012\"\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016"+
 		"\u0018\u001a\u001c\u001e \"$&(*,.02468:<>@B\u0000\u0003\u0001\u000034"+
 		"\u0001\u0000\\]\u0001\u000012\u01da\u0000D\u0001\u0000\u0000\u0000\u0002"+
-		"P\u0001\u0000\u0000\u0000\u0004_\u0001\u0000\u0000\u0000\u0006d\u0001"+
+		"P\u0001\u0000\u0000\u0000\u0004a\u0001\u0000\u0000\u0000\u0006d\u0001"+
 		"\u0000\u0000\u0000\bl\u0001\u0000\u0000\u0000\ns\u0001\u0000\u0000\u0000"+
 		"\f\u0081\u0001\u0000\u0000\u0000\u000e\u0086\u0001\u0000\u0000\u0000\u0010"+
 		"\u008e\u0001\u0000\u0000\u0000\u0012\u0091\u0001\u0000\u0000\u0000\u0014"+
@@ -4365,11 +4365,11 @@ public class TestSuiteParser extends Parser {
 		"\u0000\u0000\u0000MK\u0001\u0000\u0000\u0000MN\u0001\u0000\u0000\u0000"+
 		"N\u0001\u0001\u0000\u0000\u0000OM\u0001\u0000\u0000\u0000PQ\u0005\u0001"+
 		"\u0000\u0000QR\u0005X\u0000\u0000RS\u0005\u0002\u0000\u0000ST\u0005_\u0000"+
-		"\u0000TU\u0003\u0004\u0002\u0000UV\u0003\f\u0006\u0000VW\u0003\u0006\u0003"+
-		"\u0000W\\\u0003\u0012\t\u0000XY\u0005_\u0000\u0000Y[\u0003\u0012\t\u0000"+
-		"ZX\u0001\u0000\u0000\u0000[^\u0001\u0000\u0000\u0000\\Z\u0001\u0000\u0000"+
-		"\u0000\\]\u0001\u0000\u0000\u0000]\u0003\u0001\u0000\u0000\u0000^\\\u0001"+
-		"\u0000\u0000\u0000_`\u0005\u0003\u0000\u0000`a\u0005\u0002\u0000\u0000"+
+		"\u0000TU\u0005\u0003\u0000\u0000UV\u0005\u0002\u0000\u0000VW\u0003\u0004"+
+		"\u0002\u0000WX\u0003\f\u0006\u0000XY\u0003\u0006\u0003\u0000Y^\u0003\u0012"+
+		"\t\u0000Z[\u0005_\u0000\u0000[]\u0003\u0012\t\u0000\\Z\u0001\u0000\u0000"+
+		"\u0000]`\u0001\u0000\u0000\u0000^\\\u0001\u0000\u0000\u0000^_\u0001\u0000"+
+		"\u0000\u0000_\u0003\u0001\u0000\u0000\u0000`^\u0001\u0000\u0000\u0000"+
 		"ab\u0005Y\u0000\u0000bc\u0005_\u0000\u0000c\u0005\u0001\u0000\u0000\u0000"+
 		"de\u0005\u0004\u0000\u0000ef\u0005\u0002\u0000\u0000fh\u0005_\u0000\u0000"+
 		"gi\u0003\b\u0004\u0000hg\u0001\u0000\u0000\u0000ij\u0001\u0000\u0000\u0000"+
@@ -4558,7 +4558,7 @@ public class TestSuiteParser extends Parser {
 		"\u0000\u0193\u018e\u0001\u0000\u0000\u0000\u0193\u018f\u0001\u0000\u0000"+
 		"\u0000\u0193\u0190\u0001\u0000\u0000\u0000\u0193\u0191\u0001\u0000\u0000"+
 		"\u0000\u0193\u0192\u0001\u0000\u0000\u0000\u0194C\u0001\u0000\u0000\u0000"+
-		"&IM\\jo|\u007f\u008c\u009f\u00a8\u00ae\u00b3\u00b8\u00c2\u00c6\u00ce\u00d7"+
+		"&IM^jo|\u007f\u008c\u009f\u00a8\u00ae\u00b3\u00b8\u00c2\u00c6\u00ce\u00d7"+
 		"\u00f0\u00f5\u00ff\u0107\u0110\u0117\u011a\u0123\u0130\u0138\u013a\u0144"+
 		"\u0147\u014b\u0152\u015a\u015d\u0165\u0168\u0187\u0193";
 	public static final ATN _ATN =

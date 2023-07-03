@@ -10,7 +10,6 @@ import logging
 import os
 
 # debug
-logging.basicConfig( level = logging.DEBUG )
 logger = logging.getLogger( __name__ )
 # TODO debug flag
 showDebugOutput: bool = True

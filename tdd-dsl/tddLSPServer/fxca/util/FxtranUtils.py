@@ -17,30 +17,31 @@ ns = {'fx': 'http://fxtran.net/#syntax'}
 
 
 # TODO hc
-def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML/subfolder/cfo_sut_example.xml', need_public: bool = False ) -> List[ Tuple[ str ] ]:
-    '''
+def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML/subfolder/cfo_sut_example.xml', need_public: bool = False, modules: List[ str ] = [ ] ) -> Tuple[
+    List[ Tuple[ str ] ], List[ Tuple[ str, str, List[ str ] ] ] ]:
+    """
     XML filter for Fxtran output files (http://fxtran.net/#syntax) using XPath expressions
-    '''
+    """
 
     # Get the root element
     tree = ET.parse( xmlPath )
     root = tree.getroot( )
 
-    # reduce to public elements if needed
-    # root = root.findall( ".//fx:public-stmt", ns ) if public else root
+    # Are filtered modules in scope
+    isFilteredScope: bool = False
 
-    # Find all variables
-    # EN-decl elements within T-decl-stmt elements
-    variables = [ ]
-    scope_stack = [ ]  # Stack to track the current scope
-    pub_elements = [ ]
+    variables = [ ]  # Variables to return (EN-decl elements within T-decl-stmt elements)
+    scopes = [ ]  # Scopes to return
+    scopeStack = [ ]  # Stack to track the current scope
+    pubElements = [ ]  # Elements declared public
 
-    # scope-changing elements
+    # TODO deprecated
+    # Scope-changing elements
     scope_elements = [ 'subroutine-stmt', 'program-stmt', 'function-stmt' ]
     scope_block_statement = [ 'do-stmt' ]
     end_scope_elements = [ 'end-subroutine-stmt', 'end-program-stmt', 'end-function-stmt' ]
 
-    # dynamically extracted scope-changing elements
+    # Dynamically extracted scope-changing elements
     dyn_scope_elements = set( )
     dyn_end_scope_elements = set( )
 
@@ -49,16 +50,17 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
 
         # TODO functions / subroutines
 
-        # check if element is scope-changing by searching for scope-ending element
+        # Check if element is scope-changing by searching for scope-ending element
         # Extract the tag name without the namespace
         tag = element.tag.rsplit( '}', 1 )[ -1 ]
 
         if tag.endswith( '-stmt' ):
+            # Extract the statement name
+            stmtName = tag.rsplit( '-', 1 )[ 0 ]
             # Find scope name element
-            ltag = tag.rsplit( '-', 1 )[ 0 ]
-            name_element = element.find( f".//fx:{ltag}-N", ns )
+            nameElement = element.find( f".//fx:{stmtName}-N", ns )
 
-            if not tag in dyn_scope_elements and name_element is not None:
+            if not tag in dyn_scope_elements and nameElement is not None:
                 end_tag = 'end-' + tag
                 if root.find( f".//fx:{end_tag}", ns ) is not None:
                     dyn_scope_elements.add( tag )
@@ -66,63 +68,123 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
 
         # Reduce the scope stack when leaving scopes
         if element.tag.endswith( tuple( dyn_end_scope_elements ) ):
-            scope_stack.pop( )
+            scopeStack.pop( )
+
+            # Check scope is filtered and top level scope ended
+            if not modules or not scopeStack:
+                isFilteredScope = False
+
         # Extend the scope stack when entering scopes
         elif element.tag.endswith( tuple( dyn_scope_elements ) ):
-            # Find scope name
-            scope_name = name_element.find( './/fx:n', ns ).text
-            scope_stack.append( scope_name )
+            # Extract scope name
+            scopeName = nameElement.find( './/fx:n', ns ).text
+
+            # TODO hc module
+            # Check if top level scope is in filtered scope or if filtered scope is empty
+            if not modules or not scopeStack and stmtName == 'module' and scopeName in modules:
+                isFilteredScope = True
+
+            # Check scope is filtered and is in filtered scope
+            if isFilteredScope:
+                # Extract arguments
+                argumentNames = [ ]
+                for itm in element.findall( './/fx:arg-N', ns ):
+                    argumentNames.append( itm.find( './/fx:n', ns ).text )
+
+                # Get the current scope from the scope stack
+                currentScope = '.'.join( scopeStack )
+
+                # Add type, name and arguments to returning scopes
+                scopes.append( (stmtName, scopeName, argumentNames, currentScope) )
+
+            # Update scope stack
+            scopeStack.append( scopeName )
 
         # Store public available ids
         elif element.tag.endswith( 'public-stmt' ):
-            pubElements = element.findall( './/fx:n', ns )
-            pubIds = list( map( (lambda element: element.text), pubElements ) )
-            pub_elements.extend( pubIds )
+            pubIds = list( map( (lambda itm: itm.text), element.findall( './/fx:n', ns ) ) )
+            pubElements.extend( pubIds )
 
         # Extract variables, public only, if needed
         elif element.tag.endswith( 'T-decl-stmt' ):
-            attributes = list( map( lambda itm: itm.text, element.findall( './/fx:attribute-N', ns ) ) )
 
-            # Check if variable is not an output
-            intent_spec = element.find( './/fx:intent-spec', ns )
-            if intent_spec is None or intent_spec.text != 'out':
-                # Get the current scope from the scope stack
-                current_scope = '.'.join( scope_stack )
+            # Check scope is filtered and is in filtered scope
+            if isFilteredScope:
+                attributes = list( map( lambda itm: itm.text, element.findall( './/fx:attribute-N', ns ) ) )
 
-                # Get the type of the variable if it exists
-                t_spec_element = element.find( './/fx:T-N', ns )
-                variable_type = t_spec_element.text if t_spec_element is not None else ''
+                # Check if variable is not an output
+                intentSpec = element.find( './/fx:intent-spec', ns )
+                if intentSpec is None or intentSpec.text != 'out':
+                    # Get the current scope from the scope stack
+                    currentScope = '.'.join( scopeStack )
 
-                for en_decl in element.findall( './/fx:EN-decl', ns ):
-                    # Get the name of the variable from the named element
-                    variable_name = en_decl.find( './/fx:n', ns ).text
+                    # Get the type of the variable if it exists
+                    tSpecElement = element.find( './/fx:T-N', ns )
+                    variableType = tSpecElement.text if tSpecElement is not None else ''
 
-                    # TODO check hc PUBLIC
-                    # Check public availability
-                    if variable_name in pub_elements or 'PUBLIC' in attributes or not need_public:
-                        # Save the variable names with their respective types and scopes
-                        variables.append( (variable_name, variable_type, current_scope) )
+                    for enDecl in element.findall( './/fx:EN-decl', ns ):
+                        # Get the name of the variable from the named element
+                        variableName = enDecl.find( './/fx:n', ns ).text
+
+                        # TODO check hc PUBLIC
+                        # Check public availability
+                        if variableName in pubElements or 'PUBLIC' in attributes or not need_public:
+                            # Save the variable names with their respective types and scopes
+                            variables.append( (variableName, variableType, currentScope) )
 
     # TODO Debug
     # Print the list of found named scopes
-    # for scope_name in dyn_scope_elements:
-    #     print( f"Named scope element: {scope_name}" )
+    # for scopeName in dyn_scope_elements:
+    #     print( f"Named scope element: {scopeName}" )
 
-    return variables
+    return variables, scopes
 
 
-def getFiles( directory: str = "", pattern: str = "*.[fF]90" ):
+def getFiles( path: str = "", pattern: str = "*.[fF]90" ):
     '''
     return files from directory and subdirectories matching a pattern
-    :param directory: path to directory
+    :param path: path to directory
     :param pattern: pattern of files to return
     :return: pattern matching files in directory and subdirectories
     '''
     files = [ ]
-    for root, dirNames, fileNames in os.walk( directory ):
+    for root, dirNames, fileNames in os.walk( path ):
         for fileName in fnmatch.filter( fileNames, pattern ):
             files.append( (root, fileName) )
+
     return files
+
+
+def getSubdirectories( path: str = "", recursive: bool = False, followSymlinks: bool = False ):
+    """
+    Returns subdirectory names not starting with '.' under given path.
+
+    :param path: root path
+    :param recursive: return subdirectories recursively
+    :param followSymlinks: follow symlinks
+    :return: subdirectories
+    """
+    subDirs: List[ str ] = [ entry.path for entry in os.scandir( path ) if not entry.name.startswith( '.' ) and entry.is_dir( follow_symlinks = followSymlinks ) ]
+    if recursive:
+        for path in subDirs:
+            subDirs.extend( getSubdirectories( path ) )
+    return subDirs
+
+
+def getSubdirectoriesGen( path: str = "", recursive: bool = False, followSymlinks: bool = False ):
+    """
+    Yield subdirectory names not starting with '.' under given path. Does not follow symlinks.
+
+    :param path: root path
+    :param recursive: yield subdirectories recursively
+    :param followSymlinks: follow symlinks
+    :return: yielded subdirectories
+    """
+    for entry in os.scandir( path ):
+        if not entry.name.startswith( '.' ) and entry.is_dir( follow_symlinks = followSymlinks ):
+            yield entry
+            if recursive:
+                yield from getSubdirectoriesGen( entry.path, recursive )
 
 
 # TODO hc
@@ -178,8 +240,11 @@ def writeDecorateSrcXml( srcDir: str = "", outDir: str = "foo", fxtranPath: str 
             # Call fxtran via subprocess with filepath as working directory
             subprocess.check_output( fxtranCmd, shell = True, stderr = subprocess.STDOUT, cwd = filepath )
         except subprocess.CalledProcessError as e:
-            raise RuntimeError( f"command '{e.cmd}' return with error (code {e.returncode}): {e.output}" )
+            # TODO continue
+            # raise RuntimeError( f"command '{e.cmd}' return with error (code {e.returncode}): {e.output}" )
+            pass
         except PermissionError as e:
+            # TODO continue without parsing
             raise RuntimeError( f"Permission denied for calling fxtran parser '{fxtranPath}'. Error (code {e.errno}): {e.strerror} '{e.filename}'" )
 
 

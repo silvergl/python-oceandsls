@@ -94,15 +94,16 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         decl = self.visit( ctx.varDeclaration( ) )
         value = self.visit( ctx.expr( ) )
         comment = self.visit( ctx.optionalDesc( ) )
+        name = ctx.decl.name.text
         # match comment:
         #     case None:
         #         template.render( decl=decl, value=value)
         #     case _:
         #         template.render( decl=decl, value=value, comment=comment )
         if comment:
-            return template.render( decl = decl, value = value, comment = comment )
+            return template.render( decl = decl, value = value, name = name, comment = comment )
         else:
-            return template.render( decl = decl, value = value )
+            return template.render( decl = decl, value = value, name = name )
 
     # Visit a parse tree produced by TestSuiteParser#varDeclaration.
     def visitVarDeclaration( self, ctx: TestSuiteParser.VarDeclarationContext ):
@@ -241,10 +242,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
             case [ _, None ]:
                 return template.render( directive = directive, input_ = input_, output = output, pubAttributes = pubAttributes )
             case _:
-                return template.render(
-                    directive = directive, input_ = input_, output = output, pubAttributes = pubAttributes,
-                    comment = comment
-                    )
+                return template.render( directive = directive, input_ = input_, output = output, pubAttributes = pubAttributes, comment = comment )
 
     # Visit a parse tree produced by TestSuiteParser#test_directive.
     def visitTest_directive( self, ctx: TestSuiteParser.Test_directiveContext ):

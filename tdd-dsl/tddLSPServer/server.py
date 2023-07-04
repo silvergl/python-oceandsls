@@ -26,7 +26,7 @@ import uuid
 import os.path
 # debug import
 from pprint import pprint
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 # antlr4
 from antlr4 import CommonTokenStream, InputStream, Token
@@ -92,6 +92,9 @@ class tddLSPServer( LanguageServer ):
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners( )
         self.parser.addErrorListener( self.error_listener )
+
+        # attributes of generated files
+        self.files: dict[ str, Tuple[ float, str, str ] ] = {}
 
 
 tdd_server = tddLSPServer( 'pygls-odsl-tdd-prototype', 'v0.1' )
@@ -271,11 +274,11 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     parseTree: Top_levelContext = tdd_server.parser.test_suite( )
 
     # set current working directory as working directory for test files
-    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor( testWorkPath = os.getcwd( ) )
+    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor( testWorkPath = os.getcwd( ), files = tdd_server.files )
 
     # TODO add arguments templatePath testPath testFolder
-    # write files
-    fileGeneratorVisitor.visit( parseTree )
+    # write files and save attributes
+    tdd_server.files = fileGeneratorVisitor.visit( parseTree )
 
     server.show_message( 'Text Document Did Save' )
 

@@ -5,9 +5,11 @@ __author__ = 'sgu'
 # TODO license
 
 import difflib
+import hashlib
 # utils
 import logging
 import os
+from typing import Tuple
 
 # debug
 logger = logging.getLogger( __name__ )
@@ -32,8 +34,37 @@ def merge_file_content( file_content_0: str, file_content_1: str ) -> str:
     )
 
 
-def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', filename: str = 'test', content: str = '' ) -> None:
-    '''
+def hash_file( path: str = None ) -> str:
+    """
+    Hash file using MD5
+
+    :param path: system file path
+    :return: MD5 hash of file
+    """
+
+    with open( path, "rb" ) as f:
+        return hashlib.md5( f.read( ) ).hexdigest( )
+
+
+def fileModified( path = None, mtime: float = 0, fileHash: str = None ) -> bool:
+    """
+    Check hash and modification time of file.
+
+    :param path: system path to file
+    :param mtime: last modification time
+    :param fileHash: last md5 file hash
+    :return: If modification time or file hash is changed
+    """
+    if mtime > os.path.getmtime( path ) or fileHash != hash_file( path ):
+        logger.debug( f'... modified {path}' )
+        return True
+    else:
+        logger.debug( f'... not modified {path}' )
+        return False
+
+
+def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', filename: str = 'test', content: str = '', fileAttr: tuple[ float, str, str ] = None ) -> tuple[ float, str, str ]:
+    """
     Write/merge pFUnit-file under :test_path:/:test_folder:/:filename:.pf for test-case.
     Merges file if it exists using difflib.
 
@@ -41,8 +72,11 @@ def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', f
     :param test_folder: test-folder under system path for *.pf-files
     :param filename: filename  of *.pf-file
     :param content: test-case content
-    :return: None
-    '''
+    :param fileHash: hash if file should exist
+    :param mtime: modification time if file should exist
+    :param content_org: original content
+    :return: hast and modification time of file
+    """
 
     # Define the folder and filename. Current working directory is ignored for absolut test_path
     path = os.path.join( os.getcwd( ), test_path, test_folder )
@@ -55,16 +89,29 @@ def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', f
 
     # Create file if it doesn't exist else merge with existing file
     filename = f"{filename.lower( )}.pf"
-    path = os.path.join( os.getcwd( ), path, filename )
+    path = os.path.join( path, filename )
     if os.path.exists( path ):
-        if showDebugOutput and logger.isEnabledFor( logging.DEBUG):
-            logger.debug(f'...try merge {path}')
-        with open( path, mode = 'r', encoding = 'utf-8' ) as f:
-            content_org = f.read( )
+        # check if file is known or was modified
+        if fileAttr is None or fileModified( path, fileAttr[0], fileAttr[1] ):
+            # reload file from disk if it is unknown or modified
+            with open( path, mode = 'r', encoding = 'utf-8' ) as f:
+                content_org = f.read( )
+        else:
+            # keep original file content
+            content_org = fileAttr[2]
+
+        if showDebugOutput and logger.isEnabledFor( logging.DEBUG ):
+            logger.debug( f'...try merge {path}' )
+        # merge current content with original file content
         content = merge_file_content( content, content_org )
+    else:
+        # dismiss current content if saved again
+        content_org = ''
 
     # Write rendered and optional merged content to file
     with open( path, mode = 'w', encoding = 'utf-8' ) as f:
         f.write( content )
         if showDebugOutput and logger.isEnabledFor( logging.DEBUG ):
             logger.debug( f'... create {path}' )
+
+    return os.path.getmtime( path ), hash_file( path ), content_org

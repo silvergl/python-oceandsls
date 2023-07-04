@@ -21,7 +21,8 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
     testFilePredicate: str
     environment: Environment
 
-    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates', testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests' ):
+    # TODO hc
+    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates', files: dict[ str, Tuple[ float, str, str ] ] = {}, testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests' ):
         '''
         Build template file dictionary from TestSuiteParser.ruleNames
 
@@ -32,6 +33,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         :param testFolder: relative path under :testWorkPath: to save pfUnit tests
         '''
         super( ).__init__( )
+        self.files: dict[ str, Tuple[ float, str, str ] ] = files
         self.templatePath = templatePath
         self.testPath = testWorkPath
         # TODO add test directory option
@@ -51,7 +53,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
             i += 1
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
-    def visitTest_case( self, ctx: TestSuiteParser.Test_caseContext ):
+    def visitTest_case( self, ctx: TestSuiteParser.Test_caseContext ) -> dict[ str, Tuple[ float, str, str ] ]:
         # Load Jinja2 template
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
         # Render template
@@ -63,9 +65,17 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         for assertion in ctx.assertions:
             assertions.append( self.visit( assertion ) )
         content = template.render( name = name, scope = scope, vars_ = vars_, assertions = assertions )
-        write_file( self.testPath, self.testFolder, name, content )
+
+        absPath: str = os.path.join( os.getcwd( ), self.testPath, self.testFolder, name, )
+        fileAttr = self.files.get( absPath )
+        if fileAttr:
+            self.files[ absPath ] = write_file( self.testPath, self.testFolder, name, content, fileAttr)
+        else:
+            self.files[ absPath ] = write_file( self.testPath, self.testFolder, name, content)
+
         # TODO find test cases in children?
-        return self.visitChildren( ctx )
+        self.visitChildren( ctx )
+        return self.files
 
     # Visit a parse tree produced by TestSuiteParser#src_path.
     def visitSrc_path( self, ctx: TestSuiteParser.Src_pathContext ):
@@ -98,7 +108,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
                 case [ True, _ ]:
                     # Add parameter to top of declaration
                     parm.append( templates[ 0 ] )
-                case [ _ , False ]:
+                case [ _, False ]:
                     # Append declaration with constant expression as normal
                     vars.append( templates[ 0 ] )
                 case [ False, True ]:
@@ -144,7 +154,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
             case [ True, _ ] | [ _, False ]:
                 # TODO put parameters at the top
                 # Found Parameter no reference on right side: Add declaration with constant expression
-                templates.extend( [ template.render( decl = decl, name = None, value = value, comment = comment), None ] )
+                templates.extend( [ template.render( decl = decl, name = None, value = value, comment = comment ), None ] )
             case [ False, True ]:
                 # Found reference on right side: Separate declaration and initialization
                 templates.extend( [ template.render( decl = None, name = name, value = value, comment = comment ), decl ] )

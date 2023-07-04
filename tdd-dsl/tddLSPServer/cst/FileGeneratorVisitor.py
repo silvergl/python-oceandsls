@@ -2,7 +2,7 @@
 
 # util
 import os
-from typing import Dict
+from typing import Dict, List, Tuple
 
 # jinja2
 from jinja2 import Environment, FileSystemLoader
@@ -21,7 +21,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
     testFilePredicate: str
     environment: Environment
 
-    def __init__(self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates', testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests'):
+    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates', testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests' ):
         '''
         Build template file dictionary from TestSuiteParser.ruleNames
 
@@ -39,6 +39,10 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         # Load Jinja2 templates
         self.environment = Environment( loader = FileSystemLoader( templatePath ) )
 
+        # variable flags
+        self.foundRef: bool = False
+        self.foundPar = False
+
         self.fileTemplates = {}
         # Get template file names from grammar
         i: int = 0
@@ -54,7 +58,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         name = ctx.name.text
         scope = self.visit( ctx.scope )
         vars_ = self.visit( ctx.vars_ )
-        self.testPath = self.visit(ctx.src_path())
+        self.testPath = self.visit( ctx.src_path( ) )
         assertions = [ ]
         for assertion in ctx.assertions:
             assertions.append( self.visit( assertion ) )
@@ -64,11 +68,11 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         return self.visitChildren( ctx )
 
     # Visit a parse tree produced by TestSuiteParser#src_path.
-    def visitSrc_path(self, ctx:TestSuiteParser.Src_pathContext):
+    def visitSrc_path( self, ctx: TestSuiteParser.Src_pathContext ):
         # Strip string terminals
         # TODO document
         # If the given path is an absolute path, then self.testPath is ignored and the joining is only the given path
-        return os.path.join(self.testPath,ctx.path.text.strip('\''))
+        return os.path.join( self.testPath, ctx.path.text.strip( '\'' ) )
 
     # Visit a parse tree produced by TestSuiteParser#test_scope.
     def visitTest_scope( self, ctx: TestSuiteParser.Test_scopeContext ):
@@ -76,34 +80,79 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         return self.visit( ctx.use_modules( ) )
 
     # Get rendered list of used modules
-    def visitUse_modules(self, ctx:TestSuiteParser.Use_modulesContext):
+    def visitUse_modules( self, ctx: TestSuiteParser.Use_modulesContext ):
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
         return template.render( modules = ctx.modules )
 
     # Visit a parse tree produced by TestSuiteParser#test_vars.
     def visitTest_vars( self, ctx: TestSuiteParser.Test_varsContext ):
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
+
+        parm = [ ]
+        decl = [ ]
         vars = [ ]
         for var in ctx.vars_:
-            vars.append( self.visit( var ) )
-        return template.render( vars = vars )
+            templates: List[ str ] = self.visit( var )
+            # Is the variable initialized with a reference?
+            match (self.foundPar, self.foundRef):
+                case [ True, _ ]:
+                    # Add parameter to top of declaration
+                    parm.append( templates[ 0 ] )
+                case [ _ , False ]:
+                    # Append declaration with constant expression as normal
+                    vars.append( templates[ 0 ] )
+                case [ False, True ]:
+                    # Split declaration and initialization separately
+                    vars.append( templates[ 0 ] )
+                    decl.append( templates[ 1 ] )
+
+                    # Reset found flags
+                    self.foundRef = False
+                    self.foundPar = False
+                case _:
+                    # TODO error
+                    pass
+
+        # set declaration list to None if empty
+        # decl = decl if decl else None
+
+        return template.render( parm = parm, decl = decl, vars = vars )
 
     # Visit a parse tree produced by TestSuiteParser#test_vars.
     def visitTest_var( self, ctx: TestSuiteParser.Test_varContext ):
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
-        decl = self.visit( ctx.varDeclaration( ) )
-        value = self.visit( ctx.expr( ) )
         comment = self.visit( ctx.optionalDesc( ) )
+
+        # reset foundPar flag for left side
+        self.foundPar = False
+        decl = self.visit( ctx.varDeclaration( ) )
         name = ctx.decl.name.text
-        # match comment:
-        #     case None:
-        #         template.render( decl=decl, value=value)
-        #     case _:
-        #         template.render( decl=decl, value=value, comment=comment )
-        if comment:
-            return template.render( decl = decl, value = value, name = name, comment = comment )
-        else:
-            return template.render( decl = decl, value = value, name = name )
+
+        self.foundRef = False
+        # reset foundRef flag for right side
+        value = self.visit( ctx.expr( ) )
+
+        templates: List[ str ] = [ ]
+
+        # TODO deprecated
+        # if self.foundRef:
+        #     templates.extend( [ decl, template.render( decl = None, name = name, value = value, comment = comment ) ] )
+        # else:
+        #     templates.extend( [ None, template.render( decl = decl, name = None, value = value, comment = comment ) ] )
+
+        match (self.foundPar, self.foundRef):
+            case [ True, _ ] | [ _, False ]:
+                # TODO put parameters at the top
+                # Found Parameter no reference on right side: Add declaration with constant expression
+                templates.extend( [ template.render( decl = decl, name = None, value = value, comment = comment), None ] )
+            case [ False, True ]:
+                # Found reference on right side: Separate declaration and initialization
+                templates.extend( [ template.render( decl = None, name = name, value = value, comment = comment ), decl ] )
+            case _:
+                # TODO error
+                pass
+
+        return templates
 
     # Visit a parse tree produced by TestSuiteParser#varDeclaration.
     def visitVarDeclaration( self, ctx: TestSuiteParser.VarDeclarationContext ):
@@ -112,23 +161,28 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         type = self.visit( ctx.type_ )
         keys = [ ]
         for key in ctx.keys:
-            keys.append( key.keyword.text )
+            # TODO check for parameter
+            keyText: str = key.keyword.text
+            # flag parameter
+            if keyText.lower( ) == 'parameter':
+                self.foundPar = True
+            keys.append( keyText )
         # match keys:
         #     case []:
         #         return template.render( name=name, type=type )
         #     case _:
         #         return template.render( name=name, type=type, keys=keys )
-        if keys:
-            return template.render( name = name, type = type, keys = keys )
-        else:
-            return template.render( name = name, type = type )
 
-    # Visit a parse tree produced by TestSuiteParser#ref.
-    def visitRef( self, ctx: TestSuiteParser.RefContext ):
-        return self.visitChildren( ctx )
+        return template.render( name = name, type = type, keys = keys )
+
+        # if keys:
+        #     return template.render( name = name, type = type, keys = keys )
+        # else:
+        #     return template.render( name = name, type = type )
 
     # Visit a parse tree produced by TestSuiteParser#funRef.
     def visitFunRef( self, ctx: TestSuiteParser.FunRefContext ):
+        self.foundRef = True
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
         name = ctx.ID( ).getText( )
         args = [ ]
@@ -138,6 +192,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
 
     # Visit a parse tree produced by TestSuiteParser#varRef.
     def visitVarRef( self, ctx: TestSuiteParser.VarRefContext ):
+        self.foundRef = True
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
         name = ctx.ID( ).getText( )
         return template.render( name = name )

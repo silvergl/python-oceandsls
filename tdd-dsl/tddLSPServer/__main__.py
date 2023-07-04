@@ -21,7 +21,10 @@ import logging
 
 from .server import tdd_server
 
-logging.basicConfig( filename = "tddDSL_pygls.log", level = logging.DEBUG, filemode = "w" )
+# TODO Set up logging /usr/lib/python3.10/asyncio/log.py
+#  /usr/lib/python3.10/asyncio/selector_events.py
+# logging.basicConfig( filename = "tddDSL_pygls.log", level = logging.DEBUG, filemode = "w" )
+logging.basicConfig( level = logging.DEBUG)
 
 
 def add_arguments( parser ):

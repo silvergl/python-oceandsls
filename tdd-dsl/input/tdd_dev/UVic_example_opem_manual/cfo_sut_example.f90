@@ -6,6 +6,7 @@ MODULE cfo_example
   PUBLIC :: ft_ME, zxrex, nprey
 
   INTEGER, PARAMETER :: dp=KIND(0D0)
+  ! INTEGER :: nprey=4
   REAL(dp) :: nprey= - ( 283D0 / 520D0 )
   REAL(dp), PARAMETER :: cfds=86.4D3
 

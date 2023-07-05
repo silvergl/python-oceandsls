@@ -6,7 +6,7 @@ test test_fT_ME :
     var :
         dp : integer, PARAMETER = KIND( 0D0 )
         xIntercept : real( dp ) = 283D0 / 19D0
-        yIntercept : real( dp ) = nprey
+        yIntercept : real( dp ) = - ( 283D0 / 520D0 )
     assert Equal (
         in :
             fT_ME( xIntercept ) , K # input in Kelvin

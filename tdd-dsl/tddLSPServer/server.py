@@ -46,7 +46,7 @@ from pygls.workspace import Document
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
 # user relative imports
 from .cst.DiagnosticListener import DiagnosticListener
-from .cst.FileGeneratorVisitor import FileGeneratorVisitor
+from .cst.PFFileGeneratorVisitor import PFFileGeneratorVisitor
 from .cst.SystemFileVisitor import SystemFileVisitor
 from .cst.SymbolTableVisitor import SymbolTableVisitor
 from .gen.python.TestSuite.TestSuiteLexer import TestSuiteLexer
@@ -274,7 +274,7 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     parseTree: Top_levelContext = tdd_server.parser.test_suite( )
 
     # set current working directory as working directory for test files
-    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor( testWorkPath = os.getcwd( ), files = tdd_server.files )
+    fileGeneratorVisitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor( testWorkPath = os.getcwd( ), files = tdd_server.files )
 
     # TODO add arguments templatePath testPath testFolder
     # write files and save attributes

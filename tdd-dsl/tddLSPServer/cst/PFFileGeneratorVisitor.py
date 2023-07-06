@@ -1,4 +1,4 @@
-'''FileGeneratorVisitor module.'''
+'''FileGeneratorVisitor module for pFunit pf files.'''
 
 # util
 import os
@@ -13,7 +13,7 @@ from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
 
 
-class FileGeneratorVisitor( TestSuiteVisitor ):
+class PFFileGeneratorVisitor( TestSuiteVisitor ):
     fileTemplates: Dict[ int, str ]
     templatePath: str
     testPath: str
@@ -22,9 +22,9 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
     environment: Environment
 
     # TODO hc
-    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates', files: dict[ str, Tuple[ float, str, str ] ] = {}, testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests' ):
+    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/pf', files: dict[ str, Tuple[ float, str, str ] ] = {}, testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests' ):
         '''
-        Build template file dictionary from TestSuiteParser.ruleNames
+        pfUnit test file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
         Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
 
@@ -43,7 +43,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
 
         # variable flags
         self.foundRef: bool = False
-        self.foundPar = False
+        self.foundPar: bool = False
 
         self.fileTemplates = {}
         # Get template file names from grammar

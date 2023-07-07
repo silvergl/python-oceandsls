@@ -55,10 +55,11 @@ from .symbolTable.SymbolTable import FunctionSymbol, ModuleSymbol, PathSymbol, R
 from .utils.computeTokenIndex import CaretPosition, TokenPosition, computeTokenPosition
 from .utils.suggestVariables import suggestSymbols
 
+# TODO rm or move to debug logger
 # python path hacking / DO NOT USE for live code
 # if not os.path.join(sys.path[0], 'example-dsl', 'lspExampleServer') in sys.path:
 #     sys.path.append(os.path.join( sys.path[0], 'example-dsl', 'lspExampleServer') )
-pprint( f'sys.path {sys.path}' )
+# pprint( f'sys.path {sys.path}' )
 
 COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1

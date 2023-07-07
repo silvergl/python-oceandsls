@@ -55,7 +55,7 @@ def fileModified( path = None, mtime: float = 0, fileHash: str = None ) -> bool:
     :param fileHash: last md5 file hash
     :return: If modification time or file hash is changed
     """
-    if mtime > os.path.getmtime( path ) or fileHash != hash_file( path ):
+    if os.path.getmtime( path ) > mtime or fileHash != hash_file( path ):
         logger.debug( f'... modified {path}' )
         return True
     else:

@@ -1,0 +1,15 @@
+  ! {{ comment }}
+  FUNCTION {{ name }} ({{ argsName|join(', ') }}, {{returnUnit}}) RESULT ({{ returnName }})
+    IMPLICIT NONE
+    {{ argsDecl|join('\n') }}
+    {{ returnDecl }}
+
+    character(len=:),optional :: {{returnUnit}}
+    if(present({{returnUnit}}))then
+        if ( x /= y ) then
+          print *, "{{ name }}: Input wrong unit", {{returnUnit}}
+        endif
+    endif
+
+    {{ returnName }} =
+  END FUNCTION {{ name }}

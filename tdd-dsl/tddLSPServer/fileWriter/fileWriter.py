@@ -1,4 +1,4 @@
-"""pfUnit generator using to generate Fortran Unit Tests"""
+"""pfUnit generator utils to generate *.pf Fortran unit tests files"""
 
 __author__ = 'sgu'
 

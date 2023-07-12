@@ -1,5 +1,7 @@
 '''FileGeneratorVisitor module.'''
 
+__author__ = 'sgu'
+
 # util
 import os
 from typing import Dict, List, Tuple

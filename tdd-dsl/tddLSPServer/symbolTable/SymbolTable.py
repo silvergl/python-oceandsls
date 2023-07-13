@@ -880,7 +880,20 @@ class BlockSymbol( ScopedSymbol ):
 
 
 class ModuleSymbol( ScopedSymbol ):
-    pass
+    def __init__( self, name: str = "" , file: str = ""):
+        super( ).__init__( name )
+        self.__childSymbols = [ ]
+
+        # filename of system file
+        self._file = file
+
+    @property
+    def file( self ):
+        return self._file
+
+    @file.setter
+    def file(self, file):
+        self._file = file
 
 
 class VariableSymbol( UnitSymbol ):

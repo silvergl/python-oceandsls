@@ -11,17 +11,23 @@ import subprocess
 import xml.etree.ElementTree as ET
 from typing import List, Tuple
 
+from symbolTable.SymbolTable import ModuleSymbol
+
 # TODO hc
 # Set the namespace as Fxtran for XPath expressions
 ns = {'fx': 'http://fxtran.net/#syntax'}
 
-
 # TODO hc
-def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML/subfolder/cfo_sut_example.xml', need_public: bool = False, modules: List[ str ] = [ ] ) -> Tuple[
+def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML/subfolder/cfo_sut_example.xml', need_public: bool = False, modules: List[ ModuleSymbol ] = [ ] ) -> Tuple[
     List[ Tuple[ str ] ], List[ Tuple[ str, str, List[ str ] ] ] ]:
     """
     XML filter for Fxtran output files (http://fxtran.net/#syntax) using XPath expressions
     """
+
+    # extract names of module symbols for scope filter
+    moduleNames = list( map( lambda s: s.name, modules ) )
+    # extract filename of original file
+    basename = os.path.splitext(os.path.basename(xmlPath))[0]
 
     # Get the root element
     tree = ET.parse( xmlPath )
@@ -71,7 +77,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
             scopeStack.pop( )
 
             # Check scope is filtered and top level scope ended
-            if not modules or not scopeStack:
+            if not moduleNames or not scopeStack:
                 isFilteredScope = False
 
         # Extend the scope stack when entering scopes
@@ -81,8 +87,12 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
 
             # TODO hc module
             # Check if top level scope is in filtered scope or if filtered scope is empty
-            if not modules or not scopeStack and stmtName == 'module' and scopeName in modules:
+            if not moduleNames or not scopeStack and stmtName == 'module' and scopeName in moduleNames:
                 isFilteredScope = True
+                module: ModuleSymbol = next(filter ( lambda module: module.name == scopeName, modules))
+
+                # get filename of original file
+                module.file = basename
 
             # Check scope is filtered and is in filtered scope
             if isFilteredScope:

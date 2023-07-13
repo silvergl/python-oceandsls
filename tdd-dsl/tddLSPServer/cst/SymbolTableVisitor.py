@@ -71,7 +71,7 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
         args = [ ]
         for arg in ctx.args:
             args.append( self.visit( arg ) )
-        return (name, args)
+        return name, args
 
     # Visit a parse tree produced by TestSuiteParser#varRef.
     def visitVarRef( self, ctx: TestSuiteParser.VarRefContext ):
@@ -101,12 +101,11 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
     # Get rendered list of used modules
     def visitUse_modules( self, ctx: TestSuiteParser.Use_modulesContext ):
 
-        # Add module symbols to symboltable and extract names of module symbols for XML filter
+        # Add module symbols to symboltable for XML scope filter
         moduleSymbols: List[ ModuleSymbol ] = []
         for module in ctx.modules:
             self.visit(module)
         moduleSymbols = getAllSymbolsOfType( self._scope, ModuleSymbol )
-        moduleNames = list( map( lambda s: s.name, moduleSymbols ) )
 
         # TODO hc
         xmlPath = os.path.join( self._testPath, 'tmp' )
@@ -120,7 +119,7 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
 
         for path, filename in xmlFiles:
             # TODO add key for variables
-            xmlElements = filterXML( os.path.join( path, filename ), True, moduleNames )
+            xmlElements = filterXML( os.path.join( path, filename ), True, moduleSymbols )
 
             # Add scopes
             for scopeType, scopeName, scopeArgs, parentScopes in xmlElements[ 1 ]:

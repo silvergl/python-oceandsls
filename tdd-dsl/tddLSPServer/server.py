@@ -44,6 +44,7 @@ from pygls.workspace import Document
 # TODO fail relative import beyond top-level package
 # from ...antlrLib.CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
+from cst.F90FileGeneratorVisitor import F90FileGeneratorVisitor
 # user relative imports
 from .cst.DiagnosticListener import DiagnosticListener
 from .cst.PFFileGeneratorVisitor import PFFileGeneratorVisitor
@@ -275,11 +276,18 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     parseTree: Top_levelContext = tdd_server.parser.test_suite( )
 
     # set current working directory as working directory for test files
-    fileGeneratorVisitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor( testWorkPath = os.getcwd( ), files = tdd_server.files )
+    pffFileGeneratorVisitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor( testWorkPath = os.getcwd( ), files = tdd_server.files )
 
     # TODO add arguments templatePath testPath testFolder
-    # write files and save attributes
-    tdd_server.files = fileGeneratorVisitor.visit( parseTree )
+    # write pf files and save written files
+    tdd_server.files = pffFileGeneratorVisitor.visit( parseTree )
+
+    # set current working directory as working directory for test files
+    f90FileGeneratorVisitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor( testWorkPath = os.getcwd( ), files = tdd_server.files )
+
+    # TODO add arguments templatePath testPath testFolder
+    # write optional fortran file and save written files
+    tdd_server.files = f90FileGeneratorVisitor.visit( parseTree )
 
     server.show_message( 'Text Document Did Save' )
 

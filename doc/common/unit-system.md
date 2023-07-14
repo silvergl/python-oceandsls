@@ -74,9 +74,11 @@ that required grouping.
 `exponentUnit` is used to express any unit with an exponent, e.g., m^2.
 The exponent numbers can be positive or negative.
 
+
 ## SI Unit Parsing
 
-SI units comprise of an optional prefix and one or more character to define a base unit.
+SI units comprise of an optional prefix and one or more character to define a
+base unit.
 
 Prefixes are: https://www.nist.gov/pml/owm/metric-si-prefixes
 - Q R Y Z E P T G M k h da d c m my n p f a z y r q
@@ -90,7 +92,8 @@ mm -> milli mmeter
 mmol -> milli mol
 my -> micro
 
-**Note:** The original Java code can be found here. However, it is more complicated as it is also able to process exponents and other symbols.
+**Note:** The original Java code can be found here. However, it is more
+complicated as it is also able to process exponents and other symbols.
 https://git.se.informatik.uni-kiel.de/oceandsl/cp-dsl/-/blob/master/bundles/org.oceandsl.configuration/src/org/oceandsl/configuration/parser/UnitParser.java
 
 
@@ -104,7 +107,20 @@ class Unit
   units : List<UnitElement>
 
 abstract class UnitElement
+```
 
+**Discuss:** Should we use one `PrefixUnit` class for SI and custom units?
+
+*Option* joined class
+```
+class PrefixUnit extends UnitElement
+  basicUnit : EUnit
+  prefix : EPRefix
+  unitName : String
+```
+
+*Option* separate class
+```
 class PrefixUnit extends UnitElement
 
 class PrefixSIUnit extends PrefixUnit
@@ -113,10 +129,23 @@ class PrefixSIUnit extends PrefixUnit
 
 class PrefixCustomUnit extends PrefixUnit
   unitName : String
-
 ```
 
-Discuss: Should custom units also have a prefix and how do we process these?
+**Discuss:** Should custom units also have a prefix and how do we process these?
+
+*Option* separate class where both can use prefixes
+```
+class PrefixUnit extends UnitElement
+  prefix : EPRefix
+  
+class PrefixSIUnit extends PrefixUnit
+  basicUnit : EUnit
+
+class PrefixCustomUnit extends PrefixUnit
+  unitName : String
+```
+
+Classes for units with exponent and grouped units.
 
 ```
 class ExponentUnit extends UnitElement

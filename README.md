@@ -12,6 +12,8 @@ This project contains multiple DSLs for ocean and earth system models.
 - TDD-DSL testing DSL for test-driven development
 - BGC-DSL language to specify biogeochemical models
 
+Documentation can be found in the `doc`.
+
 ## License
 
 Apache 2.0

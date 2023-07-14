@@ -17,7 +17,6 @@ Similarly, Celsius and Kelvin are converted accordingly.
 ## Grammar
 
 ```antlr
-
 // ----------------------
 // Units
 // ----------------------
@@ -264,7 +263,3 @@ the original and the sum of both exponents.
 Then we repeat this with the next `exponentUnit`.
 In case the exponent becomes zero both `exponentUnit`s are removed and nothing
 is added.
-
-
-
-

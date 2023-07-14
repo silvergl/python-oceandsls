@@ -75,6 +75,26 @@ that required grouping.
 `exponentUnit` is used to express any unit with an exponent, e.g., m^2.
 The exponent numbers can be positive or negative.
 
+## SI Unit Parsing
+
+SI units comprise of an optional prefix and one or more character to define a base unit.
+
+Prefixes are: https://www.nist.gov/pml/owm/metric-si-prefixes
+- Q R Y Z E P T G M k h da d c m my n p f a z y r q
+Units are: https://en.wikipedia.org/wiki/International_System_of_Units
+- s m g A K mol cd Hz J C W rad sr N Pa V F Ohm S Wb T H °C lm lx Bq Gy Sv kat
+
+**Rules**
+Here is a list of mapping rules for SI unit string. ($ indicates line end)
+m -> meter
+mm -> milli mmeter
+mmol -> milli mol
+my -> micro
+
+**Note:** The original Java code can be found here. However, it is more complicated as it is also able to process exponents and other symbols.
+https://git.se.informatik.uni-kiel.de/oceandsl/cp-dsl/-/blob/master/bundles/org.oceandsl.configuration/src/org/oceandsl/configuration/parser/UnitParser.java
+
+
 ## Representation
 
 The grammar implies a specific CST structure for units. Here we go beyond this,
@@ -119,9 +139,11 @@ t,r,s are variables, functions or values
 
 ### Expression: t + r
 
+```
 t : T + r : T
 -------------
   t + r : T
+```
 
 This expresses that in an addition both need to have the same unit.
 Regarding substances, the substance can be different, as it is possible that
@@ -129,24 +151,30 @@ different substances are mixed. They can even create new substances.
 
 ### Expression: t - r
 
+```
 t : T - r : T
 -------------
   t - r : T
+```
 
 This expresses that in a subtraction both need to have the same unit.
 
 ### Expression: t * r
 
+```
 t : T * r : R
 -------------
 t * r : T * R
+```
 
 In case the base type of T and R are the same, the unit can be merged, e.g.,
 when multiplying two length (m), the result is area (m^2).
 
+```
                     t * r : T * R and base(T) == base(R)
 ----------------------------------------------------------------------------
 t * r : S and base(S) == base(T) and exponent(S) = exponent(T) + exponent(R)
+```
 
 In other cases the unit expression becomes more complex.
 
@@ -155,9 +183,11 @@ In other cases the unit expression becomes more complex.
 Analog the the multiplication, the division leads to a new composite type which
 could be merged when both types have the same base unit.
 
+```
 t : T / r : R
 -------------
 t / r : T / R
+```
 
 ### Expression: f(x_1,...,x_n)
 
@@ -172,9 +202,11 @@ Therefore, all input units must be the same unit or without a unit.
 Exponents require that t has a unit or no unit, but i is a unit less integer
 value.
 
+```
                         t : T ^ i : I
 ------------------------------------------------------------------
 t ^ i : S with base(S) = base(T) and exponent(S) = exponent(T) * i
+```
 
 ## Normalization
 

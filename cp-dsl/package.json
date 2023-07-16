@@ -26,9 +26,15 @@
         ]
       },
       {
+        "id": "oceandsl_conf",
+        "extensions": [
+          ".oconf"
+        ]
+      },
+      {
         "id": "oceandsl_dcl",
         "extensions": [
-          ".odsl"
+          ".dcl"
         ]
       },
       {

@@ -20,9 +20,9 @@ import argparse
 import logging
 from setuptools import setup, find_packages
 
-from .server import dcl_server
+from .server import conf_server
 
-logging.basicConfig( filename="dclDSL_pygls.log", level=logging.DEBUG, filemode="w" )
+logging.basicConfig( filename="confDSL_pygls.log", level=logging.DEBUG, filemode="w" )
 
 
 def main():
@@ -50,12 +50,12 @@ def main():
     args = parser.parse_args()
 
     if args.tcp:
-        dcl_server.start_tcp( args.host, args.port )
+        conf_server.start_tcp( args.host, args.port )
     elif args.ws:
-        dcl_server.start_ws( args.host, args.port )
+        conf_server.start_ws( args.host, args.port )
     else:
         parser.print_help()
-        dcl_server.start_io()
+        conf_server.start_io()
 
 
 if __name__ == '__main__':

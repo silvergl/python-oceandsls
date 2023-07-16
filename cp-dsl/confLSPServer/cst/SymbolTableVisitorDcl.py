@@ -14,7 +14,7 @@ from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
 
-class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
+class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
     _symbolTable: SymbolTable
 
     def __init__(self, name: str = '', ):

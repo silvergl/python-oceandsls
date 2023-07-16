@@ -18,10 +18,23 @@
             }
         },
         {
-            "name": "Launch Server",
+            "name": "Launch DCL Server",
             "type": "python",
             "request": "launch",
             "module": "dclLSPServer",
+            "args": ["--tcp"],
+            "justMyCode": false,
+            "python": "${command:python.interpreterPath}",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/../antlrLib/"
+            }
+        },
+        {
+            "name": "Launch CONF Server",
+            "type": "python",
+            "request": "launch",
+            "module": "confLSPServer",
             "args": ["--tcp"],
             "justMyCode": false,
             "python": "${command:python.interpreterPath}",
@@ -48,7 +61,15 @@
     "compounds": [
         {
             "name": "Server + Client",
-            "configurations": ["Launch Server", "Launch Client"]
-        }
+            "configurations": ["Launch DCL Server", "Launch CONF Server", "Launch Client"]
+        },
+        {
+            "name": "DCL Server + Client",
+            "configurations": ["Launch DCL Server", "Launch Client"]
+        },
+        {
+            "name": "CONF Server + Client",
+            "configurations": ["Launch CONF Server", "Launch Client"]
+        },
     ]
 }

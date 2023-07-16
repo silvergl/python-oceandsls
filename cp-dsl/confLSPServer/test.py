@@ -1,50 +1,15 @@
-import re
+from confLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
+from confLSPServer.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
+from confLSPServer.gen.python.Configuration.ConfigurationParser import ConfigurationParser
+from antlr4 import InputStream, CommonTokenStream
+tableVisitor = SymbolTableVisitor("testConf")
 
-literalNames = [ "<INVALID>", "'model'", "'types'", "'group'", "':'", 
-                 "'{'", "'}'", "'def'", "','", "'='", "'required'", 
-                 "'feature'", "'requires'", "'excludes'", "'sub'", "'alternative'", 
-                 "'multiple'", "'('", "')'", "'['", "']'", "'range'", 
-                 "'enum'", "'*'", "'/'", "'**'", "'noP'", "'yotta'", 
-                 "'zetta'", "'exa'", "'peta'", "'tera'", "'giga'", "'mega'", 
-                 "'kilo'", "'hecto'", "'deca'", "'deci'", "'centi'", 
-                 "'mili'", "'micro'", "'nano'", "'pico'", "'femto'", 
-                 "'atto'", "'zepto'", "'yocto'", "'meter'", "'gram'", 
-                 "'ton'", "'second'", "'ampere'", "'kelvin'", "'mole'", 
-                 "'candela'", "'pascal'", "'Joul'", "'+'", "'-'", "'%'", 
-                 "'.'" ]
+with open("/home/armin/Dokumente/cp-dsl/examples/testing/basic/global.oconf") as conf_file:
+    data = conf_file.read()
+    input_stream = InputStream(data)
+    lexer = ConfigurationLexer(input_stream)
+    stream = CommonTokenStream(lexer)
+    dcl_parsed = ConfigurationParser(stream).declarationModel()
+    tableVisitor.visit(dcl_parsed)
+    print(tableVisitor.symbolTable)
 
-symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                  "<INVALID>", "ELONG", "EDOUBLE", "EBoolean", "ID", 
-                  "INT", "STRING", "WS", "ML_COMMENT", "SL_COMMENT", 
-                  "ANY_OTHER" ]
-
-
-def get_position_and_item_val(inp : str):
-    from itertools import groupby
-
-    ret_val = []
-
-    for k, g in groupby(enumerate(inp), lambda x: not x[1].isspace()):
-        if k:
-            pos, first_item = next(g)
-            item = first_item + ''.join([x for _, x in g])
-            ret_val.append([pos, pos + len(item) - 1, item])
-    return ret_val
-
-string = "lelelelelelel def oder not def of model"
-
-print(get_position_and_item_val(string))

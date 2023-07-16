@@ -35,11 +35,12 @@ function getClientOptions(): LanguageClientOptions {
         //  documentSelector: [{ scheme: 'file', language: 'plaintext' }],
         // Register the server for oceandsl_dcl as defined in package.json
         documentSelector: [
-            { scheme: ".dcl", language: "oceandsl_dcl" },
-            { scheme: ".oconf", language: "oceandsl_conf" },
+            { scheme: "file", language: "oceandsl_conf" },
+            { scheme: "untitled", language: "oceandsl_conf" },
+            { scheme: "file", language: "oceandsl_dcl" },
             { scheme: "untitled", language: "oceandsl_dcl" },
         ],
-        outputChannelName: "[pygls] ODslDCLLanguageServer",
+        outputChannelName: "[pygls] ODslLanguageServer",
         synchronize: {
             // Notify the server about file changes to '.clientrc files contain in the workspace
             fileEvents: workspace.createFileSystemWatcher("**/*.*"),

@@ -5,12 +5,15 @@ __author__ = 'stu222808'
 # util imports
 from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
-
 # antlr4
 from antlr4.tree.Tree import ParseTree
+from antlr4 import InputStream, CommonTokenStream
 
+from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
+from ..gen.python.Declaration.DeclarationParser import DeclarationParser
+from ..gen.python.Declaration.DeclarationLexer import DeclarationLexer
 # user relative imports
-from ...dclLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor as DeclSymbolTableVisitor
+from .SymbolTableVisitorDcl import SymbolTableVisitorDecl as DeclSymbolTableVisitor
 from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Configuration.ConfigurationVisitor import ConfigurationVisitor
@@ -35,9 +38,22 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
     def defaultResult(self) -> SymbolTable:
         return self._symbolTable
 
+    def visitConfigurationModel(self, ctx: ConfigurationParser.ConfigurationModelContext):
+        # Symboltable has to be filled with Declaration Defaults
+        # TODO: How do we know where the dcl file is placed?
+        with open("/home/armin/Dokumente/cp-dsl/examples/testing/basic/" + ctx.declarationModel.text + ".decl") as dcl_file:
+            data = dcl_file.read()
+            input_stream = InputStream(data)
+            lexer = DeclarationLexer(input_stream)
+            stream = CommonTokenStream(lexer)
+            dcl_parsed = DeclarationParser(stream).declarationModel()
+            self.declVisitor.visit(dcl_parsed)
+        self.symbolTable.addDependencies(self.declVisitor.symbolTable)
+        return super().visitConfigurationModel(ctx)
+
     # Visit a parse tree produced by DeclarationParser#paramAssignStat.
     # 'def' name=ID type=paramType ':' unit=unitSpecification (',' description=STRING)? ('=' defaultValue=arithmeticExpression)?
-    def visitParameterAssign(self, ctx: ConfigurationParser.ParameterAssign):
+    def visitParameterAssignment(self, ctx: ConfigurationParser.parameterAssignment):
         
         # define the given Parameter
         varName = ctx.declaration.text # set and get the variable name here
@@ -47,23 +63,20 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         def checkForParamAndEdit(searchedParamName : str, ctx : ConfigurationParser.parameterAssignment):
             for param in self._symbolTable.getSymbolsOfType(VariableSymbol):
                 if param.name == searchedParamName:
-                    param.value = ctx
+                    param.configuration.append(ctx)
                     return
             # TODO: add new symbol if not found in SymbolTable?
     
-    def visitParamGroup(self, ctx: ConfigurationParser.ParamGroup):
+    def visitParameterGroup(self, ctx: ConfigurationParser.parameterGroup):
         return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text, VariableSymbol)
 
-    def visitUnitSpec(self, ctx : ConfigurationParser.UnitSpec):
+    def visitUnitSpecification(self, ctx : ConfigurationParser.unitSpecification):
         return self.stringToUnitType(ctx.name.text)
 
-    def visitFeatureConfig(self, ctx: ConfigurationParser.FeatureConfig):
+    def visitFeatureConfiguration(self, ctx: ConfigurationParser.featureConfiguration):
         return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text)
 
-    def visitFeatureActivate(self, ctx : ConfigurationParser.FeatureActivate):
-        for feature in self._symbolTable.getAllSymbols(RoutineSymbol):
-            checkForFeatureAndSetActivation(feature, ctx.declaration.text, False if ctx.deactivated.text == '!' else True)
-            
+    def visitFeatureActivation(self, ctx : ConfigurationParser.featureActivation):
         def checkForFeatureAndSetActivation(feature : RoutineSymbol, searchedFeatureName : str, activate : bool):
             if feature.name == searchedFeatureName:
                 feature.is_activated = activate
@@ -71,9 +84,18 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
                 return
             for feature in feature.getFeatures():
                 checkForFeatureAndSetActivation(feature, searchedFeatureName)
+
+
+        for feature in self._scope.getFeatures():
+            #TODO: Scopeing how to ge the correct feature/parameter, when names and scope is out of bound with decl and conf?
+            try:
+                checkForFeatureAndSetActivation(feature, ctx.declaration.text, True if ctx.deactivated.text else False)
+            except AttributeError:
+                pass
+            
             
 
-    def visitIncludeDecl(self, ctx: ConfigurationParser.includeDecl):
+    def visitInclude(self, ctx: ConfigurationParser.include):
         self.declVisitor.visit(ctx)
         self.symbolTable.addDependencies(self.declVisitor.symbolTable)
 

@@ -96,11 +96,11 @@ NEWLINE=95
 WS=96
 'test'=1
 ':'=2
-'var'=3
-'='=4
-','=5
-'scope'=6
-'filepath'=7
+'srcpath'=3
+'var'=4
+'='=5
+','=6
+'scope'=7
 'modules'=8
 'assert'=9
 '('=10

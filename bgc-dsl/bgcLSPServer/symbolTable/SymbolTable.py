@@ -468,7 +468,7 @@ class UnitSymbol( TypedSymbol ):
     """
     attached_unit: Optional[Unit]
 
-    def __init__(self, name: str, attached_unit: Unit, attached_type: Type = None):
+    def __init__(self, name: str, attached_unit: Unit = None, attached_type: Type = None):
         super().__init__( name, attached_type )
         self.attached_unit = attached_unit
 
@@ -866,8 +866,8 @@ class BlockSymbol( ScopedSymbol ):
 
 class VariableSymbol( UnitSymbol ):
 
-    def __init__(self, name: str, value=None, attached_type: Type = None):
-        super().__init__( name, attached_type )
+    def __init__(self, name: str, value = None, attached_unit: Unit = None, attached_type: Type = None):
+        super().__init__( name, attached_unit, attached_type )
 
         self.value = value
 

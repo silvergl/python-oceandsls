@@ -1,6 +1,6 @@
-# Generated from TestSuite.g4 by ANTLR 4.12.0
+# Generated from TestSuite.g4 by ANTLR 4.13.0
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .TestSuiteParser import TestSuiteParser
 else:
     from TestSuiteParser import TestSuiteParser
@@ -16,6 +16,11 @@ class TestSuiteVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx:TestSuiteParser.Test_caseContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#src_path.
+    def visitSrc_path(self, ctx:TestSuiteParser.Src_pathContext):
         return self.visitChildren(ctx)
 
 
@@ -39,13 +44,8 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#test_files.
-    def visitTest_files(self, ctx:TestSuiteParser.Test_filesContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#test_modules.
-    def visitTest_modules(self, ctx:TestSuiteParser.Test_modulesContext):
+    # Visit a parse tree produced by TestSuiteParser#use_modules.
+    def visitUse_modules(self, ctx:TestSuiteParser.Use_modulesContext):
         return self.visitChildren(ctx)
 
 

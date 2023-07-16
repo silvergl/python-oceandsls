@@ -1,4 +1,4 @@
-// Generated from c:\Users\amack\Documents\UNI\python-oceandsls\cp-dsl\dclLSPServer\grammars\Terminals.g4 by ANTLR 4.9.2
+// Generated from /home/armin/Dokumente/antlr4/antlr4-python/cp-dsl/dclLSPServer/grammars/Terminals.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

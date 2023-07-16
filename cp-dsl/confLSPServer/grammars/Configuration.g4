@@ -17,13 +17,12 @@ configurationModel          :   'configuration' name=ID ':' declarationModel=ID
                             ;
 
 
-include                     :   'include' importedNamespace = QualifiedName #includeDecl;
+include                     :   'include' importedNamespace = QualifiedName;
 
 //TODO deactivated? set deactivated to true if '!' else to false
 //TODO add FeatureDeclaration reference for declaration = ID
 featureActivation           :   (deactivated='!')?
                                 declaration=ID
-                            #featureActivate
                             ;
 
 //TODO add FeatureDeclaration reference for declaration = ID
@@ -31,7 +30,6 @@ featureConfiguration        :   'feature' declaration=ID '{'
                                 ('activate' featureActivations+=featureActivation (',' featureActivations+=featureActivation)*)?
                                 (parameterGroups+=parameterGroup|featureConfigurations+=featureConfiguration)*
                                 '}'
-                            #featureConfig
                             ;
 
 // Generic parameter group setup
@@ -39,12 +37,10 @@ featureConfiguration        :   'feature' declaration=ID '{'
 parameterGroup              :   'group' declaration=ID '{'
                                 (parameters+=parameterAssignment)*
                                 '}'
-                            #paramGroup
                             ;
 
 //TODO add ParameterDeclaration reference for declaration = QualifiedName
 parameterAssignment         :   declaration= QualifiedName ('[' selectors+=selector (',' selectors+=selector)*  ']')? ':' value=arithmeticExpression (unit=unitSpecification)? 
-                            #parameterAssign
                             ;
 
 selector                    :   elementSelector | rangeSelector;
@@ -52,7 +48,6 @@ elementSelector             :   element=ELONG;
 rangeSelector               :   lowerBound=ELONG ':' upperBound=ELONG;
 
 unitSpecification                        : unit=ID
-                            #unitSpec
                             ;
 
 /** Lexer rules (start uppercase)*/

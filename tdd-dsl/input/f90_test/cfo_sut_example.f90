@@ -12,9 +12,9 @@ MODULE cfo_example
 
 CONTAINS
 
-  subroutine function(arg1, arg2)
+  subroutine my_sub(arg1, arg2)
     ! Fortran function code goes here
-  end subroutine my_function
+  end subroutine my_sub
 
   ! temperature function for Mytilus edulis from Jenny's simulations
   FUNCTION fT_ME (temperature) RESULT (fT)

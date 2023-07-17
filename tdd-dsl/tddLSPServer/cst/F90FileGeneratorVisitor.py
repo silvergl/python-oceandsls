@@ -9,6 +9,7 @@ from typing import Dict, List, Tuple
 # jinja2
 from jinja2 import Environment, FileSystemLoader
 
+from symbolTable import SymbolTable
 # user relative imports
 from tddLSPServer.fxca.util.FxtranUtils import filterXML, getFiles, writeDecorateSrcXml
 from tddLSPServer.fileWriter.fileWriter import write_file
@@ -25,7 +26,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     environment: Environment
 
     # TODO hc
-    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/f90', files: dict[ str, Tuple[ float, str, str ] ] = {}, workPath: str = 'tdd-dsl/output', workFolder: str = 'tests' ):
+    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/f90', files: dict[ str, Tuple[ float, str, str ] ] = {}, symbolTable: SymbolTable = None, workPath: str = 'tdd-dsl/output', workFolder: str = 'tests' ):
         '''
         Fortran 90 source code file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
@@ -48,12 +49,19 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         self.foundRef: bool = False
         self.foundPar: bool = False
 
+        # set symboltable
+        self._symbolTable: SymbolTable = symbolTable
+
         self.fileTemplates = {}
         # Get template file names from grammar
         i: int = 0
         for rule in TestSuiteParser.ruleNames:
             self.fileTemplates[ i ] = f'{rule}_template.txt'
             i += 1
+
+    @property
+    def symbolTable( self ) -> SymbolTable:
+        return self._symbolTable
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case( self, ctx: TestSuiteParser.Test_caseContext ) -> dict[ str, Tuple[ float, str, str ] ]:

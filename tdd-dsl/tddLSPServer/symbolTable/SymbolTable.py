@@ -656,7 +656,7 @@ class ScopedSymbol( Symbol ):
                 result.append( child )
 
         if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
-            localList: List[ T ] = await self.parent( ).getSymbolsOfType(t, True )
+            localList: List[ T ] = await self.parent( ).getSymbolsOfType( t, True )
             result.extend( localList )
 
         return result
@@ -880,20 +880,29 @@ class BlockSymbol( ScopedSymbol ):
 
 
 class ModuleSymbol( ScopedSymbol ):
-    def __init__( self, name: str = "" , file: str = ""):
+    def __init__( self, name: str = "", file: str = "" ):
         super( ).__init__( name )
         self.__childSymbols = [ ]
 
         # filename of system file
-        self._file = file
+        self._file: str = file
+        self._containsFunction: bool = False
 
     @property
-    def file( self ):
+    def file( self ) -> str:
         return self._file
 
     @file.setter
-    def file(self, file):
+    def file( self, file: str ):
         self._file = file
+
+    @property
+    def containsFunction( self ) -> bool:
+        return self._containsFunction
+
+    @containsFunction.setter
+    def containsFunction( self, containsFunction: bool ):
+        self._containsFunction = containsFunction
 
 
 class VariableSymbol( UnitSymbol ):

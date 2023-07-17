@@ -282,8 +282,12 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     # write pf files and save written files
     tdd_server.files = pffFileGeneratorVisitor.visit( parseTree )
 
+    # get symboltable for f90 generator
+    symbolTableVisitor: SystemFileVisitor = SystemFileVisitor( 'variables', os.getcwd( ) )
+    symbolTable = symbolTableVisitor.visit( parseTree )
+
     # set current working directory as working directory for test files
-    f90FileGeneratorVisitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor( testWorkPath = os.getcwd( ), files = tdd_server.files )
+    f90FileGeneratorVisitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor( workPath = os.getcwd( ), files = tdd_server.files, symbolTable = symbolTable )
 
     # TODO add arguments templatePath testPath testFolder
     # write optional fortran file and save written files

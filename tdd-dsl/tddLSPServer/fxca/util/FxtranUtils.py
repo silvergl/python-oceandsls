@@ -28,6 +28,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
     moduleNames = list( map( lambda s: s.name, modules ) )
     # extract filename of original file
     basename = os.path.splitext(os.path.basename(xmlPath))[0]
+    baseModule: ModuleSymbol = None
 
     # Get the root element
     tree = ET.parse( xmlPath )
@@ -46,6 +47,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
     scope_elements = [ 'subroutine-stmt', 'program-stmt', 'function-stmt' ]
     scope_block_statement = [ 'do-stmt' ]
     end_scope_elements = [ 'end-subroutine-stmt', 'end-program-stmt', 'end-function-stmt' ]
+    contain_statement = [ 'contains-stmt' ]
 
     # Dynamically extracted scope-changing elements
     dyn_scope_elements = set( )
@@ -94,6 +96,8 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
                 # get filename of original file
                 module.file = basename
 
+                baseModule = module
+
             # Check scope is filtered and is in filtered scope
             if isFilteredScope:
                 # Extract arguments
@@ -114,6 +118,12 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
         elif element.tag.endswith( 'public-stmt' ):
             pubIds = list( map( (lambda itm: itm.text), element.findall( './/fx:n', ns ) ) )
             pubElements.extend( pubIds )
+
+        # Extract variables, public only, if needed
+        elif element.tag.endswith( 'contains-stmt' ):
+            # Check if top level scope is in filtered scope or if filtered scope is empty
+            if len(scopeStack) == 1 and scopeStack[0] == baseModule.name:
+                baseModule.containsFunction = True
 
         # Extract variables, public only, if needed
         elif element.tag.endswith( 'T-decl-stmt' ):

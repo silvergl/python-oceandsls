@@ -590,6 +590,23 @@ class ScopedSymbol( Symbol ):
 
         return result
 
+    def getAllNestedModulesWithFileSync( self, file: str = None ) -> List[ ModuleSymbol ]:
+        """
+        :param file: If given only returns symbols from that file.
+        :return: A list of all ModuleSymbol with implementing files from this and all nested scopes in the order they were defined.
+        """
+        result: List[ ModuleSymbol ] = [ ]
+
+        for child in self.children( ):
+            # check all ModuleSymbols if basefile is file or if file is None if basefile is defined
+            if isinstance( child, ModuleSymbol ) and ( file is not None or child.file == file)  and (file is None or child.file is not None):
+                result.append( child )
+
+            if isinstance( child, ScopedSymbol ):
+                result.extend( child.getAllNestedModulesWithFileSync( file ) )
+
+        return result
+
     def getNestedSymbolsOfTypeSync( self, t: type ) -> List[ T ]:
         """
         Synchronously retrieves child symbols of a given type from this symbol.
@@ -880,7 +897,7 @@ class BlockSymbol( ScopedSymbol ):
 
 
 class ModuleSymbol( ScopedSymbol ):
-    def __init__( self, name: str = "", file: str = "" ):
+    def __init__( self, name: str = "", file: str = None ):
         super( ).__init__( name )
         self.__childSymbols = [ ]
 
@@ -903,7 +920,6 @@ class ModuleSymbol( ScopedSymbol ):
     @containsFunction.setter
     def containsFunction( self, containsFunction: bool ):
         self._containsFunction = containsFunction
-
 
 class VariableSymbol( UnitSymbol ):
 

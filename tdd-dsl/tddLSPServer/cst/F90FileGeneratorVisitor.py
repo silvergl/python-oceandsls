@@ -15,6 +15,7 @@ from tddLSPServer.fxca.util.FxtranUtils import filterXML, getFiles, writeDecorat
 from tddLSPServer.fileWriter.fileWriter import write_file
 from tddLSPServer.gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from tddLSPServer.gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
+from tddLSPServer.utils.suggestVariables import getScope
 
 
 class F90FileGeneratorVisitor( TestSuiteVisitor ):
@@ -67,6 +68,11 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     def visitTest_case( self, ctx: TestSuiteParser.Test_caseContext ) -> dict[ str, Tuple[ float, str, str ] ]:
         # Load Jinja2 template
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
+
+        scope = getScope(ctx, self.symbolTable)
+
+        # TODO get module name + '.f90' move to module visitor
+        implementedModules = scope.getAllModulesWithFileSync()
 
         # Get test case template parameters
         name = ctx.name.text

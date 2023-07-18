@@ -283,7 +283,7 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     tdd_server.files = pffFileGeneratorVisitor.visit( parseTree )
 
     # get symboltable for f90 generator
-    symbolTableVisitor: SystemFileVisitor = SystemFileVisitor( 'variables', os.getcwd( ) )
+    symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'variables', os.getcwd( ) )
     symbolTable = symbolTableVisitor.visit( parseTree )
 
     # set current working directory as working directory for test files

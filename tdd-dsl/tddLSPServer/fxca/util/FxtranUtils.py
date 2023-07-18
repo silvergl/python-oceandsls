@@ -79,7 +79,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
             scopeStack.pop( )
 
             # Check scope is filtered and top level scope ended
-            if not moduleNames or not scopeStack:
+            if not scopeStack:
                 isFilteredScope = False
 
         # Extend the scope stack when entering scopes
@@ -87,16 +87,23 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
             # Extract scope name
             scopeName = nameElement.find( './/fx:n', ns ).text
 
-            # TODO hc module
-            # Check if top level scope is in filtered scope or if filtered scope is empty
-            if not moduleNames or not scopeStack and stmtName == 'module' and scopeName in moduleNames:
-                isFilteredScope = True
-                module: ModuleSymbol = next(filter ( lambda module: module.name == scopeName, modules))
+            if stmtName == 'module':
 
-                # get filename of original file
-                module.file = basename
+                # TODO depr rm
+                # # set top level module as scope if filtered scope is empty
+                # if not moduleNames:
+                #     moduleNames.append(scopeName)
 
-                baseModule = module
+                # TODO hc module
+                # Check if top level scope is in filtered scope or if filtered scope is empty
+                if not scopeStack and scopeName in moduleNames:
+                    isFilteredScope = True
+                    module: ModuleSymbol = next(filter ( lambda module: module.name == scopeName, modules))
+
+                    # get filename of original file
+                    module.file = basename
+
+                    baseModule = module
 
             # Check scope is filtered and is in filtered scope
             if isFilteredScope:

@@ -866,6 +866,10 @@ class VariableSymbol( UnitSymbol ):
         self.is_tree = isinstance(value, ParseTree)
         self.value = value
 
+class EnumSymbol(ScopedSymbol):
+    def __init__(self, name: str = "", value = None):
+        self.value = value
+        super().__init__(name)
 
 class LiteralSymbol( UnitSymbol ):
 

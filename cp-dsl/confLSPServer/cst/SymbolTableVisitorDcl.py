@@ -8,8 +8,10 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 # antlr4
 from antlr4.tree.Tree import ParseTree
 
+from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
+
 # user relative imports
-from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind
+from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
@@ -20,7 +22,7 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
     def __init__(self, name: str = '', ):
         super().__init__()
         # creates a new symboltable with no duplicate symbols
-        self._symbolTable = SymbolTable( name, SymbolTableOptions( False ) )
+        self._symbolTable = None
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
@@ -79,6 +81,14 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
 
     def visitFeatureGroupAssignStat(self, ctx: DeclarationParser.FeatureGroupAssignStatContext):
         return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), "", RoutineSymbol, "")
+    
+    def visitEnumerationType(self, ctx: DeclarationParser.EnumerationTypeContext):
+        enumName = ctx.name.text if ctx.name else ""
+        self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, self.visitChildren(ctx))
+        return super().visitEnumeral(ctx)
+    
+    def visitEnumeral(self, ctx: DeclarationParser.EnumeralContext):
+        return [ctx.name] + self.visitChildren(ctx)
 
     # def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
     #     self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID().getText() )

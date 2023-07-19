@@ -14,9 +14,11 @@ from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationLexer import DeclarationLexer
 # user relative imports
 from .SymbolTableVisitorDcl import SymbolTableVisitorDecl as DeclSymbolTableVisitor
-from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind
+from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Configuration.ConfigurationVisitor import ConfigurationVisitor
+
+import os
 
 
 class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
@@ -29,7 +31,6 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
-        self.declVisitor = DeclSymbolTableVisitor(name + "_ConfDeclVisit")
 
     @property
     def symbolTable(self) -> SymbolTable:
@@ -40,16 +41,23 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
 
     def visitConfigurationModel(self, ctx: ConfigurationParser.ConfigurationModelContext):
         # Symboltable has to be filled with Declaration Defaults
+        table = self.visitDeclaration(ctx.declarationModel.text)
+        self._symbolTable.addDependencies(table)
+        self._currPos = RoutineSymbol()
+        return super().visitConfigurationModel(ctx)
+    
+    def visitDeclarationTable(self, declarationName : str):
+        declVisitor = DeclSymbolTableVisitor(declarationName + "_ConfDeclVisit")
         # TODO: How do we know where the dcl file is placed?
-        with open("/home/armin/Dokumente/cp-dsl/examples/testing/basic/" + ctx.declarationModel.text + ".decl") as dcl_file:
+        with open(os.path.join(os.getcwd(),declarationName)) as dcl_file:
             data = dcl_file.read()
             input_stream = InputStream(data)
             lexer = DeclarationLexer(input_stream)
             stream = CommonTokenStream(lexer)
             dcl_parsed = DeclarationParser(stream).declarationModel()
-            self.declVisitor.visit(dcl_parsed)
-        self.symbolTable.addDependencies(self.declVisitor.symbolTable)
-        return super().visitConfigurationModel(ctx)
+            declVisitor.visit(dcl_parsed)
+        return declVisitor.symbolTable
+
 
     # Visit a parse tree produced by DeclarationParser#paramAssignStat.
     # 'def' name=ID type=paramType ':' unit=unitSpecification (',' description=STRING)? ('=' defaultValue=arithmeticExpression)?
@@ -61,10 +69,11 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         checkForParamAndEdit(varName, ctx)
                 
         def checkForParamAndEdit(searchedParamName : str, ctx : ConfigurationParser.parameterAssignment):
-            for param in self._symbolTable.getSymbolsOfType(VariableSymbol):
+            for param in (self._scope.getParameters() if self._scope else self._symbolTable.getAllSymbolsSync(VariableSymbol, localOnly=True)):
                 if param.name == searchedParamName:
                     param.configuration.append(ctx)
                     return
+            print("ERROR: Couldn't find correct Symbol")
             # TODO: add new symbol if not found in SymbolTable?
     
     def visitParameterGroup(self, ctx: ConfigurationParser.parameterGroup):
@@ -77,27 +86,32 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text)
 
     def visitFeatureActivation(self, ctx : ConfigurationParser.featureActivation):
-        def checkForFeatureAndSetActivation(feature : RoutineSymbol, searchedFeatureName : str, activate : bool):
-            if feature.name == searchedFeatureName:
-                feature.is_activated = activate
-                # TODO: Do we have to add the element again, or does it just save the changes?
-                return
-            for feature in feature.getFeatures():
-                checkForFeatureAndSetActivation(feature, searchedFeatureName)
-
-
         for feature in self._scope.getFeatures():
             #TODO: Scopeing how to ge the correct feature/parameter, when names and scope is out of bound with decl and conf?
-            try:
-                checkForFeatureAndSetActivation(feature, ctx.declaration.text, True if ctx.deactivated.text else False)
-            except AttributeError:
-                pass
-            
-            
-
+            if feature.name == ctx.name.text:
+                try:
+                    # if is_activated is set to false it is not none
+                    feature.is_activated = True if ctx.deactivated else False
+                except AttributeError:
+                    print("WARNING: There was a None in Feature Configuration of " + str(feature.name))
+                    pass
+                
     def visitInclude(self, ctx: ConfigurationParser.include):
-        self.declVisitor.visit(ctx)
-        self.symbolTable.addDependencies(self.declVisitor.symbolTable)
+        info = ctx.importedNamespace.text.split(".")
+        table = self.visitDeclarationTable(info[0])
+        scope : RoutineSymbol = None
+        #TODO: Not sure if this is gonna work
+        for i in range(1,len(info)):
+            if scope:
+                for elem in scope.getAllSymbolsSync(T,True):
+                    if info[i] == elem.name:
+                        scope = elem
+                        self._symbolTable.addSymbol(elem)
+            else:
+                for elem in table.getAllSymbolsSync():
+                    if elem.name == info[i]:
+                        scope = elem
+                        self._symbolTable.addSymbol(elem)
 
     
     def stringToPrefix(input : str):

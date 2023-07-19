@@ -9,13 +9,12 @@ from typing import Dict, List, Tuple
 # jinja2
 from jinja2 import Environment, FileSystemLoader
 
-from symbolTable import SymbolTable
 # user relative imports
-from tddLSPServer.fxca.util.FxtranUtils import filterXML, getFiles, writeDecorateSrcXml
-from tddLSPServer.fileWriter.fileWriter import write_file
-from tddLSPServer.gen.python.TestSuite.TestSuiteParser import TestSuiteParser
-from tddLSPServer.gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
-from tddLSPServer.utils.suggestVariables import getScope
+from ..symbolTable.SymbolTable import SymbolTable, FunctionSymbol, ModuleSymbol, RoutineSymbol
+from ..fileWriter.fileWriter import write_file
+from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
+from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
+from ..utils.suggestVariables import getScope
 
 
 class F90FileGeneratorVisitor( TestSuiteVisitor ):

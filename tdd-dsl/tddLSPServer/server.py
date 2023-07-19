@@ -44,8 +44,8 @@ from pygls.workspace import Document
 # TODO fail relative import beyond top-level package
 # from ...antlrLib.CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
-from cst.F90FileGeneratorVisitor import F90FileGeneratorVisitor
 # user relative imports
+from .cst.F90FileGeneratorVisitor import F90FileGeneratorVisitor
 from .cst.DiagnosticListener import DiagnosticListener
 from .cst.PFFileGeneratorVisitor import PFFileGeneratorVisitor
 from .cst.SystemFileVisitor import SystemFileVisitor

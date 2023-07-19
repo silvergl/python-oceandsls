@@ -68,10 +68,16 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         # Load Jinja2 template
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
 
-        scope = getScope(ctx, self.symbolTable)
+        moduleSymbols = self.visit( ctx.scope )
 
-        # TODO get module name + '.f90' move to module visitor
-        implementedModules = scope.getAllModulesWithFileSync()
+        # funSymbol = moduleSymbols[0].getSymbolsOfTypeSync( FunctionSymbol, True )
+        #
+        # routineSymbol = moduleSymbols[0].getSymbolsOfTypeSync( RoutineSymbol, True )
+
+        # not implemented ops
+        # opsNew = list(filter ( lambda ))
+
+        # module: ModuleSymbol = next(filter ( lambda module: module.name == scopeName, modules))
 
         # Get test case template parameters
         name = ctx.name.text
@@ -118,37 +124,26 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         # If the given path is an absolute path, then self._testPath is ignored and the joining is only the given path
         self.workPath: str = os.path.join( self.workPath, userPath )
 
-    # Get rendered list of used modules
+    # Get list of used module symbols
     def visitUse_modules( self, ctx: TestSuiteParser.Use_modulesContext ):
 
-        # Add module symbols to symboltable and extract names of module symbols for XML filter
-        moduleNames: List[ str ] = [ ]
+        # Accumulate module names
+        moduleSymbols: List[ ModuleSymbol ] = [ ]
         for module in ctx.modules:
-            moduleNames.append( self.visit( module ) )
+            moduleSymbols.append( self.visit( module ) )
 
-        # TODO hc
-        xmlPath = os.path.join( self.workPath, 'tmp' )
-        # TODO hc
-        # Write XML files
-        writeDecorateSrcXml( self.workPath, xmlPath, '/home/sgu/IdeaProjects/fxtran/bin/fxtran' )  # /home/sgu/Documents/fxtran/bin/fxtran
+        return moduleSymbols
 
-        # TODO hc, specify modules
-        # Get Fortran files
-        xmlFiles = getFiles( xmlPath, "*.[fF]90.xml" )
-
-        for path, filename in xmlFiles:
-            # TODO add key for variables
-            xmlElements = filterXML( os.path.join( path, filename ), True, moduleNames )
-
-    # Visit a parse tree produced by TestSuiteParser#test_module.
+    # Find corresponding module symbol
     def visitTest_module( self, ctx: TestSuiteParser.Test_moduleContext ):
-        return ctx.name.text
+        # Return corresponding module symbol, optionally with implementing file and contain functions flag
+        return getScope(ctx, self.symbolTable)
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion( self, ctx: TestSuiteParser.Test_assertionContext ):
-        template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
+        # template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
 
-        comment = ctx.comment.text.rstrip( '\n' ) if ctx.comment is not None else None
+        comment = ctx.comment.text.rstrip( '\n' ).lstrip( '#' ) if ctx.comment is not None else None
 
         ops: dict[ str, List[ str ], str ] = self.visit( ctx.input_ )
         ret: dict[ str, List[ str ], str ] = self.visit( ctx.output )
@@ -164,10 +159,10 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     # Visit a parse tree produced by TestSuiteParser#test_parameter.
     def visitTest_parameter( self, ctx: TestSuiteParser.Test_parameterContext ):
         # get value name and optional argument types
-        valueDecl: Tuple[ str, List[ str ] ] = self.visitChildren( ctx.value )
+        valueDecl: Tuple[ str, List[ str ] ] = self.visit( ctx.value )
 
         # unit of expression
-        exprUnit: str = self.visitChildren( ctx.comment )
+        exprUnit: str = self.visit( ctx.comment )
 
         # return value expression and unit of expression
         # TODO rm declaration from grammar?
@@ -182,7 +177,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     # Visit a parse tree produced by TestSuiteParser#specDesc.
     def visitSpecDesc( self, ctx: TestSuiteParser.SpecDescContext ):
         # get unit of expression
-        return self.visitChildren( ctx.type_ )
+        return self.visit( ctx.type_ )
 
     # Visit a parse tree produced by TestSuiteParser#customUnit.
     def visitCustomUnit( self, ctx: TestSuiteParser.CustomUnitContext ):
@@ -226,7 +221,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
                 return 'real'
             case [ 'integer', 'integer' ]:
                 if ctx.op == '*':
-                    # if all of the operands are integer then result of the operation will be integer
+                    # if all the operands are integer then result of the operation will be integer
                     return 'integer'
                 else:
                     return 'real'
@@ -248,7 +243,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
                 # if any of the operands are real then result of the operation will be real
                 return 'real'
             case [ 'integer', 'integer' ]:
-                # if all of the operands are integer then result of the operation will be integer
+                # if all the operands are integer then result of the operation will be integer
                 return 'integer'
             case _:
                 # custom types have precedence

@@ -1,0 +1,7 @@
+{% if comment %}
+    comment: {{comment}}
+{%- elif integer %}
+    integer: {{integer}}
+{%- else %}
+    default
+{%- endif %}

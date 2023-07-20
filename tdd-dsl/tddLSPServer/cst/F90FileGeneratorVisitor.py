@@ -43,7 +43,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         # TODO add test directory option
         self.workFolder = workFolder
         # Load Jinja2 templates
-        self.environment = Environment( loader = FileSystemLoader( templatePath ) )
+        self.environment = Environment( loader = FileSystemLoader( templatePath ), trim_blocks=True, lstrip_blocks = True, keep_trailing_newline = False )
 
         # variable flags
         self.foundRef: bool = False
@@ -142,6 +142,8 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion( self, ctx: TestSuiteParser.Test_assertionContext ):
         # template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
+        template = self.environment.get_template( 'tmp_dev.txt')
+        template.render( comment = 'test comment', integer = 1)
 
         comment = ctx.comment.text.rstrip( '\n' ).lstrip( '#' ) if ctx.comment is not None else None
 

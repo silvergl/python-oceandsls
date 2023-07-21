@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 from jinja2 import Environment, FileSystemLoader
 
 # user relative imports
-from ..symbolTable.SymbolTable import SymbolTable, FunctionSymbol, ModuleSymbol, RoutineSymbol
+from ..symbolTable.SymbolTable import SymbolTable, FunctionSymbol, ModuleSymbol, RoutineSymbol, VariableSymbol
 from ..fileWriter.fileWriter import write_file
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
@@ -142,8 +142,29 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion( self, ctx: TestSuiteParser.Test_assertionContext ):
         # template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
-        template = self.environment.get_template( 'tmp_dev.txt')
-        template.render( comment = 'test comment', integer = 1)
+
+        # template = self.environment.get_template( 'tmp_dev.txt')
+        # foobar = template.render( comment = 'test comment', integer = 1)
+
+        template = self.environment.get_template( 'test_assertion_template.txt')
+
+        # TODO remove comment
+        comment = ctx.comment.text.rstrip( '\n' ).lstrip( '#' ) if ctx.comment is not None else None
+        name = 'fT_ME'
+        argsName = ['arg0', 'arg1', 'arg2']
+        unit = 'K'
+
+        argsName += ['unit'] if unit is not None else []
+
+        argsDecl = ['REAL, INTENT(IN)  :: a','REAL, INTENT(IN)  :: b','REAL, INTENT(IN)  :: c']
+        returnType = 'REAL'
+
+        scope = getScope( ctx, self.symbolTable )
+
+        var = scope.getNestedSymbolsOfTypeAndNameSync(VariableSymbol,ops[0][1][0][0])
+        var[0].attached_type
+
+        foobar = template.render( comment = comment, name = name, argsName = argsName, unit = unit, argsDecl = argsDecl, returnType = returnType )
 
         comment = ctx.comment.text.rstrip( '\n' ).lstrip( '#' ) if ctx.comment is not None else None
 

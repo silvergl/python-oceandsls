@@ -1,15 +1,26 @@
+{% if comment %}
   ! {{ comment }}
-  FUNCTION {{ name }} ({{ argsName|join(', ') }}, {{returnUnit}}) RESULT ({{ returnName }})
+{% endif %}
+  FUNCTION {{ name }} ({% if argsName %}{{ argsName |list |join(', ') }}{% endif %}) RESULT (out)
     IMPLICIT NONE
-    {{ argsDecl|join('\n') }}
-    {{ returnDecl }}
+    {% if argsDecl %}
+    {{ argsDecl|join('\n    ') }}
+    {% endif %}
+    {% if returnType%}
+    {{ returnType }}
+    {%- else %}
+    ! <<Add return type here>>
+    {%- endif %}, INTENT(OUT) :: out
 
-    character(len=:),optional :: {{returnUnit}}
-    if(present({{returnUnit}}))then
-        if ( x /= y ) then
-          print *, "{{ name }}: Input wrong unit", {{returnUnit}}
+    {% if unit %}
+    character(len=:),optional :: unit
+    if(present(unit))then
+        if ( unit /= {{unit}} ) then
+          print *, "{{ name }}: Expected {{ unit }} as input unit but got ", unit
         endif
     endif
+    {%- endif %}
 
-    {{ returnName }} =
+
+    out = ! Add return expression here
   END FUNCTION {{ name }}

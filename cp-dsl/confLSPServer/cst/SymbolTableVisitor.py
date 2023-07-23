@@ -27,7 +27,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
     def __init__(self, name: str = '', ):
         super().__init__()
         # creates a new symboltable with no duplicate symbols
-        self._symbolTable = SymbolTable( name, SymbolTableOptions( False ) )
+        self._symbolTable = SymbolTable(name, SymbolTableOptions(False))
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None

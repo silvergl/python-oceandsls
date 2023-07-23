@@ -191,12 +191,13 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     core: CodeCompletionCore = CodeCompletionCore( dcl_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {DeclarationParser, DeclarationParser}
+    core.preferredRules = {DeclarationParser.RULE_featureDeclaration, DeclarationParser.RULE_featureGroupDeclaration,
+                           DeclarationParser.RULE_parameterGroupDeclaration, DeclarationParser.RULE_parameterDeclaration,
+                           DeclarationParser.RULE_typeReference, DeclarationParser.RULE_enumeral,
+                           DeclarationParser.RULE_enumeral}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
-
-    calcVariables = False
 
     def calcLitAndSymbNames(literalNames):
         literalNames = []
@@ -261,7 +262,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         addToCompletionList(completionItems)
 
     # Variables finding
-    if any( rule in candidates.rules for rule in [ DeclarationParser.declarationModel ] ) and calcVariables:
+    if any( rule in candidates.rules for rule in [ DeclarationParser.declarationModel ] ):
 
         symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
 

@@ -8,19 +8,21 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 # antlr4
 from antlr4.tree.Tree import ParseTree
 
+from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
+
 # user relative imports
-from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind
+from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
 
-class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
+class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
     _symbolTable: SymbolTable
 
     def __init__(self, name: str = '', ):
         super().__init__()
         # creates a new symboltable with no duplicate symbols
-        self._symbolTable = SymbolTable( name, SymbolTableOptions( False ) )
+        self._symbolTable = SymbolTable(name, SymbolTableOptions(False))
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
@@ -79,7 +81,24 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
 
     def visitFeatureGroupAssignStat(self, ctx: DeclarationParser.FeatureGroupAssignStatContext):
         return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), "", RoutineSymbol, "")
+    
+    def visitEnumerationType(self, ctx: DeclarationParser.EnumerationTypeContext):
+        enumName = ctx.name.text if ctx.name else ""
+        self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, self.visitChildren(ctx))
+        return super().visitEnumeral(ctx)
+    
+    def visitEnumeral(self, ctx: DeclarationParser.EnumeralContext):
+        return [(ctx.name.text, int(ctx.value.text))] + self.visitChildren(ctx)
+    
+    def visitArrayType(self, ctx: DeclarationParser.ArrayType):
+        bounds = self.visitChildren(ctx)
+        self._symbolTable.addNewSymbolOfType(ArraySymbol, self._scope, ctx.type.text if ctx.type else "", bounds[0], bounds[1])
 
+    def visitSizeDimension(self, ctx: DeclarationParser.SizeDimension):
+        return (0, int(ctx.size.text) if ctx.size else 0)    
+
+    def visitRangeDimension(self, ctx: DeclarationParser.RangeDimension):
+        return ((int(ctx.lowerBound.text) if ctx.lowerBound else 0), (int(ctx.upperBound.text) if ctx.upperBound else 0))
     # def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
     #     self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID().getText() )
     #     return self.visitChildren( ctx )

@@ -870,6 +870,12 @@ class EnumSymbol(ScopedSymbol):
     def __init__(self, name: str = "", value = None):
         self.value = value
         super().__init__(name)
+        
+class ArraySymbol(ScopedSymbol):
+    def __init__(self, name: str = "", upperBound = 0, lowerBound = 0):
+        self.upperBound = upperBound
+        self.lowerBound = lowerBound
+        super().__init__(name)
 
 class LiteralSymbol( UnitSymbol ):
 

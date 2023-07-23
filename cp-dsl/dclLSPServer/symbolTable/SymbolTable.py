@@ -859,12 +859,23 @@ class BlockSymbol( ScopedSymbol ):
 
 class VariableSymbol( UnitSymbol ):
     is_tree = False
+    configuration = []
     
     def __init__(self, name: str, description: str = "", value = None, attached_unit : Unit = None, attached_type: Type = None):
         super().__init__( name, description, attached_unit, attached_type )
         self.is_tree = isinstance(value, ParseTree)
         self.value = value
 
+class EnumSymbol(ScopedSymbol):
+    def __init__(self, name: str = "", value = None):
+        self.value = value
+        super().__init__(name)
+        
+class ArraySymbol(ScopedSymbol):
+    def __init__(self, name: str = "", upperBound = 0, lowerBound = 0):
+        self.upperBound = upperBound
+        self.lowerBound = lowerBound
+        super().__init__(name)
 
 class LiteralSymbol( UnitSymbol ):
 
@@ -909,16 +920,16 @@ class RoutineSymbol( ScopedSymbol ):
         self.returnType = returnType
 
     def getVariables(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType( VariableSymbol )
+        return self.getNestedSymbolsOfTypeSync( VariableSymbol )
 
     def getParameters(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType( ParameterSymbol )
+        return self.getNestedSymbolsOfTypeSync( ParameterSymbol )
 
     def getUnits(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType(UnitSymbol)
+        return self.getNestedSymbolsOfTypeSync(UnitSymbol)
     
     def getFeatures(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType(RoutineSymbol)
+        return self.getNestedSymbolsOfTypeSync(RoutineSymbol)
 
 
 class MethodFlags( Enum ):

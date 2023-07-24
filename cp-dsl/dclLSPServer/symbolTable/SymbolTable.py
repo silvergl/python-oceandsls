@@ -251,6 +251,9 @@ class Symbol:
     # The name of the scope or empty if anonymous.
     name: str
 
+    #The configuration Trees
+    configuration = []
+
     # Reference to the parse tree which contains this symbol.
     context: Optional[ParseTree]
 
@@ -859,23 +862,55 @@ class BlockSymbol( ScopedSymbol ):
 
 class VariableSymbol( UnitSymbol ):
     is_tree = False
-    configuration = []
     
     def __init__(self, name: str, description: str = "", value = None, attached_unit : Unit = None, attached_type: Type = None):
         super().__init__( name, description, attached_unit, attached_type )
         self.is_tree = isinstance(value, ParseTree)
         self.value = value
 
-class EnumSymbol(ScopedSymbol):
+class EnumSymbol(Symbol):
     def __init__(self, name: str = "", value = None):
         self.value = value
         super().__init__(name)
         
-class ArraySymbol(ScopedSymbol):
+class ArraySymbol(Symbol):
+    """
+    Array Representation
+    i[2:7] = {0,1,2,3,4,5}
+    => [(2,0), (3,1), (4,2), (5,3), (6,4), (7,5)]
+    i[5][9] = 8
+    => [(5, [(9,8)]]
+    """
+    vectors = []
+    value = []
+
     def __init__(self, name: str = "", upperBound = 0, lowerBound = 0):
         self.upperBound = upperBound
         self.lowerBound = lowerBound
         super().__init__(name)
+
+    #!!!!EXPERIMENTAL!!!!
+    def add(self, vector, val) -> None:
+        #check if vector already in array
+        if vector in self.vectors:
+            i = self.vectors.index(vector)
+            self.value[i] = val
+            return
+        if self.upperBound == 0 and self.lowerBound == 0:
+            self.vectors.append(vector)
+            self.value.append((vector, val))
+        else:
+            #Check for the bounds
+            if self.lowerBound <= vector and self.upperBound >= vector:
+                self.vectors.append(vector)
+                self.value.append((vector, val))
+            else:
+                print("Array out of bound error")
+
+
+    def __len__(self):
+        return max(self.vector)
+
 
 class LiteralSymbol( UnitSymbol ):
 
@@ -913,7 +948,7 @@ class RoutineSymbol( ScopedSymbol ):
     A standalone function/procedure/rule.
     """
     returnType: Optional[Type]  # Can be null if result is void.
-    is_activated: bool = True # set if the feature is activated
+    is_activated: bool = False # set if the feature is activated
 
     def __init__(self, name: str, returnType: Type = None):
         super().__init__( name )

@@ -41,7 +41,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
 
     def visitConfigurationModel(self, ctx: ConfigurationParser.ConfigurationModelContext):
         # Symboltable has to be filled with Declaration Defaults
-        table = self.visitDeclaration(ctx.declarationModel.text)
+        table = self.visitDeclarationTable(ctx.declarationModel.text)
         self._symbolTable.addDependencies(table)
         self._currPos = RoutineSymbol()
         return super().visitConfigurationModel(ctx)
@@ -49,7 +49,8 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
     def visitDeclarationTable(self, declarationName : str):
         declVisitor = DeclSymbolTableVisitor(declarationName + "_ConfDeclVisit")
         # TODO: How do we know where the dcl file is placed?
-        with open(os.path.join(os.getcwd(),declarationName)) as dcl_file:
+        # TODO: Maybe: Copy TDD-DSL Pattern for os paths
+        with open(os.path.join(os.getcwd(),declarationName + ".dcl")) as dcl_file:
             data = dcl_file.read()
             input_stream = InputStream(data)
             lexer = DeclarationLexer(input_stream)
@@ -83,6 +84,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         return self.stringToUnitType(ctx.name.text)
 
     def visitFeatureConfiguration(self, ctx: ConfigurationParser.featureConfiguration):
+        #TODO: get activated if mentioned
         return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text)
 
     def visitFeatureActivation(self, ctx : ConfigurationParser.featureActivation):
@@ -97,6 +99,8 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
                     pass
                 
     def visitInclude(self, ctx: ConfigurationParser.include):
+        #TODO: includes ConfigurationFile
+        #TODO: copy to DeclarationVisitor
         info = ctx.importedNamespace.text.split(".")
         table = self.visitDeclarationTable(info[0])
         scope : RoutineSymbol = None

@@ -88,6 +88,7 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         return super().visitEnumeral(ctx)
     
     def visitEnumeral(self, ctx: DeclarationParser.EnumeralContext):
+        #TODO: is this a children?
         return [(ctx.name.text, int(ctx.value.text))] + self.visitChildren(ctx)
     
     def visitArrayType(self, ctx: DeclarationParser.ArrayType):

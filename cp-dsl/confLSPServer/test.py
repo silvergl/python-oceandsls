@@ -12,4 +12,3 @@ with open("/home/armin/Dokumente/cp-dsl/examples/testing/basic/global.oconf") as
     dcl_parsed = ConfigurationParser(stream).declarationModel()
     tableVisitor.visit(dcl_parsed)
     print(tableVisitor.symbolTable)
-

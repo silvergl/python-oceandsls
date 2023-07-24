@@ -691,6 +691,45 @@ class ScopedSymbol( Symbol ):
 
         return result
 
+    def getSymbolsOfTypeAndNameSync( self, t: type, name: str = None, localOnly = True ) -> List[ T ]:
+        """
+        Synchronously returns symbols of the type and optionally the name, if given.
+
+        :param t: The type of the objects to return.
+        :param name: If given only returns symbols with that name.
+        :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol (recursively).
+        :return: A promise resolving to direct children of a given type.
+        """
+        result: List[ T ] = [ ]
+        for child in self.children( ):
+            if isinstance( child, t ) and (name is None or child.name == name):
+                result.append( child )
+
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
+            result.extend( self.parent( ).getSymbolsOfTypeAndNameSync( t, name, localOnly ) )
+
+        return result
+
+    async def getSymbolsOfTypeAndName( self, t: type, name: str = None, localOnly = True ) -> List[ T ]:
+        """
+        Asynchronously returns symbols of the type and optionally the name, if given.
+
+        :param t: The type of the objects to return.
+        :param name: If given only returns symbols with that name.
+        :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol (recursively).
+        :return: A promise resolving to direct children of a given type.
+        """
+        result: List[ T ] = [ ]
+        for child in self.children( ):
+            if isinstance( child, t ) and (name is None or child.name == name):
+                result.append( child )
+
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
+            localList: List[ T ] = await self.parent( ).getSymbolsOfTypeAndName( t, name, localOnly )
+            result.extend( localList )
+
+        return result
+
     def getSymbolsOfTypeSync( self, t: type, localOnly = True ) -> List[ T ]:
         """
         :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol

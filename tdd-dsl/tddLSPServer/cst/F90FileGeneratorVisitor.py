@@ -141,15 +141,30 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion( self, ctx: TestSuiteParser.Test_assertionContext ):
-        # template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
+        template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
+
+        # extract comment
+        # TODO remove comment
+        comment = ctx.comment.text.rstrip( '\n' ).lstrip( '#' ) if ctx.comment is not None else None
+
+        # extract id and optional arguments
+        ops: dict[ str, List[ str ], str ] = self.visit( ctx.input_ )
+
+        scope = getScope( ctx, self.symbolTable )
+
+        var = scope.getNestedSymbolsOfTypeAndNameSync(VariableSymbol,ops[0][1][0][0])
+        varType = var[0].attached_type
+
+
+        for op in ops:
+            op[0]
+
 
         # template = self.environment.get_template( 'tmp_dev.txt')
         # foobar = template.render( comment = 'test comment', integer = 1)
 
         template = self.environment.get_template( 'test_assertion_template.txt')
 
-        # TODO remove comment
-        comment = ctx.comment.text.rstrip( '\n' ).lstrip( '#' ) if ctx.comment is not None else None
         name = 'fT_ME'
         argsName = ['arg0', 'arg1', 'arg2']
         unit = 'K'
@@ -159,10 +174,8 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         argsDecl = ['REAL, INTENT(IN)  :: a','REAL, INTENT(IN)  :: b','REAL, INTENT(IN)  :: c']
         returnType = 'REAL'
 
-        scope = getScope( ctx, self.symbolTable )
 
-        var = scope.getNestedSymbolsOfTypeAndNameSync(VariableSymbol,ops[0][1][0][0])
-        var[0].attached_type
+
 
         foobar = template.render( comment = comment, name = name, argsName = argsName, unit = unit, argsDecl = argsDecl, returnType = returnType )
 
@@ -223,7 +236,12 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     # Visit a parse tree produced by TestSuiteParser#varRef.
     def visitVarRef( self, ctx: TestSuiteParser.VarRefContext ):
         name = ctx.ID( ).getText( )
-        return name, None
+
+        # extract most local type of reference from symboltable
+        scope = getScope( ctx, self.symbolTable )
+        var = scope.getNestedSymbolsOfTypeAndNameSync(VariableSymbol,name)
+        varType = var[0].attached_type if var else None
+        return varType
 
     # Visit a parse tree produced by TestSuiteParser#parensExpr.
     def visitParensExpr( self, ctx: TestSuiteParser.ParensExprContext ):
@@ -232,46 +250,101 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
 
     # Visit a parse tree produced by TestSuiteParser#mulDivExpr.
     def visitMulDivExpr( self, ctx: TestSuiteParser.MulDivExprContext ):
-        leftType = self.visit( ctx.left )
-        rightType = self.visit( ctx.right )
+        # extract left and right operator
+        left = self.visit( ctx.left )
+        right = self.visit( ctx.right )
+
+        # determine types
+        if isinstance(left, Tuple):
+            # lookup function in symboltable for return type
+            scope = getScope( ctx, self.symbolTable )
+            routineSymbol = scope.getSymbolsOfTypeAndNameSync(RoutineSymbol,left[0], False)
+            if routineSymbol:
+                leftType = routineSymbol[0].returnType
+            else:
+                # function and return type are unknown
+                leftType = f'ADD return {left[0]}'
+        else:
+            leftType = left
+
+        if isinstance(right, Tuple):
+            # lookup function in symboltable for return type
+            scope = getScope( ctx, self.symbolTable )
+            routineSymbol = scope.getSymbolsOfTypeAndNameSync(RoutineSymbol,right[0], False)
+            if routineSymbol:
+                rightType = routineSymbol[0].returnType
+            else:
+                # function and return type are unknown
+                rightType = f'ADD return {right[0]}'
+        else:
+            rightType = right
+
+        # determine type of expression
         # https://web.chem.ox.ac.uk/fortran/arithmetic.html
         match (leftType, rightType):
             case [ 'real', _ ]:
                 # if any of the operands are real then result of the operation will be real
-                return 'real'
+                varType: str = 'real'
             case [ _, 'real' ]:
                 # if any of the operands are real then result of the operation will be real
-                return 'real'
+                varType: str =  'real'
             case [ 'integer', 'integer' ]:
                 if ctx.op == '*':
                     # if all the operands are integer then result of the operation will be integer
-                    return 'integer'
+                    varType: str =  'integer'
                 else:
-                    return 'real'
+                    varType: str =  'real'
             case _:
                 # custom types have precedence
                 # TODO mod custom type with second type
-                return 'character(:),allocatable'
+                varType: str =   ctx.op.text.join([leftType, rightType])
+
+        # return function references and determined type
+        match (isinstance(left, Tuple), isinstance(right, Tuple)):
+            case [ True, True ]:
+                return varType, left, right
+            case [ True, False ]:
+                return varType, left
+            case [ False, True ]:
+                return varType, right
+            case _:
+                return varType
 
     # Visit a parse tree produced by TestSuiteParser#addSubExpr.
     def visitAddSubExpr( self, ctx: TestSuiteParser.AddSubExprContext ):
-        leftType = self.visit( ctx.left )
-        rightType = self.visit( ctx.right )
+        # extract left and right operator
+        left = self.visit( ctx.left )
+        right = self.visit( ctx.right )
+
+        # extract types from function references
+        leftType = left[1] if isinstance(left, Tuple) else left
+        rightType = right[1] if isinstance(right, Tuple) else right
         # https://web.chem.ox.ac.uk/fortran/arithmetic.html
         match (leftType, rightType):
             case [ 'real', _ ]:
                 # if any of the operands are real then result of the operation will be real
-                return 'real'
+                varType: str = 'real'
             case [ _, 'real' ]:
                 # if any of the operands are real then result of the operation will be real
-                return 'real'
+                varType: str = 'real'
             case [ 'integer', 'integer' ]:
                 # if all the operands are integer then result of the operation will be integer
-                return 'integer'
+                varType: str = 'integer'
             case _:
                 # custom types have precedence
                 # TODO mod custom type with second type
-                return 'character(:),allocatable'
+                varType: str =  ctx.op.text.join([leftType, rightType])
+
+        # return function references and determined type
+        match (isinstance(left, Tuple), isinstance(right, Tuple)):
+            case [ True, True ]:
+                return varType, left, right
+            case [ True, False ]:
+                return varType, left
+            case [ False, True ]:
+                return varType, right
+            case _:
+                return varType
 
     # Visit a parse tree produced by TestSuiteParser#signExpr.
     def visitSignExpr( self, ctx: TestSuiteParser.SignExprContext ):
@@ -287,7 +360,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     def visitStrExpr( self, ctx: TestSuiteParser.StrExprContext ):
         # custom types will be string
         # TODO add specific custom types
-        return 'character(:),allocatable'
+        return 'character(len = *)'
 
     # Visit a parse tree produced by TestSuiteParser#intExpr.
     def visitIntExpr( self, ctx: TestSuiteParser.IntExprContext ):
@@ -296,6 +369,6 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
 
     # Visit a parse tree produced by TestSuiteParser#refExpr.
     def visitRefExpr( self, ctx: TestSuiteParser.RefExprContext ):
-        # get the id, optional number of arguments and their types
+        # extract the id, optional types of arguments
         valueDecl: Tuple[ str, List[ str ] ] = self.visit( ctx.value )
         return valueDecl

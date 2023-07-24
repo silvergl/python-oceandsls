@@ -39,18 +39,19 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
         return self._testPath
 
     def defaultResult( self ) -> SymbolTable:
+        # Return the symboltable by default
         return self._symbolTable
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case( self, ctx: TestSuiteParser.Test_caseContext ):
+        # Extract symbols from path, scope and variables
         return self.withScope( ctx, False, BlockSymbol, lambda: self.visitChildren( ctx ), ctx.ID( ).getText( ) )
 
     # Visit a parse tree produced by TestSuiteParser#test_var.
     def visitTest_var( self, ctx: TestSuiteParser.Test_varContext ):
         # TODO add comment (symbolTable Class and instance)
         decl = self.visit( ctx.varDeclaration( ) )
-        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, decl[ 0 ], ctx.value, decl[ 1 ], decl[ 2 ] )
-        return self.visitChildren( ctx )
+        return self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, decl[ 0 ], ctx.value, decl[ 1 ], decl[ 2 ] )
 
     # Visit a parse tree produced by TestSuiteParser#varDeclaration.
     def visitVarDeclaration( self, ctx: TestSuiteParser.VarDeclarationContext ):
@@ -60,6 +61,48 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
         for key in ctx.keys:
             keys.append( key.keyword.text )
         return name, varType, keys
+
+    # Visit a parse tree produced by TestSuiteParser#mulDivExpr.
+    def visitMulDivExpr( self, ctx: TestSuiteParser.MulDivExprContext ):
+        # concatenate operators with op
+        left = self.visit( ctx.left )
+        right = self.visit( ctx.right )
+        ops: List[str] = [ left, right ]
+
+        return ctx.op.text.join(ops)
+
+    # Visit a parse tree produced by TestSuiteParser#addSubExpr.
+    def visitAddSubExpr( self, ctx: TestSuiteParser.AddSubExprContext ):
+        # concatenate operators with op
+        ops: List[str] = [ self.visit( ctx.left ), self.visit( ctx.right ) ]
+
+        return ctx.op.text.join(ops)
+
+
+    # Visit a parse tree produced by TestSuiteParser#signExpr.
+    def visitSignExpr( self, ctx: TestSuiteParser.SignExprContext ):
+        # return inner type
+        return self.visit( ctx.inner )
+
+    # Visit a parse tree produced by TestSuiteParser#numberExpr.
+    def visitNumberExpr( self, ctx: TestSuiteParser.NumberExprContext ):
+        # return user input
+        return ctx.value.text
+
+    # Visit a parse tree produced by TestSuiteParser#strExpr.
+    def visitStrExpr( self, ctx: TestSuiteParser.StrExprContext ):
+        # return user input
+        return ctx.value.text
+
+    # Visit a parse tree produced by TestSuiteParser#intExpr.
+    def visitIntExpr( self, ctx: TestSuiteParser.IntExprContext ):
+        # return user input
+        return ctx.value.text
+
+    # Visit a parse tree produced by TestSuiteParser#refExpr.
+    def visitRefExpr( self, ctx: TestSuiteParser.RefExprContext ):
+        # forward reference type
+        return self.visit( ctx.value )
 
     # Visit a parse tree produced by TestSuiteParser#ref.
     def visitRef( self, ctx: TestSuiteParser.RefContext ):
@@ -71,7 +114,7 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
         args = [ ]
         for arg in ctx.args:
             args.append( self.visit( arg ) )
-        return name, args
+        return name + '(' + ', '.join(args) + ')'
 
     # Visit a parse tree produced by TestSuiteParser#varRef.
     def visitVarRef( self, ctx: TestSuiteParser.VarRefContext ):
@@ -122,7 +165,7 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
             xmlElements = filterXML( os.path.join( path, filename ), True, moduleSymbols )
 
             # Add scopes
-            for scopeType, scopeName, scopeArgs, parentScopes in xmlElements[ 1 ]:
+            for scopeType, scopeName, scopeArgs, returnID, parentScopes in xmlElements[ 1 ]:
                 scopeSym: ScopedSymbol
 
                 # Top level symbols are omitted as they are only filtered modules in the current test case.
@@ -141,7 +184,7 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
                         case 'function':
                             currentScope = self._scope
                             self._scope = scopeSym
-                            self.withScope( ctx, False, FunctionSymbol, lambda: list( map( lambda arg: self.addRoutineParams( arg ), scopeArgs ) ), scopeName )
+                            self.withScope( ctx, False, FunctionSymbol, lambda: list( map( lambda arg: self.addRoutineParams( arg ), scopeArgs ) ), scopeName, returnID )
                             self._scope = currentScope
                         case _:
                             # TODO Types?

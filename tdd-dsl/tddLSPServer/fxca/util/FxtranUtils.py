@@ -49,6 +49,9 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
     end_scope_elements = [ 'end-subroutine-stmt', 'end-program-stmt', 'end-function-stmt' ]
     contain_statement = [ 'contains-stmt' ]
 
+    # last defined value
+    lastValueDefined: str = ''
+
     # Dynamically extracted scope-changing elements
     dyn_scope_elements = set( )
     dyn_end_scope_elements = set( )
@@ -76,6 +79,14 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
 
         # Reduce the scope stack when leaving scopes
         if element.tag.endswith( tuple( dyn_end_scope_elements ) ):
+
+            # Update return name of first functions without result statement
+            if element.tag.endswith( 'function-stmt' ):
+                for scope in reversed(scopes):
+                    if scope[3] == -1:
+                        scope[3] = lastValueDefined
+                        break
+
             scopeStack.pop( )
 
             # Check scope is filtered and top level scope ended
@@ -115,11 +126,25 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
                 # Get the current scope from the scope stack
                 currentScope = '.'.join( scopeStack )
 
+                # Extract resultId for functions
+                resultID = None
+                if element.tag.endswith( 'function-stmt' ):
+                    resultElement = element.find( './/fx:result-spec', ns )
+                    if resultElement:
+                        resultID = resultElement.find( './/fx:n', ns ).text
+                    else:
+                        resultID = -1
+
                 # Add type, name and arguments to returning scopes
-                scopes.append( (stmtName, scopeName, argumentNames, currentScope) )
+                scopes.append( [stmtName, scopeName, argumentNames,resultID, currentScope] )
 
             # Update scope stack
             scopeStack.append( scopeName )
+
+        # Store assignment statements for optional return values of functions
+        elif element.tag.endswith( 'a-stmt' ):
+            # Save name for return type of functions
+            lastValueDefined = element.find( './/fx:n', ns ).text
 
         # Store public available ids
         elif element.tag.endswith( 'public-stmt' ):
@@ -152,6 +177,8 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
                     for enDecl in element.findall( './/fx:EN-decl', ns ):
                         # Get the name of the variable from the named element
                         variableName = enDecl.find( './/fx:n', ns ).text
+                        # Save name for return type of functions
+                        lastValueDefined = variableName
 
                         # TODO check hc PUBLIC
                         # Check public availability

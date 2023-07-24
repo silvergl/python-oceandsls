@@ -13,7 +13,7 @@
     {%- endif %}, INTENT(OUT) :: out
 
     {% if unit %}
-    character(len=:),optional :: unit
+    character(len = *),optional :: unit
     if(present(unit))then
         if ( unit /= {{unit}} ) then
           print *, "{{ name }}: Expected {{ unit }} as input unit but got ", unit

@@ -9,9 +9,33 @@ import subprocess
 # TODO license
 
 import xml.etree.ElementTree as ET
-from typing import List, Tuple
+from dataclasses import dataclass, field
+from typing import Dict, List, Tuple
 
 from symbolTable.SymbolTable import ModuleSymbol
+
+@dataclass
+class PublicObj:
+    """
+    Test Case for a Unit-test
+    """
+
+    # Require public entities
+    needPublic: bool = False
+    # By default, entities are public unless general private statement
+    defaultPrivate: bool = False
+    # Entities specifically mentioned as public optionally with attributes
+    pubElements: Dict[ str, List[str] ] = field( default_factory = dict )
+    # Entities specifically mentioned as private optionally with attributes
+    prElements: Dict[ str, List[str] ] = field( default_factory = dict )
+
+    def isPublic( self, name: str ) -> bool:
+        # Entity is considered public if public is not needed or entities are public by default and entity is not specifically marked as private or entity is specifically marked as public
+        if not self.needPublic or not self.defaultPrivate and not name in self.prElements or name in self.pubElements:
+            return True
+        else:
+            return False
+
 
 # TODO hc
 # Set the namespace as Fxtran for XPath expressions
@@ -40,7 +64,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
     variables = [ ]  # Variables to return (EN-decl elements within T-decl-stmt elements)
     scopes = [ ]  # Scopes to return
     scopeStack = [ ]  # Stack to track the current scope
-    pubElements = [ ]  # Elements declared public
+    pubElement: PublicObj = PublicObj()  # Elements declared as public
 
     # TODO deprecated
     # Scope-changing elements
@@ -95,7 +119,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
 
         # Extend the scope stack when entering scopes
         elif element.tag.endswith( tuple( dyn_scope_elements ) ):
-            # Extract scope name
+            # Extract scope namedosfsck logical sector size zero
             scopeName = nameElement.find( './/fx:n', ns ).text
 
             if stmtName == 'module':
@@ -149,7 +173,11 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
         # Store public available ids
         elif element.tag.endswith( 'public-stmt' ):
             pubIds = list( map( (lambda itm: itm.text), element.findall( './/fx:n', ns ) ) )
-            pubElements.extend( pubIds )
+            pubElement.pubElements.extend( pubIds )
+            for item in pubIds:
+                # TODO 27.07.2023
+                pubElement.pubElements[item] = pubElement.pubElements.get(item, item)
+
 
         # Extract variables, public only, if needed
         elif element.tag.endswith( 'contains-stmt' ):

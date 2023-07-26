@@ -3,7 +3,8 @@ MODULE cfo_example
   IMPLICIT NONE
 
   PRIVATE
-  PUBLIC :: ft_ME, zxrex, nprey
+  PRIVATE :: zxrex
+  PUBLIC :: ft_ME, nprey
 
   INTEGER, PARAMETER :: dp=KIND(0D0)
   ! INTEGER :: nprey=4

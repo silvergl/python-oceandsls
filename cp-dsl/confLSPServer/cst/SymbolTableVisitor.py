@@ -9,6 +9,8 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 from antlr4.tree.Tree import ParseTree
 from antlr4 import InputStream, CommonTokenStream
 
+from confLSPServer.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
+
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationLexer import DeclarationLexer
@@ -43,7 +45,6 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         # Symboltable has to be filled with Declaration Defaults
         table = self.visitDeclarationTable(ctx.declarationModel.text)
         self._symbolTable.addDependencies(table)
-        self._currPos = RoutineSymbol()
         return super().visitConfigurationModel(ctx)
     
     def visitDeclarationTable(self, declarationName : str):
@@ -78,6 +79,9 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
             # TODO: add new symbol if not found in SymbolTable?
     
     def visitParameterGroup(self, ctx: ConfigurationParser.parameterGroup):
+        for elem in self._scope.getAllSymbolsSync(GroupSymbol, True):
+            if elem.name == ctx.declaration.text:
+                self._scope = elem
         return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text, VariableSymbol)
 
     def visitUnitSpecification(self, ctx : ConfigurationParser.unitSpecification):
@@ -85,7 +89,10 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
 
     def visitFeatureConfiguration(self, ctx: ConfigurationParser.featureConfiguration):
         #TODO: get activated if mentioned
-        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text)
+        self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text)
+        for elem in self._scope.getAllSymbolsSync(RoutineSymbol, True):
+            if elem.name == ctx.declaration.text:
+                elem.is_activated = True
 
     def visitFeatureActivation(self, ctx : ConfigurationParser.featureActivation):
         for feature in self._scope.getFeatures():
@@ -102,7 +109,18 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         #TODO: includes ConfigurationFile
         #TODO: copy to DeclarationVisitor
         info = ctx.importedNamespace.text.split(".")
-        table = self.visitDeclarationTable(info[0])
+        #visit configuration table
+        confVisitor = SymbolTableVisitor(info[0] + "_ConfVisit")
+        # TODO: How do we know where the dcl file is placed?
+        # TODO: Maybe: Copy TDD-DSL Pattern for os paths
+        with open(os.path.join(os.getcwd(),info[0] + ".dcl")) as conf_file:
+            data = conf_file.read()
+            input_stream = InputStream(data)
+            lexer = ConfigurationLexer(input_stream)
+            stream = CommonTokenStream(lexer)
+            dcl_parsed = ConfigurationParser(stream).configurationModel()
+            confVisitor.visit(dcl_parsed)
+            table = confVisitor._symbolTable
         scope : RoutineSymbol = None
         #TODO: Not sure if this is gonna work
         for i in range(1,len(info)):

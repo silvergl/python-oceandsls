@@ -16,7 +16,7 @@ from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
 
-class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
+class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
     _symbolTable: SymbolTable
 
     def __init__(self, name: str = '', ):
@@ -26,6 +26,7 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
+        self.inlineInt = 0
 
     @property
     def symbolTable(self) -> SymbolTable:
@@ -84,11 +85,25 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
     
     def visitEnumerationType(self, ctx: DeclarationParser.EnumerationTypeContext):
         enumName = ctx.name.text if ctx.name else ""
-        self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, self.visitChildren(ctx))
-        return super().visitEnumeral(ctx)
+        enumList = []
+        for i in range(ctx.getChildCount()):
+            #enumList representation: [(id, value),...]
+            enumList.append(self.visit(ctx.getChild(i)))
+        self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
     
     def visitEnumeral(self, ctx: DeclarationParser.EnumeralContext):
-        return [(ctx.name.text, int(ctx.value.text))] + self.visitChildren(ctx)
+        #return a tuple of id and value
+        return (ctx.name.text, int(ctx.value.text))
+    
+    def visitInlineEnumerationType(self, ctx: DeclarationParser.InlineEnumerationTypeContext):
+        enumName = "Inline_" + self.inlineInt
+        enumList = []
+        self.inlineInt += 1
+        for i in range(ctx.getChildCount()):
+            #enumList representation: [(id, value),...]
+            enumList.append(self.visit(ctx.getChild(i)))
+        self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
+
     
     def visitArrayType(self, ctx: DeclarationParser.ArrayType):
         bounds = self.visitChildren(ctx)

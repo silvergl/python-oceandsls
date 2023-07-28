@@ -1,0 +1,2 @@
+main is true
+flag is enabled

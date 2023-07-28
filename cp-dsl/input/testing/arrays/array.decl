@@ -1,0 +1,11 @@
+model array
+
+group example : "example description" {
+	def dyn_array string[] : "text djdjdj"
+	def dyn_empty_array string[] : "text"
+	def dyn_undef_array string[] : "text"
+	def fix_array string[4] : "text"
+	def dyn_array_2d string[,] : "2d"
+	def fix_array_2d string[4,4] : "matrix"
+	def range_array string[2:4] : "range"
+}

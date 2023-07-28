@@ -1,0 +1,12 @@
+ must fail with "Group 'common' cannot be cast to string"
+common must work, return name of common
+ must work, return of the description for common 
+200 must work, return value of ground_temp
+[] must fail with "list of parameters cannot be cast to string"
+
+ must fail with "feature 'general' cannot be case to string"
+general must work, return name of the feature
+general must work, return the description for general
+[,] must fail with "list of features cannot be cast to string"
+ must fail with "parameter group 'settings' cannot be cast to string"
+ must fail with "feature 'pump' cannot be cast to string"

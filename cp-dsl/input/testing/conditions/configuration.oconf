@@ -1,0 +1,7 @@
+configuration example1 : conditions
+
+group main {
+	param : true
+}
+
+feature flag {}

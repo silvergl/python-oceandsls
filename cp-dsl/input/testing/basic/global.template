@@ -1,0 +1,22 @@
+for eval
+
+file "global.md" : '''
+# Global Parameter
+#{name} name of the configuration
+#{model} name of the model
+#{size(groups)} number of global groups
+#{size(features)} number of global features
+#{for groups join " " it.name}
+#{for features join " " it.name}
+
+# Group Attributes
+'#{common.name}' name of common
+'#{common.description}' description for common
+'#{common.ground_temp}' value of parameter ground_temp
+'#{common.ground_color}' value of the parameter ground_color, e.g. red
+
+# Feature Attributes
+'#{general.name}' name of the feature, general
+'#{general.description}' description for general
+'#{general.enabled}' feature is active
+'''

@@ -1,0 +1,30 @@
+value=200
+make general {
+	make pump {
+	
+	ENABLED
+	pump found
+	group settings2
+temperature = 
+
+
+}
+make pipe {
+	
+	ENABLED
+	pipe found
+	
+}
+	ENABLED
+	general feature found
+	group settings
+color = 
+
+
+}
+make offline {
+	
+	DISABLED
+	offline feature
+	
+}

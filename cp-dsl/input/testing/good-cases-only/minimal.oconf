@@ -1,0 +1,17 @@
+configuration minimal : good_cases
+
+feature general {
+	activate pipe
+	feature pump {
+		group settings2 {
+			temperature : 195 K
+		}
+	}
+	group settings { 
+		color : green
+	}
+}
+
+group common {
+	ground_temp: 200 K
+}

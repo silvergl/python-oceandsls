@@ -1,0 +1,16 @@
+for eval
+
+file "global.out" : '''
+#{common} must fail with "Group 'common' cannot be cast to string"
+#{common.name} must work, return name of common
+#{common.description} must work, return of the description for common 
+#{common.ground_temp} must work, return value of ground_temp
+#{common.parameters} must fail with "list of parameters cannot be cast to string"
+
+#{general} must fail with "feature 'general' cannot be case to string"
+#{general.name} must work, return name of the feature
+#{general.description} must work, return the description for general
+#{general.features} must fail with "list of features cannot be cast to string"
+#{general.settings} must fail with "parameter group 'settings' cannot be cast to string"
+#{general.pump} must fail with "feature 'pump' cannot be cast to string"
+'''

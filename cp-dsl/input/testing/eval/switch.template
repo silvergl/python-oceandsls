@@ -1,0 +1,23 @@
+for eval
+
+file "switch.out" : '''
+#{switch common.ground_temp 
+	case 100 "100"  // should work, as ground_temp is a numerical value
+	case "value" "x"    // should fail, as "value" is a string value
+	end
+}
+'''
+
+file "type-switch.out" : '''
+#{switch common.ground_temp 
+	is Temperature "20"    // should work, as Temperature is the exact type
+	is int "100"  // should work, as int is the numerical type
+	is string "200" // should produce an error, as ground_temp is known
+	end
+}
+#{for common.parameters switch it
+	is int "INTEGER" // should work, as the data type is not defined.
+	is string "STRING" // should work, as the data type is not defined.
+	end
+}
+'''

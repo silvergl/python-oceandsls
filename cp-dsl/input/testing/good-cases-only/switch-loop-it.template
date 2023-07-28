@@ -1,0 +1,11 @@
+for good_cases
+
+file "type-it-switch.md" : '''
+#{for common.parameters switch it
+	is int "INTEGER"   // should work in template editor, as the data type is not defined.
+	is float "FLOAT"   // should work in template editor, as the data type is not defined.
+	is string "STRING" // should work in template editor, as the data type is not defined.
+	default "bäe"      // should work in template editor, as the data type is not defined.
+	end
+} = FLOAT as ground_temp is of type Temperature
+'''

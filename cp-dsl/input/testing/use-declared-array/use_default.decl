@@ -1,0 +1,5 @@
+model use_default
+
+group arrays : "documentation" {
+	def param1 float[2] : "" = [ 1, 2 ] 
+}

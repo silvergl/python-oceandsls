@@ -1,0 +1,35 @@
+for eval
+
+file "feature.out" : '''
+value=#{common.ground_temp}
+#{for features join "\n" use featureTemplate(it)}
+'''
+
+template featureTemplate(Feature feature) '''make #{feature.name} {
+	#{for feature.features join "\n" use featureTemplate(it)}
+	#{if feature.enabled "ENABLED" else "DISABLED"}
+	#{switch feature.name
+		case "pump" 5
+		case "pipe" 2
+		case "general" 17
+		case "offline" 0
+		end
+	}
+	#{for feature.groups join "\n" use groupTemplate(it)}
+}'''
+
+template groupTemplate(Group group) '''
+group #{group.name}
+#{for group.parameters join "\n" use parameterTemplate(it)}
+'''
+
+template parameterTemplate(Parameter parameter) '''
+#{parameter.name} = #{switch parameter.value
+	is boolean parameter.value
+	is int parameter.value
+	is float parameter.value
+	is string '''"#{parameter.value}"'''
+	is Color parameter.value
+	end
+}
+'''

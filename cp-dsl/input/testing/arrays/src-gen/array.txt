@@ -1,0 +1,30 @@
+# Array
+
+## All elements of a dynamic array
+hello ++ kitty
+
+## All elements of an empty dynamic array
+
+
+## Iterate over all parameters in the configuration
+dyn_array = hello, kitty
+dyn_empty_array = <empty>
+dyn_undef_array = <empty>
+fix_array = one, two, three, four
+dyn_array_2d = <empty>
+fix_array_2d = [a,b,c,d], [0,1,2,3], [A,B,C,D], [!,',§,$]
+range_array = <empty>
+
+## Iterate over all parameters in the configuration
+dyn_array = hello, kitty
+dyn_empty_array = 
+dyn_undef_array = 
+fix_array = one, two, three, four
+dyn_array_2d = 
+fix_array_2d = [a,b,c,d], [0,1,2,3], [A,B,C,D], [!,',§,$]
+range_array = 
+
+## Check whether array function work properly
+dyn_array found:       exists=true empty=yes == expected: exists=true empty=no
+dyn_empty_array found: exists=true empty=yes == expected: exists=true empty=yes
+dyn_undef_array found: exists=true empty=yes == expected: exists=false + empty=yes

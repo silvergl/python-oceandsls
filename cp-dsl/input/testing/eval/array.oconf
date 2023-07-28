@@ -1,0 +1,6 @@
+configuration array : array
+
+group example {
+	dyn_array: [ "hello", "kitty" ]
+	fix_array: [ "one", "two", "three", "four" ]
+}

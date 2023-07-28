@@ -1,0 +1,5 @@
+for use_default
+
+file "output.txt" : '''
+#{for arrays.param1 join " " it}
+'''

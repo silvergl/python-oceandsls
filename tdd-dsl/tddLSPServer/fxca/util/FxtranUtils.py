@@ -173,9 +173,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
         # Store public available ids
         elif element.tag.endswith( 'public-stmt' ):
             pubIds = list( map( (lambda itm: itm.text), element.findall( './/fx:n', ns ) ) )
-            pubElement.pubElements.extend( pubIds )
             for item in pubIds:
-                # TODO 27.07.2023
                 pubElement.pubElements[item] = pubElement.pubElements.get(item, item)
 
 

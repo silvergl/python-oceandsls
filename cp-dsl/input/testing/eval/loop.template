@@ -1,0 +1,13 @@
+for eval
+
+file "loop.out" : '''
+#{for groups join "\n" it.name} must work, 'it' is of type ParameterGroupDeclaration and a ParameterGroupDeclaration has a name
+#{for groups join "\n" it} must fail, as 'it' is of type ParameterGroup which cannot be cast to string
+#{for common.parameters join "\n" it.name} must work, 'it' is of type Parameter and a Parameter has a name
+#{for common.parameters join "\n" '''#{it.name}  #{it.description}'''} must work
+
+#{for features join "\n" it.name} must work, 'it' is of type FeatureDeclaration which has a name
+#{for features join "\n" it} must fail, as 'it' is of type FeatureDeclaration which cannot be cast to string
+#{for general.features join "\n" it.name} must work, 'it' us of type FeatureDeclaration which has a name
+#{for general.features join "\n" it.enabled} must work, 'it' us of type FeatureDeclaration which has a attribute enabled
+'''

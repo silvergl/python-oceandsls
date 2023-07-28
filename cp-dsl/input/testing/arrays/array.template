@@ -1,0 +1,41 @@
+for array
+
+file "array.txt" : '''
+# Array
+
+## All elements of a dynamic array
+#{for example.dyn_array join " ++ " it}
+
+## All elements of an empty dynamic array
+#{for example.dyn_empty_array join " ++ " it}
+
+## Iterate over all parameters in the configuration
+#{for example.parameters join "\n" use checkKindAndPrintParameter(it)}
+
+## Iterate over all parameters in the configuration
+#{for example.parameters join "\n" use printParameter(it)}
+
+## Check whether array function work properly
+dyn_array found:       #{use arrayFunctions(example.dyn_array)} == expected: exists=true empty=no
+dyn_empty_array found: #{use arrayFunctions(example.dyn_empty_array)} == expected: exists=true empty=yes
+dyn_undef_array found: #{use arrayFunctions(example.dyn_undef_array)} == expected: exists=false + empty=yes
+'''
+
+template checkKindAndPrintParameter(Parameter paramX) '''#{paramX.name} = #{if (exists(paramX.value)) if size(paramX.value)>0 for paramX.value join ", " it else "<empty>" else "<undef>"}'''
+
+template printParameter(Parameter paramX2) '''#{paramX2.name} = #{for paramX2.value join ", " it}'''
+
+template arrayFunctions(string[] value) '''exists=#{exists(value)} empty=#{if isEmpty(value) "yes" else "no"}'''
+
+// not yet implemented completely
+file "range-array.md" : '''
+'''
+
+// array access
+file "array-access.md" : '''
+# Array
+
+## Test access to array elements
+dyn_array #{example.dyn_array[0]} == hello
+fix_array_2d #{example.fix_array_2d[0,0]} == a
+'''

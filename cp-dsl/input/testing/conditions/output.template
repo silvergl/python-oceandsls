@@ -1,0 +1,6 @@
+for conditions
+
+file '''output-#{name}.txt''' : '''
+#{if main.param "main is true" else "main is false"}
+#{if flag.enabled "flag is enabled" else "flag is disabled"}
+'''

@@ -1,0 +1,9 @@
+for array
+
+file "array.out" : '''
+#{for example.dyn_array join " ++ " it}
+#{for example.parameters join "\n" use parameterTemplate(it)}
+'''
+
+template parameterTemplate(Parameter param) '''#{param.name} = #{for param.value join ", " it}'''
+//template parameterTemplate(Parameter param) '''#{param.name} = #{for param join ", " it}'''

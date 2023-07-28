@@ -1,0 +1,24 @@
+for good_cases
+
+file "switch.md" : '''
+#{switch common.ground_temp 
+	case 100.0 "100"  // should work, as ground_temp is a numerical value
+	default "other"
+	end
+}
+#{switch common.ground_temp 
+	case 200.0 "200"  // should work, as ground_temp is a numerical value
+	default "other"
+	end
+}
+'''
+
+file "type-switch.md" : '''
+#{switch common.ground_temp 
+	is Temperature "is temperature"    // should work, as Temperature is the exact type
+	is int "is int"  // should not work, as int is the numerical type
+	is string "is string" // should produce an error, as ground_temp is known
+	is float "is float" // should work, as Temperatures are floats
+	end
+}
+'''

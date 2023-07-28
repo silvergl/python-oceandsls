@@ -1,0 +1,5 @@
+for eval
+
+file "if-then-else.out" : '''
+#{if common.ground_temp > 273 "high" else "low"}
+'''

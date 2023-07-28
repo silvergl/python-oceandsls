@@ -1,0 +1,7 @@
+model conditions
+
+group main : "group documentation" {
+	def param boolean : "boolean flag" = false
+}
+
+feature flag : "flag doucmentation"

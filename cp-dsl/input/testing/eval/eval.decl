@@ -1,0 +1,23 @@
+model eval
+
+types
+	enum Color { red, green, blue }
+	range Temperature float [ 0 : 373 ]
+	
+feature general : "general" {
+	group settings : "" {
+		def color Color : "color"
+	}
+	sub multiple
+		feature pump : "pumping station" {
+			group settings2 : "" {
+				def temperature Temperature : kelvin
+			}
+		}
+		feature pipe : "pipes"
+}
+feature offline : "the disabled one"
+
+group common : "" {
+	def ground_temp Temperature : kelvin
+}

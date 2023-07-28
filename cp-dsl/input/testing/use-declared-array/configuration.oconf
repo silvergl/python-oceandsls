@@ -1,0 +1,5 @@
+configuration example1 : use_default
+
+group arrays {
+	
+}

@@ -467,27 +467,6 @@ class UnitSymbol( TypedSymbol ):
         super().__init__( name, attached_type )
         self.attached_unit = attached_unit
         self.attached_description = attached_description
-        
-
-class TypeAlias( Symbol, Type ):
-    """
-    An alias for another type.
-    """
-    __targetType: Type
-
-    def __init__(self, name: str, target: Type):
-        super().__init__( name )
-        self.__targetType = target
-
-    def baseTypes(self) -> List[Type]:
-        return [self.__targetType]
-
-    def kind(self) -> TypeKind:
-        return TypeKind.Alias
-
-    def reference(self) -> ReferenceKind:
-        return ReferenceKind.Irrelevant
-
 
 class ScopedSymbol( Symbol ):
     """
@@ -852,14 +831,6 @@ class ScopedSymbol( Symbol ):
         return self.parent().nextOf( self )
 
 
-class NamespaceSymbol( ScopedSymbol ):
-    pass
-
-
-class BlockSymbol( ScopedSymbol ):
-    pass
-
-
 class VariableSymbol( UnitSymbol ):
     is_tree = False
     
@@ -869,17 +840,18 @@ class VariableSymbol( UnitSymbol ):
         self.value = value
 
 class EnumSymbol(Symbol):
-    def __init__(self, name: str = "", value = None):
-        self.value = value
+    def __init__(self, name: str = "", values = None):
+        self.values = values
         super().__init__(name)
         
 class ArraySymbol(Symbol):
     """
-    Array Representation
+    a class representing a n-dimensional array
+    Array Representation:
     i[2:7] = {0,1,2,3,4,5}
-    => [(2,0), (3,1), (4,2), (5,3), (6,4), (7,5)]
+    => [2,3,4,5,6,7][0,1,2,3,4,5]
     i[5][9] = 8
-    => [(5, [(9,8)]]
+    => [5][ArraySymbol([9][8])]
     """
     vectors = []
     value = []
@@ -891,41 +863,86 @@ class ArraySymbol(Symbol):
 
     #!!!!EXPERIMENTAL!!!!
     def add(self, vector, val) -> None:
-        #check if vector already in array
-        if vector in self.vectors:
-            i = self.vectors.index(vector)
-            self.value[i] = val
-            return
-        if self.upperBound == 0 and self.lowerBound == 0:
-            self.vectors.append(vector)
-            self.value.append((vector, val))
+        """
+        adds a value in the array
+        vector: the index of the value
+        val: the value to save in the array
+        """
+        #n Dimension Support
+        if len(vector) >= 2:
+            newArray = ArraySymbol()
+            newArray.add(vector[1:], val)
+            self.vectors.append(vector[0])
+            self.value.append(newArray)
         else:
-            #Check for the bounds
-            if self.lowerBound <= vector and self.upperBound >= vector:
+            #check if vector already in array
+            if vector in self.vectors:
+                i = self.vectors.index(vector)
+                self.value[i] = val
+                return
+            if self.upperBound == 0 and self.lowerBound == 0:
                 self.vectors.append(vector)
-                self.value.append((vector, val))
+                self.value.append(val)
             else:
-                print("Array out of bound error")
+                #Check for the bounds
+                if self.lowerBound <= vector and self.upperBound >= vector:
+                    self.vectors.append(vector)
+                    self.value.append(val)
+                else:
+                    print("Array out of bound error")
 
+    def get(self, index) -> T:
+        """
+        get a value out of the list
+        index: the index of the value to return
+        """
+        return self.value[self.vectors.index(index)]
+    
+    def remove(self, index) -> T:
+        """
+        removes and returns the value places at index
+        index: the index of the value to remove
+        """
+        i = self.vectors.index(index)
+        self.vectors.pop(i)
+        return self.value.pop(i)
+    
+    def removeVal(self, val) -> None:
+        """
+        removes a given value from the array (first elem found)
+        val: the value to remove
+        """
+        i = self.value.index(val)
+        self.vectors.pop(i)
+        self.value.pop(i)
+
+    def toArray(self, recursive = True) -> list:
+        """
+        converts the array in a pyton list
+        """
+        returnVal = []
+        for i in range(len(self)):
+            if i in self.vectors:
+                index = self.vectors.index(i)
+                if not recursive:
+                    returnVal.append(self.get(index))
+                else:
+                    elem = self.get(index)
+                    if isinstance(elem, ArraySymbol):
+                        returnVal.append(elem.toArray())
+                    else:
+                        returnVal.append(elem)
+            else:
+                returnVal.append(None)
+        return returnVal
+
+    def clear(self) -> None:
+        self.vectors = []
+        self.value = []
 
     def __len__(self):
         return max(self.vector)
 
-
-class LiteralSymbol( UnitSymbol ):
-
-    def __init__(self, name: str, value=None, attached_type: Type = None):
-        super().__init__( name, attached_type )
-
-        self._value = value
-
-    @property
-    def value(self):
-        return self._value
-
-
-class ParameterSymbol( VariableSymbol ):
-    pass
 
 class GroupSymbol(ScopedSymbol):
     """
@@ -942,8 +959,10 @@ class GroupSymbol(ScopedSymbol):
     def getGroupVars(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getSymbolsOfType(self.groupType)
 
+class NamespaceSymbol( ScopedSymbol ):
+    pass
 
-class RoutineSymbol( ScopedSymbol ):
+class FeatureSymbol( ScopedSymbol ):
     """
     A standalone function/procedure/rule.
     """
@@ -958,156 +977,13 @@ class RoutineSymbol( ScopedSymbol ):
         return self.getNestedSymbolsOfTypeSync( VariableSymbol )
 
     def getParameters(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getNestedSymbolsOfTypeSync( ParameterSymbol )
+        return self.getNestedSymbolsOfTypeSync( VariableSymbol )
 
     def getUnits(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getNestedSymbolsOfTypeSync(UnitSymbol)
     
     def getFeatures(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getNestedSymbolsOfTypeSync(RoutineSymbol)
-
-
-class MethodFlags( Enum ):
-    NoneFL = 0
-    Virtual = 1
-    Const = 2
-    Overwritten = 4
-
-    # Distinguished by the return type.
-    SetterOrGetter = 8
-
-    # Special flag used e.g. in C++ for explicit c-tors.
-    Explicit = 16
-
-
-class MethodSymbol( RoutineSymbol ):
-    """
-    A function which belongs to a class or other outer container structure.
-    """
-    methodFlags = MethodFlags.NoneFL
-
-
-class FieldSymbol( VariableSymbol ):
-    """
-    A field which belongs to a class or other outer container structure.
-    """
-    setter: Optional[MethodSymbol] = None
-    getter: Optional[MethodSymbol] = None
-
-
-class ClassSymbol( ScopedSymbol, Type ):
-    """
-    Classes and structs.
-    """
-    isStruct: bool
-    reference: ReferenceKind
-
-    @property
-    def extends(self) -> List[ClassSymbol]:
-        """
-        Usually only one member, unless the language supports multiple inheritance (like C++).
-        """
-        return self._extends
-
-    @property
-    def implements(self) -> List[tuple[ClassSymbol, InterfaceSymbol]]:
-        """
-        Typescript allows a class to implement a class, not only interfaces.
-        """
-        return self._implements
-
-    def __init__(self, name: str, ext: List[ClassSymbol], impl: List[tuple[ClassSymbol, InterfaceSymbol]]):
-        super().__init__( name )
-        self._extends = ext
-        self._implements = impl
-
-        self.isStruct = False
-        self.reference = ReferenceKind.Irrelevant
-
-    def baseTypes(self) -> List[Type]:
-        return self._extends
-
-    def kind(self) -> TypeKind:
-        return TypeKind.Class
-
-    def getMethods(self, includeInherited=False) -> Coroutine[List[T]]:
-        """
-
-        :param includeInherited: Not used.
-        :return: a list of all methods.
-        """
-        return self.getSymbolsOfType( MethodSymbol )
-
-    def getFields(self, includeInherited=False) -> Coroutine[List[T]]:
-        """
-        :param includeInherited: Not used.
-        :return: all fields.
-        """
-        return self.getSymbolsOfType( FieldSymbol )
-
-
-class InterfaceSymbol( ScopedSymbol, Type ):
-    reference: ReferenceKind
-
-    def __init__(self, name: str, ext: List[tuple[ClassSymbol, InterfaceSymbol]]):
-        super().__init__( name )
-        self._extends = ext
-
-        self.reference = ReferenceKind.Irrelevant
-
-    @property
-    def extends(self) -> List[tuple[ClassSymbol, InterfaceSymbol]]:
-        """
-        Typescript allows an interface to extend a class, not only interfaces.
-        """
-        return self._extends
-
-    def baseTypes(self) -> List[Type]:
-        return self._extends
-
-    def kind(self) -> TypeKind:
-        return TypeKind.Interface
-
-    def getMethods(self, includeInherited=False) -> Coroutine[List[MethodSymbol]]:
-        """
-        :param includeInherited: Not used.
-        :return: a list of all methods.
-        """
-        return self.getSymbolsOfType( MethodSymbol )
-
-    def getFields(self, includeInherited=False) -> Coroutine[List[T]]:
-        """
-        :param includeInherited: Not used.
-        :return: all fields.
-        """
-        return self.getSymbolsOfType( FieldSymbol )
-
-
-class ArrayType( Symbol, Type ):
-    __referenceKind: ReferenceKind
-
-    def __init__(self, name: str, referenceKind: ReferenceKind, elemType: Type, size=0):
-        super().__init__( name )
-        self.__referenceKind = referenceKind
-        self._elementType = elemType
-        self._size = size
-
-    @property
-    def elementType(self) -> Type:
-        return self._elementType
-
-    @property
-    def size(self) -> int:
-        return self._size  # > 0 if fixed length.
-
-    def baseTypes(self) -> List[Type]:
-        return []
-
-    def kind(self) -> TypeKind:
-        return TypeKind.Array
-
-    def reference(self) -> ReferenceKind:
-        return self.__referenceKind
+        return self.getNestedSymbolsOfTypeSync(FeatureSymbol)
 
 
 @dataclass

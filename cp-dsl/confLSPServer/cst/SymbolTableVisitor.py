@@ -16,7 +16,7 @@ from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationLexer import DeclarationLexer
 # user relative imports
 from .SymbolTableVisitorDcl import SymbolTableVisitorDecl as DeclSymbolTableVisitor
-from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol
+from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Configuration.ConfigurationVisitor import ConfigurationVisitor
 
@@ -73,6 +73,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         def checkForParamAndEdit(searchedParamName : str, ctx : ConfigurationParser.parameterAssignment):
             for param in (self._scope.getParameters() if self._scope else self._symbolTable.getAllSymbolsSync(VariableSymbol, localOnly=True)):
                 if param.name == searchedParamName:
+                    #is this static?
                     param.configuration.append(ctx)
                     return
             print("ERROR: Couldn't find correct Symbol")
@@ -82,15 +83,14 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         for elem in self._scope.getAllSymbolsSync(GroupSymbol, True):
             if elem.name == ctx.declaration.text:
                 self._scope = elem
-        return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text, VariableSymbol)
+        return self.withScope(ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
 
     def visitUnitSpecification(self, ctx : ConfigurationParser.unitSpecification):
         return self.stringToUnitType(ctx.name.text)
 
     def visitFeatureConfiguration(self, ctx: ConfigurationParser.featureConfiguration):
-        #TODO: get activated if mentioned
-        self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.declaration.text)
-        for elem in self._scope.getAllSymbolsSync(RoutineSymbol, True):
+        self.withScope(ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
+        for elem in self._scope.getAllSymbolsSync(FeatureSymbol, True):
             if elem.name == ctx.declaration.text:
                 elem.is_activated = True
 
@@ -106,12 +106,9 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
                     pass
                 
     def visitInclude(self, ctx: ConfigurationParser.include):
-        #TODO: includes ConfigurationFile
-        #TODO: copy to DeclarationVisitor
         info = ctx.importedNamespace.text.split(".")
         #visit configuration table
         confVisitor = SymbolTableVisitor(info[0] + "_ConfVisit")
-        # TODO: How do we know where the dcl file is placed?
         # TODO: Maybe: Copy TDD-DSL Pattern for os paths
         with open(os.path.join(os.getcwd(),info[0] + ".dcl")) as conf_file:
             data = conf_file.read()
@@ -121,19 +118,20 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
             dcl_parsed = ConfigurationParser(stream).configurationModel()
             confVisitor.visit(dcl_parsed)
             table = confVisitor._symbolTable
-        scope : RoutineSymbol = None
+        scope : FeatureSymbol = None
         #TODO: Not sure if this is gonna work
-        for i in range(1,len(info)):
-            if scope:
-                for elem in scope.getAllSymbolsSync(T,True):
-                    if info[i] == elem.name:
-                        scope = elem
-                        self._symbolTable.addSymbol(elem)
-            else:
-                for elem in table.getAllSymbolsSync():
-                    if elem.name == info[i]:
-                        scope = elem
-                        self._symbolTable.addSymbol(elem)
+        self._symbolTable.addSymbol(table.resolveSync(info[-1]))
+        #for i in range(1,len(info)):
+            # if scope:
+            #     for elem in scope.getAllSymbolsSync(T,True):
+            #         if info[i] == elem.name:
+            #             scope = elem
+            #             self._symbolTable.addSymbol(elem)
+            # else:
+            #     for elem in table.getAllSymbolsSync():
+            #         if elem.name == info[i]:
+            #             scope = elem
+            #             self._symbolTable.addSymbol(elem)
 
     
     def stringToPrefix(input : str):
@@ -149,10 +147,11 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
                 return kind
         return UnitKind.Unknown
     
-    def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None,
-                  **my_kwargs: P.kwargs or None) -> T:
-        scope = self._symbolTable.addNewSymbolOfType( t, self._scope, *my_args, **my_kwargs )
-        scope.context = tree
+    def withScope(self, tree: ParseTree, name: str, action: Callable) -> T:
+        scope = self._symbolTable.resolveSync(name)
+        # Dont set configuration context -> should stay declaration tree
+        # scope.context = tree
+        scope.configuration.append(tree)
         self._scope = scope
         try:
             return action()

@@ -11,7 +11,7 @@ from antlr4.tree.Tree import ParseTree
 from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
 
 # user relative imports
-from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, RoutineSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol
+from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
@@ -78,10 +78,10 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
     #   featureDeclaration ID is saved as attribute 'name'
 
     def visitFeatureAssignStat(self, ctx: DeclarationParser.FeatureAssignStatContext):
-        return self.withScope(ctx, RoutineSymbol, lambda: self.visitChildren(ctx), ctx.name.text if ctx.name else "")
+        return self.withScope(ctx, FeatureSymbol, lambda: self.visitChildren(ctx), ctx.name.text if ctx.name else "")
 
     def visitFeatureGroupAssignStat(self, ctx: DeclarationParser.FeatureGroupAssignStatContext):
-        return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), "", RoutineSymbol, "")
+        return self.withScope(ctx, GroupSymbol, lambda: self.visitChildren(ctx), "", FeatureSymbol, "")
     
     def visitEnumerationType(self, ctx: DeclarationParser.EnumerationTypeContext):
         enumName = ctx.name.text if ctx.name else ""
@@ -114,12 +114,6 @@ class SymbolTableVisitor( DeclarationVisitor, Generic[T] ):
 
     def visitRangeDimension(self, ctx: DeclarationParser.RangeDimension):
         return ((int(ctx.lowerBound.text) if ctx.lowerBound else 0), (int(ctx.upperBound.text) if ctx.upperBound else 0))
-    # def visitAssignStat(self, ctx: TestGrammarParser.AssignStatContext):
-    #     self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.ID().getText() )
-    #     return self.visitChildren( ctx )
-
-    # def visitFuncExpr(self, ctx: TestGrammarParser.FuncExprContext):
-    #     return self.withScope( ctx, RoutineSymbol, lambda: self.visitChildren( ctx ), ctx.ID().getText() )
     
     def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None,
                   **my_kwargs: P.kwargs or None) -> T:

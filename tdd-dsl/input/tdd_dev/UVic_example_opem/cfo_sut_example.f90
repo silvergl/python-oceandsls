@@ -2,8 +2,11 @@
 MODULE cfo_example  
   IMPLICIT NONE
 
+  PRIVATE
   PRIVATE :: get_sum
-  PUBLIC :: ft_ME
+  PUBLIC :: fT_ME
+
+  TYPE(ocf), DIMENSION(:), ALLOCATABLE, PUBLIC :: zoo
 
   INTEGER, PARAMETER :: dp=KIND(0D0)
 

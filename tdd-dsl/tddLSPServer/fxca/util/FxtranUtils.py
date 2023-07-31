@@ -63,9 +63,14 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
     # Are filtered modules in scope
     isFilteredScope: bool = False
 
-    variables = [ ]  # Variables to return (EN-decl elements within T-decl-stmt elements)
-    scopes = [ ]  # Scopes to return
-    scopeStack = [ ]  # Stack to track the current scope
+    # Variables to return (EN-decl elements within T-decl-stmt elements)
+    variables = [ ]
+    # Scopes to return
+    scopes = [ ]
+    # Stack to track the current scope
+    scopeStack = [ ]
+    # Variables defined in scope
+    scopeStackVar: Dict[ str, Dict[ str, str ] ] = {}
     pubElement: PublicObj = PublicObj( needPublic = need_public )  # Elements declared as public
 
     # TODO deprecated
@@ -76,7 +81,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
     contain_statement = [ 'contains-stmt' ]
 
     # last defined value
-    lastValueDefined: str = ''
+    lastVariableType: str = ''
 
     # Dynamically extracted scope-changing elements
     dyn_scope_elements = set( )
@@ -107,11 +112,21 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
         if element.tag.endswith( tuple( dyn_end_scope_elements ) ):
 
             # Update return name of first functions without result statement
-            scopeName = nameElement.find( './/fx:n', ns ).text if nameElement is not None else None
+            scopeName = element.find( './/fx:n', ns ).text
+
+            # Dereference returnType for functions
             if element.tag.endswith( 'function-stmt' ) and pubElement.isPublic( scopeName ):
+
+                # Get the current scope from the scope stack
+                currentScope = '.'.join( scopeStack )
+                # Get return name
+                resultID = scopeStackVar.get( currentScope ).get( '-1' )
+                # Get return type
+                resultType = lastVariableType if resultID == -1 else scopeStackVar.get( currentScope ).get( resultID, 'None' )
+                # Set return type for corresponding scope
                 for scope in reversed( scopes ):
-                    if scope[ 3 ] == -1:
-                        scope[ 3 ] = lastValueDefined
+                    if scopeStack[ -1 ] == scope[ 1 ] and scope[ 3 ] == resultID:
+                        scope[ 3 ] = resultType
                         break
 
             scopeStack.pop( )
@@ -169,11 +184,19 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
 
             # Update scope stack
             scopeStack.append( scopeName )
+            # Optionally save resultID for dereference
+            scopeStackVar[ '.'.join( scopeStack ) ] = {'-1': resultID} if resultID else {}
 
         # Store assignment statements for optional return values of functions
         elif element.tag.endswith( 'a-stmt' ):
-            # Save name for return type of functions
-            lastValueDefined = element.find( './/fx:n', ns ).text
+            # Get current variable name
+            variableName = element.find( './/fx:n', ns ).text
+
+            # Get the current scope from the scope stack
+            currentScope = '.'.join( scopeStack )
+
+            # Type for return type of functions, None if not found
+            lastVariableType = scopeStackVar.get( currentScope ).get( variableName, None )
 
         # Store public available ids
         elif element.tag.endswith( 'public-stmt' ):
@@ -214,8 +237,23 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
                 currentScope = '.'.join( scopeStack )
 
                 # Get the type of the variable if it exists
-                tSpecElement = element.find( './/fx:T-N', ns )
-                variableType = tSpecElement.text if tSpecElement is not None else ''
+                tSpecElement = element.findall( './/fx:T-N', ns )
+
+                # Extract variable type
+                if tSpecElement:
+                    if tSpecElement[ 0 ].text:
+                        # Direct type name
+                        variableType = tSpecElement[ 0 ].text
+                    else:
+                        # Derived type name
+                        derivedElement: str = element.find( './/fx:derived-T-spec', ns )
+                        # TODO hc default ''
+                        derivedType: str = derivedElement.text if derivedElement else ''
+                        variableType = ''.join( [ derivedType, tSpecElement[ 0 ].find( './/fx:n', ns ).text, ')' ] )
+                else:
+                    # TODO check no type value
+                    # No type found
+                    variableType = ''
 
                 for enDecl in element.findall( './/fx:EN-decl', ns ):
                     # Get the name of the variable from the named element
@@ -228,12 +266,15 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
                         pubElement.pubElements[ variableName ] = pubElementEntry
 
                     # Save name for return type of functions
-                    lastValueDefined = variableName
+                    variable = (variableName, variableType, currentScope)
+
+                    # Add variable with type to current scope
+                    scopeStackVar.get( currentScope )[ variableName ] = variableType
 
                     # Check public availability
                     if pubElement.isPublic( variableName ):
                         # Save the variable names with their respective types and scopes
-                        variables.append( (variableName, variableType, currentScope) )
+                        variables.append( variable )
 
     # TODO Debug
     # Print the list of found named scopes
@@ -303,17 +344,11 @@ def writeDecorateSrcXml( srcDir: str = "", outDir: str = "foo", fxtranPath: str 
     # TODO hc
     # Define the fxtran command
     fxtranCmdOps = " ".join(
-            [
-                    fxtranPath,
-                    # "-line-length 200",
-                    "-no-cpp",
-                    "-strip-comments",
-                    "-name-attr",
-                    # "-code-tag",
+            [ fxtranPath, # "-line-length 200",
+                    "-no-cpp", "-strip-comments", "-name-attr", # "-code-tag",
                     # "-no-include",
                     # "-construct-tag",
-                    "-o"
-            ]
+                    "-o" ]
     )
 
     # Get Fortran files

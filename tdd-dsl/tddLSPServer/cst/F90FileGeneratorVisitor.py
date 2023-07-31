@@ -24,6 +24,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     workFolder: str
     testFilePredicate: str
     environment: Environment
+    ops: Dict[str, List]
 
     # TODO hc
     def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/f90', files: dict[ str, Tuple[ float, str, str ] ] = {}, symbolTable: SymbolTable = None, workPath: str = 'tdd-dsl/output', workFolder: str = 'tests' ):
@@ -43,7 +44,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         # TODO add test directory option
         self.workFolder = workFolder
         # Load Jinja2 templates
-        self.environment = Environment( loader = FileSystemLoader( templatePath ), trim_blocks=True, lstrip_blocks = True, keep_trailing_newline = False )
+        self.environment = Environment( loader = FileSystemLoader( templatePath ), trim_blocks = True, lstrip_blocks = True, keep_trailing_newline = False )
 
         # variable flags
         self.foundRef: bool = False
@@ -52,12 +53,15 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         # set symboltable
         self._symbolTable: SymbolTable = symbolTable
 
-        self.fileTemplates = {}
         # Get template file names from grammar
+        self.fileTemplates = {}
         i: int = 0
         for rule in TestSuiteParser.ruleNames:
             self.fileTemplates[ i ] = f'{rule}_template.txt'
             i += 1
+
+        # Initialize dictionary to track operations of assertions
+        self.ops = {}
 
     @property
     def symbolTable( self ) -> SymbolTable:
@@ -137,7 +141,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     # Find corresponding module symbol
     def visitTest_module( self, ctx: TestSuiteParser.Test_moduleContext ):
         # Return corresponding module symbol, optionally with implementing file and contain functions flag
-        return getScope(ctx, self.symbolTable)
+        return getScope( ctx, self.symbolTable )
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion( self, ctx: TestSuiteParser.Test_assertionContext ):
@@ -148,34 +152,31 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         comment = ctx.comment.text.rstrip( '\n' ).lstrip( '#' ) if ctx.comment is not None else None
 
         # extract id and optional arguments
-        ops: dict[ str, List[ str ], str ] = self.visit( ctx.input_ )
+        self.visit( ctx.input_ )
 
         scope = getScope( ctx, self.symbolTable )
 
-        var = scope.getNestedSymbolsOfTypeAndNameSync(VariableSymbol,ops[0][1][0][0])
-        varType = var[0].attached_type
+        # TODO 31.07 write templates for ops and combine them
 
+        var = scope.getNestedSymbolsOfTypeAndNameSync( VariableSymbol, ops[ 0 ][ 1 ][ 0 ][ 0 ] )
+        varType = var[ 0 ].attached_type
 
         for op in ops:
-            op[0]
-
+            op[ 0 ]
 
         # template = self.environment.get_template( 'tmp_dev.txt')
         # foobar = template.render( comment = 'test comment', integer = 1)
 
-        template = self.environment.get_template( 'test_assertion_template.txt')
+        template = self.environment.get_template( 'test_assertion_template.txt' )
 
         name = 'fT_ME'
-        argsName = ['arg0', 'arg1', 'arg2']
+        argsName = [ 'arg0', 'arg1', 'arg2' ]
         unit = 'K'
 
-        argsName += ['unit'] if unit is not None else []
+        argsName += [ 'unit' ] if unit is not None else [ ]
 
-        argsDecl = ['REAL, INTENT(IN)  :: a','REAL, INTENT(IN)  :: b','REAL, INTENT(IN)  :: c']
+        argsDecl = [ 'REAL, INTENT(IN)  :: a', 'REAL, INTENT(IN)  :: b', 'REAL, INTENT(IN)  :: c' ]
         returnType = 'REAL'
-
-
-
 
         foobar = template.render( comment = comment, name = name, argsName = argsName, unit = unit, argsDecl = argsDecl, returnType = returnType )
 
@@ -194,15 +195,18 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
 
     # Visit a parse tree produced by TestSuiteParser#test_parameter.
     def visitTest_parameter( self, ctx: TestSuiteParser.Test_parameterContext ):
+        # TODO rm declaration from grammar?
         # get value name and optional argument types
-        valueDecl: Tuple[ str, List[ str ] ] = self.visit( ctx.value )
+        value = self.visit( ctx.value )
 
         # unit of expression
         exprUnit: str = self.visit( ctx.comment )
 
-        # return value expression and unit of expression
-        # TODO rm declaration from grammar?
-        return valueDecl, exprUnit
+        # Update input unit of function
+        if isinstance( value, Tuple ):
+            op = self.ops.get(value[0])
+            op[1] = exprUnit
+            self.ops[value[0]] = op
 
     # Visit a parse tree produced by TestSuiteParser#emptyDesc.
     def visitEmptyDesc( self, ctx: TestSuiteParser.EmptyDescContext ):
@@ -231,7 +235,10 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         args: List[ str ] = [ ]
         for arg in ctx.args:
             args.append( self.visit( arg ) )
-        return name, args
+
+        self.ops[name] = self.ops.get(name, [args, None, None])
+
+        return name , args
 
     # Visit a parse tree produced by TestSuiteParser#varRef.
     def visitVarRef( self, ctx: TestSuiteParser.VarRefContext ):
@@ -239,8 +246,8 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
 
         # extract most local type of reference from symboltable
         scope = getScope( ctx, self.symbolTable )
-        var = scope.getNestedSymbolsOfTypeAndNameSync(VariableSymbol,name)
-        varType = var[0].attached_type if var else None
+        var = scope.getNestedSymbolsOfTypeAndNameSync( VariableSymbol, name )
+        varType = var[ 0 ].attached_type if var else None
         return varType
 
     # Visit a parse tree produced by TestSuiteParser#parensExpr.
@@ -254,61 +261,65 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         left = self.visit( ctx.left )
         right = self.visit( ctx.right )
 
-        # determine types
-        if isinstance(left, Tuple):
-            # lookup function in symboltable for return type
+        # Determine operator types
+        if isinstance( left, Tuple ):
+            # Update routine entries
+
+            # Lookup routine in symboltable for return type
             scope = getScope( ctx, self.symbolTable )
-            routineSymbol = scope.getSymbolsOfTypeAndNameSync(RoutineSymbol,left[0], False)
+            routineSymbol = scope.getSymbolsOfTypeAndNameSync( RoutineSymbol, left[ 0 ], False )
             if routineSymbol:
-                leftType = routineSymbol[0].returnType
+                leftType = routineSymbol[ 0 ].returnType
             else:
                 # function and return type are unknown
-                leftType = f'ADD return {left[0]}'
+                leftType = f'ADD return {left[ 0 ]}'
+
+            op = self.ops.get(left[0])
+            op[2] = leftType
+            self.ops[left[0]] = op
         else:
             leftType = left
 
-        if isinstance(right, Tuple):
-            # lookup function in symboltable for return type
+        if isinstance( right, Tuple ):
+            # Update routine entries
+
+            # Lookup routine in symboltable for return type
             scope = getScope( ctx, self.symbolTable )
-            routineSymbol = scope.getSymbolsOfTypeAndNameSync(RoutineSymbol,right[0], False)
+            routineSymbol = scope.getSymbolsOfTypeAndNameSync( RoutineSymbol, right[ 0 ], False )
             if routineSymbol:
-                rightType = routineSymbol[0].returnType
+                rightType = routineSymbol[ 0 ].returnType
             else:
                 # function and return type are unknown
-                rightType = f'ADD return {right[0]}'
+                rightType = f'ADD return {right[ 0 ]}'
+
+            op = self.ops.get(right[0])
+            op[2] = rightType
+            self.ops[right[0]] = op
         else:
             rightType = right
 
         # determine type of expression
         # https://web.chem.ox.ac.uk/fortran/arithmetic.html
-        match (leftType, rightType):
+        match (leftType.lower( ), rightType.lower( )):
             case [ 'real', _ ]:
                 # if any of the operands are real then result of the operation will be real
                 varType: str = 'real'
             case [ _, 'real' ]:
                 # if any of the operands are real then result of the operation will be real
-                varType: str =  'real'
+                varType: str = 'real'
             case [ 'integer', 'integer' ]:
                 if ctx.op == '*':
                     # if all the operands are integer then result of the operation will be integer
-                    varType: str =  'integer'
+                    varType: str = 'integer'
                 else:
-                    varType: str =  'real'
+                    varType: str = 'real'
             case _:
                 # custom types have precedence
                 # TODO mod custom type with second type
-                varType: str =   ctx.op.text.join([leftType, rightType])
+                varType: str = ctx.op.text.join( [ leftType, rightType ] )
 
-        # return function references and determined type
-        match (isinstance(left, Tuple), isinstance(right, Tuple)):
-            case [ True, True ]:
-                return varType, left, right
-            case [ True, False ]:
-                return varType, left
-            case [ False, True ]:
-                return varType, right
-            case _:
-                return varType
+        # return determined type
+        return varType
 
     # Visit a parse tree produced by TestSuiteParser#addSubExpr.
     def visitAddSubExpr( self, ctx: TestSuiteParser.AddSubExprContext ):
@@ -316,9 +327,44 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         left = self.visit( ctx.left )
         right = self.visit( ctx.right )
 
+        # Determine operator types
+        if isinstance( left, Tuple ):
+            # Update routine entries
+
+            # Lookup routine in symboltable for return type
+            scope = getScope( ctx, self.symbolTable )
+            routineSymbol = scope.getSymbolsOfTypeAndNameSync( RoutineSymbol, left[ 0 ], False )
+            if routineSymbol:
+                leftType = routineSymbol[ 0 ].returnType
+            else:
+                # function and return type are unknown
+                leftType = f'ADD return {left[ 0 ]}'
+
+            op = self.ops.get(left[0])
+            op[2] = leftType
+            self.ops[left[0]] = op
+        else:
+            leftType = left
+
+        if isinstance( right, Tuple ):
+            # Update routine entries
+
+            # Lookup routine in symboltable for return type
+            scope = getScope( ctx, self.symbolTable )
+            routineSymbol = scope.getSymbolsOfTypeAndNameSync( RoutineSymbol, right[ 0 ], False )
+            if routineSymbol:
+                rightType = routineSymbol[ 0 ].returnType
+            else:
+                # function and return type are unknown
+                rightType = f'ADD return {right[ 0 ]}'
+
+            op = self.ops.get(right[0])
+            op[2] = rightType
+            self.ops[right[0]] = op
+        else:
+            rightType = right
+
         # extract types from function references
-        leftType = left[1] if isinstance(left, Tuple) else left
-        rightType = right[1] if isinstance(right, Tuple) else right
         # https://web.chem.ox.ac.uk/fortran/arithmetic.html
         match (leftType, rightType):
             case [ 'real', _ ]:
@@ -333,18 +379,10 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
             case _:
                 # custom types have precedence
                 # TODO mod custom type with second type
-                varType: str =  ctx.op.text.join([leftType, rightType])
+                varType: str = ctx.op.text.join( [ leftType, rightType ] )
 
-        # return function references and determined type
-        match (isinstance(left, Tuple), isinstance(right, Tuple)):
-            case [ True, True ]:
-                return varType, left, right
-            case [ True, False ]:
-                return varType, left
-            case [ False, True ]:
-                return varType, right
-            case _:
-                return varType
+        # return determined type
+        return varType
 
     # Visit a parse tree produced by TestSuiteParser#signExpr.
     def visitSignExpr( self, ctx: TestSuiteParser.SignExprContext ):

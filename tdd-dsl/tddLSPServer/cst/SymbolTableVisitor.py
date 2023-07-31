@@ -154,7 +154,7 @@ class SymbolTableVisitor( TestSuiteVisitor, Generic[ T ] ):
         xmlPath = os.path.join( self._testPath, 'tmp' )
         # TODO hc
         # Write XML files
-        writeDecorateSrcXml( self._testPath, xmlPath, '/home/sgu/Documents/fxtran/bin/fxtran' )  # /home/sgu/IdeaProjects/fxtran/bin/fxtran
+        writeDecorateSrcXml( self._testPath, xmlPath, '/home/sgu/IdeaProjects/fxtran/bin/fxtran' )  # /home/sgu/Documents/fxtran/bin/fxtran
 
         # TODO hc, specify modules
         # Get Fortran files

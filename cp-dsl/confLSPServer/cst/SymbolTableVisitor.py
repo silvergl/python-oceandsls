@@ -64,21 +64,18 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
 
     def visitParameterAssignment(self, ctx: ConfigurationParser.ParameterAssignmentContext):
         # define the given Parameter
-        print("ENDLICH HATS GEFUNZT!!!!")
-        varName = ctx.declaration.text # set and get the variable name here
-        unit = self.visit(ctx.unit) if ctx.unit != None else UnitPrefix.NoP
+        varName = ctx.declaration.getText() # set and get the variable name here
+        prefix = self.visit(ctx.unit) if ctx.unit != None else UnitPrefix.NoP
         #isArray = True if len(ctx.selectors) > 0 else False
         symbol = self._scope.getAllNestedSymbolsSync(varName)[0]
-        if unit != UnitPrefix.NoP:
-            symbol.attached_unit.prefix = unit
+        if prefix != UnitPrefix.NoP:
+            print("ungleich!!")
+            symbol.unit.prefix = prefix
         symbol.configuration.append(ctx)
         
     def visitParameterGroup(self, ctx: ConfigurationParser.ParameterGroupContext):
         self.withScope(GroupSymbol, ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
-        print("paramGroup", ctx.declaration.text)
-        print([i.getText() for i in ctx.children])
-        print(ctx.children)
-    
+
     def visitSelector(self, ctx: ConfigurationParser.SelectorContext):
         vector = []
         vector.append(self.visitChildren(ctx))
@@ -91,7 +88,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         return (int(ctx.lowerBound.text), int(ctx.upperBound.text))
 
     def visitUnitSpecification(self, ctx : ConfigurationParser.UnitSpecificationContext):
-        return self.stringToPrefix(ctx.name.text)
+        return self.stringToPrefix(ctx.unit.text)
 
     def visitFeatureConfiguration(self, ctx: ConfigurationParser.FeatureConfigurationContext):
         self.withScope(FeatureSymbol, ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
@@ -126,21 +123,13 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
             scope = table.getAllNestedSymbolsSync(info[i])[0]
         self._symbolTable.addSymbol(scope)
 
-    def stringToPrefix(input : str):
+    def stringToPrefix(self, input : str):
             for prefix in UnitPrefix:
                 if vars(prefix)["_name_"].lower() == input.lower():
                     return prefix
             return UnitPrefix.NoP
     
-    
-    def stringToUnitType(input : str):
-        for kind in UnitKind:
-            if vars(kind)["_name_"].lower() == input.lower():
-                return kind
-        return UnitKind.Unknown
-    
     def withScope(self, type : T, tree: ParseTree, name: str, action: Callable) -> T:
-        print("With Scope, by:", name, tree.getText(), str(type))
         scope = self._symbolTable.getAllNestedSymbolsSync(name)
         if len(scope) < 1:
             print("Symbol with name " + str(name) + " could not be found")

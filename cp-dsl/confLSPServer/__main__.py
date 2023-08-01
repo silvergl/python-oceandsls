@@ -66,6 +66,7 @@ if __name__ == '__main__':
     from confLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
     tableVisitor = SymbolTableVisitor("testConf")
 
+
     with open("/home/armin/Dokumente/cp-dsl/examples/testing/basic/global.oconf") as conf_file:
         data = conf_file.read()
         input_stream = InputStream(data)
@@ -74,8 +75,8 @@ if __name__ == '__main__':
         dcl_parsed = ConfigurationParser(stream).configurationModel()
         tableVisitor.visit(dcl_parsed)
         print(tableVisitor.symbolTable)
-        for elem in tableVisitor.symbolTable.getAllNestedSymbolsSync("temperature"):
-            print(elem.name, elem.configuration.__len__())
+        for elem in tableVisitor.symbolTable.getAllNestedSymbolsSync("ground_color"):
+            print(elem.unit.prefix, elem.configuration[0].getText())
     # from confLSPServer.gen.python.Declaration.DeclarationLexer import DeclarationLexer
     # from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
     # from antlr4 import InputStream, CommonTokenStream

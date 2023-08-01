@@ -94,7 +94,7 @@ class UnitKind( Enum ):
     Joule = 9
     ton = 10
 
-class UnitPrefix:
+class UnitPrefix(Enum):
     """
     Rough categorization of a unit from SI prefixes.
     """
@@ -138,6 +138,32 @@ class Unit:
     prefix: UnitPrefix
     kind: UnitKind
     reference: ReferenceKind
+
+class ComposedUnit():
+    """The composed Unit Representation of the Declaration-DSL"""
+    numerator : FundamentalUnit
+    denominator : FundamentalUnit
+    exponent : FundamentalUnit
+    basicUnit : FundamentalUnit
+
+    def __init__(self, basicUnit : FundamentalUnit = None, numerator : FundamentalUnit = None, denominator : FundamentalUnit = None, exponent : FundamentalUnit = None) -> None:
+        self.basicUnit = basicUnit
+        self.numerator = numerator
+        self.denominator = denominator
+        self.exponent = exponent
+
+class UnitSpecification():
+    """CP-DSL Declaration UnitSpecification Representation Class"""
+    prefix : UnitPrefix
+    def __init__(self) -> None:
+        self.composedUnitList = []
+        self.prefix = None
+    
+    def add(self, unit : ComposedUnit):
+        self.composedUnitList.append(unit)
+
+    def getUnits(self):
+        return self.composedUnitList
 
 @dataclass
 class Type:
@@ -832,13 +858,17 @@ class ScopedSymbol( Symbol ):
         return self.parent().nextOf( self )
 
 
-class VariableSymbol( UnitSymbol ):
+class VariableSymbol( Symbol ):
     is_tree = False
     
-    def __init__(self, name: str, description: str = "", value = None, attached_unit : Unit = None, attached_type: Type = None):
-        super().__init__( name, description, attached_unit, attached_type )
+    def __init__(self, name: str, description: str = "", value = None, unitSpecification : UnitSpecification = None, type = None):
+        super().__init__(name)
+        self.description = description
+        self.unit = unitSpecification
         self.is_tree = isinstance(value, ParseTree)
         self.value = value
+        #if None -> default type int
+        self.type = type
 
 class EnumSymbol(Symbol):
     def __init__(self, name: str = "", values = None):

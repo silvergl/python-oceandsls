@@ -11,7 +11,7 @@ from antlr4.tree.Tree import ParseTree
 from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
 
 # user relative imports
-from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol, RangeSymbol
+from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol, RangeSymbol, ComposedUnit, UnitSpecification
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
@@ -41,19 +41,20 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         # define the given Parameter
         varName = ctx.name.text if ctx.name else "" # set and get the variable name here
         unit = self.visit(ctx.unit)
+        varType = self._scope.resolveSync(ctx.type_.getText())
         description = ctx.description.text if ctx.description else ""
-        symbol = self._symbolTable.addNewSymbolOfType(VariableSymbol, self._scope, varName, description, ctx, unit)
+        symbol = self._symbolTable.addNewSymbolOfType(VariableSymbol, self._scope, varName, description, ctx, unit, varType)
         symbol.context = ctx
         return symbol
     
-    def stringToPrefix(input : str):
+    def stringToPrefix(self, input : str):
             for prefix in UnitPrefix:
                 if vars(prefix)["_name_"].lower() == input.lower():
                     return prefix
             return UnitPrefix.NoP
     
     
-    def stringToUnitType(input : str):
+    def stringToUnitType(self, input : str):
         for kind in UnitKind:
             if vars(kind)["_name_"].lower() == input.lower():
                 return kind
@@ -61,13 +62,28 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
     
     # sIUnit                      :   (prefix=ePrefix)? type=eSIUnitType #siUnit; 
     def visitSiunit(self, ctx:DeclarationParser.SIUnitContext):
-        return FundamentalUnit(name = ctx.type.text if ctx.type.text else "", unitPrefix = self.stringToPrefix(ctx.prefix.text if ctx.prefix else ""), unitKind = self.stringToUnitType(ctx.type.text if ctx.type else ""))
+        return FundamentalUnit(name = ctx.type_.getText() if ctx.type_ else "", unitPrefix = self.stringToPrefix(ctx.prefix.getText() if ctx.prefix else ""), unitKind = self.stringToUnitType(ctx.type_.getText() if ctx.type_ else ""))
     
     # customUnit                  :   name=STRING #customunit;
     def visitCustomunit(self, ctx:DeclarationParser.CustomUnitContext):
         # TODO: Set Prefix and type in customUnit either
         return FundamentalUnit(name = ctx.name.text if ctx.name.text else "")
     
+    def visitBasicUnit(self, ctx:DeclarationParser.BasicUnitContext):
+        return self.visitChildren(ctx)
+    
+    def visitUnitSpecification(self, ctx:DeclarationParser.UnitSpecificationContext):
+        retVal = UnitSpecification()
+        for elem in ctx.units:
+            retVal.add(self.visit(elem))
+        return retVal
+
+    def visitComposedUnit(self, ctx:DeclarationParser.ComposedUnitContext):
+        if ctx.denominator:
+            return ComposedUnit(numerator = self.visitBasicUnit(ctx.numerator), denominator = self.visitBasicUnit(ctx.denominator))
+        if ctx.exponent:
+            return ComposedUnit(numerator = self.visitBasicUnit(ctx.numerator), exponent = self.visitBasicUnit(ctx.exponent))
+        return ComposedUnit(basicUnit = self.visitChildren(ctx))    
         
     def visitParamGroupAssignStat(self, ctx: DeclarationParser.ParamGroupAssignStatContext):
         description = ctx.description.text if ctx.description else ""

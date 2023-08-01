@@ -1,4 +1,4 @@
-// Generated from Declaration.g4 by ANTLR 4.12.0
+// Generated from Declaration.g4 by ANTLR 4.13.0
 package Declaration;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -158,14 +158,14 @@ public class DeclarationBaseVisitor<T> extends AbstractParseTreeVisitor<T> imple
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSIUnit(DeclarationParser.SIUnitContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSiunit(DeclarationParser.SiunitContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCustomUnit(DeclarationParser.CustomUnitContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCustomunit(DeclarationParser.CustomunitContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

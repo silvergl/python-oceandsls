@@ -1,4 +1,4 @@
-// Generated from Configuration.g4 by ANTLR 4.12.0
+// Generated from Configuration.g4 by ANTLR 4.13.0
 package Configuration;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -107,6 +107,16 @@ public interface ConfigurationListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitUnitSpecification(ConfigurationParser.UnitSpecificationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ConfigurationParser#qualifiedName}.
+	 * @param ctx the parse tree
+	 */
+	void enterQualifiedName(ConfigurationParser.QualifiedNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ConfigurationParser#qualifiedName}.
+	 * @param ctx the parse tree
+	 */
+	void exitQualifiedName(ConfigurationParser.QualifiedNameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ConfigurationParser#arithmeticExpression}.
 	 * @param ctx the parse tree

@@ -17,7 +17,7 @@ configurationModel          :   'configuration' name=ID ':' declarationModel=ID
                             ;
 
 
-include                     :   'include' importedNamespace = QualifiedName;
+include                     :   'include' importedNamespace = qualifiedName;
 
 //TODO deactivated? set deactivated to true if '!' else to false
 //TODO add FeatureDeclaration reference for declaration = ID
@@ -40,18 +40,19 @@ parameterGroup              :   'group' declaration=ID '{'
                             ;
 
 //TODO add ParameterDeclaration reference for declaration = QualifiedName
-parameterAssignment         :   declaration= QualifiedName ('[' selectors+=selector (',' selectors+=selector)*  ']')? ':' value=arithmeticExpression (unit=unitSpecification)? 
+parameterAssignment         :   declaration = qualifiedName ('[' selectors+=selector (',' selectors+=selector)*  ']')? ':' value=arithmeticExpression (unit=unitSpecification)?
                             ;
 
 selector                    :   elementSelector | rangeSelector;
 elementSelector             :   element=ELONG;
 rangeSelector               :   lowerBound=ELONG ':' upperBound=ELONG;
 
-unitSpecification                        : unit=ID
+unitSpecification           :   unit=ID
+                            ;
+
+qualifiedName               :   ID ('.' ID)*
                             ;
 
 /** Lexer rules (start uppercase)*/
 
-ID                          : ( [a-zA-Z] | '_') ( [a-zA-Z] | '_' | [0-9] | '^' | '-' | '*' | '/' )* ; // override identifiers
-
-QualifiedName               : ID ('.' ID)* ;
+ID                          : ( [a-zA-Z] | '_') ( [a-zA-Z] | '_' | [0-9] | '^' | '-' | '*' | '/' )*; // override identifiers

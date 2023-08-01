@@ -94,7 +94,7 @@ release_BGC: $(BGCGRAMMAR).tar.gz
 CPPKGTARGETS = Terminals Expression Configuration Declaration
 
 # Release version used by release targets
-CPPACKAGE = cp-dsl/cpLSPServer
+CPPACKAGE = cp-dsl/confLSPServer
 CPVER = $(strip $(shell cat version))
 CPPYCPVERDIR = $(CPPACKAGE)-$(CPVER)
 CPPYBUILDDIR = $(CPPACKAGE)/../build/$(CPPYCPVERDIR)

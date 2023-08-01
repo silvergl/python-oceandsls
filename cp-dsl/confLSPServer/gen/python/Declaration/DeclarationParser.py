@@ -1,4 +1,4 @@
-# Generated from Declaration.g4 by ANTLR 4.12.0
+# Generated from Declaration.g4 by ANTLR 4.13.0
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -318,7 +318,7 @@ class DeclarationParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.12.0")
+        self.checkVersion("4.13.0")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -1922,34 +1922,45 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.prefix = None # EPrefixContext
-            self.type_ = None # ESIUnitTypeContext
-
-        def eSIUnitType(self):
-            return self.getTypedRuleContext(DeclarationParser.ESIUnitTypeContext,0)
-
-
-        def ePrefix(self):
-            return self.getTypedRuleContext(DeclarationParser.EPrefixContext,0)
 
 
         def getRuleIndex(self):
             return DeclarationParser.RULE_sIUnit
 
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class SiunitContext(SIUnitContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.SIUnitContext
+            super().__init__(parser)
+            self.prefix = None # EPrefixContext
+            self.type_ = None # ESIUnitTypeContext
+            self.copyFrom(ctx)
+
+        def eSIUnitType(self):
+            return self.getTypedRuleContext(DeclarationParser.ESIUnitTypeContext,0)
+
+        def ePrefix(self):
+            return self.getTypedRuleContext(DeclarationParser.EPrefixContext,0)
+
+
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSIUnit" ):
-                listener.enterSIUnit(self)
+            if hasattr( listener, "enterSiunit" ):
+                listener.enterSiunit(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSIUnit" ):
-                listener.exitSIUnit(self)
+            if hasattr( listener, "exitSiunit" ):
+                listener.exitSiunit(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSIUnit" ):
-                return visitor.visitSIUnit(self)
+            if hasattr( visitor, "visitSiunit" ):
+                return visitor.visitSiunit(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -1959,6 +1970,7 @@ class DeclarationParser ( Parser ):
         self.enterRule(localctx, 40, self.RULE_sIUnit)
         self._la = 0 # Token type
         try:
+            localctx = DeclarationParser.SiunitContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 263
             self._errHandler.sync(self)
@@ -1985,28 +1997,40 @@ class DeclarationParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.name = None # Token
 
-        def STRING(self):
-            return self.getToken(DeclarationParser.STRING, 0)
 
         def getRuleIndex(self):
             return DeclarationParser.RULE_customUnit
 
+     
+        def copyFrom(self, ctx:ParserRuleContext):
+            super().copyFrom(ctx)
+
+
+
+    class CustomunitContext(CustomUnitContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a DeclarationParser.CustomUnitContext
+            super().__init__(parser)
+            self.name = None # Token
+            self.copyFrom(ctx)
+
+        def STRING(self):
+            return self.getToken(DeclarationParser.STRING, 0)
+
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCustomUnit" ):
-                listener.enterCustomUnit(self)
+            if hasattr( listener, "enterCustomunit" ):
+                listener.enterCustomunit(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCustomUnit" ):
-                listener.exitCustomUnit(self)
+            if hasattr( listener, "exitCustomunit" ):
+                listener.exitCustomunit(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCustomUnit" ):
-                return visitor.visitCustomUnit(self)
+            if hasattr( visitor, "visitCustomunit" ):
+                return visitor.visitCustomunit(self)
             else:
                 return visitor.visitChildren(self)
-
 
 
 
@@ -2015,6 +2039,7 @@ class DeclarationParser ( Parser ):
         localctx = DeclarationParser.CustomUnitContext(self, self._ctx, self.state)
         self.enterRule(localctx, 42, self.RULE_customUnit)
         try:
+            localctx = DeclarationParser.CustomunitContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
             self.state = 267
             localctx.name = self.match(DeclarationParser.STRING)

@@ -1,6 +1,6 @@
-# Generated from Declaration.g4 by ANTLR 4.12.0
+# Generated from Declaration.g4 by ANTLR 4.13.0
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .DeclarationParser import DeclarationParser
 else:
     from DeclarationParser import DeclarationParser
@@ -109,13 +109,13 @@ class DeclarationVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by DeclarationParser#sIUnit.
-    def visitSIUnit(self, ctx:DeclarationParser.SIUnitContext):
+    # Visit a parse tree produced by DeclarationParser#siunit.
+    def visitSiunit(self, ctx:DeclarationParser.SiunitContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by DeclarationParser#customUnit.
-    def visitCustomUnit(self, ctx:DeclarationParser.CustomUnitContext):
+    # Visit a parse tree produced by DeclarationParser#customunit.
+    def visitCustomunit(self, ctx:DeclarationParser.CustomunitContext):
         return self.visitChildren(ctx)
 
 

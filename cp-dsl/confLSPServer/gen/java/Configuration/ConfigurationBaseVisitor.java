@@ -1,4 +1,4 @@
-// Generated from Configuration.g4 by ANTLR 4.12.0
+// Generated from Configuration.g4 by ANTLR 4.13.0
 package Configuration;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -82,6 +82,13 @@ public class ConfigurationBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitUnitSpecification(ConfigurationParser.UnitSpecificationContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitQualifiedName(ConfigurationParser.QualifiedNameContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

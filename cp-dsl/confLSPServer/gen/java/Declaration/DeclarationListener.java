@@ -1,4 +1,4 @@
-// Generated from Declaration.g4 by ANTLR 4.12.0
+// Generated from Declaration.g4 by ANTLR 4.13.0
 package Declaration;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -216,25 +216,29 @@ public interface DeclarationListener extends ParseTreeListener {
 	 */
 	void exitBasicUnit(DeclarationParser.BasicUnitContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DeclarationParser#sIUnit}.
+	 * Enter a parse tree produced by the {@code siunit}
+	 * labeled alternative in {@link DeclarationParser#sIUnit}.
 	 * @param ctx the parse tree
 	 */
-	void enterSIUnit(DeclarationParser.SIUnitContext ctx);
+	void enterSiunit(DeclarationParser.SiunitContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link DeclarationParser#sIUnit}.
+	 * Exit a parse tree produced by the {@code siunit}
+	 * labeled alternative in {@link DeclarationParser#sIUnit}.
 	 * @param ctx the parse tree
 	 */
-	void exitSIUnit(DeclarationParser.SIUnitContext ctx);
+	void exitSiunit(DeclarationParser.SiunitContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DeclarationParser#customUnit}.
+	 * Enter a parse tree produced by the {@code customunit}
+	 * labeled alternative in {@link DeclarationParser#customUnit}.
 	 * @param ctx the parse tree
 	 */
-	void enterCustomUnit(DeclarationParser.CustomUnitContext ctx);
+	void enterCustomunit(DeclarationParser.CustomunitContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link DeclarationParser#customUnit}.
+	 * Exit a parse tree produced by the {@code customunit}
+	 * labeled alternative in {@link DeclarationParser#customUnit}.
 	 * @param ctx the parse tree
 	 */
-	void exitCustomUnit(DeclarationParser.CustomUnitContext ctx);
+	void exitCustomunit(DeclarationParser.CustomunitContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DeclarationParser#composedUnit}.
 	 * @param ctx the parse tree

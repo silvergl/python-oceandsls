@@ -1,4 +1,4 @@
-// Generated from Declaration.g4 by ANTLR 4.12.0
+// Generated from Declaration.g4 by ANTLR 4.13.0
 package Declaration;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -257,25 +257,25 @@ public class DeclarationBaseListener implements DeclarationListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSIUnit(DeclarationParser.SIUnitContext ctx) { }
+	@Override public void enterSiunit(DeclarationParser.SiunitContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSIUnit(DeclarationParser.SIUnitContext ctx) { }
+	@Override public void exitSiunit(DeclarationParser.SiunitContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCustomUnit(DeclarationParser.CustomUnitContext ctx) { }
+	@Override public void enterCustomunit(DeclarationParser.CustomunitContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCustomUnit(DeclarationParser.CustomUnitContext ctx) { }
+	@Override public void exitCustomunit(DeclarationParser.CustomunitContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,4 +1,4 @@
-// Generated from Configuration.g4 by ANTLR 4.12.0
+// Generated from Configuration.g4 by ANTLR 4.13.0
 package Configuration;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -70,6 +70,12 @@ public interface ConfigurationVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitUnitSpecification(ConfigurationParser.UnitSpecificationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ConfigurationParser#qualifiedName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitQualifiedName(ConfigurationParser.QualifiedNameContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ConfigurationParser#arithmeticExpression}.
 	 * @param ctx the parse tree

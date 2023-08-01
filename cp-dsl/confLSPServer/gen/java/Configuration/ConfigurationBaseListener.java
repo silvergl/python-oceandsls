@@ -1,4 +1,4 @@
-// Generated from Configuration.g4 by ANTLR 4.12.0
+// Generated from Configuration.g4 by ANTLR 4.13.0
 package Configuration;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -132,6 +132,18 @@ public class ConfigurationBaseListener implements ConfigurationListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitUnitSpecification(ConfigurationParser.UnitSpecificationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterQualifiedName(ConfigurationParser.QualifiedNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitQualifiedName(ConfigurationParser.QualifiedNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

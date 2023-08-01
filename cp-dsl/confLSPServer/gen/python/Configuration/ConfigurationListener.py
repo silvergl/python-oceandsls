@@ -1,6 +1,6 @@
-# Generated from Configuration.g4 by ANTLR 4.12.0
+# Generated from Configuration.g4 by ANTLR 4.13.0
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .ConfigurationParser import ConfigurationParser
 else:
     from ConfigurationParser import ConfigurationParser
@@ -95,6 +95,15 @@ class ConfigurationListener(ParseTreeListener):
 
     # Exit a parse tree produced by ConfigurationParser#unitSpecification.
     def exitUnitSpecification(self, ctx:ConfigurationParser.UnitSpecificationContext):
+        pass
+
+
+    # Enter a parse tree produced by ConfigurationParser#qualifiedName.
+    def enterQualifiedName(self, ctx:ConfigurationParser.QualifiedNameContext):
+        pass
+
+    # Exit a parse tree produced by ConfigurationParser#qualifiedName.
+    def exitQualifiedName(self, ctx:ConfigurationParser.QualifiedNameContext):
         pass
 
 

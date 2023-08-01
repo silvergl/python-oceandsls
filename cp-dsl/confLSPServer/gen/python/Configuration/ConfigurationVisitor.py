@@ -1,6 +1,6 @@
-# Generated from Configuration.g4 by ANTLR 4.12.0
+# Generated from Configuration.g4 by ANTLR 4.13.0
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .ConfigurationParser import ConfigurationParser
 else:
     from ConfigurationParser import ConfigurationParser
@@ -56,6 +56,11 @@ class ConfigurationVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by ConfigurationParser#unitSpecification.
     def visitUnitSpecification(self, ctx:ConfigurationParser.UnitSpecificationContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ConfigurationParser#qualifiedName.
+    def visitQualifiedName(self, ctx:ConfigurationParser.QualifiedNameContext):
         return self.visitChildren(ctx)
 
 

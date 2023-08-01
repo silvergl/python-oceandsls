@@ -1,6 +1,6 @@
-# Generated from Declaration.g4 by ANTLR 4.12.0
+# Generated from Declaration.g4 by ANTLR 4.13.0
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .DeclarationParser import DeclarationParser
 else:
     from DeclarationParser import DeclarationParser
@@ -188,21 +188,21 @@ class DeclarationListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by DeclarationParser#sIUnit.
-    def enterSIUnit(self, ctx:DeclarationParser.SIUnitContext):
+    # Enter a parse tree produced by DeclarationParser#siunit.
+    def enterSiunit(self, ctx:DeclarationParser.SiunitContext):
         pass
 
-    # Exit a parse tree produced by DeclarationParser#sIUnit.
-    def exitSIUnit(self, ctx:DeclarationParser.SIUnitContext):
+    # Exit a parse tree produced by DeclarationParser#siunit.
+    def exitSiunit(self, ctx:DeclarationParser.SiunitContext):
         pass
 
 
-    # Enter a parse tree produced by DeclarationParser#customUnit.
-    def enterCustomUnit(self, ctx:DeclarationParser.CustomUnitContext):
+    # Enter a parse tree produced by DeclarationParser#customunit.
+    def enterCustomunit(self, ctx:DeclarationParser.CustomunitContext):
         pass
 
-    # Exit a parse tree produced by DeclarationParser#customUnit.
-    def exitCustomUnit(self, ctx:DeclarationParser.CustomUnitContext):
+    # Exit a parse tree produced by DeclarationParser#customunit.
+    def exitCustomunit(self, ctx:DeclarationParser.CustomunitContext):
         pass
 
 

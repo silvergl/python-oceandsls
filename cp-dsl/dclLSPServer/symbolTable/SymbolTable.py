@@ -268,6 +268,7 @@ class Symbol:
     def __init__(self, name: str = ''):
         self.name = name
         self.context = None
+        self.configuration = []
 
     def parent(self) -> Optional[Symbol]:
         return self.__theParent
@@ -843,8 +844,15 @@ class EnumSymbol(Symbol):
     def __init__(self, name: str = "", values = None):
         self.values = values
         super().__init__(name)
+
+class RangeSymbol(Symbol):
+    def __init__(self, name, type, minimum, maximum):
+        super().__init__(name)
+        self.type = type
+        self.minimum = minimum
+        self.maximum = maximum
         
-class ArraySymbol(Symbol):
+class ArraySymbol(VariableSymbol):
     """
     a class representing a n-dimensional array
     Array Representation:
@@ -972,6 +980,7 @@ class FeatureSymbol( ScopedSymbol ):
     def __init__(self, name: str, returnType: Type = None):
         super().__init__( name )
         self.returnType = returnType
+        self.is_activated = False
 
     def getVariables(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getNestedSymbolsOfTypeSync( VariableSymbol )

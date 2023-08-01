@@ -11,7 +11,7 @@ from antlr4.tree.Tree import ParseTree
 from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
 
 # user relative imports
-from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol
+from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol, RangeSymbol
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationVisitor import DeclarationVisitor
 
@@ -26,7 +26,6 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
-        self.inlineInt = 0
 
     @property
     def symbolTable(self) -> SymbolTable:
@@ -43,9 +42,9 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         varName = ctx.name.text if ctx.name else "" # set and get the variable name here
         unit = self.visit(ctx.unit)
         description = ctx.description.text if ctx.description else ""
-        scope = self._symbolTable.addNewSymbolOfType(VariableSymbol, self._scope, varName, description, ctx, unit)
-        # TODO backlog add description as comment to SymbolTable?
-        return scope
+        symbol = self._symbolTable.addNewSymbolOfType(VariableSymbol, self._scope, varName, description, ctx, unit)
+        symbol.context = ctx
+        return symbol
     
     def stringToPrefix(input : str):
             for prefix in UnitPrefix:
@@ -65,7 +64,7 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         return FundamentalUnit(name = ctx.type.text if ctx.type.text else "", unitPrefix = self.stringToPrefix(ctx.prefix.text if ctx.prefix else ""), unitKind = self.stringToUnitType(ctx.type.text if ctx.type else ""))
     
     # customUnit                  :   name=STRING #customunit;
-    def visitCustomunit(self, ctx:DeclarationParser.customUnit):
+    def visitCustomunit(self, ctx:DeclarationParser.CustomUnitContext):
         # TODO: Set Prefix and type in customUnit either
         return FundamentalUnit(name = ctx.name.text if ctx.name.text else "")
     
@@ -89,31 +88,39 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         for i in range(ctx.getChildCount()):
             #enumList representation: [(id, value),...]
             enumList.append(self.visit(ctx.getChild(i)))
-        self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
+        symbol = self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
+        symbol.context = ctx
     
     def visitEnumeral(self, ctx: DeclarationParser.EnumeralContext):
         #return a tuple of id and value
         return (ctx.name.text, int(ctx.value.text))
+
     
     def visitInlineEnumerationType(self, ctx: DeclarationParser.InlineEnumerationTypeContext):
-        enumName = "Inline_" + self.inlineInt
+        enumName = ""
         enumList = []
         self.inlineInt += 1
         for i in range(ctx.getChildCount()):
             #enumList representation: [(id, value),...]
             enumList.append(self.visit(ctx.getChild(i)))
-        self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
+        symbol = self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
+        symbol.context = ctx
 
     
-    def visitArrayType(self, ctx: DeclarationParser.ArrayType):
+    def visitArrayType(self, ctx: DeclarationParser.ArrayTypeContext):
         bounds = self.visitChildren(ctx)
-        self._symbolTable.addNewSymbolOfType(ArraySymbol, self._scope, ctx.type.text if ctx.type else "", bounds[0], bounds[1])
+        symbol = self._symbolTable.addNewSymbolOfType(ArraySymbol, self._scope, ctx.type.text if ctx.type else "", bounds[0], bounds[1])
+        symbol.context = ctx
 
-    def visitSizeDimension(self, ctx: DeclarationParser.SizeDimension):
-        return (0, int(ctx.size.text) if ctx.size else 0)    
+    def visitSizeDimension(self, ctx: DeclarationParser.SizeDimensionContext):
+        return (0, int(ctx.size.text) if ctx.size else 0)
 
-    def visitRangeDimension(self, ctx: DeclarationParser.RangeDimension):
+    def visitRangeDimension(self, ctx: DeclarationParser.RangeDimensionContext):
         return ((int(ctx.lowerBound.text) if ctx.lowerBound else 0), (int(ctx.upperBound.text) if ctx.upperBound else 0))
+    
+    def visitRangeType(self, ctx: DeclarationParser.RangeTypeContext):
+        symbol = self._symbolTable.addNewSymbolOfType(RangeSymbol, self._scope, ctx.name.text, type(ctx.type_), ctx.minimum, ctx.maximum)
+        symbol.context = ctx
     
     def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None,
                   **my_kwargs: P.kwargs or None) -> T:

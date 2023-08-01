@@ -10,13 +10,14 @@ from antlr4.tree.Tree import ParseTree
 from antlr4 import InputStream, CommonTokenStream
 
 from confLSPServer.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
+from confLSPServer.gen.python.Configuration.ConfigurationParser import ConfigurationParser
 
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationLexer import DeclarationLexer
 # user relative imports
 from .SymbolTableVisitorDcl import SymbolTableVisitorDecl as DeclSymbolTableVisitor
-from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol
+from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Configuration.ConfigurationVisitor import ConfigurationVisitor
 
@@ -32,7 +33,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         self._symbolTable = SymbolTable(name, SymbolTableOptions(False))
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
-        self._scope = None
+        self._scope = self._symbolTable
 
     @property
     def symbolTable(self) -> SymbolTable:
@@ -44,14 +45,15 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
     def visitConfigurationModel(self, ctx: ConfigurationParser.ConfigurationModelContext):
         # Symboltable has to be filled with Declaration Defaults
         table = self.visitDeclarationTable(ctx.declarationModel.text)
-        self._symbolTable.addDependencies(table)
+        # add all symbols to symboltable
+        self._symbolTable = table
         return super().visitConfigurationModel(ctx)
     
     def visitDeclarationTable(self, declarationName : str):
         declVisitor = DeclSymbolTableVisitor(declarationName + "_ConfDeclVisit")
         # TODO: How do we know where the dcl file is placed?
         # TODO: Maybe: Copy TDD-DSL Pattern for os paths
-        with open(os.path.join(os.getcwd(),declarationName + ".dcl")) as dcl_file:
+        with open(os.path.join(os.getcwd(),declarationName + ".decl")) as dcl_file:
             data = dcl_file.read()
             input_stream = InputStream(data)
             lexer = DeclarationLexer(input_stream)
@@ -60,44 +62,43 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
             declVisitor.visit(dcl_parsed)
         return declVisitor.symbolTable
 
-
-    # Visit a parse tree produced by DeclarationParser#paramAssignStat.
-    # 'def' name=ID type=paramType ':' unit=unitSpecification (',' description=STRING)? ('=' defaultValue=arithmeticExpression)?
-    def visitParameterAssignment(self, ctx: ConfigurationParser.parameterAssignment):
-        
+    def visitParameterAssignment(self, ctx: ConfigurationParser.ParameterAssignmentContext):
         # define the given Parameter
+        print("ENDLICH HATS GEFUNZT!!!!")
         varName = ctx.declaration.text # set and get the variable name here
-        #unit = self.visit(ctx.unit) if unit != None else UnitKind.Unknown
-        checkForParamAndEdit(varName, ctx)
-                
-        def checkForParamAndEdit(searchedParamName : str, ctx : ConfigurationParser.parameterAssignment):
-            for param in (self._scope.getParameters() if self._scope else self._symbolTable.getAllSymbolsSync(VariableSymbol, localOnly=True)):
-                if param.name == searchedParamName:
-                    #is this static?
-                    param.configuration.append(ctx)
-                    return
-            print("ERROR: Couldn't find correct Symbol")
-            # TODO: add new symbol if not found in SymbolTable?
+        unit = self.visit(ctx.unit) if ctx.unit != None else UnitPrefix.NoP
+        #isArray = True if len(ctx.selectors) > 0 else False
+        symbol = self._scope.getAllNestedSymbolsSync(varName)[0]
+        if unit != UnitPrefix.NoP:
+            symbol.attached_unit.prefix = unit
+        symbol.configuration.append(ctx)
+        
+    def visitParameterGroup(self, ctx: ConfigurationParser.ParameterGroupContext):
+        self.withScope(GroupSymbol, ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
+        print("paramGroup", ctx.declaration.text)
+        print([i.getText() for i in ctx.children])
+        print(ctx.children)
     
-    def visitParameterGroup(self, ctx: ConfigurationParser.parameterGroup):
-        for elem in self._scope.getAllSymbolsSync(GroupSymbol, True):
-            if elem.name == ctx.declaration.text:
-                self._scope = elem
-        return self.withScope(ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
+    def visitSelector(self, ctx: ConfigurationParser.SelectorContext):
+        vector = []
+        vector.append(self.visitChildren(ctx))
+        return vector
+    
+    def visitElementSelector(self, ctx: ConfigurationParser.ElementSelectorContext):
+        return int(ctx.element.text)
+    
+    def visitRangeSelector(self, ctx: ConfigurationParser.RangeSelectorContext):
+        return (int(ctx.lowerBound.text), int(ctx.upperBound.text))
 
-    def visitUnitSpecification(self, ctx : ConfigurationParser.unitSpecification):
-        return self.stringToUnitType(ctx.name.text)
+    def visitUnitSpecification(self, ctx : ConfigurationParser.UnitSpecificationContext):
+        return self.stringToPrefix(ctx.name.text)
 
-    def visitFeatureConfiguration(self, ctx: ConfigurationParser.featureConfiguration):
-        self.withScope(ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
-        for elem in self._scope.getAllSymbolsSync(FeatureSymbol, True):
-            if elem.name == ctx.declaration.text:
-                elem.is_activated = True
+    def visitFeatureConfiguration(self, ctx: ConfigurationParser.FeatureConfigurationContext):
+        self.withScope(FeatureSymbol, ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
 
-    def visitFeatureActivation(self, ctx : ConfigurationParser.featureActivation):
+    def visitFeatureActivation(self, ctx : ConfigurationParser.FeatureActivationContext):
         for feature in self._scope.getFeatures():
-            #TODO: Scopeing how to ge the correct feature/parameter, when names and scope is out of bound with decl and conf?
-            if feature.name == ctx.name.text:
+            if feature.name == ctx.declaration.text:
                 try:
                     # if is_activated is set to false it is not none
                     feature.is_activated = True if ctx.deactivated else False
@@ -105,12 +106,12 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
                     print("WARNING: There was a None in Feature Configuration of " + str(feature.name))
                     pass
                 
-    def visitInclude(self, ctx: ConfigurationParser.include):
+    def visitInclude(self, ctx: ConfigurationParser.IncludeContext):
         info = ctx.importedNamespace.text.split(".")
         #visit configuration table
         confVisitor = SymbolTableVisitor(info[0] + "_ConfVisit")
         # TODO: Maybe: Copy TDD-DSL Pattern for os paths
-        with open(os.path.join(os.getcwd(),info[0] + ".dcl")) as conf_file:
+        with open(os.path.join(os.getcwd(),info[0] + ".oconf")) as conf_file:
             data = conf_file.read()
             input_stream = InputStream(data)
             lexer = ConfigurationLexer(input_stream)
@@ -118,22 +119,13 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
             dcl_parsed = ConfigurationParser(stream).configurationModel()
             confVisitor.visit(dcl_parsed)
             table = confVisitor._symbolTable
-        scope : FeatureSymbol = None
         #TODO: Not sure if this is gonna work
-        self._symbolTable.addSymbol(table.resolveSync(info[-1]))
-        #for i in range(1,len(info)):
-            # if scope:
-            #     for elem in scope.getAllSymbolsSync(T,True):
-            #         if info[i] == elem.name:
-            #             scope = elem
-            #             self._symbolTable.addSymbol(elem)
-            # else:
-            #     for elem in table.getAllSymbolsSync():
-            #         if elem.name == info[i]:
-            #             scope = elem
-            #             self._symbolTable.addSymbol(elem)
+        scope = None
+        #go through all symbols
+        for i in range(1,len(info)):
+            scope = table.getAllNestedSymbolsSync(info[i])[0]
+        self._symbolTable.addSymbol(scope)
 
-    
     def stringToPrefix(input : str):
             for prefix in UnitPrefix:
                 if vars(prefix)["_name_"].lower() == input.lower():
@@ -147,13 +139,27 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
                 return kind
         return UnitKind.Unknown
     
-    def withScope(self, tree: ParseTree, name: str, action: Callable) -> T:
-        scope = self._symbolTable.resolveSync(name)
-        # Dont set configuration context -> should stay declaration tree
-        # scope.context = tree
+    def withScope(self, type : T, tree: ParseTree, name: str, action: Callable) -> T:
+        print("With Scope, by:", name, tree.getText(), str(type))
+        scope = self._symbolTable.getAllNestedSymbolsSync(name)
+        if len(scope) < 1:
+            print("Symbol with name " + str(name) + " could not be found")
+            return
+        elif len(scope) > 1:
+            for elem in scope:
+                if isinstance(elem, type):
+                    scope = elem
+                    break
+        else:
+            scope = scope[0]
+        if type == FeatureSymbol:
+            scope.is_activated = True
         scope.configuration.append(tree)
         self._scope = scope
         try:
             return action()
         finally:
-            self._scope = scope.parent()
+            if self._scope:
+                self._scope = scope.parent()
+            else:
+                print("scope not set")

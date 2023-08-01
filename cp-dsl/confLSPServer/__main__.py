@@ -59,4 +59,36 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    from confLSPServer.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
+    from confLSPServer.gen.python.Configuration.ConfigurationParser import ConfigurationParser
+    from antlr4 import InputStream, CommonTokenStream
+    from confLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
+    tableVisitor = SymbolTableVisitor("testConf")
+
+    with open("/home/armin/Dokumente/cp-dsl/examples/testing/basic/global.oconf") as conf_file:
+        data = conf_file.read()
+        input_stream = InputStream(data)
+        lexer = ConfigurationLexer(input_stream)
+        stream = CommonTokenStream(lexer)
+        dcl_parsed = ConfigurationParser(stream).configurationModel()
+        tableVisitor.visit(dcl_parsed)
+        print(tableVisitor.symbolTable)
+        for elem in tableVisitor.symbolTable.getAllNestedSymbolsSync("temperature"):
+            print(elem.name, elem.configuration.__len__())
+    # from confLSPServer.gen.python.Declaration.DeclarationLexer import DeclarationLexer
+    # from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
+    # from antlr4 import InputStream, CommonTokenStream
+    # from confLSPServer.cst.SymbolTableVisitorDcl import SymbolTableVisitorDecl
+    # tableVisitor = SymbolTableVisitorDecl("test")
+
+    # with open("/home/armin/Dokumente/antlr4/antlr4-python/cp-dsl/eval.decl") as conf_file:
+    #     data = conf_file.read()
+    #     input_stream = InputStream(data)
+    #     lexer = DeclarationLexer(input_stream)
+    #     stream = CommonTokenStream(lexer)
+    #     dcl_parsed = DeclarationParser(stream).declarationModel()
+    #     tableVisitor.visit(dcl_parsed)
+    #     print(tableVisitor.symbolTable.getAllNestedSymbolsSync("Temperature"))
+
+

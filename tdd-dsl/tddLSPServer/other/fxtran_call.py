@@ -7,81 +7,109 @@ __author__ = 'sgu'
 # utils
 import fnmatch
 import os.path
+import pathlib
 import re
 import subprocess
 # xml
 import xml.etree.ElementTree as ET
 
 
-# graphviz
-# requires sudo apt install libgraphviz-dev
-
-
-def get_files( root_dir: str = "", pattern: str = "*.[fF]90" ):
+def getFiles( root_dir: str = "", pattern: str = "*.[fF]90" ):
     files = [ ]
-    for root, dirnames, filenames in os.walk( root_dir ):
-        for filename in fnmatch.filter( filenames, pattern ):
-            files.append( os.path.join( root, filename ) )
+    for root, dirNames, fileNames in os.walk( root_dir ):
+        for fileName in fnmatch.filter( fileNames, pattern ):
+            files.append( (root, fileName) )
     return files
 
 
-def write_decorate_src_xml( root_dir: str = "", fxtran_path: str = "" ):
+def writeDecorateSrcXml( srcDir: str = "", outDir: str = "foo", fxtranPath: str = "" ):
     # Define the fxtran command
-    fxtran_cmd_ops = [
-            fxtran_path,
-            # "-line-length 200",
-            "-no-cpp",
-            "-strip-comments",
-            "-name-attr",
-            # "-code-tag",
-            # "-no-include",
-            # "-construct-tag",
-    ]
+    fxtranCmdOps = " ".join(
+            [
+                    fxtranPath,
+                    # "-line-length 200",
+                    "-no-cpp",
+                    "-strip-comments",
+                    "-name-attr",
+                    # "-code-tag",
+                    # "-no-include",
+                    # "-construct-tag",
+                    "-o"
+            ]
+    )
 
     # Get Fortran files
-    fortran_files = get_files( root_dir, "*.[fF]90" )
+    fortranFiles = getFiles( srcDir, "*.[fF]90" )
 
-    for fortran_file in fortran_files:
-        fxtran_cmd = " ".join( map( str, fxtran_cmd_ops ) )
+    for filepath, filename in fortranFiles:
+
         try:
-            # Call fxtran via subprocess
-            subprocess.check_output( fxtran_cmd + " " + fortran_file, shell = True, stderr = subprocess.STDOUT )
+            # create output directory if it doesn't exist
+            relPath = os.path.relpath( filepath, srcDir )
+            relOutDir = os.path.join( outDir, relPath ) if relPath != '.' else outDir
+            pathlib.Path( relOutDir ).mkdir( mode = 0o750, parents = True, exist_ok = True )
+        except PermissionError as e:
+            raise RuntimeError( f"Permission denied for output directory '{outDir}'. Error (code {e.errno}): {e.strerror} '{e.filename}'" )
+
+        # Exchange the output name ending with xml
+        outFilename = filename.rsplit( '.', 1 )[ 0 ] + ".xml"
+        # Build output path for xml file
+        outFilePath = os.path.join( relOutDir, outFilename )
+        # Build the fxtran command
+        fxtranCmd = " ".join( [ fxtranCmdOps, outFilePath, filename ] )
+
+        try:
+            # Call fxtran via subprocess with filepath as working directory
+            subprocess.check_output( fxtranCmd, shell = True, stderr = subprocess.STDOUT, cwd = filepath )
         except subprocess.CalledProcessError as e:
-            raise RuntimeError( "command '{}' return with error (code {}): {}".format( e.cmd, e.returncode, e.output ) )
+            raise RuntimeError( f"command '{e.cmd}' return with error (code {e.returncode}): {e.output}" )
+        except PermissionError as e:
+            raise RuntimeError( f"Permission denied for calling fxtran parser '{fxtranPath}'. Error (code {e.errno}): {e.strerror} '{e.filename}'" )
 
 
-def read_decorate_src_xml( fxtran_filepath: str = "" ):
+def read_decorate_src_xml( xmlFilepath: str = "", xmlFilename: str = "" ):
     # Manually parse the xml from a string.
     # Allows to remove the xml namespace.
 
-    fin = open( fxtran_filepath, 'r' )
-    input_lines = fin.read( )
-    fin.close( )
-
-    # Remove xmlns attribute (xml namespace) as we only use fxtran syntax
-    xml_string = re.sub( ' xmlns="[^"]+"', '', input_lines, count = 1 )
-
-    root_manual = ET.fromstring( xml_string )
+    # TODO rm
+    # manual method - can modify xml
+    #
+    # fin = open( fxtran_filepath, 'r' )
+    # input_lines = fin.read( )
+    # fin.close( )
+    #
+    # # Remove xmlns attribute (xml namespace) as we only use fxtran syntax
+    # xml_string = re.sub( ' xmlns="[^"]+"', '', input_lines, count = 1 )
+    #
+    # root_manual = ET.fromstring( xml_string )
 
     # parse the XML-File directly into an Element, which is the root element of the parsed tree
     # https://docs.python.org/library/xml.etree.elementtree.html#parsing-xml
-    root = ET.parse( fxtran_filepath ).getroot( )
+    root = ET.parse( os.path.join( xmlFilepath, xmlFilename ) ).getroot( )
 
+    # Debug
     # print(ET.tostring(root).decode())
 
     return root
 
 
-root_dir: str = "/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standalone"
-fxtran_path: str = "/home/sgu/IdeaProjects/fxtran/bin/fxtran"
+# TODO rm debug
+#srcDir: str = "/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standalone"
+#fxtranPath: str = "/home/sgu/IdeaProjects/fxtran/bin/fxtran"
+#outDir: str = "/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML"
 
+srcDir: str = "/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standalone"
+fxtranPath: str = "/home/sgu/Documents/fxtran/bin/fxtran"
+outDir: str = "/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML"
+
+# Fxtran syntax xml namespace
 ns = {'fx': 'http://fxtran.net/#syntax'}
 
-# TODO uncomment
-write_decorate_src_xml( root_dir, fxtran_path )
+# Write XML files
+writeDecorateSrcXml( srcDir, outDir, fxtranPath )
 
 # Get Fortran files
-xml_files = get_files( root_dir, "*.[fF]90.xml" )
+xmlFiles = getFiles( srcDir, "*.[fF]90.xml" )
 
 # local decl
 #   EN-decl-LT
@@ -100,8 +128,8 @@ xml_files = get_files( root_dir, "*.[fF]90.xml" )
 #   module-stmt
 #       module-N
 
-for xml_file in xml_files:
-    root_element = read_decorate_src_xml( xml_file )
+for path, xml_filename in xmlFiles:
+    root_element = read_decorate_src_xml( path, xml_filename )
 
     en_decl_lt_elems = root_element.findall( ".//fx:EN-decl-LT", ns )
     en_n_elems = root_element.findall( './/fx:EN-N', ns )
@@ -158,6 +186,9 @@ for xml_file in xml_files:
             case 'call-stmt':
                 pass
 
+# graphviz
+# requires sudo apt install libgraphviz-dev
+#
 # subroutine_calls = {}
 # for xml_file in xml_files:
 #     root_element = read_decorate_src_xml( xml_file )

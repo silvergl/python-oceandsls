@@ -32,10 +32,16 @@ test_suite              : cases+=test_case
 
 /** test case*/
 test_case               : 'test' name=ID ':' NEWLINE
+                          'srcpath' ':' srcpath=src_path
                           scope=test_scope
                           vars=test_vars
                           assertions+=test_assertion
                           (NEWLINE assertions+=test_assertion)*
+                        ;
+
+// TODO use special literal for filepath eg FILEPATH : [-.a-zA-Z0-9:/\\]+ ;
+/** Placeholder for code completion of system path to source code files*/
+src_path                : path=STRING NEWLINE
                         ;
 
 /** variables used in test case; ends on newline*/
@@ -53,17 +59,11 @@ varDeclaration          : name=ID ':' type=paramType (',' keys+=f90StdKey (',' k
 
 /** scope of test case*/
 test_scope              : 'scope' ':' NEWLINE
-                          files=test_files
-                          modules=test_modules
-                        ;
-
-// TODO use special literal for filepath eg FILEPATH : [-.a-zA-Z0-9:/\\]+ ;
-/** files containing the tests*/
-test_files              : 'filepath' ':' path=STRING NEWLINE
+                          modules=use_modules
                         ;
 
 /** modules used in the test; ends on newline*/
-test_modules            : 'modules' ':'  NEWLINE
+use_modules            : 'modules' ':'  NEWLINE
                           modules+=test_module+
                         ;
 

@@ -21,19 +21,20 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
     testFilePredicate: str
     environment: Environment
 
-    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates', testRootPath: str = 'tdd-dsl/output', testFolder: str = 'tests' ):
+    def __init__(self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates', testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests'):
         '''
         Build template file dictionary from TestSuiteParser.ruleNames
 
         Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
 
         :param templatePath: relative filepath for jinja templates
-        :param testRootPath: relative path to generate test suite
-        :param testFolder: relative path under :testPath: to save pfUnit tests
+        :param testWorkPath: relative path to generate test suite
+        :param testFolder: relative path under :testWorkPath: to save pfUnit tests
         '''
         super( ).__init__( )
         self.templatePath = templatePath
-        self.testPath = testRootPath
+        self.testPath = testWorkPath
+        # TODO add test directory option
         self.testFolder = testFolder
         # Load Jinja2 templates
         self.environment = Environment( loader = FileSystemLoader( templatePath ) )
@@ -53,6 +54,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         name = ctx.name.text
         scope = self.visit( ctx.scope )
         vars_ = self.visit( ctx.vars_ )
+        self.testPath = self.visit(ctx.src_path())
         assertions = [ ]
         for assertion in ctx.assertions:
             assertions.append( self.visit( assertion ) )
@@ -61,17 +63,20 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         # TODO find test cases in children?
         return self.visitChildren( ctx )
 
+    # Visit a parse tree produced by TestSuiteParser#src_path.
+    def visitSrc_path(self, ctx:TestSuiteParser.Src_pathContext):
+        # Strip string terminals
+        # TODO document
+        # If the given path is an absolute path, then self.testPath is ignored and the joining is only the given path
+        return os.path.join(self.testPath,ctx.path.text.strip('\''))
+
     # Visit a parse tree produced by TestSuiteParser#test_scope.
     def visitTest_scope( self, ctx: TestSuiteParser.Test_scopeContext ):
-        return self.visit( ctx.test_modules( ) )
-
-    # Visit a parse tree produced by TestSuiteParser#test_files.
-    def visitTest_files( self, ctx: TestSuiteParser.Test_filesContext ):
-        # TODO forward filepath
-        return self.visitChildren( ctx )
+        # get explicitly only used modules. Path to modules is only for src analysis
+        return self.visit( ctx.use_modules( ) )
 
     # Get rendered list of used modules
-    def visitTest_modules( self, ctx: TestSuiteParser.Test_modulesContext ):
+    def visitUse_modules(self, ctx:TestSuiteParser.Use_modulesContext):
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
         return template.render( modules = ctx.modules )
 
@@ -89,15 +94,16 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
         decl = self.visit( ctx.varDeclaration( ) )
         value = self.visit( ctx.expr( ) )
         comment = self.visit( ctx.optionalDesc( ) )
+        name = ctx.decl.name.text
         # match comment:
         #     case None:
         #         template.render( decl=decl, value=value)
         #     case _:
         #         template.render( decl=decl, value=value, comment=comment )
         if comment:
-            return template.render( decl = decl, value = value, comment = comment )
+            return template.render( decl = decl, value = value, name = name, comment = comment )
         else:
-            return template.render( decl = decl, value = value )
+            return template.render( decl = decl, value = value, name = name )
 
     # Visit a parse tree produced by TestSuiteParser#varDeclaration.
     def visitVarDeclaration( self, ctx: TestSuiteParser.VarDeclarationContext ):
@@ -236,10 +242,7 @@ class FileGeneratorVisitor( TestSuiteVisitor ):
             case [ _, None ]:
                 return template.render( directive = directive, input_ = input_, output = output, pubAttributes = pubAttributes )
             case _:
-                return template.render(
-                    directive = directive, input_ = input_, output = output, pubAttributes = pubAttributes,
-                    comment = comment
-                    )
+                return template.render( directive = directive, input_ = input_, output = output, pubAttributes = pubAttributes, comment = comment )
 
     # Visit a parse tree produced by TestSuiteParser#test_directive.
     def visitTest_directive( self, ctx: TestSuiteParser.Test_directiveContext ):

@@ -21,7 +21,7 @@ import logging
 
 from .server import example_server
 
-#debug
+# TODO debug
 from pprint import pprint
 if "." in __name__:
     pprint(f'.{__name__}')

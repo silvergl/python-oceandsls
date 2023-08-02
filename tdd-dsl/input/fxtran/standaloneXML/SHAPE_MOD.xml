@@ -1,0 +1,28 @@
+<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="SHAPE_MOD.F90">
+<module-stmt>module <module-N><N n="SHAPE_MOD"><n>shape_mod</n></N></module-N></module-stmt>
+  <implicit-none-stmt>implicit none</implicit-none-stmt>
+ 
+  
+  <T-stmt>type, <attribute><attribute-N>abstract</attribute-N></attribute> :: <T-N><N n="SHAPE_M"><n>shape_m</n></N></T-N></T-stmt>
+ 
+    
+    <component-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>real</T-N></intrinsic-T-spec></_T-spec_> :: <EN-decl-LT><EN-decl><EN-N><N n="X"><n>x</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="Y"><n>y</n></N></EN-N></EN-decl></EN-decl-LT></component-decl-stmt>
+ 
+  <contains-stmt>contains</contains-stmt>
+ 
+    
+    
+    <component-decl-stmt><_T-spec_><procedure-T-spec>procedure(<procedure-N><N n="SHAPE_AREA"><n>shape_area</n></N></procedure-N>)</procedure-T-spec></_T-spec_>, <attribute><attribute-N>deferred</attribute-N></attribute> :: <EN-decl-LT><EN-decl><EN-N><N n="GET_AREA"><n>get_area</n></N></EN-N></EN-decl></EN-decl-LT></component-decl-stmt>
+  <end-T-stmt>end type <T-N><N n="SHAPE_M"><n>shape_m</n></N></T-N></end-T-stmt>
+ 
+  
+  
+  <interface-stmt>interface</interface-stmt>
+    <function-stmt>function <function-N><N n="SHAPE_AREA"><n>shape_area</n></N></function-N>(<dummy-arg-LT><arg-N><N n="THIS"><n>this</n></N></arg-N></dummy-arg-LT>) <result-spec>result(<N n="AREA"><n>area</n></N>)</result-spec></function-stmt>
+      <import-stmt>import :: <import-N-LT><N n="SHAPE_M"><n>shape_m</n></N></import-N-LT></import-stmt>
+      <T-decl-stmt><_T-spec_><derived-T-spec>class(<T-N><N n="SHAPE_M"><n>shape_m</n></N></T-N>)</derived-T-spec></_T-spec_> :: <EN-decl-LT><EN-decl><EN-N><N n="THIS"><n>this</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+      <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>real</T-N></intrinsic-T-spec></_T-spec_> :: <EN-decl-LT><EN-decl><EN-N><N n="AREA"><n>area</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <end-function-stmt>end function <function-N><N n="SHAPE_AREA"><n>shape_area</n></N></function-N></end-function-stmt>
+  <end-interface-stmt>end interface</end-interface-stmt>
+<end-module-stmt>end module <module-N><N n="SHAPE_MOD"><n>shape_mod</n></N></module-N></end-module-stmt>
+</file></object>

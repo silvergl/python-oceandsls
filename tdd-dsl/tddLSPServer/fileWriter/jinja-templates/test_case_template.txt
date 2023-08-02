@@ -5,4 +5,4 @@ SUBROUTINE {{ name }}(){# TODO add TEST type subroutine function? #}
 {{ vars_ }}
 
 {{ assertions|join('\n') }}
-END SUBROUTINE {{ name }}()
+END SUBROUTINE {{ name }}

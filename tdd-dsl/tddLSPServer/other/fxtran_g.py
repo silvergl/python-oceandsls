@@ -7,7 +7,9 @@ __author__ = 'sgu'
 import xml.etree.ElementTree as ET
 
 # Load the XML file
-tree = ET.parse( '/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standalone/example.f90.xml' )
+# tree = ET.parse( '/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standalone/example.f90.xml' )
+# tree = ET.parse( '/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML/subfolder/cfo_sut_example.xml' )
+tree = ET.parse( '/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML/subfolder/cfo_sut_example.xml' )
 
 # Find the root element
 root = tree.getroot( )

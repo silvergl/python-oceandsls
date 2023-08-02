@@ -18,10 +18,6 @@ from antlr4.error.Errors import RecognitionException
 # https://pygls.readthedocs.io/en/latest/pages/migrating-to-v1.html
 from lsprotocol.types import (Diagnostic, Position, Range)
 
-# debug
-logging.basicConfig( level = logging.DEBUG )
-
-
 class DiagnosticListener( ErrorListener ):
     def __init__( self ):
         self.diagnostics: List[ Diagnostic ] = [ ]

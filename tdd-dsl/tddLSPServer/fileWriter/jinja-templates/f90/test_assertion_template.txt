@@ -1,7 +1,7 @@
 {% if comment %}
   ! {{ comment }}
 {% endif %}
-  FUNCTION {{ name }} ({% if argsName %}{{ argsName |list |join(', ') }}{% endif %}) RESULT (out)
+  FUNCTION {{ name }} ({% if argNames %}{{ argNames |list |join(', ') }}{% endif %}) RESULT (out)
     IMPLICIT NONE
     {% if argsDecl %}
     {{ argsDecl|join('\n    ') }}
@@ -22,5 +22,5 @@
     {%- endif %}
 
 
-    out = ! Add return expression here
+    out = ! <<Add return expression here>>
   END FUNCTION {{ name }}

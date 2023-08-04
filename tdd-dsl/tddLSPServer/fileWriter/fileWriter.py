@@ -63,7 +63,7 @@ def fileModified( path = None, mtime: float = 0, fileHash: str = None ) -> bool:
         return False
 
 
-def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', filename: str = 'test', content: str = '', fileAttr: tuple[ float, str, str ] = None ) -> tuple[ float, str, str ]:
+def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', filename: str = 'test', fileSuffix: str = '', content: str = '', fileAttr: tuple[ float, str, str ] = None ) -> tuple[ float, str, str ]:
     """
     Write/merge pFUnit-file under :test_path:/:test_folder:/:filename:.pf for test-case.
     Merges file if it exists using difflib.
@@ -71,6 +71,7 @@ def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', f
     :param test_path: system path to store pFUnit-tests
     :param test_folder: test-folder under system path for *.pf-files
     :param filename: filename  of *.pf-file
+    :param fileSuffix: suffix of file
     :param content: test-case content
     :param fileHash: hash if file should exist
     :param mtime: modification time if file should exist
@@ -87,8 +88,9 @@ def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', f
         if showDebugOutput and logger.isEnabledFor( logging.DEBUG ):
             logger.debug( f'... create {path}' )
 
+    # TODO hc
     # Create file if it doesn't exist else merge with existing file
-    filename = f"{filename.lower( )}.pf"
+    filename = f"{filename.lower( )}{fileSuffix}"
     path = os.path.join( path, filename )
     if os.path.exists( path ):
         # check if file is known or was modified

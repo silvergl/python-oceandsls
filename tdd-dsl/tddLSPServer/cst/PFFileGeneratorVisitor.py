@@ -24,7 +24,7 @@ class PFFileGeneratorVisitor( TestSuiteVisitor ):
     environment: Environment
 
     # TODO hc
-    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/pf', files: dict[ str, Tuple[ float, str, str ] ] = {}, testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests' ):
+    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/pf', files: dict[ str, Tuple[ float, str, str ] ] = {}, testWorkPath: str = 'tdd-dsl/output', testFolder: str = 'tests', fileSuffix = '.pf' ):
         '''
         pfUnit test file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
@@ -40,6 +40,7 @@ class PFFileGeneratorVisitor( TestSuiteVisitor ):
         self.testPath = testWorkPath
         # TODO add test directory option
         self.testFolder = testFolder
+        self.fileSuffix = fileSuffix
         # Load Jinja2 templates
         self.environment = Environment( loader = FileSystemLoader( templatePath ) )
 
@@ -70,10 +71,7 @@ class PFFileGeneratorVisitor( TestSuiteVisitor ):
 
         absPath: str = os.path.join( os.getcwd( ), self.testPath, self.testFolder, name, )
         fileAttr = self.files.get( absPath )
-        if fileAttr:
-            self.files[ absPath ] = write_file( self.testPath, self.testFolder, name, content, fileAttr)
-        else:
-            self.files[ absPath ] = write_file( self.testPath, self.testFolder, name, content)
+        self.files[ absPath ] = write_file( self.testPath, self.testFolder, name, self.fileSuffix, content, fileAttr)
 
         # TODO find test cases in children?
         self.visitChildren( ctx )

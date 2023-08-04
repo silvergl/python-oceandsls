@@ -28,7 +28,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     lastOpID : str
 
     # TODO hc
-    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/f90', files: dict[ str, Tuple[ float, str, str ] ] = {}, symbolTable: SymbolTable = None, workPath: str = 'tdd-dsl/output', workFolder: str = 'tests' ):
+    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/f90', files: dict[ str, Tuple[ float, str, str ] ] = {}, symbolTable: SymbolTable = None, workPath: str = 'tdd-dsl/output', workFolder: str = '', fileSuffix = '.f90' ):
         '''
         Fortran 90 source code file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
@@ -44,6 +44,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         self.workPath = workPath
         # TODO add test directory option
         self.workFolder = workFolder
+        self.fileSuffix = fileSuffix
         # Load Jinja2 templates
         self.environment = Environment( loader = FileSystemLoader( templatePath ), trim_blocks = True, lstrip_blocks = True, keep_trailing_newline = False )
 
@@ -85,7 +86,6 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
         # module: ModuleSymbol = next(filter ( lambda module: module.name == scopeName, modules))
 
         # Get test case template parameters
-        name = ctx.name.text
 
         # Get operations defined in assertions
         for assertion in ctx.assertions:
@@ -102,24 +102,25 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
                 opsNames.append(key)
                 opsImpl.append(valueList[3])
 
+        # Get module name destination
+        moduleName = moduleSymbols[0].name if moduleSymbols else None
+
         # Render template with new operations
-        content = template.render( name = name, opsNames = opsNames, ops = opsImpl )
+        content = template.render( name = moduleName, opsNames = opsNames, ops = opsImpl )
 
         # Write content to file
-
         # Get path destination
+        moduleFile = moduleSymbols[0].file if moduleSymbols else None
+        # TODO rm?
+        # Check if file suffix exists
+        fileSuffix = '' if moduleFile.endswith( self.fileSuffix ) else self.fileSuffix
+
         self.visit( ctx.src_path( ) )
-        absPath: str = os.path.join( os.getcwd( ), self.workPath, self.workFolder, name, )
+        absPath: str = os.path.join( os.getcwd( ), self.workPath, self.workFolder, moduleFile)
 
         # Are the files previously generated?
         fileAttr = self.files.get( absPath )
-        # TODO alternative fileAttr = None ?
-        if fileAttr:
-            # Write  file
-            self.files[ absPath ] = write_file( self.workPath, self.workFolder, name, content, fileAttr )
-        else:
-            # Write  file
-            self.files[ absPath ] = write_file( self.workPath, self.workFolder, name, content )
+        self.files[ absPath ] = write_file( self.workPath, self.workFolder, moduleFile, fileSuffix, content, fileAttr )
 
         # TODO find test cases in children?
         self.visitChildren( ctx )

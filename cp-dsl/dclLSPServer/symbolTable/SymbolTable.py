@@ -869,6 +869,7 @@ class VariableSymbol( Symbol ):
         self.value = value
         #if None -> default type int
         self.type = type
+        self.is_array = False
 
 class EnumSymbol(Symbol):
     def __init__(self, name: str = "", values = None):
@@ -895,9 +896,10 @@ class ArraySymbol(VariableSymbol):
     value = []
 
     def __init__(self, name: str = "", upperBound = 0, lowerBound = 0):
+        super().__init__(name)
         self.upperBound = upperBound
         self.lowerBound = lowerBound
-        super().__init__(name)
+        self.is_array = True
 
     #!!!!EXPERIMENTAL!!!!
     def add(self, vector, val) -> None:
@@ -908,10 +910,12 @@ class ArraySymbol(VariableSymbol):
         """
         #n Dimension Support
         if len(vector) >= 2:
-            newArray = ArraySymbol()
+            if isinstance(self.get(vector[0]), ArraySymbol):
+                newArray = self.get(vector[0])
+            else:
+                newArray = ArraySymbol()
             newArray.add(vector[1:], val)
-            self.vectors.append(vector[0])
-            self.value.append(newArray)
+            self.add((vector[0], newArray))
         else:
             #check if vector already in array
             if vector in self.vectors:
@@ -929,12 +933,35 @@ class ArraySymbol(VariableSymbol):
                 else:
                     print("Array out of bound error")
 
+
     def get(self, index) -> T:
         """
-        get a value out of the list
+        get a value out of the list, None if not available
         index: the index of the value to return
         """
-        return self.value[self.vectors.index(index)]
+        try:
+            return self.value[self.vectors.index(index)]
+        except:
+            return None
+    
+    def getVector(self, vector) -> T:
+        """
+        get a value out of the list recursive given by a vector
+        vector: the vector
+        """
+        if len(vector) >= 2:
+            currArray = self
+            try:
+                for i in vector:
+                    index = self.vectors.index(i)
+                    currArray = currArray.value[index]
+                return currArray
+            except:
+                # return the last value reached
+                return currArray
+        else:
+            return self.get(vector[0])
+            
     
     def remove(self, index) -> T:
         """

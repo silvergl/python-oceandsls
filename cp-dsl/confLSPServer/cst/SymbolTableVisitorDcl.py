@@ -42,7 +42,15 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         varName = ctx.name.text if ctx.name else "" # set and get the variable name here
         unit = self.visit(ctx.unit)
         varType = self._scope.resolveSync(ctx.type_.getText())
+        varType = varType if varType else self.visit(ctx.type_)
         description = ctx.description.text if ctx.description else ""
+        # if it is a Array, it was already created, so no need for a variable Symbol
+        if isinstance(varType, ArraySymbol):
+            varType.name = ctx.name.text
+            varType.unit = unit
+            varType.context = ctx
+            varType.description = description
+            return varType
         symbol = self._symbolTable.addNewSymbolOfType(VariableSymbol, self._scope, varName, description, ctx, unit, varType)
         symbol.context = ctx
         return symbol
@@ -121,12 +129,18 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
             enumList.append(self.visit(ctx.getChild(i)))
         symbol = self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
         symbol.context = ctx
-
+        return symbol
+    
+    def visitTypeReference(self, ctx: DeclarationParser.TypeReferenceContext):
+        return ctx.type_.text
     
     def visitArrayType(self, ctx: DeclarationParser.ArrayTypeContext):
         bounds = self.visitChildren(ctx)
         symbol = self._symbolTable.addNewSymbolOfType(ArraySymbol, self._scope, ctx.type.text if ctx.type else "", bounds[0], bounds[1])
-        symbol.context = ctx
+        # context will be set in visitparameterassignement
+        #symbol.context = ctx
+        symbol.type = ctx.type_.text
+        return symbol
 
     def visitSizeDimension(self, ctx: DeclarationParser.SizeDimensionContext):
         return (0, int(ctx.size.text) if ctx.size else 0)

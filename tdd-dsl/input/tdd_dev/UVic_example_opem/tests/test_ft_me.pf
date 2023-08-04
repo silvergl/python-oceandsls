@@ -5,9 +5,6 @@ SUBROUTINE test_fT_ME()
 
  integer, PARAMETER :: dp = KIND ( 0D0 )
 
- real ( dp * bar ) :: xIntercept = 283D0 / 19D0
- real ( dp, bar ) :: xIntercept = 283D0 / 19D0
- real ( 0 ) :: xIntercept = 283D0 / 19D0
  real ( dp ) :: xIntercept = 283D0 / 19D0
  real ( dp ) :: yIntercept = - ( 283D0 / 520D0 )
 

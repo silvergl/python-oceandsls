@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="fxtran_g" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+  <configuration default="false" name="FileMerger" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
     <module name="tdd-dsl" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
@@ -8,11 +8,11 @@
     </envs>
     <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
     <option name="SDK_NAME" value="Python 3.10 (python-oceandsls)" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tdd-dsl/tddLSPServer/other" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tdd-dsl/input/f90_test" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tdd-dsl/tddLSPServer/other/fxtran_g.py" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tdd-dsl/tddLSPServer/other/FileMerger.py" />
     <option name="PARAMETERS" value="" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />

@@ -859,22 +859,24 @@ class ScopedSymbol( Symbol ):
 
 
 class VariableSymbol( Symbol ):
-    is_tree = False
     
     def __init__(self, name: str, description: str = "", value = None, unitSpecification : UnitSpecification = None, type = None):
         super().__init__(name)
         self.description = description
         self.unit = unitSpecification
         self.is_tree = isinstance(value, ParseTree)
-        self.value = value
+        if value:
+            self.value = value
+        else:
+            self.value = 0
         #if None -> default type int
         self.type = type
         self.is_array = False
 
 class EnumSymbol(Symbol):
-    def __init__(self, name: str = "", values = None):
-        self.values = values
+    def __init__(self, name: str = "", enums = None):
         super().__init__(name)
+        self.enums = enums
 
 class RangeSymbol(Symbol):
     def __init__(self, name, type, minimum, maximum):

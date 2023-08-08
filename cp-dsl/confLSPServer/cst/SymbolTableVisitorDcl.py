@@ -26,6 +26,7 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
+        self._enumIndex = 0
 
     @property
     def symbolTable(self) -> SymbolTable:
@@ -109,24 +110,31 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
     def visitEnumerationType(self, ctx: DeclarationParser.EnumerationTypeContext):
         enumName = ctx.name.text if ctx.name else ""
         enumList = []
-        for i in range(ctx.getChildCount()):
+        self._enumIndex = 0
+        for i in ctx.enumeral():
             #enumList representation: [(id, value),...]
-            enumList.append(self.visit(ctx.getChild(i)))
+            enumList.append(self.visitEnumeral(i))
+            self._enumIndex += 1
         symbol = self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
         symbol.context = ctx
     
     def visitEnumeral(self, ctx: DeclarationParser.EnumeralContext):
-        #return a tuple of id and value
-        return (ctx.name.text, int(ctx.value.text))
+        if ctx.value:
+            #return a tuple of id and value
+            return (ctx.name.text, int(ctx.value.text))
+        else:
+            return (ctx.name.text, self._enumIndex)
 
     
     def visitInlineEnumerationType(self, ctx: DeclarationParser.InlineEnumerationTypeContext):
         enumName = ""
         enumList = []
         self.inlineInt += 1
-        for i in range(ctx.getChildCount()):
+        self._enumIndex = 0
+        for i in ctx.enumeral():
             #enumList representation: [(id, value),...]
-            enumList.append(self.visit(ctx.getChild(i)))
+            enumList.append(self.visitEnumeral(i))
+            self._enumIndex += 1
         symbol = self._symbolTable.addNewSymbolOfType(EnumSymbol, self._scope, enumName, enumList)
         symbol.context = ctx
         return symbol

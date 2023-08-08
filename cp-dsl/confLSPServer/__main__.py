@@ -63,7 +63,9 @@ if __name__ == '__main__':
     from confLSPServer.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
     from confLSPServer.gen.python.Configuration.ConfigurationParser import ConfigurationParser
     from antlr4 import InputStream, CommonTokenStream
+    from confLSPServer.symbolTable.SymbolTable import VariableSymbol
     from confLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
+    from confLSPServer.utils.calc import DeclarationCalculator, ConfigurationCalculator
     tableVisitor = SymbolTableVisitor("testConf")
 
 
@@ -74,9 +76,13 @@ if __name__ == '__main__':
         stream = CommonTokenStream(lexer)
         dcl_parsed = ConfigurationParser(stream).configurationModel()
         tableVisitor.visit(dcl_parsed)
-        print(tableVisitor.symbolTable)
-        for elem in tableVisitor.symbolTable.getAllNestedSymbolsSync("ground_color"):
-            print(elem.unit.prefix, elem.configuration[0].getText())
+        tableCalc = DeclarationCalculator(tableVisitor.symbolTable)
+        table = ConfigurationCalculator(tableCalc.calculate()).calculate()
+        for elem in table.getAllNestedSymbolsSync():
+            if isinstance(elem, VariableSymbol):
+                print(elem.name, elem.value)
+
+
     # from confLSPServer.gen.python.Declaration.DeclarationLexer import DeclarationLexer
     # from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
     # from antlr4 import InputStream, CommonTokenStream

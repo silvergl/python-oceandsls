@@ -14,12 +14,18 @@ def merge_fortran_operation( fortran_file, function_name, function_code, module_
     # contains_pattern = r'^\s*contains\s*$'
     # function_pattern = r'(^\s*(?:subroutine|function)\s+' + function_name + r'\s*\(.*?\))'
 
+    public_private_pattern = r'\n *(?:private|public) :: *\n'
+    implicit_pattern = r'\n *implicit none :: *\n'
+
     contains_pattern = r'\n *contains *\n'
     function_end_pattern = r'(\n *end +(?:subroutine|function) +' + function_name + ' *\n)'
     module_end_pattern = r'(\n *end +module +' + module_name + ' *\n?)'
 
 
     # Find the position to insert the new code
+    match_public_private = re.search(public_private_pattern, content, flags=re.IGNORECASE)
+    match_implicit = re.search(implicit_pattern, content, flags=re.IGNORECASE)
+    # TODO 8.8
     match_contains = re.search(contains_pattern, content, flags=re.IGNORECASE)
     match_function = re.search(function_end_pattern, content, flags=re.IGNORECASE)
     match_module = re.search(module_end_pattern, content, flags=re.IGNORECASE)

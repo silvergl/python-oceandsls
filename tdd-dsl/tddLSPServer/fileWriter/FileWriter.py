@@ -8,6 +8,7 @@ import difflib
 import hashlib
 # utils
 import logging
+import re
 import os
 from typing import Tuple
 
@@ -17,22 +18,60 @@ logger = logging.getLogger( __name__ )
 showDebugOutput: bool = True
 
 
-def merge_file_content( file_content_0: str, file_content_1: str ) -> str:
+def difflib_merge( fileContent0: str, fileContent1: str ) -> str:
     '''
     Merge two file-contents based on difflib.
 
-    :param file_content_0: Content of first file
-    :param file_content_1: Content of second file
+    :param fileContent0: Content of first file
+    :param fileContent1: Content of second file
     :return: 3-way merge of comparing the first file and second file
     '''
-    return "\n".join(
+    mergedContent = "\n".join(
             lines[ 2: ] for lines in difflib.Differ( ).compare(
-                    file_content_0.split( "\n" ),
-                    file_content_1.split( "\n" )
+                    fileContent0.split( "\n" ),
+                    fileContent1.split( "\n" )
             )
             if not lines.startswith( "?" )
     )
 
+    return mergedContent
+
+def mergeFortranFunction( fileContent, functionCode, functionName: str = '', moduleName: str = '' ):
+    """
+    Merge function code into fortran code after function name, contain statement or at the module end.
+
+    :param fileContent: File content in which to be merged
+    :param functionCode: Code to be merged
+    :param functionName: Optional function name after which to be merged
+    :param moduleName: Optional module name in which to be merged
+    :return: Merged content
+    """
+
+    containsPattern = r'\n *contains *\n'
+    functionEndPattern = r'(\n *end +(?:subroutine|function) +' + functionName + ' *\n)'
+    moduleEndPattern = r'(\n *end +module +' + moduleName + ' *\n?)'
+
+    # Find the position to insert the new code
+    matchContains = re.search(containsPattern, fileContent, flags=re.IGNORECASE)
+    matchFunction = re.search(functionEndPattern, fileContent, flags=re.IGNORECASE)
+    matchModule = re.search(moduleEndPattern, fileContent, flags=re.IGNORECASE)
+
+    if matchFunction:
+        # Insert the new code after the function/subroutine
+        insertPosition = matchFunction.end()
+    elif matchContains:
+        # Insert the new code after the "contains" statement
+        insertPosition = matchContains.end()
+    elif matchModule:
+        # Insert the new code at the module end
+        insertPosition = matchModule.start()
+    else:
+        # If neither "contains" nor the function/subroutine is found, raise an error
+        raise ValueError(f'Function, Module or "contains" statement not found. Function: {functionName}, Module: {moduleName}' )
+    # Insert the new code at the determined position
+    mergedContent = fileContent[:insertPosition] + functionCode + '\n' + fileContent[ insertPosition: ]
+
+    return mergedContent
 
 def hash_file( path: str = None ) -> str:
     """

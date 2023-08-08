@@ -4,7 +4,8 @@ MODULE cfo_example
 
   PRIVATE
   PRIVATE :: zxrex
-  PUBLIC :: ft_ME, nprey
+  PUBLIC :: ft_ME
+  PUBLIC :: nprey
 
   INTEGER, PARAMETER :: dp=KIND(0D0)
   ! INTEGER :: nprey=4

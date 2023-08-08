@@ -12,10 +12,6 @@ MODULE cfo_example
 
 CONTAINS
 
-  subroutine my_sub(arg1, arg2)
-    ! Fortran function code goes here
-  end subroutine my_sub
-
   ! temperature function for Mytilus edulis from Jenny's simulations
   FUNCTION fT_ME (temperature) RESULT (fT)
     IMPLICIT NONE
@@ -24,8 +20,4 @@ CONTAINS
     fT = (1D0 + (temperature - 15D0)*9.5D0)/260D0
   END FUNCTION fT_ME
 
-  subroutine my_function(arg1, arg2)
-    ! Fortran function code goes here
-  end subroutine my_function
-  
 END MODULE cfo_example

@@ -158,6 +158,9 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
 
                     baseModule = module
 
+            # Update scope stack
+            scopeStack.append( scopeName )
+
             # Check scope is filtered and is in filtered scope
             if isFilteredScope:
                 # Extract arguments
@@ -184,9 +187,6 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
 
                 # save resultID for dereference
                 scopeStackVar[ '.'.join( scopeStack ) ] = {'-1': resultID} if resultID else {}
-
-            # Update scope stack
-            scopeStack.append( scopeName )
 
         # Store assignment statements for optional return values of functions
         elif element.tag.endswith( 'a-stmt' ):

@@ -5,59 +5,88 @@ __author__ = 'sgu'
 import re
 import os
 
-def merge_fortran_operation( fortran_file, function_name, function_code, module_name: str = '' ):
+def mergeFortranOperation( fortranFile, functionCode, functionName: str = '', moduleName: str = '' ):
     # Read the contents of the Fortran file
-    with open( fortran_file, mode = 'r', encoding = 'utf-8' ) as f:
+    with open( fortranFile, mode = 'r', encoding = 'utf-8' ) as f:
         content = f.read( )
 
     # Define the patterns to match the "contains" statement and the function/subroutine
-    # contains_pattern = r'^\s*contains\s*$'
-    # function_pattern = r'(^\s*(?:subroutine|function)\s+' + function_name + r'\s*\(.*?\))'
+    # containsPattern = r'^\s*contains\s*$'
+    # functionPattern = r'(^\s*(?:subroutine|function)\s+' + functionName + r'\s*\(.*?\))'
 
-    public_private_pattern = r'\n *(?:private|public) :: *\n'
-    implicit_pattern = r'\n *implicit none :: *\n'
+    publicPattern = r'\n(( *)public(?: *\:\:.*)?\n)+'
+    privatePattern = r'\n(( *)private(?: *\:\:.*)?\n)+'
+    implicitPattern = r'\n( *)implicit none *\n'
 
-    contains_pattern = r'\n *contains *\n'
-    function_end_pattern = r'(\n *end +(?:subroutine|function) +' + function_name + ' *\n)'
-    module_end_pattern = r'(\n *end +module +' + module_name + ' *\n?)'
+    containsPattern = r'\n( *)contains *\n'
+    # functionEndPattern = r'(\n *end +(?:subroutine|function) +' + functionFindName + ' *\n)'
+    moduleStartPattern = r'(\n( *)module +' + moduleName + ' *\n?)'
+    moduleEndPattern = r'(\n( *)end +module +' + moduleName + ' *\n?)'
 
 
     # Find the position to insert the new code
-    match_public_private = re.search(public_private_pattern, content, flags=re.IGNORECASE)
-    match_implicit = re.search(implicit_pattern, content, flags=re.IGNORECASE)
-    # TODO 8.8
-    match_contains = re.search(contains_pattern, content, flags=re.IGNORECASE)
-    match_function = re.search(function_end_pattern, content, flags=re.IGNORECASE)
-    match_module = re.search(module_end_pattern, content, flags=re.IGNORECASE)
+    matchPublic = re.search(publicPattern, content, flags=re.IGNORECASE)
+    matchPrivate = re.search(privatePattern, content, flags=re.IGNORECASE)
+    matchImplicit = re.search(implicitPattern, content, flags=re.IGNORECASE)
+    matchModuleStart = re.search(moduleStartPattern,content, flags=re.IGNORECASE)
 
-
-    if match_function:
-        # Insert the new code after the function/subroutine
-        insert_position = match_function.end()
-    elif match_contains:
-        # Insert the new code after the "contains" statement
-        insert_position = match_contains.end()
-    elif match_module:
-        # Insert the new code at the module end
-        insert_position = match_module.start()
+    # Insert code accessible
+    if matchPublic:
+        # Insert after the "public" statement
+        insertPosition = matchPublic.end()
+        lineInsertion = matchPublic.regs[-1]
+    elif matchPrivate:
+        # Insert after the "private" statement
+        insertPosition = matchPrivate.end()
+        lineInsertion = matchPrivate.regs[-1]
+    elif matchImplicit:
+        # Insert after the "implicit" statement
+        insertPosition = matchImplicit.end()
+        lineInsertion = matchImplicit.regs[-1]
+    elif matchModuleStart:
+        # Insert after the module start
+        insertPosition = matchModuleStart.end()
+        lineInsertion = matchModuleStart.regs[-1]
     else:
         # If neither "contains" nor the function/subroutine is found, raise an error
-        raise ValueError(f'Function, Module or "contains" statement not found. Function: {function_name}, Module: {module_name}')
-    # Insert the new code at the determined position
-    modified_content = content[:insert_position] + function_code + '\n' + content[insert_position:]
+        raise ValueError(f'Private/Public, Module or "Implicit" statement not found. File: {fortranFile}, Module: {moduleName}')
+
+    # Insert function  at the determined position
+    content = content[:insertPosition] + content[lineInsertion[0]:lineInsertion[1]] + f'PUBLIC :: {functionName}' + '\n' + content[insertPosition:]
+
+    # TODO 8.8
+    matchContains = re.search(containsPattern, content, flags=re.IGNORECASE)
+    # matchFunction = re.search(functionEndPattern, content, flags=re.IGNORECASE)
+    matchModule = re.search(moduleEndPattern, content, flags=re.IGNORECASE)
+
+    # Insert function code
+    if matchContains:
+        # Insert after the "contains" statement
+        insertPosition = matchContains.end()
+        lineInsertion = matchContains.regs[-1]
+    elif matchModule:
+        # Insert before the module end
+        insertPosition = matchModule.start()
+        lineInsertion = matchModule.regs[-1]
+    else:
+        # If neither "contains" nor the function/subroutine is found, raise an error
+        raise ValueError(f'Module or "contains" statement not found. File: {fortranFile}, Module: {moduleName}')
+
+    # Insert function code at the determined position
+    content = content[:insertPosition] + content[lineInsertion[0]:lineInsertion[1]] + functionCode + '\n' + content[insertPosition:]
 
     # Write the modified content back to the Fortran file
-    with open(fortran_file, 'w') as file:
-        file.write(modified_content)
+    with open(fortranFile, 'w') as file:
+        file.write(content)
 
 
 # debug usage
-fortran_file = 'cfo_sut_example.f90'
-function_name = 'fT_ME'
-module_name = 'cfo_example'
-function_code = '''
+fortranFile = 'cfo_sut_example.f90'
+functionName = 'my_function'
+moduleName = 'cfo_example'
+functionCode = '''
   subroutine my_function(arg1, arg2)
     ! Fortran function code goes here
   end subroutine my_function'''
 
-merge_fortran_operation( fortran_file, function_name, function_code, module_name )
+mergeFortranOperation( fortranFile, functionCode, functionName, moduleName )

@@ -36,9 +36,9 @@ def difflibMerge( fileContent0: str, fileContent1: str ) -> str:
 
     return mergedContent
 
-def insertFortranOperation( insertContentList: List[str ], fileContent, moduleName: str = '' ):
+def insertFortranOperation( insertContentList: List[str ], fileContent ):
     """
-    Insert operation into fortran code after contain statement or at the module end.
+    Insert operation into fortran code at the module end.
 
     :param insertContentList: List of code to be merged
     :param fileContent: File content in which to be merged
@@ -48,12 +48,12 @@ def insertFortranOperation( insertContentList: List[str ], fileContent, moduleNa
 
     functionName: str = insertContentList[0]
     functionCode: str = insertContentList[1]
+    moduleName: str = insertContentList[2]
 
     publicPattern = r'\n(( *)public(?: *\:\:.*)?\n)+'
     privatePattern = r'\n(( *)private(?: *\:\:.*)?\n)+'
     implicitPattern = r'\n( *)implicit none *\n'
 
-    containsPattern = r'\n( *)contains *\n'
     moduleStartPattern = r'(\n( *)module +' + moduleName + ' *\n?)'
     moduleEndPattern = r'(\n( *)end +module +' + moduleName + ' *\n?)'
 
@@ -87,24 +87,19 @@ def insertFortranOperation( insertContentList: List[str ], fileContent, moduleNa
     # Insert public statement with line insertion
     fileContent = fileContent[:insertPosition] + fileContent[lineInsertion[0]:lineInsertion[1]] + f'PUBLIC :: {functionName}' + '\n' + fileContent[insertPosition:]
 
-    matchContains = re.search(containsPattern, fileContent, flags=re.IGNORECASE)
     matchModuleEnd = re.search(moduleEndPattern, fileContent, flags=re.IGNORECASE)
 
     # Insert function code
-    if matchContains:
-        # Insert after the "contains" statement
-        insertPosition = matchContains.end()
-        lineInsertion = matchContains.regs[-1]
-    elif matchModuleEnd:
+    if matchModuleEnd:
         # Insert before the module end
         insertPosition = matchModuleEnd.start()
         lineInsertion = matchModuleEnd.regs[-1]
     else:
         # If neither "contains" nor the module is found, raise an error
-        raise ValueError(f'Module or "contains" statement not found. Module: {moduleName}')
+        raise ValueError(f'Module statement not found. Module: {moduleName}')
 
     # Insert function code with line insertion
-    fileContent = fileContent[:insertPosition] + fileContent[lineInsertion[0]:lineInsertion[1]] + functionCode + '\n' + fileContent[ insertPosition: ]
+    fileContent = fileContent[:insertPosition] + '\n' + fileContent[lineInsertion[0]:lineInsertion[1]] + functionCode + '\n' + fileContent[ insertPosition: ]
 
     return fileContent
 
@@ -167,9 +162,9 @@ def writeFile( filePath: str = 'tdd-dsl/output/tests/test.pf', content: List[str
     # Create file if it doesn't exist else merge with existing file
     if os.path.exists( filePath ):
         # check if file is known or was modified
-        if fileAttr is None or fileModified( path, fileAttr[0], fileAttr[1] ):
+        if fileAttr is None or fileModified( filePath, fileAttr[0], fileAttr[1] ):
             # reload file from disk if it is unknown or modified
-            with open( path, mode = 'r', encoding = 'utf-8' ) as f:
+            with open( filePath, mode = 'r', encoding = 'utf-8' ) as f:
                 contentOrg = f.read( )
         else:
             # keep original file content
@@ -177,7 +172,7 @@ def writeFile( filePath: str = 'tdd-dsl/output/tests/test.pf', content: List[str
 
         # Log
         if showDebugOutput and logger.isEnabledFor( logging.DEBUG ):
-            logger.debug( f'...try merge {path}' )
+            logger.debug( f'...try merge {filePath}' )
 
         # merge current content with original file content
         if insert:
@@ -189,9 +184,9 @@ def writeFile( filePath: str = 'tdd-dsl/output/tests/test.pf', content: List[str
         contentOrg = ''
 
     # Write rendered and optional merged content to file
-    with open( path, mode = 'w', encoding = 'utf-8' ) as f:
+    with open( filePath, mode = 'w', encoding = 'utf-8' ) as f:
         f.write( content )
         if showDebugOutput and logger.isEnabledFor( logging.DEBUG ):
-            logger.debug( f'... create {path}' )
+            logger.debug( f'... create {filePath}' )
 
-    return os.path.getmtime( path ), hash_file( path ), contentOrg
+    return os.path.getmtime( filePath ), hash_file( filePath ), contentOrg

@@ -11,7 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # user relative imports
 from ..symbolTable.SymbolTable import SymbolTable, FunctionSymbol, ModuleSymbol, RoutineSymbol, VariableSymbol
-from ..fileWriter.fileWriter import write_file
+from ..fileWriter.FileWriter import writeFile
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
 from ..utils.suggestVariables import getScope
@@ -21,14 +21,13 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
     fileTemplates: Dict[ int, str ]
     templatePath: str
     workPath: str
-    workFolder: str
     testFilePredicate: str
     environment: Environment
     ops: Dict[ str, List ]
     lastOpID : str
 
     # TODO hc
-    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/f90', files: dict[ str, Tuple[ float, str, str ] ] = {}, symbolTable: SymbolTable = None, workPath: str = 'tdd-dsl/output', workFolder: str = '', fileSuffix = '.f90' ):
+    def __init__( self, templatePath: str = 'tdd-dsl/tddLSPServer/fileWriter/jinja-templates/f90', files: dict[ str, Tuple[ float, str, str ] ] = {}, symbolTable: SymbolTable = None, workPath: str = 'tdd-dsl/output', fileSuffix = 'f90' ):
         '''
         Fortran 90 source code file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
@@ -36,14 +35,11 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
 
         :param templatePath: relative filepath for jinja templates
         :param workPath: relative path to generate test suite
-        :param workFolder: relative path under :testWorkPath: to save fortran 90 source code files
         '''
         super( ).__init__( )
         self.files: dict[ str, Tuple[ float, str, str ] ] = files
         self.templatePath = templatePath
         self.workPath = workPath
-        # TODO add test directory option
-        self.workFolder = workFolder
         self.fileSuffix = fileSuffix
         # Load Jinja2 templates
         self.environment = Environment( loader = FileSystemLoader( templatePath ), trim_blocks = True, lstrip_blocks = True, keep_trailing_newline = False )
@@ -102,28 +98,36 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
                 opsNames.append(key)
                 opsImpl.append(valueList[3])
 
-        # Get module name destination
-        moduleName = moduleSymbols[0].name if moduleSymbols else None
+        # Write content to module if module is set
+        if moduleSymbols:
+            if moduleSymbols[0].file:
+                # Module exists
 
-        # Render template with new operations
-        content = template.render( name = moduleName, opsNames = opsNames, ops = opsImpl )
+                insert = True
+                moduleFile = moduleSymbols[0].file
 
-        # Write content to file
-        # Get path destination
-        moduleFile = moduleSymbols[0].file if moduleSymbols else None
-        # TODO rm?
-        # Check if file suffix exists
-        fileSuffix = '' if moduleFile.endswith( self.fileSuffix ) else self.fileSuffix
+                content = [', '.join(opsNames),'\n\n'.join(opsImpl), moduleSymbols[0].name ]
 
-        self.visit( ctx.src_path( ) )
-        absPath: str = os.path.join( os.getcwd( ), self.workPath, self.workFolder, moduleFile)
+            else:
+                # Module is new
+                insert = False
 
-        # Are the files previously generated?
-        fileAttr = self.files.get( absPath )
-        self.files[ absPath ] = write_file( self.workPath, self.workFolder, moduleFile, fileSuffix, content, fileAttr )
+                # Set module file
+                moduleName = moduleSymbols[0].name
+                moduleFile = '.'.join([moduleName, self.fileSuffix])
 
-        # TODO find test cases in children?
-        self.visitChildren( ctx )
+                # Render template with new operations
+                content = [template.render( name = moduleName, opsNames = opsNames, ops = opsImpl )]
+
+            # Get absolute file path
+            self.visit( ctx.src_path( ) )
+            absPath: str = os.path.join( self.workPath, moduleFile )
+
+            # Get the file attributes for previously generated files
+            fileAttr = self.files.get( absPath )
+
+            # Write content to file
+            self.files[ self.workPath ] = writeFile( absPath, content, fileAttr, insert )
 
         # Return list of generated files
         return self.files
@@ -155,6 +159,7 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion( self, ctx: TestSuiteParser.Test_assertionContext ):
+        # Load operation template
         template = self.environment.get_template( self.fileTemplates[ ctx.getRuleIndex( ) ] )
 
         # extract comment
@@ -191,8 +196,6 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
             returnType = valueList[2]
 
             # TODO subroutine
-            # Load operation template
-            template = self.environment.get_template( 'test_assertion_template.txt' )
             # Fortran implementation
             valueList.append(template.render( comment = comment, name = name, argNames = argNames, unit = unit, argsDecl = argsDecl, returnType = returnType ))
             # Update operation list

@@ -1,0 +1,1 @@
+{{ type }}{% if keys %}, {{ keys|join(', ') }}{% endif %} :: {{ name }}

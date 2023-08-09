@@ -567,6 +567,32 @@ class ScopedSymbol( Symbol ):
             self.children( ).remove( symbol )
             symbol.setParent( None )
 
+    def getAllModulesWithFileSync( self, file: str = None, localOnly = False, callers: List[ T ] = [ ] ) -> List[ ModuleSymbol ]:
+        """
+        :param callers: List of visited scopes, that should not be visited again
+        :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
+        (recursively).
+        :param file: If given only returns symbols from that file.
+        :return: A list of all ModuleSymbol with implementing files from this and all nested scopes in the order they were defined.
+        """
+        result: List[ ModuleSymbol ] = [ ]
+
+        for child in self.children( ):
+            # check all ModuleSymbols if basefile is file or if file is None if basefile is defined
+            if isinstance( child, ModuleSymbol ) and (file is not None and child.file == file or file is None and child.file is not None):
+                result.append( child )
+
+            # recursively call children scopes, except for scopes that called us
+            if isinstance( child, ScopedSymbol ) and not child in callers:
+                result.extend( child.getAllModulesWithFileSync( file, True, callers + [ self ] ) )
+
+        # recursively call parent scopes, except for scopes that called us
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ) and not self.parent( ) in callers:
+            localList = self.parent( ).getAllModulesWithFileSync( file, localOnly, callers + [ self ] )
+            result.extend( localList )
+
+        return result
+
     async def getNestedSymbolsOfType( self, t: type ) -> List[ T ]:
         """
         Asynchronously retrieves child symbols of a given type from this symbol.
@@ -587,6 +613,26 @@ class ScopedSymbol( Symbol ):
         childSymbols = await asyncio.gather( *childPromises )
         for entry in childSymbols:
             result.extend( entry )
+
+        return result
+
+    # TODO async
+    def getNestedSymbolsOfTypeAndNameSync( self, t: type, name: str = None ) -> List[ T ]:
+        """
+        Synchronously retrieves child symbols of a given type and name from this symbol.
+
+        :param t: The type of the objects to return.
+        :param name: If given only returns symbols with that name.
+        :return: A list of all (nested) children of the given type.
+        """
+        result: List[ T ] = [ ]
+
+        for child in self.children( ):
+            if isinstance( child, t ) and (name is None or child.name == name):
+                result.append( child )
+
+            if isinstance( child, ScopedSymbol ):
+                result.extend( child.getNestedSymbolsOfTypeAndNameSync( t, name ) )
 
         return result
 
@@ -645,8 +691,49 @@ class ScopedSymbol( Symbol ):
 
         return result
 
-    async def getSymbolsOfType( self, t: type, localOnly = True ) -> List[ T ]:
+    def getSymbolsOfTypeAndNameSync( self, t: type, name: str = None, localOnly = True ) -> List[ T ]:
         """
+        Synchronously returns symbols of the type and optionally the name, if given.
+
+        :param t: The type of the objects to return.
+        :param name: If given only returns symbols with that name.
+        :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol (recursively).
+        :return: A promise resolving to direct children of a given type.
+        """
+        result: List[ T ] = [ ]
+        for child in self.children( ):
+            if isinstance( child, t ) and (name is None or child.name == name):
+                result.append( child )
+
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
+            result.extend( self.parent( ).getSymbolsOfTypeAndNameSync( t, name, localOnly ) )
+
+        return result
+
+    async def getSymbolsOfTypeAndName( self, t: type, name: str = None, localOnly = True ) -> List[ T ]:
+        """
+        Asynchronously returns symbols of the type and optionally the name, if given.
+
+        :param t: The type of the objects to return.
+        :param name: If given only returns symbols with that name.
+        :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol (recursively).
+        :return: A promise resolving to direct children of a given type.
+        """
+        result: List[ T ] = [ ]
+        for child in self.children( ):
+            if isinstance( child, t ) and (name is None or child.name == name):
+                result.append( child )
+
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
+            localList: List[ T ] = await self.parent( ).getSymbolsOfTypeAndName( t, name, localOnly )
+            result.extend( localList )
+
+        return result
+
+    def getSymbolsOfTypeSync( self, t: type, localOnly = True ) -> List[ T ]:
+        """
+        :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
+        (recursively).
         :param t: The type of the objects to return.
         :return: A promise resolving to direct children of a given type.
         """
@@ -655,15 +742,35 @@ class ScopedSymbol( Symbol ):
             if isinstance( child, t ):
                 result.append( child )
 
+        # TODO check modded by sgu?
         if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
-            localList: List[ T ] = await self.parent( ).getSymbolsOfType(t, True )
+            result.extend( self.parent( ).getSymbolsOfTypeSync( t, localOnly ) )
+
+        return result
+
+    async def getSymbolsOfType( self, t: type, localOnly = True ) -> List[ T ]:
+        """
+        :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
+        (recursively).
+        :param t: The type of the objects to return.
+        :return: A promise resolving to direct children of a given type.
+        """
+        result: List[ T ] = [ ]
+        for child in self.children( ):
+            if isinstance( child, t ):
+                result.append( child )
+
+        # TODO check modded by sgu?
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
+            localList: List[ T ] = await self.parent( ).getSymbolsOfType( t, localOnly )
             result.extend( localList )
 
         return result
 
     # TODO: add optional position dependency (only symbols defined before a given caret pos are viable).
-    async def getAllSymbols( self, t: type, localOnly = False ) -> List[ T ]:
+    async def getAllSymbols( self, t: type, localOnly = False, callers: List[ T ] = [ ]  ) -> List[ T ]:
         """
+        :param callers: List of visited scopes, that should not be visited again
         :param t: The type of the objects to return.
         :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
         (recursively).
@@ -678,20 +785,22 @@ class ScopedSymbol( Symbol ):
             if isinstance( child, t ):
                 result.append( child )
 
-            if isinstance( child, NamespaceSymbol ):
-                childSymbols = await child.getAllSymbols( t, True )
+            if isinstance( child, NamespaceSymbol ) and not child in callers:
+                childSymbols: List[ T ] = await child.getAllSymbols( t, True, callers + [ self ] )
                 result.extend( childSymbols )
 
-        if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
-            childSymbols = await self.getAllSymbols( t, True )
-            result.extend( childSymbols )
+        # TODO sgu fixed bug: no recursive call
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ) and not self.parent( ) in callers:
+            localList: List[ T ] = await self.parent( ).getAllSymbols( t, localOnly, callers + [ self ] )
+            result.extend( localList )
 
         return result
 
-    def getAllSymbolsSync( self, t: type, localOnly: bool = False ) -> List[ T ]:
+    def getAllSymbolsSync( self, t: type, localOnly: bool = False, callers: List[ T ] = [ ] ) -> List[ T ]:
         """
         TODO: add optional position dependency (only symbols defined before a given caret pos are viable).
 
+        :param callers: List of visited scopes, that should not be visited again
         :param t: The type of the objects to return.
         :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
         (recursively).
@@ -706,13 +815,14 @@ class ScopedSymbol( Symbol ):
             if isinstance( child, t ):
                 result.append( child )
 
-            if isinstance( child, NamespaceSymbol ):
-                childSymbols = child.getAllSymbolsSync( t, True )
+            if isinstance( child, NamespaceSymbol ) and not child in callers:
+                childSymbols: List[ T ] = child.getAllSymbolsSync( t, True, callers + [ self ] )
                 result.extend( childSymbols )
 
-        if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
-            childSymbols = self.getAllSymbolsSync( t, True )
-            result.extend( childSymbols )
+        # TODO sgu fixed bug: no recursive call
+        if not localOnly and isinstance( self.parent( ), ScopedSymbol ) and not self.parent( ) in callers:
+            localList: List[ T ] = self.parent( ).getAllSymbolsSync( t, localOnly, callers + [ self ] )
+            result.extend( localList )
 
         return result
 
@@ -730,7 +840,7 @@ class ScopedSymbol( Symbol ):
 
         # Nothing found locally. Let the parent continue.
         if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
-            return await self.parent( ).resolve( name, False )
+            return await self.parent( ).resolve( name, localOnly )
 
         return None
 
@@ -748,7 +858,7 @@ class ScopedSymbol( Symbol ):
 
         # Nothing found locally. the parent continues.
         if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
-            return self.parent( ).resolveSync( name, False )
+            return self.parent( ).resolveSync( name, localOnly )
 
         return None
 
@@ -765,7 +875,7 @@ class ScopedSymbol( Symbol ):
                 result.append( child )
 
         if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
-            localList = self.parent( ).getTypedSymbols( True )
+            localList = self.parent( ).getTypedSymbols( localOnly )
             result.extend( localList )
 
         return result
@@ -784,7 +894,7 @@ class ScopedSymbol( Symbol ):
                 result.append( child.name )
 
         if not localOnly and isinstance( self.parent( ), ScopedSymbol ):
-            localList = self.parent( ).getTypedSymbolNames( True )
+            localList = self.parent( ).getTypedSymbolNames( localOnly )
             result.extend( localList )
 
         return result
@@ -880,7 +990,29 @@ class BlockSymbol( ScopedSymbol ):
 
 
 class ModuleSymbol( ScopedSymbol ):
-    pass
+    def __init__( self, name: str = "", file: str = None ):
+        super( ).__init__( name )
+        self.__childSymbols = [ ]
+
+        # filename of system file
+        self._file: str = file
+        self._containsFunction: bool = False
+
+    @property
+    def file( self ) -> str:
+        return self._file
+
+    @file.setter
+    def file( self, file: str ):
+        self._file = file
+
+    @property
+    def containsFunction( self ) -> bool:
+        return self._containsFunction
+
+    @containsFunction.setter
+    def containsFunction( self, containsFunction: bool ):
+        self._containsFunction = containsFunction
 
 
 class VariableSymbol( UnitSymbol ):

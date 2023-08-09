@@ -6,6 +6,7 @@
             "name": "Launch Client",
             "type": "extensionHost",
             "request": "launch",
+            "suppressMultipleSessionWarning": true,
             "runtimeExecutable": "${execPath}",
             "args": ["--extensionDevelopmentPath=${workspaceRoot}"],
             "outFiles": ["${workspaceRoot}/typescript-build/client/out/**/*.js"],

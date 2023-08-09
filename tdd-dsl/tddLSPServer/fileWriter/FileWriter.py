@@ -10,7 +10,7 @@ import hashlib
 import logging
 import re
 import os
-from typing import Tuple
+from typing import List, Tuple
 
 # debug
 logger = logging.getLogger( __name__ )
@@ -18,7 +18,7 @@ logger = logging.getLogger( __name__ )
 showDebugOutput: bool = True
 
 
-def difflib_merge( fileContent0: str, fileContent1: str ) -> str:
+def difflibMerge( fileContent0: str, fileContent1: str ) -> str:
     '''
     Merge two file-contents based on difflib.
 
@@ -36,42 +36,77 @@ def difflib_merge( fileContent0: str, fileContent1: str ) -> str:
 
     return mergedContent
 
-def mergeFortranFunction( fileContent, functionCode, functionName: str = '', moduleName: str = '' ):
+def insertFortranOperation( insertContentList: List[str ], fileContent, moduleName: str = '' ):
     """
-    Merge function code into fortran code after function name, contain statement or at the module end.
+    Insert operation into fortran code after contain statement or at the module end.
 
+    :param insertContentList: List of code to be merged
     :param fileContent: File content in which to be merged
-    :param functionCode: Code to be merged
-    :param functionName: Optional function name after which to be merged
     :param moduleName: Optional module name in which to be merged
     :return: Merged content
     """
 
-    containsPattern = r'\n *contains *\n'
-    functionEndPattern = r'(\n *end +(?:subroutine|function) +' + functionName + ' *\n)'
-    moduleEndPattern = r'(\n *end +module +' + moduleName + ' *\n?)'
+    functionName: str = insertContentList[0]
+    functionCode: str = insertContentList[1]
+
+    publicPattern = r'\n(( *)public(?: *\:\:.*)?\n)+'
+    privatePattern = r'\n(( *)private(?: *\:\:.*)?\n)+'
+    implicitPattern = r'\n( *)implicit none *\n'
+
+    containsPattern = r'\n( *)contains *\n'
+    moduleStartPattern = r'(\n( *)module +' + moduleName + ' *\n?)'
+    moduleEndPattern = r'(\n( *)end +module +' + moduleName + ' *\n?)'
 
     # Find the position to insert the new code
-    matchContains = re.search(containsPattern, fileContent, flags=re.IGNORECASE)
-    matchFunction = re.search(functionEndPattern, fileContent, flags=re.IGNORECASE)
-    matchModule = re.search(moduleEndPattern, fileContent, flags=re.IGNORECASE)
+    matchPublic = re.search(publicPattern, fileContent, flags=re.IGNORECASE)
+    matchPrivate = re.search(privatePattern, fileContent, flags=re.IGNORECASE)
+    matchImplicit = re.search(implicitPattern, fileContent, flags=re.IGNORECASE)
+    matchModuleStart = re.search(moduleStartPattern,fileContent, flags=re.IGNORECASE)
 
-    if matchFunction:
-        # Insert the new code after the function/subroutine
-        insertPosition = matchFunction.end()
-    elif matchContains:
-        # Insert the new code after the "contains" statement
-        insertPosition = matchContains.end()
-    elif matchModule:
-        # Insert the new code at the module end
-        insertPosition = matchModule.start()
+    # Insert code accessible
+    if matchPublic:
+        # Insert after the "public" statement
+        insertPosition = matchPublic.end()
+        lineInsertion = matchPublic.regs[-1]
+    elif matchPrivate:
+        # Insert after the "private" statement
+        insertPosition = matchPrivate.end()
+        lineInsertion = matchPrivate.regs[-1]
+    elif matchImplicit:
+        # Insert after the "implicit" statement
+        insertPosition = matchImplicit.end()
+        lineInsertion = matchImplicit.regs[-1]
+    elif matchModuleStart:
+        # Insert after the module start
+        insertPosition = matchModuleStart.end()
+        lineInsertion = matchModuleStart.regs[-1]
     else:
         # If neither "contains" nor the function/subroutine is found, raise an error
-        raise ValueError(f'Function, Module or "contains" statement not found. Function: {functionName}, Module: {moduleName}' )
-    # Insert the new code at the determined position
-    mergedContent = fileContent[:insertPosition] + functionCode + '\n' + fileContent[ insertPosition: ]
+        raise ValueError(f'Private/Public, Module or "Implicit" statement not found. Module: {moduleName}')
 
-    return mergedContent
+    # Insert public statement with line insertion
+    fileContent = fileContent[:insertPosition] + fileContent[lineInsertion[0]:lineInsertion[1]] + f'PUBLIC :: {functionName}' + '\n' + fileContent[insertPosition:]
+
+    matchContains = re.search(containsPattern, fileContent, flags=re.IGNORECASE)
+    matchModuleEnd = re.search(moduleEndPattern, fileContent, flags=re.IGNORECASE)
+
+    # Insert function code
+    if matchContains:
+        # Insert after the "contains" statement
+        insertPosition = matchContains.end()
+        lineInsertion = matchContains.regs[-1]
+    elif matchModuleEnd:
+        # Insert before the module end
+        insertPosition = matchModuleEnd.start()
+        lineInsertion = matchModuleEnd.regs[-1]
+    else:
+        # If neither "contains" nor the module is found, raise an error
+        raise ValueError(f'Module or "contains" statement not found. Module: {moduleName}')
+
+    # Insert function code with line insertion
+    fileContent = fileContent[:insertPosition] + fileContent[lineInsertion[0]:lineInsertion[1]] + functionCode + '\n' + fileContent[ insertPosition: ]
+
+    return fileContent
 
 def hash_file( path: str = None ) -> str:
     """
@@ -102,24 +137,21 @@ def fileModified( path = None, mtime: float = 0, fileHash: str = None ) -> bool:
         return False
 
 
-def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', filename: str = 'test', fileSuffix: str = '', content: str = '', fileAttr: tuple[ float, str, str ] = None ) -> tuple[ float, str, str ]:
+def writeFile( filePath: str = 'tdd-dsl/output/tests/test.pf', content: List[str] = '', fileAttr: tuple[ float, str, str ] = None, insert: bool = False ) -> tuple[ float, str, str ]:
     """
     Write/merge pFUnit-file under :test_path:/:test_folder:/:filename:.pf for test-case.
     Merges file if it exists using difflib.
 
-    :param test_path: system path to store pFUnit-tests
-    :param test_folder: test-folder under system path for *.pf-files
-    :param filename: filename  of *.pf-file
-    :param fileSuffix: suffix of file
+    :param filePath: system path to file
     :param content: test-case content
     :param fileHash: hash if file should exist
     :param mtime: modification time if file should exist
-    :param content_org: original content
+    :param contentOrg: original content
     :return: hast and modification time of file
     """
 
     # Define the folder and filename. Current working directory is ignored for absolut test_path
-    path = os.path.join( os.getcwd( ), test_path, test_folder )
+    path = os.path.dirname(filePath)
 
     # Create folder if it doesn't exist
     if not os.path.isdir( path ):
@@ -127,27 +159,34 @@ def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', f
         if showDebugOutput and logger.isEnabledFor( logging.DEBUG ):
             logger.debug( f'... create {path}' )
 
+    # Join content when it is written in one place.
+    if not insert:
+        content = ''.join( content )
+
     # TODO hc
     # Create file if it doesn't exist else merge with existing file
-    filename = f"{filename.lower( )}{fileSuffix}"
-    path = os.path.join( path, filename )
-    if os.path.exists( path ):
+    if os.path.exists( filePath ):
         # check if file is known or was modified
         if fileAttr is None or fileModified( path, fileAttr[0], fileAttr[1] ):
             # reload file from disk if it is unknown or modified
             with open( path, mode = 'r', encoding = 'utf-8' ) as f:
-                content_org = f.read( )
+                contentOrg = f.read( )
         else:
             # keep original file content
-            content_org = fileAttr[2]
+            contentOrg = fileAttr[2]
 
+        # Log
         if showDebugOutput and logger.isEnabledFor( logging.DEBUG ):
             logger.debug( f'...try merge {path}' )
+
         # merge current content with original file content
-        content = merge_file_content( content, content_org )
+        if insert:
+            content = insertFortranOperation( content, contentOrg )
+        else:
+            content = difflibMerge( content, contentOrg )
     else:
         # dismiss current content if saved again
-        content_org = ''
+        contentOrg = ''
 
     # Write rendered and optional merged content to file
     with open( path, mode = 'w', encoding = 'utf-8' ) as f:
@@ -155,4 +194,4 @@ def write_file( test_path: str = 'tdd-dsl/output', test_folder: str = 'tests', f
         if showDebugOutput and logger.isEnabledFor( logging.DEBUG ):
             logger.debug( f'... create {path}' )
 
-    return os.path.getmtime( path ), hash_file( path ), content_org
+    return os.path.getmtime( path ), hash_file( path ), contentOrg

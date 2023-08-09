@@ -115,7 +115,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
             scopeName = element.find( './/fx:n', ns ).text
 
             # Dereference returnType for functions
-            if element.tag.endswith( 'function-stmt' ) and pubElement.isPublic( scopeName ):
+            if isFilteredScope and element.tag.endswith( 'function-stmt' ) and pubElement.isPublic( scopeName ):
 
                 # Get the current scope from the scope stack
                 currentScope = '.'.join( scopeStack )
@@ -182,21 +182,24 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
                 if pubElement.isPublic( scopeName ):
                     scopes.append( [ stmtName, scopeName, argumentNames, resultID, currentScope ] )
 
+                # save resultID for dereference
+                scopeStackVar[ '.'.join( scopeStack ) ] = {'-1': resultID} if resultID else {}
+
             # Update scope stack
             scopeStack.append( scopeName )
-            # Optionally save resultID for dereference
-            scopeStackVar[ '.'.join( scopeStack ) ] = {'-1': resultID} if resultID else {}
 
         # Store assignment statements for optional return values of functions
         elif element.tag.endswith( 'a-stmt' ):
-            # Get current variable name
-            variableName = element.find( './/fx:n', ns ).text
+            # Check scope is filtered and is in filtered scope
+            if isFilteredScope:
+                # Get current variable name
+                variableName = element.find( './/fx:n', ns ).text
 
-            # Get the current scope from the scope stack
-            currentScope = '.'.join( scopeStack )
+                # Get the current scope from the scope stack
+                currentScope = '.'.join( scopeStack )
 
-            # Type for return type of functions, None if not found
-            lastVariableType = scopeStackVar.get( currentScope ).get( variableName, None )
+                # Type for return type of functions, None if not found
+                lastVariableType = scopeStackVar.get( currentScope ).get( variableName, None )
 
         # Store public available ids
         elif element.tag.endswith( 'public-stmt' ):
@@ -218,7 +221,7 @@ def filterXML( xmlPath: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/inpu
         # Extract variables, public only, if needed
         elif element.tag.endswith( 'contains-stmt' ):
             # Check if top level scope is in filtered scope or if filtered scope is empty
-            if len( scopeStack ) == 1 and scopeStack[ 0 ] == baseModule.name:
+            if isFilteredScope and len( scopeStack ) == 1 and scopeStack[ 0 ] == baseModule.name:
                 baseModule.containsFunction = True
 
         # Extract variables, public only, if needed

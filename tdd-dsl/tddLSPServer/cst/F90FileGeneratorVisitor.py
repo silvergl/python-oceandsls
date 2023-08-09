@@ -302,10 +302,13 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
                     exprType: str = 'integer'
                 else:
                     exprType: str = 'real'
+            case [ None, None ]:
+                # if both operands are None then result of the operation will be None
+                exprType: str = None
             case _:
                 # custom types have precedence
                 # TODO mod custom type with second type
-                exprType: str = ctx.op.text.join( [ leftType, rightType ] )
+                exprType: str = ctx.op.text.join( [ str(leftType), str(leftType) ] )
 
         # Mark last added operation as not last operation
         self.lastOpID = None
@@ -331,10 +334,13 @@ class F90FileGeneratorVisitor( TestSuiteVisitor ):
             case [ 'integer', 'integer' ]:
                 # if all the operands are integer then result of the operation will be integer
                 exprType: str = 'integer'
+            case [ None, None ]:
+                # if both operands are None then result of the operation will be None
+                exprType: str = None
             case _:
                 # custom types have precedence
                 # TODO mod custom type with second type
-                exprType: str = ctx.op.text.join( [ leftType, rightType ] )
+                exprType: str = ctx.op.text.join( [ str(leftType), str(leftType) ] )
 
         # Mark last added operation as not last operation
         self.lastOpID = None

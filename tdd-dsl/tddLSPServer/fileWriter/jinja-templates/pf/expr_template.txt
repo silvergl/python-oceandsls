@@ -1,0 +1,1 @@
+{% if (op is undefined) and (inner is defined) %}( {{ inner }} ){% elif (left is defined) and (right is defined) %}{{ left }} {{ op }} {{ right }}{% elif (op is defined) and (inner is defined) %}{{ op }} {{ inner }}{% elif value is not none %}{{ value }}{% endif %}

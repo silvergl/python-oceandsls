@@ -3,41 +3,40 @@ MODULE cfo_example
   IMPLICIT NONE
 
   PRIVATE
-  PUBLIC :: ft_ME, zxrex, nprey
+  PRIVATE :: get_sum
+  PUBLIC :: fT_ME
+  PUBLIC :: foo
 
-  INTEGER, PARAMETER :: dp=KIND(0D0)
-  !INTEGER :: nprey=4
-  REAL(dp) :: nprey= - ( 283D0 / 520D0 )
-  REAL(dp), PARAMETER :: cfds=86.4D3
-
-  INCLUDE 'stdunits.h'
-
-  TYPE, PUBLIC :: ocf
-     REAL(dp) :: ngr,&  ! relative growth rate
-          ca=0.1D0,&    ! cost of assimilation coefficients
-          cf=0.1D0,&    ! cost of foraging coefficients
-          Af,&          ! foraging activity
-          IC,&          ! C ingestion
-          E,&           ! assimilation efficiency
-          POC,&         ! zooplankton biomass concentration
-          RC,&          ! respiration
-          XC            ! C excretion
-  END TYPE ocf
   TYPE(ocf), DIMENSION(:), ALLOCATABLE, PUBLIC :: zoo
 
-CONTAINS
+  INTEGER, PARAMETER :: dp=KIND(0D0)
 
-  ! excrete (respire) extra C in food
-  SUBROUTINE zxrex (zoo, Rm, fQ)
-    IMPLICIT NONE
-    CLASS(ocf), INTENT(INOUT) :: zoo
-    REAL(dp), INTENT(IN) :: Rm, fQ
-    REAL(dp) :: EI
-    EI = zoo%E*zoo%IC
-    zoo%ngr = (EI*(1D0 - zoo%ca) - zoo%poc*(zoo%cf*zoo%Af + Rm))*fQ
-    zoo%RC  = EI - zoo%ngr        ! respiration
-    zoo%XC = zoo%IC*(1D0 - zoo%E) ! egestion
-  END SUBROUTINE zxrex
+  ! INCLUDE 'stdunits.h'
+
+  ! Set the super type as abstract
+  type, abstract :: shape_m
+ 
+    ! Sub-types receive these variables
+    real :: x, y
+ 
+  contains
+
+    ! This procedure marked as deferred
+    ! will be defined in sub-types
+    procedure(shape_area), deferred :: get_area
+  end type shape_m
+ 
+  ! Define that we want to return the defined
+  ! area for each shape sub-class
+  interface
+    function shape_area(this) result(area)
+      import :: shape_m
+      class(shape_m) :: this
+      real :: area
+    end function shape_area
+  end interface
+
+CONTAINS
 
   ! temperature function for Mytilus edulis from Jenny's simulations
   FUNCTION fT_ME (temperature) RESULT (fT)
@@ -46,4 +45,52 @@ CONTAINS
     REAL(dp) :: fT
     fT = (1D0 + (temperature - 15D0)*9.5D0)/260D0
   END FUNCTION fT_ME
+  
+  ! Return type, function, name, arguments
+  integer function get_sum(n1, n2)
+    implicit none
+    integer :: n1, n2, sum
+
+    ! The last value defined is returned
+    sum = n1 + n2
+  end function get_sum
+
+  ! Define variable to be returned
+  function get_sum2(n1, n2) result(sum)
+    implicit none
+
+    ! Don't allow variable values to change
+    integer, intent(in) :: n1, n2
+    integer :: sum
+    sum = n1 + n2
+  end function get_sum2
+
+  ! Block functions from changing input
+  ! variables with pure
+  pure function get_sum3(n1, n2) result(sum)
+    implicit none
+    integer, intent(in) :: n1
+
+    ! Arguments don't need to have a value passed
+    integer, intent(in), optional :: n2
+    integer :: sum
+
+    if(present(n2)) then
+      sum = n1 + n2
+    else
+      sum = n1 + 1
+    end if
+  end function get_sum3
+  
+  !  asserts y-Intercept
+  FUNCTION foo (arg0) RESULT (out)
+    IMPLICIT NONE
+    real, INTENT(IN)  :: arg0
+    ! <<Add return type here>>, INTENT(OUT) :: out
+
+
+
+    out = ! <<Add return expression here>>
+  END FUNCTION foo
+
 END MODULE cfo_example

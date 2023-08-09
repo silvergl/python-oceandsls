@@ -26,7 +26,7 @@ import uuid
 import os.path
 # debug import
 from pprint import pprint
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 # antlr4
 from antlr4 import CommonTokenStream, InputStream, Token
@@ -45,8 +45,9 @@ from pygls.workspace import Document
 # from ...antlrLib.CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
 # user relative imports
+from .cst.F90FileGeneratorVisitor import F90FileGeneratorVisitor
 from .cst.DiagnosticListener import DiagnosticListener
-from .cst.FileGeneratorVisitor import FileGeneratorVisitor
+from .cst.PFFileGeneratorVisitor import PFFileGeneratorVisitor
 from .cst.SystemFileVisitor import SystemFileVisitor
 from .cst.SymbolTableVisitor import SymbolTableVisitor
 from .gen.python.TestSuite.TestSuiteLexer import TestSuiteLexer
@@ -55,10 +56,11 @@ from .symbolTable.SymbolTable import FunctionSymbol, ModuleSymbol, PathSymbol, R
 from .utils.computeTokenIndex import CaretPosition, TokenPosition, computeTokenPosition
 from .utils.suggestVariables import suggestSymbols
 
+# TODO rm or move to debug logger
 # python path hacking / DO NOT USE for live code
 # if not os.path.join(sys.path[0], 'example-dsl', 'lspExampleServer') in sys.path:
 #     sys.path.append(os.path.join( sys.path[0], 'example-dsl', 'lspExampleServer') )
-pprint( f'sys.path {sys.path}' )
+# pprint( f'sys.path {sys.path}' )
 
 COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1
@@ -92,6 +94,9 @@ class tddLSPServer( LanguageServer ):
         # set ErrorListener for diagnostics
         self.parser.removeErrorListeners( )
         self.parser.addErrorListener( self.error_listener )
+
+        # attributes of generated files
+        self.files: dict[ str, Tuple[ float, str, str ] ] = {}
 
 
 tdd_server = tddLSPServer( 'pygls-odsl-tdd-prototype', 'v0.1' )
@@ -271,11 +276,22 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     parseTree: Top_levelContext = tdd_server.parser.test_suite( )
 
     # set current working directory as working directory for test files
-    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor( testWorkPath = os.getcwd( ) )
+    pffFileGeneratorVisitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor( testWorkPath = os.getcwd( ), files = tdd_server.files )
 
     # TODO add arguments templatePath testPath testFolder
-    # write files
-    fileGeneratorVisitor.visit( parseTree )
+    # write pf files and save written files
+    tdd_server.files = pffFileGeneratorVisitor.visit( parseTree )
+
+    # get symboltable for f90 generator
+    symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'variables', os.getcwd( ) )
+    symbolTable = symbolTableVisitor.visit( parseTree )
+
+    # set current working directory as working directory for test files
+    f90FileGeneratorVisitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor( workPath = os.getcwd( ), files = tdd_server.files, symbolTable = symbolTable )
+
+    # TODO add arguments templatePath testPath testFolder
+    # write optional fortran file and save written files
+    tdd_server.files = f90FileGeneratorVisitor.visit( parseTree )
 
     server.show_message( 'Text Document Did Save' )
 

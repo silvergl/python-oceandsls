@@ -3,9 +3,12 @@ MODULE cfo_example
   IMPLICIT NONE
 
   PRIVATE
-  PUBLIC :: ft_ME, zxrex, nprey
+  PRIVATE :: zxrex
+  PUBLIC :: ft_ME
+  PUBLIC :: nprey
 
   INTEGER, PARAMETER :: dp=KIND(0D0)
+  ! INTEGER :: nprey=4
   REAL(dp) :: nprey= - ( 283D0 / 520D0 )
   REAL(dp), PARAMETER :: cfds=86.4D3
 

@@ -86,7 +86,7 @@ pubAttributes           : ('tolerance' ':' tol=expr NEWLINE)?
                         ;
 
 /** IO parameter; ends on newline */
-test_parameter               : (decl=parameterDeclaration '=')? value=expr comment=optionalDesc  /** ends on newline */
+test_parameter          : (decl=parameterDeclaration '=')? value=expr comment=optionalDesc  /** ends on newline */
                         ;
 
 /** optional description for declarations; ensures non description to be newline */

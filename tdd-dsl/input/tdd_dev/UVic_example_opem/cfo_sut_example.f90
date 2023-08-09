@@ -5,6 +5,7 @@ MODULE cfo_example
   PRIVATE
   PRIVATE :: get_sum
   PUBLIC :: fT_ME
+  PUBLIC :: foo
 
   TYPE(ocf), DIMENSION(:), ALLOCATABLE, PUBLIC :: zoo
 
@@ -81,4 +82,15 @@ CONTAINS
     end if
   end function get_sum3
   
+  !  asserts y-Intercept
+  FUNCTION foo (arg0) RESULT (out)
+    IMPLICIT NONE
+    real, INTENT(IN)  :: arg0
+    ! <<Add return type here>>, INTENT(OUT) :: out
+
+
+
+    out = ! <<Add return expression here>>
+  END FUNCTION foo
+
 END MODULE cfo_example

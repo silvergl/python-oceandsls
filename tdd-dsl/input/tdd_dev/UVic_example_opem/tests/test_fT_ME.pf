@@ -1,6 +1,6 @@
 @test
 SUBROUTINE test_fT_ME()
- use foobar_module
+ use cfo_example
  use funit
 
  integer, PARAMETER :: dp = KIND ( 0D0 )

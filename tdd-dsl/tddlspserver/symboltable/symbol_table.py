@@ -1311,7 +1311,7 @@ class SymbolTable(ScopedSymbol):
 
         return self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[len(parts) - 1])
 
-    async def get_all_symbols(self, t: type, local_only=False) -> List[T]:
+    async def get_all_symbols(self, t: type, local_only: bool = False, callers: List[T] = []) -> List[T]:
         """
         Asynchronously returns all symbols from this scope (and optionally those from dependencies) of a specific type.
 
@@ -1319,13 +1319,13 @@ class SymbolTable(ScopedSymbol):
         :param local_only: If true do not search dependencies.
         :return: A promise which resolves when all symbols are collected.
         """
-        result: List[T] = await super().get_all_symbols(t, local_only)
+        result: List[T] = await super().get_all_symbols(t, local_only, callers)
 
-        if not local_only:
+        if not local_only and self.parent() not in callers:
             # TODO alternative
             # dependencyResults = await asyncio.gather(*[x.getAllSymbols(t, localOnly) for x in self.dependencies])
             dependencyResults = await asyncio.gather(
-                *(map((lambda x: x.get_all_symbols(t, local_only)), self.dependencies))
+                *(map((lambda x: x.get_all_symbols(t, local_only, callers + [self])), self.dependencies))
             )
 
             for value in dependencyResults:

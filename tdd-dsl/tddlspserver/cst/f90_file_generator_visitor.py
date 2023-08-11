@@ -25,13 +25,16 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
     environment: Environment
     ops: Dict[str, List]
     last_op_id: str
-    file_suffix : str
-    _symbol_table : SymbolTable
+    file_suffix: str
+    _symbol_table: SymbolTable
     found_ref: bool
     found_par: bool
 
     # TODO hc
-    def __init__(self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/f90', files: dict[str, Tuple[float, str, str]] = {}, symbol_table: SymbolTable = None, work_path: str = 'tdd-dsl/output', file_suffix='f90'):
+    def __init__(
+        self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/f90', files: Dict[str, Tuple[float, str, str]] = {},
+        symbol_table: SymbolTable = None, work_path: str = 'tdd-dsl/output', file_suffix: str = 'f90'
+    ):
         '''
         Fortran 90 source code file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 

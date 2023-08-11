@@ -6,7 +6,7 @@ __author__ = 'sgu'
 class ContainmentHashMap(dict):
     """ HashMap containing variables """
 
-    def __init__(self, parent, mapping=None, /, **kwargs):
+    def __init__(self, parent, mapping=None, *my_args, **kwargs):
         self.parent = parent
         super().__init__(mapping)
 

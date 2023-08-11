@@ -33,9 +33,10 @@ from antlr4 import CommonTokenStream, InputStream, Token
 from antlr4.IntervalSet import IntervalSet
 # pygls
 from lsprotocol.types import (
-    CompletionItem, CompletionList, CompletionOptions, CompletionParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, MessageType, Registration, RegistrationParams,
-    SemanticTokens, SemanticTokensLegend, SemanticTokensParams, TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_DID_SAVE, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, Unregistration,
-    UnregistrationParams, WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport
+    CompletionItem, CompletionList, CompletionOptions, CompletionParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams, DidSaveTextDocumentParams, MessageType, Registration, RegistrationParams, SemanticTokens, SemanticTokensLegend,
+    SemanticTokensParams, TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_DID_SAVE,
+    TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, Unregistration, UnregistrationParams, WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport
 )
 from pygls.server import LanguageServer
 from pygls.workspace import Document
@@ -172,10 +173,8 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # get token index under caret position
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
     token_index: TokenPosition = compute_token_position(
-        parse_tree, tdd_server.token_stream,
-        CaretPosition(
-            params.position.line + 1,
-            params.position.character
+        parse_tree, tdd_server.token_stream, CaretPosition(
+            params.position.line + 1, params.position.character
         )
     )
 
@@ -234,8 +233,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         completion_list.items.append(
             CompletionItem(
                 label=IntervalSet.elementName(
-                    IntervalSet, tdd_server.parser.literalNames,
-                    tdd_server.parser.symbolicNames, key
+                    IntervalSet, tdd_server.parser.literalNames, tdd_server.parser.symbolicNames, key
                 )
             )
         )
@@ -304,8 +302,7 @@ async def did_open(ls, params: DidOpenTextDocumentParams):
 
 
 @tdd_server.feature(
-    TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
-    SemanticTokensLegend(token_types=["operator"], token_modifiers=[])
+    TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, SemanticTokensLegend(token_types=["operator"], token_modifiers=[])
 )
 def semantic_tokens(ls: TDDLSPServer, params: SemanticTokensParams):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
@@ -355,8 +352,7 @@ async def register_completions(ls: TDDLSPServer, *args):
     """Register completions method on the client."""
     params = RegistrationParams(
         registrations=[Registration(
-            id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION,
-            register_options={"triggerCharacters": "[':']"}
+            id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION, register_options={"triggerCharacters": "[':']"}
         )]
     )
     response = await ls.register_capability_async(params)

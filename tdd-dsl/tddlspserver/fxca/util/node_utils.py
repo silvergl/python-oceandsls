@@ -96,7 +96,7 @@ class NodeUtils():
     def find_child_first(cls, parent, condition):
         """ generated source for method findChildFirst """
         node = parent.getFirstChild()
-        while node != None:
+        while node is not None:
             if condition.test(node):
                 return node
             node = node.getNextSibling()
@@ -118,7 +118,7 @@ class NodeUtils():
     @classmethod
     def has_connected_with(cls, parent, nextNode, condition, includeSelf):
         """ generated source for method hasConnectedWith """
-        return NodeUtils.find_first(parent, nextNode, condition, includeSelf) != None
+        return NodeUtils.find_first(parent, nextNode, condition, includeSelf) is not None
 
     @classmethod
     def add_all_descendents_to(cls, node, predicate, include_self, selected_nodes):
@@ -182,12 +182,12 @@ class NodeUtils():
     def get_name_of_containing_operation(cls, node):
         """ generated source for method getNameOfContainingOperation """
         containing_operation_statement = NodeUtils.findContainingStatement(node, Predicates.isOperationStatement, Predicates.paranthesisTypes)
-        return NodeUtils._ROOT_PROGRAM if containing_operation_statement == None else NodeUtils.get_name_of_operation(containing_operation_statement)
+        return NodeUtils._ROOT_PROGRAM if containing_operation_statement is None else NodeUtils.get_name_of_operation(containing_operation_statement)
 
     @classmethod
     def satisfies_assumptions(cls, node):
         """ generated source for method satisfiesAssumptions """
-        if node == None:
+        if node is None:
             return True
         type_ = node.getNodeType()
         if (type_ == Node.TEXT_NODE) and (node.getChildNodes().getLength() > 0):

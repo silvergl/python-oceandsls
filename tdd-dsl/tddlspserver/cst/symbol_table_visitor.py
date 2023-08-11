@@ -15,7 +15,8 @@ from ..utils.suggest_variables import get_all_symbols_of_type
 from ..fxca.util.fxtran_utils import filter_xml, get_files, write_decorate_src_xml
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
-from ..symboltable.symbol_table import BlockSymbol, FunctionSymbol, ModuleSymbol, ParameterSymbol, RoutineSymbol, ScopedSymbol, SymbolTable, SymbolTableOptions, VariableSymbol, P, T
+from ..symboltable.symbol_table import BlockSymbol, FunctionSymbol, ModuleSymbol, ParameterSymbol, RoutineSymbol, ScopedSymbol, SymbolTable, \
+    SymbolTableOptions, VariableSymbol, P, T
 
 
 class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
@@ -183,8 +184,11 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
                         case 'function':
                             current_scope = self._scope
                             self._scope = scope_sym
-                            self.with_scope(ctx, False, FunctionSymbol, lambda: list(
-                                map(lambda arg: self.addRoutineParams(arg), scope_args)), scope_name, return_id)
+                            self.with_scope(
+                                ctx, False, FunctionSymbol, lambda: list(
+                                    map(lambda arg: self.addRoutineParams(arg), scope_args)
+                                ), scope_name, return_id
+                            )
                             self._scope = current_scope
                         case _:
                             # TODO Types?

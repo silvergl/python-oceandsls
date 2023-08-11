@@ -27,7 +27,10 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
     found_par: bool
 
     # TODO hc
-    def __init__(self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/pf', files: dict[str, Tuple[float, str, str]] = {}, test_work_path: str = 'tdd-dsl/output', test_folder: str = 'tests', file_suffix='pf'):
+    def __init__(
+        self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/pf', files: Dict[str, Tuple[float, str, str]] = {},
+        test_work_path: str = 'tdd-dsl/output', test_folder: str = 'tests', file_suffix: str = 'pf'
+    ):
         '''
         pfUnit test file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
@@ -188,10 +191,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
 
         return template.render(name=name, type=type, keys=keys)
 
-        # if keys:
-        #     return template.render( name = name, type = type, keys = keys )
-        # else:
-        #     return template.render( name = name, type = type )
+        # if keys:  #     return template.render( name = name, type = type, keys = keys )  # else:  #     return template.render( name = name, type = type )
 
     # Visit a parse tree produced by TestSuiteParser#funRef.
     def visitFunRef(self, ctx: TestSuiteParser.FunRefContext):

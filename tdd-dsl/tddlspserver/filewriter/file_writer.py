@@ -28,10 +28,8 @@ def difflib_merge(file_content0: str, file_content1: str) -> str:
     '''
     merged_content = "\n".join(
         lines[2:] for lines in difflib.Differ().compare(
-            file_content0.split("\n"),
-            file_content1.split("\n")
-        )
-        if not lines.startswith("?")
+            file_content0.split("\n"), file_content1.split("\n")
+        ) if not lines.startswith("?")
     )
 
     return merged_content
@@ -85,8 +83,11 @@ def insert_fortran_operation(insert_content_list: List[str], file_content):
         raise ValueError(f'Private/Public, Module or "Implicit" statement not found. Module: {module_name}')
 
     # Insert public statement with line insertion
-    file_content = file_content[:insert_position] + file_content[line_insertion[0]:line_insertion[1]] + \
-        f'PUBLIC :: {function_name}' + '\n' + file_content[insert_position:]
+    file_content = (file_content[:insert_position] +
+                    file_content[line_insertion[0]:line_insertion[1]] +
+                    f'PUBLIC :: {function_name}' +
+                    '\n' +
+                    file_content[insert_position:])
 
     match_module_end = re.search(module_end_pattern, file_content, flags=re.IGNORECASE)
 
@@ -100,7 +101,13 @@ def insert_fortran_operation(insert_content_list: List[str], file_content):
         raise ValueError(f'Module statement not found. Module: {module_name}')
 
     # Insert function code with line insertion
-    file_content = file_content[:insert_position] + '\n' + file_content[line_insertion[0]:line_insertion[1]] + function_code + '\n' + file_content[insert_position:]
+    file_content = (
+        file_content[:insert_position] +
+        '\n' +
+        file_content[line_insertion[0]:line_insertion[1]] +
+        function_code +
+        '\n' +
+        file_content[insert_position:])
 
     return file_content
 
@@ -134,7 +141,7 @@ def file_modified(path=None, mtime: float = 0, fileHash: str = None) -> bool:
         return False
 
 
-def write_file(file_path: str = 'tdd-dsl/output/tests/test.pf', content: List[str] = '', file_attr: tuple[float, str, str] = None, insert: bool = False) -> tuple[float, str, str]:
+def write_file(file_path: str = '', content: List[str] = '', file_attr: tuple[float, str, str] = None, insert: bool = False) -> (tuple)[float, str, str]:
     """
     Write/merge pFUnit-file under :test_path:/:test_folder:/:filename:.pf for test-case.
     Merges file if it exists using difflib.

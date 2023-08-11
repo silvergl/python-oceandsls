@@ -31,8 +31,9 @@ class PublicObj:
     pr_elements: Dict[str, List[str]] = field(default_factory=dict)
 
     def is_public(self, name: str) -> bool:
-        # Entity is considered public if public is not needed or entities are public by default and entity is not specifically marked as private or entity is specifically marked as public
-        if not self.need_public or not self.default_private and not name in self.pr_elements or name in self.pub_elements:
+        # Entity is considered public if public is not needed or entities are public by default and entity is not specifically marked as private or
+        # entity is specifically marked as public
+        if not self.need_public or not self.default_private and name not in self.pr_elements or name in self.pub_elements:
             return True
         else:
             return False
@@ -104,7 +105,7 @@ def filter_xml(
             # Find scope name element
             name_element = element.find(f".//fx:{stmt_name}-N", ns)
 
-            if not tag in dyn_scope_elements and name_element is not None:
+            if tag not in dyn_scope_elements and name_element is not None:
                 end_tag = 'end-' + tag
                 if root.find(f".//fx:{end_tag}", ns) is not None:
                     dyn_scope_elements.add(tag)

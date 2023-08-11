@@ -27,7 +27,8 @@ scope_stack = []  # Stack to track the current scope
 # # Iterate over all elements in the XML tree
 # for element in root.iter( ):
 #     match element:
-#         case element if element.tag.endswith( 'end-subroutine-stmt' ) | element.tag.endswith( 'end-program-stmt' ) | element.tag.endswith( 'end-function-stmt' ):
+#         case element if element.tag.endswith( 'end-subroutine-stmt' ) | element.tag.endswith( 'end-program-stmt' )
+#         | element.tag.endswith( 'end-function-stmt' ):
 #             scope_stack.pop( )
 #         case element if element.tag.endswith( 'subroutine-stmt' ) | element.tag.endswith( 'program-stmt' ) | element.tag.endswith( 'function-stmt' ):
 #             scope_name = element.find( './/fx:n', ns ).text
@@ -73,7 +74,7 @@ for element in root.iter():
         ltag = tag.rsplit('-', 1)[0]
         name_element = element.find(f".//fx:{ltag}-N", ns)
 
-        if not tag in dyn_scope_elements and name_element is not None:
+        if tag not in dyn_scope_elements and name_element is not None:
             end_tag = 'end-' + tag
             if root.find(f".//fx:{end_tag}", ns) is not None:
                 dyn_scope_elements.add(tag)

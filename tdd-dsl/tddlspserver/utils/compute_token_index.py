@@ -58,16 +58,14 @@ def compute_token_index(parse_tree: ParseTree, caret_position: CaretPosition) ->
 
 
 def position_of_token(
-        token: Token, text: str, caret_position: CaretPosition, identifier_token_types: List[int],
-        parse_tree: ParseTree
+    token: Token, text: str, caret_position: CaretPosition, identifier_token_types: List[int], parse_tree: ParseTree
 ):
     start = token.column
     stop = token.column + len(text)
     logger.info(
         'token.line: %s == caretPosition.line: %s = %s, start: %s <= caretPosition.column: %s <= stop: %s = %s, '
-        'token.column: %s , len(text): %s, text: %s, index: %s',
-        token.line, caret_position.line, token.line == caret_position.line, start, caret_position.column, stop,
-                                         start <= caret_position.column <= stop, token.column, len(text), text, token.tokenIndex
+        'token.column: %s , len(text): %s, text: %s, index: %s', token.line, caret_position.line, token.line == caret_position.line, start,
+        caret_position.column, stop, start <= caret_position.column <= stop, token.column, len(text), text, token.tokenIndex
     )
     if token.line == caret_position.line and start <= caret_position.column <= stop:
         index = token.tokenIndex
@@ -89,8 +87,7 @@ def position_of_token(
 
 
 def compute_token_position_of_terminal(
-        terminal_node: TerminalNode, token_stream: BufferedTokenStream,
-        caret_position: CaretPosition, identifier_token_types: List[int]
+    terminal_node: TerminalNode, token_stream: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[int]
 ):
     token: Token = terminal_node.symbol
     text: str = terminal_node.getText()
@@ -99,20 +96,21 @@ def compute_token_position_of_terminal(
 
 
 def compute_token_position_of_child_node(
-        parser_rule_context: ParserRuleContext, tokens: BufferedTokenStream,
-        caret_position: CaretPosition, identifier_token_types: List[int]
+    parser_rule_context: ParserRuleContext, tokens: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[int]
 ):
     logger.info(
-        'start: %s > caret: %s = %s, stop: %s < caret: %s = %s', parser_rule_context.start.line,
-        caret_position.line, parser_rule_context.start.line > caret_position.line, parser_rule_context.stop.line,
-        caret_position.line, parser_rule_context.stop.line < caret_position.line
+        'start: %s > caret: %s = %s, stop: %s < caret: %s = %s', parser_rule_context.start.line, caret_position.line,
+        parser_rule_context.start.line > caret_position.line, parser_rule_context.stop.line, caret_position.line,
+        parser_rule_context.stop.line < caret_position.line
     )
     logger.info(
-        'parserRuleContext.start is not None = %s, parserRuleContext.stop is not None = %s',
-        parser_rule_context.start is not None, parser_rule_context.stop is not None
+        'parserRuleContext.start is not None = %s, parserRuleContext.stop is not None = %s', parser_rule_context.start is not None,
+        parser_rule_context.stop is not None
     )
-    if (parser_rule_context.start is not None and parser_rule_context.start.line > caret_position.line) or (
-        parser_rule_context.stop is not None and parser_rule_context.stop.line < caret_position.line):
+    if (
+        (parser_rule_context.start is not None and parser_rule_context.start.line > caret_position.line) or
+        (parser_rule_context.stop is not None and parser_rule_context.stop.line < caret_position.line)
+    ):
         logger.info('return None\n')
         return None
     i = 0
@@ -125,24 +123,21 @@ def compute_token_position_of_child_node(
             return position
         i += 1
     logger.info(
-        'parserRuleContext.start is not None = %s, parserRuleContext.stop is not None = %s',
-        parser_rule_context.start is not None, parser_rule_context.stop is not None
+        'parserRuleContext.start is not None = %s, parserRuleContext.stop is not None = %s', parser_rule_context.start is not None,
+        parser_rule_context.stop is not None
     )
     if parser_rule_context.start is not None and parser_rule_context.stop is not None:
         logger.info(
-            'parserRuleContext.start.tokenIndex: %s <= parserRuleContext.stop.tokenIndex: %s = %s',
-            parser_rule_context.start.tokenIndex, parser_rule_context.stop.tokenIndex,
-            parser_rule_context.start.tokenIndex <= parser_rule_context.stop.tokenIndex
+            'parserRuleContext.start.tokenIndex: %s <= parserRuleContext.stop.tokenIndex: %s = %s', parser_rule_context.start.tokenIndex,
+            parser_rule_context.stop.tokenIndex, parser_rule_context.start.tokenIndex <= parser_rule_context.stop.tokenIndex
         )
         i = parser_rule_context.start.tokenIndex
         logger.info(
-            'while parserRuleContext start.tokenIndex: %s, stop.tokenIndex: %s',
-            parser_rule_context.start.tokenIndex, parser_rule_context.stop.tokenIndex
+            'while parserRuleContext start.tokenIndex: %s, stop.tokenIndex: %s', parser_rule_context.start.tokenIndex, parser_rule_context.stop.tokenIndex
         )
         while i <= parser_rule_context.stop.tokenIndex:
             pos = position_of_token(
-                tokens.tokens[i], tokens.tokens[i].text, caret_position, identifier_token_types,
-                parser_rule_context
+                tokens.tokens[i], tokens.tokens[i].text, caret_position, identifier_token_types, parser_rule_context
             )
             logger.info('positionOfToken = %s', pos)
             if pos:
@@ -154,8 +149,7 @@ def compute_token_position_of_child_node(
 
 
 def compute_token_position(
-        parse_tree: ParseTree, tokens: BufferedTokenStream, caret_position: CaretPosition,
-        identifier_token_types: List[int] = []
+    parse_tree: ParseTree, tokens: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[int] = []
 ) -> Optional[TokenPosition]:
     if isinstance(parse_tree, TerminalNode):
         return compute_token_position_of_terminal(parse_tree, tokens, caret_position, identifier_token_types)

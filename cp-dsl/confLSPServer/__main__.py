@@ -27,9 +27,9 @@ logging.basicConfig( filename="confDSL_pygls.log", level=logging.DEBUG, filemode
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="DCL-Language-Server",
-        description="A program for a language server based on the declaration ocean-dsl",
-        epilog="DeclarationDSL Language Server"
+        prog="CONF-Language-Server",
+        description="A program for a language server based on the configuration ocean-dsl",
+        epilog="ConfigurationDSL Language Server"
     )
     parser.add_argument(
         "--tcp", dest="tcp", action="store_true",
@@ -47,8 +47,12 @@ def main():
         "--port", dest="port", type=int, default=2087,
         help="Bind to this port"
     )
+    parser.add_argument(
+        "--testing", dest="test", action="store_true", help="Run the tests"
+    )
     args = parser.parse_args()
-
+    if args.test:
+        import confLSPServer.test
     if args.tcp:
         conf_server.start_tcp( args.host, args.port )
     elif args.ws:
@@ -69,7 +73,7 @@ if __name__ == '__main__':
     tableVisitor = SymbolTableVisitor("testConf")
 
 
-    with open("/home/armin/Dokumente/cp-dsl/examples/testing/basic/global.oconf") as conf_file:
+    with open("/home/armin/Dokumente/cp-dsl/examples/testing/arrays/array.oconf") as conf_file:
         data = conf_file.read()
         input_stream = InputStream(data)
         lexer = ConfigurationLexer(input_stream)
@@ -79,8 +83,10 @@ if __name__ == '__main__':
         tableCalc = DeclarationCalculator(tableVisitor.symbolTable)
         table = ConfigurationCalculator(tableCalc.calculate()).calculate()
         for elem in table.getAllNestedSymbolsSync():
+            if elem.name == "offline":
+                print(elem.is_activated)
             if isinstance(elem, VariableSymbol):
-                print(elem.name, elem.value)
+                print(elem.name, elem.toArray())
 
 
     # from confLSPServer.gen.python.Declaration.DeclarationLexer import DeclarationLexer

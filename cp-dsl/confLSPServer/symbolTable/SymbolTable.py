@@ -894,14 +894,14 @@ class ArraySymbol(VariableSymbol):
     i[5][9] = 8
     => [5][ArraySymbol([9][8])]
     """
-    vectors = []
-    value = []
 
     def __init__(self, name: str = "", upperBound = 0, lowerBound = 0):
         super().__init__(name)
         self.upperBound = upperBound
         self.lowerBound = lowerBound
         self.is_array = True
+        self.vectors = []
+        self.value = []
 
     #!!!!EXPERIMENTAL!!!!
     def add(self, vector, val) -> None:
@@ -917,23 +917,23 @@ class ArraySymbol(VariableSymbol):
             else:
                 newArray = ArraySymbol()
             newArray.add(vector[1:], val)
-            self.add((vector[0], newArray))
+            self.add([vector[0]], newArray)
         else:
             #check if vector already in array
-            if vector in self.vectors:
-                i = self.vectors.index(vector)
+            if vector[0] in self.vectors:
+                i = self.vectors.index(vector[0])
                 self.value[i] = val
                 return
             if self.upperBound == 0 and self.lowerBound == 0:
-                self.vectors.append(vector)
+                self.vectors.append(vector[0])
                 self.value.append(val)
             else:
                 #Check for the bounds
-                if self.lowerBound <= vector and self.upperBound >= vector:
-                    self.vectors.append(vector)
+                if self.lowerBound <= vector[0] and self.upperBound >= vector[0] or self.upperBound == 0:
+                    self.vectors.append(vector[0])
                     self.value.append(val)
                 else:
-                    print("Array out of bound error")
+                    print("ERROR: Array out of bound error for index", vector)
 
 
     def get(self, index) -> T:
@@ -942,6 +942,8 @@ class ArraySymbol(VariableSymbol):
         index: the index of the value to return
         """
         try:
+            if isinstance(index, list):
+                return self.value[self.vectors.index(index[0])]
             return self.value[self.vectors.index(index)]
         except:
             return None
@@ -990,11 +992,10 @@ class ArraySymbol(VariableSymbol):
         returnVal = []
         for i in range(len(self)):
             if i in self.vectors:
-                index = self.vectors.index(i)
                 if not recursive:
-                    returnVal.append(self.get(index))
+                    returnVal.append(self.get(i))
                 else:
-                    elem = self.get(index)
+                    elem = self.get(i)
                     if isinstance(elem, ArraySymbol):
                         returnVal.append(elem.toArray())
                     else:
@@ -1008,7 +1009,9 @@ class ArraySymbol(VariableSymbol):
         self.value = []
 
     def __len__(self):
-        return max(self.vector)
+        if len(self.vectors) == 0:
+            return 0
+        return max(self.vectors) + 1
 
 
 class GroupSymbol(ScopedSymbol):

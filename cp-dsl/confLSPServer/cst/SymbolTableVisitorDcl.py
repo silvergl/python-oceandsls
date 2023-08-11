@@ -7,6 +7,7 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 
 # antlr4
 from antlr4.tree.Tree import ParseTree
+from antlr4.Token import CommonToken
 
 from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
 
@@ -143,11 +144,14 @@ class SymbolTableVisitorDecl( DeclarationVisitor, Generic[T] ):
         return ctx.type_.text
     
     def visitArrayType(self, ctx: DeclarationParser.ArrayTypeContext):
-        bounds = self.visitChildren(ctx)
-        symbol = self._symbolTable.addNewSymbolOfType(ArraySymbol, self._scope, ctx.type.text if ctx.type else "", bounds[0], bounds[1])
+        bounds = []
+        for i in ctx.dimensions:
+            bounds.append(self.visit(i))
+        print(bounds)
+        symbol = self._symbolTable.addNewSymbolOfType(ArraySymbol, self._scope, "array_temp", bounds[0][1], bounds[0][0])
         # context will be set in visitparameterassignement
-        #symbol.context = ctx
-        symbol.type = ctx.type_.text
+        # symbol.context = ctx
+        symbol.type = self._scope.resolveSync(ctx.type_.text)
         return symbol
 
     def visitSizeDimension(self, ctx: DeclarationParser.SizeDimensionContext):

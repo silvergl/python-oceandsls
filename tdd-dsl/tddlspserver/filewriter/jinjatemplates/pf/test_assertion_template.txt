@@ -1,0 +1,2 @@
+{% if comment is not none %} ! {{ comment }}
+{% endif %} @assert{{ directive }}( {{ output }}, {{ input_ }}{% if pub_attributes != none %}, {{ pub_attributes }}{% endif %})

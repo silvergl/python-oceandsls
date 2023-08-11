@@ -1,0 +1,201 @@
+"""pfUnit generator utils to generate *.pf Fortran unit tests files"""
+
+__author__ = 'sgu'
+
+# TODO license
+
+import difflib
+import hashlib
+# utils
+import logging
+import re
+import os
+from typing import List, Tuple
+
+# debug
+logger = logging.getLogger(__name__)
+# TODO debug flag
+show_debug_output: bool = True
+
+
+def difflib_merge(file_content0: str, file_content1: str) -> str:
+    '''
+    Merge two file-contents based on difflib.
+
+    :param file_content0: Content of first file
+    :param file_content1: Content of second file
+    :return: 3-way merge of comparing the first file and second file
+    '''
+    merged_content = "\n".join(
+        lines[2:] for lines in difflib.Differ().compare(
+            file_content0.split("\n"), file_content1.split("\n")
+        ) if not lines.startswith("?")
+    )
+
+    return merged_content
+
+
+def insert_fortran_operation(insert_content_list: List[str], file_content):
+    """
+    Insert operation into fortran code at the module end.
+
+    :param insert_content_list: List of code to be merged
+    :param file_content: File content in which to be merged
+    :return: Merged content
+    """
+
+    function_name: str = insert_content_list[0]
+    function_code: str = insert_content_list[1]
+    module_name: str = insert_content_list[2]
+
+    public_pattern = r'\n(( *)public(?: *\:\:.*)?\n)+'
+    private_pattern = r'\n(( *)private(?: *\:\:.*)?\n)+'
+    implicit_pattern = r'\n( *)implicit none *\n'
+
+    module_start_pattern = r'(\n( *)module +' + module_name + ' *\n?)'
+    module_end_pattern = r'(\n( *)end +module +' + module_name + ' *\n?)'
+
+    # Find the position to insert the new code
+    match_public = re.search(public_pattern, file_content, flags=re.IGNORECASE)
+    match_private = re.search(private_pattern, file_content, flags=re.IGNORECASE)
+    match_implicit = re.search(implicit_pattern, file_content, flags=re.IGNORECASE)
+    match_module_start = re.search(module_start_pattern, file_content, flags=re.IGNORECASE)
+
+    # Insert code accessible
+    if match_public:
+        # Insert after the "public" statement
+        insert_position = match_public.end()
+        line_insertion = match_public.regs[-1]
+    elif match_private:
+        # Insert after the "private" statement
+        insert_position = match_private.end()
+        line_insertion = match_private.regs[-1]
+    elif match_implicit:
+        # Insert after the "implicit" statement
+        insert_position = match_implicit.end()
+        line_insertion = match_implicit.regs[-1]
+    elif match_module_start:
+        # Insert after the module start
+        insert_position = match_module_start.end()
+        line_insertion = match_module_start.regs[-1]
+    else:
+        # If neither "contains" nor the function/subroutine is found, raise an error
+        raise ValueError(f'Private/Public, Module or "Implicit" statement not found. Module: {module_name}')
+
+    # Insert public statement with line insertion
+    file_content = (file_content[:insert_position] +
+                    file_content[line_insertion[0]:line_insertion[1]] +
+                    f'PUBLIC :: {function_name}' +
+                    '\n' +
+                    file_content[insert_position:])
+
+    match_module_end = re.search(module_end_pattern, file_content, flags=re.IGNORECASE)
+
+    # Insert function code
+    if match_module_end:
+        # Insert before the module end
+        insert_position = match_module_end.start()
+        line_insertion = match_module_end.regs[-1]
+    else:
+        # If neither "contains" nor the module is found, raise an error
+        raise ValueError(f'Module statement not found. Module: {module_name}')
+
+    # Insert function code with line insertion
+    file_content = (
+        file_content[:insert_position] +
+        '\n' +
+        file_content[line_insertion[0]:line_insertion[1]] +
+        function_code +
+        '\n' +
+        file_content[insert_position:])
+
+    return file_content
+
+
+def hash_file(path: str = None) -> str:
+    """
+    Hash file using MD5
+
+    :param path: system file path
+    :return: MD5 hash of file
+    """
+
+    with open(path, "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()
+
+
+def file_modified(path=None, mtime: float = 0, fileHash: str = None) -> bool:
+    """
+    Check hash and modification time of file.
+
+    :param path: system path to file
+    :param mtime: last modification time
+    :param fileHash: last md5 file hash
+    :return: If modification time or file hash is changed
+    """
+    if os.path.getmtime(path) > mtime or fileHash != hash_file(path):
+        logger.debug(f'... modified {path}')
+        return True
+    else:
+        logger.debug(f'... not modified {path}')
+        return False
+
+
+def write_file(file_path: str = '', content: List[str] = '', file_attr: tuple[float, str, str] = None, insert: bool = False) -> (tuple)[float, str, str]:
+    """
+    Write/merge pFUnit-file under :test_path:/:test_folder:/:filename:.pf for test-case.
+    Merges file if it exists using difflib.
+
+    :param file_path: system path to file
+    :param content: test-case content
+    :param fileHash: hash if file should exist
+    :param mtime: modification time if file should exist
+    :param content_org: original content
+    :return: hast and modification time of file
+    """
+
+    # Define the folder and filename. Current working directory is ignored for absolut test_path
+    path = os.path.dirname(file_path)
+
+    # Create folder if it doesn't exist
+    if not os.path.isdir(path):
+        os.makedirs(path)
+        if show_debug_output and logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f'... create {path}')
+
+    # Join content when it is written in one place.
+    if not insert:
+        content = ''.join(content)
+
+    # TODO hc
+    # Create file if it doesn't exist else merge with existing file
+    if os.path.exists(file_path):
+        # check if file is known or was modified
+        if file_attr is None or file_modified(file_path, file_attr[0], file_attr[1]):
+            # reload file from disk if it is unknown or modified
+            with open(file_path, mode='r', encoding='utf-8') as f:
+                content_org = f.read()
+        else:
+            # keep original file content
+            content_org = file_attr[2]
+
+        # Log
+        if show_debug_output and logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f'...try merge {file_path}')
+
+        # merge current content with original file content
+        if insert:
+            content = insert_fortran_operation(content, content_org)
+        else:
+            content = difflib_merge(content, content_org)
+    else:
+        # dismiss current content if saved again
+        content_org = ''
+
+    # Write rendered and optional merged content to file
+    with open(file_path, mode='w', encoding='utf-8') as f:
+        f.write(content)
+        if show_debug_output and logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f'... create {file_path}')
+
+    return os.path.getmtime(file_path), hash_file(file_path), content_org

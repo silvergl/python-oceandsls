@@ -502,7 +502,6 @@ class TypeAlias(Symbol, Type):
     def reference(self) -> ReferenceKind:
         return ReferenceKind.Irrelevant
 
-
 class ScopedSymbol(Symbol):
     """
     A symbol with a scope (so it can have child symbols).
@@ -988,6 +987,66 @@ class NamespaceSymbol(ScopedSymbol):
 class BlockSymbol(ScopedSymbol):
     pass
 
+class TestCaseSymbol(ScopedSymbol):
+    """
+    A symbol representing a test case from TDD-DSL used for CMake file generation.
+    """
+
+    # Symbol name of the test
+    __test_name: str
+    # System file path to the test file
+    __test_file_path: str
+    # Symbol name of the sut
+    __sut_name: str
+    # System file path to the sut file
+    __sut_file_path: str
+
+    def __init__(self, test_name=None, test_file_path=None, sut_name=None, sut_file_path=None, ):
+        """
+        A symbol representing a test case from TDD-DSL used for CMake file generation.
+
+        :param test_name: Symbol name of the test
+        :param test_file_path: System file path to the test file
+        :param sut_name: Symbol name of the sut
+        :param sut_file_path: System file path to the sut file
+        """
+        super().__init__(test_name)
+        self.__test_name = test_name
+        self.__test_file_path = test_file_path
+        self.__sut_name = sut_name
+        self.__sut_file_path = sut_file_path
+
+    @property
+    def sut_name(self) -> str:
+        return self.__sut_name
+
+    @sut_name.setter
+    def sut_name(self, sut_name: str):
+        self.__sut_name = sut_name
+
+    @property
+    def sut_file_path(self) -> str:
+        return self.__sut_file_path
+
+    @sut_file_path.setter
+    def sut_file_path(self, sut_file_path: str):
+        self.__sut_file_path = sut_file_path
+
+    @property
+    def test_name(self) -> str:
+        return self.__test_name
+
+    @test_name.setter
+    def test_name(self, test_name: str):
+        self.__test_name = test_name
+
+    @property
+    def test_file_path(self) -> str:
+        return self.__test_file_path
+
+    @test_file_path.setter
+    def test_file_path(self, test_file_path: str):
+        self.__test_file_path = test_file_path
 
 class ModuleSymbol(ScopedSymbol):
     def __init__(self, name: str = "", file: str = None):

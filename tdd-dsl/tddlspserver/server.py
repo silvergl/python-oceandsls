@@ -46,6 +46,7 @@ from pygls.workspace import Document
 # from ...antlrLib.CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
 # user relative imports
+from .cst.cmake_file_generator_visitor import CMakeFileGeneratorVisitor
 from .cst.f90_file_generator_visitor import F90FileGeneratorVisitor
 from .cst.diagnostic_listener import DiagnosticListener
 from .cst.pf_file_generator_visitor import PFFileGeneratorVisitor
@@ -273,23 +274,24 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     top_level_context = TestSuiteParser.Test_suiteContext
     parse_tree: top_level_context = tdd_server.parser.test_suite()
 
-    # set current working directory as working directory for test files
-    pf_file_generator_visitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor(test_work_path=os.getcwd(), files=tdd_server.files)
-
-    # TODO add arguments templatePath testPath testFolder
-    # write pf files and save written files
-    tdd_server.files = pf_file_generator_visitor.visit(parse_tree)
-
     # get symboltable for f90 generator
     symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor('variables', os.getcwd())
     symbol_table = symbol_table_visitor.visit(parse_tree)
 
-    # set current working directory as working directory for test files
-    f90_file_generator_visitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    # Generate pf files
+    pf_file_generator_visitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor(test_work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    # write pf files and save generated files
+    tdd_server.files = pf_file_generator_visitor.visit(parse_tree)
 
-    # TODO add arguments templatePath testPath testFolder
-    # write optional fortran file and save written files
+    # Generate F90 files
+    f90_file_generator_visitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    # update fortran file and save generated files
     tdd_server.files = f90_file_generator_visitor.visit(parse_tree)
+
+    # Generate CMake files
+    cmake_file_generator_visitor: CMakeFileGeneratorVisitor = CMakeFileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    # update CMake files and save generated files
+    tdd_server.files = cmake_file_generator_visitor.visit(parse_tree)
 
     server.show_message('Text Document Did Save')
 

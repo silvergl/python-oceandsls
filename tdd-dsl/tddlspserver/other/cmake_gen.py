@@ -14,11 +14,11 @@ show_debug_output: bool = True
 
 # Define the template variables
 template_vars = {
-    'PROJECTNAME': 'MyProject',
-    'SUTNAME': 'MySUT',
+    'PROJECTNAME': 'MyProject', # TODO
+    'SUTNAME': 'MySUT', # cfo_example
     'SUTFILENAME': 'sut_source.f90',
-    'TESTFOLDER': 'test',
-    'TESTNAME': 'MyTest',
+    'TESTFOLDER': 'test',   # test
+    'TESTNAME': 'MyTest',   # test_fT_ME
     'TESTFILENAME': 'test_source.f90'
 }
 

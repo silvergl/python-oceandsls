@@ -40,7 +40,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
         Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
 
-        :param template_path: relative filepath for jinja templates
+        :param template_path: absolute filepath for jinja templates
         :param work_path: relative path to generate test suite
         '''
         super().__init__()
@@ -98,7 +98,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         ops_names: List[str] = []
         ops_impl: List[str] = []
         for key, value_list in self.ops.items():
-            scope = get_scope(ctx, self.symbo_table)
+            scope = get_scope(ctx, self.symbol_table)
             routine_symbol = scope.get_symbols_of_type_and_name_sync(RoutineSymbol, key, False)
             # If operations does not exist, add to newly generated ops
             if not routine_symbol:
@@ -136,6 +136,13 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             # Write content to file
             self.files[self.work_path] = write_file(abs_path, content, file_attr, insert)
 
+            # Update test case symbol
+            test_case_symbol = get_scope(ctx, self.symbol_table)
+            if test_case_symbol:
+                test_case_symbol.sut_name = module_symbols[0].name
+                test_case_symbol.sut_file_path = abs_path
+            # TODO else error
+
         # Return list of generated files
         return self.files
 
@@ -162,7 +169,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
     # Find corresponding module symbol
     def visitTest_module(self, ctx: TestSuiteParser.Test_moduleContext):
         # Return corresponding module symbol, optionally with implementing file and contain functions flag
-        return get_scope(ctx, self.symbo_table)
+        return get_scope(ctx, self.symbol_table)
 
     # Visit a parse tree produced by TestSuiteParser#test_assertion.
     def visitTest_assertion(self, ctx: TestSuiteParser.Test_assertionContext):
@@ -256,7 +263,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             args.append(self.visit(arg))
 
         # Lookup if routine exists in symboltable
-        scope = get_scope(ctx, self.symbo_table)
+        scope = get_scope(ctx, self.symbol_table)
         routine_symbol = scope.get_symbols_of_type_and_name_sync(RoutineSymbol, name, False)
         if routine_symbol:
             # Operation exists return return_type
@@ -278,7 +285,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         name = ctx.ID().getText()
 
         # extract most local type of reference from symboltable
-        scope = get_scope(ctx, self.symbo_table)
+        scope = get_scope(ctx, self.symbol_table)
         var = scope.get_nested_symbols_of_type_and_name_sync(VariableSymbol, name)
         varType = var[0].attached_type.lower() if var else None
 

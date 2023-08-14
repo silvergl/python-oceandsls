@@ -4,10 +4,16 @@ project (PFUNIT_DEMO_BASIC
   VERSION 1.0.0
   LANGUAGES Fortran)
 
-find_package(PFUNIT REQUIRED)
+# Enable CTest
 enable_testing()
 
-# system under test
+# This assumes that you've already cloned the pFUnit source code, built and installed it (make install) 
+# to a suitable location on your computer. Adding search paths using the PATHS argument is often necessary.
+# See https://cmake.org/cmake/help/v3.0/command/find_package.html for more information.
+# Note that the pFUnit package will be OS, compiler and compiler version dependent as it distributes Fortran mod-files.
+find_package(PFUNIT REQUIRED)
+
+# system under test source files
 add_library(sut
   cfo_sut_example.f90
   )

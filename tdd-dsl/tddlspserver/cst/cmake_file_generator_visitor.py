@@ -2,6 +2,7 @@
 
 __author__ = 'sgu'
 
+import os
 # util
 from typing import Dict, Tuple
 
@@ -9,6 +10,7 @@ from typing import Dict, Tuple
 from jinja2 import Environment, FileSystemLoader
 
 # user relative imports
+from ..filewriter.file_writer import write_file
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..symboltable.symbol_table import SymbolTable
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
@@ -19,7 +21,10 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     symbol_table: SymbolTable
     work_path: str
 
-    def __init__(self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake', files: Dict[str, Tuple[float, str, str]] = {}, symbol_table: SymbolTable = None, work_path: str = 'tdd-dsl/output'):
+    def __init__(
+        self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake', files: Dict[str, Tuple[float, str, str]] = {},
+        symbol_table: SymbolTable = None, work_path: str = 'tdd-dsl/output'
+        ):
         """
         Generate CMake files for test case
 
@@ -37,12 +42,93 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.template_path = template_path
 
         # Load Jinja2 templates
-        self.environment = Environment(loader=FileSystemLoader(template_path))
+        self.template_env = Environment(loader=FileSystemLoader(template_path))
 
         self.work_path = work_path
 
-    # Visit a parse tree produced by TestSuiteParser#test_case.
-    def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext) -> dict[str, Tuple[float, str, str]]:
+        self.file_templates = {}
+        # Get template file names from grammar
+        i: int = 0
+        for rule in TestSuiteParser.ruleNames:
+            self.file_templates[i] = f'{rule}_template.txt'
+            i += 1
+
+    # Visit a parse tree produced by TestSuiteParser#test_suite.
+    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
+
         # Update test case symbol
         test_case_symbol = get_scope(ctx, self.symbol_table)
-        pass
+
+        suts = {}
+        sut_names = []
+        sut: Tuple = ()
+        for case in ctx.cases:
+            sut = self.visit(case)
+
+            # add name
+            sut_names.append(sut[0])
+
+            # Extract file name
+            rel_sut_file = os.path.relpath(sut[1],self.work_path)
+            rel_sut_file = rel_sut_file if rel_sut_file != '.' else None
+            # Add name file mapping
+            suts[sut[0]] = suts.get(sut[0], rel_sut_file)
+
+        # set test folder
+        rel_test_dir = sut[2]
+
+        # Set template variables
+        template_vars = {
+            'PROJECTNAME': ctx.name.text, #'MyProject',  # TODO
+            'SUTS': suts,  # 'MySUT', # cfo_example
+            'SUTNAMES': sut_names,  # 'sut_source.f90',
+            'TESTFOLDER': rel_test_dir #'test',  # test
+        }
+
+        # Load Jinja2 template
+        template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
+
+        # Render template
+        content = template.render(template_vars)
+
+        # Write the rendered content to files
+        abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
+        file_attr = self.files.get(abs_path)
+        self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
+
+        return self.files
+
+    # Visit a parse tree produced by TestSuiteParser#test_case.
+    def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
+        # Resolve test case symbol
+        test_case_symbol = get_scope(ctx, self.symbol_table)
+
+        # Get system file paths
+        test_file = os.path.split(test_case_symbol.test_file_path)
+
+        # Get relative test directory path
+        rel_test_dir = os.path.relpath(test_file[0], self.work_path)
+        rel_test_dir = rel_test_dir if rel_test_dir != '.' else None
+
+        # Set template variables
+        template_vars = {
+            'SUTNAME': test_case_symbol.sut_name,  # 'MySUT', # cfo_example
+            'TESTNAME': test_case_symbol.test_name,  # 'MyTest',   # test_fT_ME
+            'TESTFILENAME': test_file[1]  # 'test_source.f90'
+        }
+
+        # Load Jinja2 template
+        template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
+
+        # Render template
+        content = template.render(template_vars)
+
+        # Write the rendered content to files
+        abs_path: str = os.path.join(test_file[0], "CMakeLists.txt")
+        file_attr = self.files.get(abs_path)
+        self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
+
+        # Return system under test details
+        sut : Tuple = (test_case_symbol.sut_name,test_case_symbol.sut_file_path, rel_test_dir)
+
+        return sut

@@ -1,4 +1,4 @@
-'''FileGeneratorVisitor module for pFunit pf files.'''
+"""FileGeneratorVisitor module for pFunit pf files."""
 
 __author__ = 'sgu'
 
@@ -33,7 +33,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/pf', files: Dict[str, Tuple[float, str, str]] = {},
         symbol_table: SymbolTable = None, test_work_path: str = 'tdd-dsl/output', test_folder: str = 'tests', file_suffix: str = 'pf'
     ):
-        '''
+        """
         pfUnit test file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
         Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
@@ -41,7 +41,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         :param template_path: absolute filepath for jinja templates
         :param test_work_path: relative path to generate test suite
         :param test_folder: relative path under :testWorkPath: to save pfUnit tests
-        '''
+        """
         super().__init__()
 
         self.files: dict[str, Tuple[float, str, str]] = files

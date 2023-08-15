@@ -134,7 +134,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             file_attr = self.files.get(abs_path)
 
             # Write content to file
-            self.files[self.work_path] = write_file(abs_path, content, file_attr, insert)
+            self.files[abs_path] = write_file(abs_path, content, file_attr, insert)
 
             # Update test case symbol
             test_case_symbol = get_scope(ctx, self.symbol_table)

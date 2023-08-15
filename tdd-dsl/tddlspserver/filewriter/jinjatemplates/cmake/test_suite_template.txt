@@ -14,13 +14,18 @@ enable_testing()
 find_package(PFUNIT REQUIRED)
 
 # system under test source files
+{% for SUTNAME, SUTFILENAME in SUTS | items %}
 add_library({{ SUTNAME }}
   {{ SUTFILENAME }}
   )
+{% endfor %}
 
-set_target_properties ({{ SUTNAME }} PROPERTIES
-  Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+{% for SUTNAME in SUTNAMES %}
 target_include_directories({{ SUTNAME }} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+{% endfor %}
+
+set_target_properties ({{ SUTNAMES|join(' ') }} PROPERTIES
+  Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory({{ TESTFOLDER }})

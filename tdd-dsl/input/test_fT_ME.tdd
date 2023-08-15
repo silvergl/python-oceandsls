@@ -1,3 +1,4 @@
+suite test_suite :
 test test_fT_ME :
     srcpath : 'tdd-dsl/input/tdd_dev/UVic_example_opem'
     scope :

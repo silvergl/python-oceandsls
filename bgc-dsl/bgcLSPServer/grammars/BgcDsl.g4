@@ -133,9 +133,13 @@ updateState:
 // sourceCompartment and targetCompartment are of type compartment
 // substances and substance are of type substanceDeclaration
 connection:
-	'connection' name=ID ('(' substances+=ID (',' substances+=ID)* ')')?
-	'from' sourceCompartment=ID 'to' targetCompartment=ID ('=' expression=arithmeticExpression |
-	'{' (substanceExpressions+=substanceExpression | calculations+=calculation)* '}')
+	'connection' (
+		(name=ID ('(' substances+=ID (',' substances+=ID)* ')')? sourceCompartment=ID 'to' targetCompartment=ID)
+		(sourceCompartment=ID 'to' targetCompartment=ID name=ID ('(' substances+=ID (',' substances+=ID)* ')')?)
+	(
+		'=' expression=arithmeticExpression |
+		'{' (substanceExpressions+=substanceExpression | calculations+=calculation)* '}'
+	)
 ;
 
 /**

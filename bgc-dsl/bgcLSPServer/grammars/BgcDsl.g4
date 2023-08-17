@@ -100,6 +100,7 @@ compartment:
  * - expression = can be any arithmetic expression to set the initial value
  *   of the state. The expression will be computed during setup. The expression
  *   is optional. The default values is 0.
+ */
 substanceState:
 	substance=ID ('=' expression=arithmeticExpression)?
 ;
@@ -134,8 +135,9 @@ updateState:
 // substances and substance are of type substanceDeclaration
 connection:
 	'connection' (
-		(name=ID ('(' substances+=ID (',' substances+=ID)* ')')? sourceCompartment=ID 'to' targetCompartment=ID)
+		(name=ID ('(' substances+=ID (',' substances+=ID)* ')')? sourceCompartment=ID 'to' targetCompartment=ID) |
 		(sourceCompartment=ID 'to' targetCompartment=ID name=ID ('(' substances+=ID (',' substances+=ID)* ')')?)
+	)
 	(
 		'=' expression=arithmeticExpression |
 		'{' (substanceExpressions+=substanceExpression | calculations+=calculation)* '}'
@@ -184,7 +186,7 @@ alternativeCalculation:
  * - expression = the expression to be used in case the case is selected.
  */
 caseCalculation:
-    'case' literal=literalExpression ':' expression=arithmeticExpression
+    'case' literalExp=literalExpression ':' expression=arithmeticExpression
 ;
 
 // ----------------------

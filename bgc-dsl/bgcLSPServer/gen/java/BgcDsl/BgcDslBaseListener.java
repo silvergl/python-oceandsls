@@ -1,4 +1,4 @@
-// Generated from BgcDsl.g4 by ANTLR 4.12.0
+// Generated from BgcDsl.g4 by ANTLR 4.13.0
 package BgcDsl;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -168,6 +168,18 @@ public class BgcDslBaseListener implements BgcDslListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAlternativeCalculation(BgcDslParser.AlternativeCalculationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCaseCalculation(BgcDslParser.CaseCalculationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCaseCalculation(BgcDslParser.CaseCalculationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

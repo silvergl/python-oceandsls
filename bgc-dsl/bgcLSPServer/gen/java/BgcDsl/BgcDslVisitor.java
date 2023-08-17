@@ -1,4 +1,4 @@
-// Generated from BgcDsl.g4 by ANTLR 4.12.0
+// Generated from BgcDsl.g4 by ANTLR 4.13.0
 package BgcDsl;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -88,6 +88,12 @@ public interface BgcDslVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAlternativeCalculation(BgcDslParser.AlternativeCalculationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link BgcDslParser#caseCalculation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCaseCalculation(BgcDslParser.CaseCalculationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link BgcDslParser#unit}.
 	 * @param ctx the parse tree

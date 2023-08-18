@@ -34,7 +34,52 @@ def difflib_merge(file_content0: str, file_content1: str) -> str:
 
     return merged_content
 
+def cmake_merge(insert_content_list: List[str], file_content):
+    """
+    TODO
 
+    :param insert_content_list: List of code to be merged
+    :param file_content: File content in which to be merged
+    :return: Merged content
+    """
+
+    library_statement: str = insert_content_list[0]
+    target_include_statement: str = insert_content_list[1]
+    function_name: str = insert_content_list[2]
+
+    target_include_pattern = r'(target_include_directories\(.*\)\n)+'
+    set_target_pattern = r'set_target_properties \(.*( PROPERTIES)\n'
+
+
+    # Find the position to insert the new code
+    match_target_include = re.search(target_include_pattern, file_content, flags=re.IGNORECASE)
+
+    # Insert code accessible
+    if match_target_include:
+        # TODO
+        insert_position_start = match_target_include.start()
+        insert_position_end = match_target_include.start()
+    else:
+        # If target_include_directories is not found, raise an error
+        raise ValueError(f'target_include_directories statement not found.')
+
+    # Insert library and target statement
+    file_content = (file_content[:insert_position_start] + library_statement + file_content[ insert_position_start:insert_position_end] + target_include_statement)
+
+    match_set_target = re.search(set_target_pattern, file_content, flags=re.IGNORECASE)
+
+    # Insert function code
+    if match_set_target:
+        # TODO
+        insert_position = match_set_target.start()
+    else:
+        # If set_target_properties is not found, raise an error
+        raise ValueError(f'set_target_properties statement not found.')
+
+    # Insert function name into set_target_properties statement
+    file_content = ( file_content[:insert_position] + " " + function_name + file_content[insert_position:])
+
+    return file_content
 def fortran_merge(insert_content_list: List[str], file_content):
     """
     Insert operation into fortran code at the module end.
@@ -180,12 +225,12 @@ def write_file(file_path: str = '', content: List[str] = '', file_attr: tuple[fl
         match extension:
             case '.f90':
                 # Insert operation at the module end
-                content = fortran_merge(content, content_org)
+                content = fortran_merge(content, content_org) if insert else content
             case '.pf':
                 # Difflib merge of file
                 content = difflib_merge(content, content_org)
             case '.txt':
-                pass
+                content = cmake_merge(content, content_org) if insert else content
             case _:
                 # TODO error
                 pass

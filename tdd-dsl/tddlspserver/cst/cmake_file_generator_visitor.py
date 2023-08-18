@@ -94,7 +94,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Write the rendered content to files
         abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
         file_attr = self.files.get(abs_path)
-        self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
+        self.files[abs_path] = write_file(abs_path, [content], file_attr, True)
 
         return self.files
 

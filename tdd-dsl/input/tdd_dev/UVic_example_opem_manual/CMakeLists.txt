@@ -18,9 +18,15 @@ add_library(sut
   cfo_sut_example.f90
   )
 
-set_target_properties (sut PROPERTIES
+# system under test source files
+add_library(foo
+  cfo_sut_example.f90
+  )
+
+set_target_properties (sut foo PROPERTIES
   Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 target_include_directories(sut PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(foo PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(tests)

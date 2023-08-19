@@ -42,7 +42,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.template_path = template_path
 
         # Load Jinja2 templates
-        self.template_env = Environment(loader=FileSystemLoader(template_path))
+        self.template_env = Environment(loader=FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=False)
 
         self.work_path = work_path
 
@@ -66,6 +66,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             sut = self.visit(case)
 
             # Add name
+            # TODO
             sut_names.append(sut[0])
 
             # Extract file name
@@ -79,22 +80,45 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
         # Set template variables
         template_vars = {
-            'PROJECTNAME': ctx.name.text, #'MyProject',  # TODO
-            'SUTS': suts,  # 'MySUT', # cfo_example
-            'SUTNAMES': sut_names,  # 'sut_source.f90',
-            'TESTFOLDER': rel_test_dir #'test',  # test
+            'PROJECTNAME': ctx.name.text,
+            'SUTS': suts,
+            'SUTNAMES': sut_names,
+            'TESTFOLDER': rel_test_dir,
+            'RENDER_TEMPLATE' : ''
         }
 
         # Load Jinja2 template
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        # Render template
-        content = template.render(template_vars)
+        # Check if file exists and need to be merged
+        abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
+
+        if os.path.exists(abs_path):
+            # Generate parts to be merged into
+            insert = True
+
+            template_vars['RENDER_TEMPLATE'] = 'add_library'
+
+            library_statements = template.render(template_vars)
+
+            template_vars['RENDER_TEMPLATE'] = 'target_include'
+
+            target_include_statements = template.render(template_vars)
+
+            content = [library_statements, target_include_statements, sut_names]
+
+        else:
+            # Generate new file
+            insert = False
+
+            template_vars['RENDER_TEMPLATE'] = 'new'
+
+            # Render template
+            content = template.render(template_vars)
 
         # Write the rendered content to files
-        abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
         file_attr = self.files.get(abs_path)
-        self.files[abs_path] = write_file(abs_path, [content], file_attr, True)
+        self.files[abs_path] = write_file(abs_path, content, file_attr, insert)
 
         return self.files
 
@@ -126,6 +150,8 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Write the rendered content to files
         abs_path: str = os.path.join(test_file[0], "CMakeLists.txt")
         file_attr = self.files.get(abs_path)
+
+        # TODO 19.08 existing file
         self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
 
         # Return system under test details

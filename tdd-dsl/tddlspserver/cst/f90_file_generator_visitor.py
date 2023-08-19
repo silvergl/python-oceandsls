@@ -79,15 +79,6 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
         module_symbols = self.visit(ctx.scope)
 
-        # funSymbol = module_symbols[0].getSymbolsOfTypeSync( FunctionSymbol, True )
-        #
-        # routine_symbol = module_symbols[0].getSymbolsOfTypeSync( RoutineSymbol, True )
-
-        # not implemented ops
-        # opsNew = list(filter ( lambda ))
-
-        # module: ModuleSymbol = next(filter ( lambda module: module.name == scopeName, modules))
-
         # Get test case template parameters
 
         # Get operations defined in assertions

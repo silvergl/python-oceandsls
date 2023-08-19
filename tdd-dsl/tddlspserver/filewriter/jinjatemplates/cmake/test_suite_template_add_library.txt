@@ -1,0 +1,5 @@
+{% for SUTNAME, SUTFILENAME in SUTS | items %}
+add_library({{ SUTNAME }}
+  {{ SUTFILENAME }}
+  )
+{% endfor %}

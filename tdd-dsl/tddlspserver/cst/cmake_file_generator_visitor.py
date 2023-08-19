@@ -65,7 +65,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         for case in ctx.cases:
             sut = self.visit(case)
 
-            # add name
+            # Add name
             sut_names.append(sut[0])
 
             # Extract file name
@@ -74,7 +74,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             # Add name file mapping
             suts[sut[0]] = suts.get(sut[0], rel_sut_file)
 
-        # set test folder
+        # Set test folder
         rel_test_dir = sut[2]
 
         # Set template variables

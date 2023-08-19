@@ -35,7 +35,7 @@ def difflib_merge(file_content0: str, file_content1: str) -> str:
     return merged_content
 
 
-def insert_fortran_operation(insert_content_list: List[str], file_content):
+def fortran_merge(insert_content_list: List[str], file_content):
     """
     Insert operation into fortran code at the module end.
 
@@ -83,11 +83,8 @@ def insert_fortran_operation(insert_content_list: List[str], file_content):
         raise ValueError(f'Private/Public, Module or "Implicit" statement not found. Module: {module_name}')
 
     # Insert public statement with line insertion
-    file_content = (file_content[:insert_position] +
-                    file_content[line_insertion[0]:line_insertion[1]] +
-                    f'PUBLIC :: {function_name}' +
-                    '\n' +
-                    file_content[insert_position:])
+    file_content = (file_content[:insert_position] + file_content[line_insertion[0]:line_insertion[1]] + f'PUBLIC :: {function_name}' + '\n' + file_content[
+                                                                                                                                               insert_position:])
 
     match_module_end = re.search(module_end_pattern, file_content, flags=re.IGNORECASE)
 
@@ -102,12 +99,7 @@ def insert_fortran_operation(insert_content_list: List[str], file_content):
 
     # Insert function code with line insertion
     file_content = (
-        file_content[:insert_position] +
-        '\n' +
-        file_content[line_insertion[0]:line_insertion[1]] +
-        function_code +
-        '\n' +
-        file_content[insert_position:])
+        file_content[:insert_position] + '\n' + file_content[line_insertion[0]:line_insertion[1]] + function_code + '\n' + file_content[insert_position:])
 
     return file_content
 
@@ -183,11 +175,21 @@ def write_file(file_path: str = '', content: List[str] = '', file_attr: tuple[fl
         if show_debug_output and logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'...try merge {file_path}')
 
-        # merge current content with original file content
-        if insert:
-            content = insert_fortran_operation(content, content_org)
-        else:
-            content = difflib_merge(content, content_org)
+        # Merge current content with original file content based on file extension
+        extension: str = os.path.splitext(file_path)[1]
+        match extension:
+            case '.f90':
+                # Insert operation at the module end
+                content = fortran_merge(content, content_org)
+            case '.pf':
+                # Difflib merge of file
+                content = difflib_merge(content, content_org)
+            case '.txt':
+                pass
+            case _:
+                # TODO error
+                pass
+
     else:
         # dismiss current content if saved again
         content_org = ''

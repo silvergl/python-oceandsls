@@ -48,6 +48,8 @@ def cmake_merge(insert_content_list: List[str], file_content):
     target_include_statement: str = insert_content_list[1]
     function_names: str = insert_content_list[2]
 
+    add_library_pattern = r'\s*add_library\s*\(\s*'
+
     target_include_pattern = r'(target_include_directories\(.*\)\n)+'
     set_target_pattern = r'set_target_properties \(.*( PROPERTIES)\n'
 
@@ -57,7 +59,7 @@ def cmake_merge(insert_content_list: List[str], file_content):
 
     # Insert code accessible
     if match_target_include:
-        # TODO
+        # TODO cm
         insert_position_start = match_target_include.start()
         insert_position_end = match_target_include.end()
     else:
@@ -71,7 +73,7 @@ def cmake_merge(insert_content_list: List[str], file_content):
 
     # Insert function code
     if match_set_target:
-        # TODO
+        # TODO cm
         insert_position = match_set_target.regs[1][0]
     else:
         # If set_target_properties is not found, raise an error

@@ -419,7 +419,7 @@ class Symbol:
         return None
 
     # TODO <anonymous> special string for empty scope names
-    def qualifiedName(self, separator=".", full=False, include_anonymous=False) -> str:
+    def qualified_name(self, separator=".", full=False, include_anonymous=False) -> str:
         """
         Creates a qualified identifier from this symbol and its parent. If `full` is true then all parents are traversed
         in addition to this instance.

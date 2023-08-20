@@ -20,6 +20,7 @@ from ..utils.suggest_variables import get_scope
 class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     symbol_table: SymbolTable
     work_path: str
+    cwd : str
 
     def __init__(
         self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake', files: Dict[str, Tuple[float, str, str]] = {},
@@ -45,6 +46,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.template_env = Environment(loader=FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=False)
 
         self.work_path = work_path
+        self.cwd = work_path
 
         self.file_templates = {}
         # Get template file names from grammar
@@ -56,43 +58,34 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     # Visit a parse tree produced by TestSuiteParser#test_suite.
     def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
 
-        # Update test case symbol
-        test_case_symbol = get_scope(ctx, self.symbol_table)
 
         suts = {}
         sut_names = []
         sut: Tuple = ()
+        test_dirs = []
         for case in ctx.cases:
+            test_case = self.visit(case)
             sut = self.visit(case)
 
             # Add name
-            # TODO
-            sut_names.append(sut[0])
+            sut_names.append(test_case[0])
 
-            # Extract file name
+            # Add name file mapping
+            suts[test_case[0]] = list(test_case[1].lib_names.values())
 
-            # TODO rm depr
-            # # Build folder structure from working directory
-            # rel_sut_file = os.path.relpath(sut[1],self.work_path)
-            # rel_sut_file = rel_sut_file if rel_sut_file != '.' else None
-            # # Add name file mapping
-            # suts[sut[0]] = suts.get(sut[0], rel_sut_file)
+            # Add test directory
+            test_file = os.path.split(test_case[1].test_file_path)
+            rel_test_dir = os.path.relpath(test_file[0], self.work_path)
+            rel_test_dir = rel_test_dir if rel_test_dir != '.' else None
 
-            # Add name file mapping based on source file folder
-            suts[sut[0]] = os.path.split(sut[1])[1]
-
-        # Set project_folder
-        abs_prj_dir = os.path.split(sut[1])[0]
-
-        # Set test folder
-        rel_test_dir = os.path.relpath(sut[2],abs_prj_dir)
+            test_dirs.append(rel_test_dir)
 
         # Set template variables
         template_vars = {
             'PROJECTNAME': ctx.name.text,
             'SUTS': suts,
             'SUTNAMES': sut_names,
-            'TESTFOLDER': rel_test_dir,
+            'TESTFOLDERS': test_dirs,
             'RENDER_TEMPLATE' : ''
         }
 
@@ -100,7 +93,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
         # Write CMake file into project folder
-        abs_path: str = os.path.join(abs_prj_dir, "CMakeLists.txt")
+        abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
 
         # Check if file exists and need to be merged
         if os.path.exists(abs_path):
@@ -134,15 +127,16 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
+
+        # Update project path
+        # TODO mv to suite
+        self.visit(ctx.srcpath)
+
         # Resolve test case symbol
         test_case_symbol = get_scope(ctx, self.symbol_table)
 
         # Get system file paths
         test_file = os.path.split(test_case_symbol.test_file_path)
-
-        # Get relative test directory path
-        rel_test_dir = os.path.relpath(test_file[0], self.work_path)
-        rel_test_dir = rel_test_dir if rel_test_dir != '.' else None
 
         # Set sut name according to test name
         sut_name = f'{test_case_symbol.test_name}_sut'
@@ -168,6 +162,17 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
 
         # Return system under test details
-        sut : Tuple = (sut_name,test_case_symbol.sut_file_path, rel_test_dir)
+        # sut : Tuple = (sut_name,test_case_symbol.sut_file_path, rel_test_dir, test_case_symbol.lib_names)
+        sut : Tuple = (sut_name,test_case_symbol)
 
         return sut
+
+    # Save the source path to scan for existing variables
+    def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):
+        # Strip string terminals
+        user_path: str = ctx.path.text.strip('\'')
+
+        # TODO document
+        # Update source directory
+        # If the given path is an absolute path, then self._testPath is ignored and the joining is only the given path
+        self.work_path = os.path.join(self.cwd, user_path)

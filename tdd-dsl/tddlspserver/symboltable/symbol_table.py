@@ -10,7 +10,7 @@ __author__ = 'sgu'
 import asyncio
 from dataclasses import dataclass
 from enum import Enum
-from typing import Coroutine, List, Optional, ParamSpec, Set, TypeVar
+from typing import Coroutine, Dict, List, Optional, ParamSpec, Set, TypeVar
 
 # antlr4
 from antlr4.tree.Tree import ParseTree
@@ -987,6 +987,7 @@ class NamespaceSymbol(ScopedSymbol):
 class BlockSymbol(ScopedSymbol):
     pass
 
+
 class TestCaseSymbol(ScopedSymbol):
     """
     A symbol representing a test case from TDD-DSL used for CMake file generation.
@@ -1001,9 +1002,9 @@ class TestCaseSymbol(ScopedSymbol):
     # System file path to the sut file
     __sut_file_path: str
     # List of used libraries
-    __lib_names: List[str]
+    __lib_names: Dict[str, str]
 
-    def __init__(self, test_name=None, test_file_path=None, sut_name=None, sut_file_path=None, lib_names=None ):
+    def __init__(self, test_name=None, test_file_path=None, sut_name=None, sut_file_path=None, lib_names=None):
         """
         A symbol representing a test case from TDD-DSL used for CMake file generation.
 
@@ -1053,11 +1054,11 @@ class TestCaseSymbol(ScopedSymbol):
         self.__test_file_path = test_file_path
 
     @property
-    def lib_names(self) -> List[str]:
+    def lib_names(self) -> Dict[str, str]:
         return self.__lib_names
 
     @lib_names.setter
-    def lib_names(self, lib_names: List[str]):
+    def lib_names(self, lib_names: Dict[str, str]):
         self.__lib_names = lib_names
 
 class ModuleSymbol(ScopedSymbol):

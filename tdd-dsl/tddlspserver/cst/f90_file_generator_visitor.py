@@ -21,6 +21,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
     file_templates: Dict[int, str]
     template_path: str
     work_path: str
+    cwd: str
     test_file_predicate: str
     environment: Environment
     ops: Dict[str, List]
@@ -47,6 +48,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         self.files: dict[str, Tuple[float, str, str]] = files
         self.template_path = template_path
         self.work_path = work_path
+        self.cwd = work_path
         self.file_suffix = file_suffix
         # Load Jinja2 templates
         self.environment = Environment(loader=FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=False)
@@ -118,7 +120,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 content = [template.render(name=module_name, opsNames=ops_names, ops=ops_impl)]
 
             # Get absolute file path
-            self.visit(ctx.src_path())
+            self.visit(ctx.srcpath)
             abs_path: str = os.path.join(self.work_path, module_file)
 
             # Get the file attributes for previously generated files
@@ -133,8 +135,8 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 # Add first used module as system under test
                 test_case_symbol.sut_name = module_symbols[0].name
                 test_case_symbol.sut_file_path = abs_path
-                # Add remaining used modules as additional libraries
-                test_case_symbol.lib_names = list(map(lambda module: module.name, module_symbols[1:]))  # TODO else error
+                # Add used modules as additional libraries
+                test_case_symbol.lib_names = dict(map(lambda module: (module.name, module.file), module_symbols))
 
         # Return list of generated files
         return self.files
@@ -147,7 +149,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         # TODO document
         # Update source directory
         # If the given path is an absolute path, then self._testPath is ignored and the joining is only the given path
-        self.work_path = os.path.join(self.work_path, user_path)
+        self.work_path = os.path.join(self.cwd, user_path)
 
     # Get list of used module symbols
     def visitUse_modules(self, ctx: TestSuiteParser.Use_modulesContext):

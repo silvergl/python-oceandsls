@@ -10,7 +10,7 @@ import hashlib
 import logging
 import re
 import os
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 # debug
 logger = logging.getLogger(__name__)
@@ -34,7 +34,8 @@ def difflib_merge(file_content0: str, file_content1: str) -> str:
 
     return merged_content
 
-def cmake_merge(insert_content_list: List[str], file_content):
+
+def cmake_merge(insert_content_list: Dict[str, str], file_content):
     """
     TODO
 
@@ -42,47 +43,52 @@ def cmake_merge(insert_content_list: List[str], file_content):
     :param file_content: File content in which to be merged
     :return: Merged content
     """
-    # TODO 19.08 existing lib
 
-    library_statement: str = insert_content_list[0]
-    target_include_statement: str = insert_content_list[1]
-    function_names: str = insert_content_list[2]
+    for sut_name, sut_statements in insert_content_list.items():
+        library_statement = sut_statements[0]
+        target_include_statements = sut_statements[1]
 
-    add_library_pattern = r'\s*add_library\s*\(\s*'
+        # Check if library exists
+        add_library_pattern = r'^ *add_library *\( *' + sut_name + r'[^\)]*\)$'
+        match_add_library = re.search(add_library_pattern, file_content, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        if match_add_library:
+            # Replace add_library statement
+            file_content = re.sub(add_library_pattern, library_statement, file_content, flags=re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        else:
+            # Add library statement and target include statement and extend set_target statement
 
-    target_include_pattern = r'(target_include_directories\(.*\)\n)+'
-    set_target_pattern = r'set_target_properties \(.*( PROPERTIES)\n'
+            target_include_pattern = r'(^target_include_directories\([^\)]*\)$\n)+'
+            set_target_pattern = r'^set_target_properties \([^\n]*( PROPERTIES)$'
 
+            # Find the position to insert the new code
+            match_target_include = re.search(target_include_pattern, file_content, flags=re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    # Find the position to insert the new code
-    match_target_include = re.search(target_include_pattern, file_content, flags=re.IGNORECASE)
+            # Add add_library statement and extend set_target statement
+            if match_target_include:
+                insert_position_start = match_target_include.start()
+                insert_position_end = match_target_include.end()
+            else:
+                # If target_include_directories is not found, raise an error
+                raise ValueError(f'target_include_directories statement not found.')
 
-    # Insert code accessible
-    if match_target_include:
-        # TODO cm
-        insert_position_start = match_target_include.start()
-        insert_position_end = match_target_include.end()
-    else:
-        # If target_include_directories is not found, raise an error
-        raise ValueError(f'target_include_directories statement not found.')
+            # Insert library and target statement
+            file_content = (file_content[:insert_position_start] + library_statement + "\n\n" + file_content[insert_position_start:insert_position_end] + target_include_statements + "\n" + file_content[insert_position_end:])
 
-    # Insert library and target statement
-    file_content = (file_content[:insert_position_start] + library_statement + file_content[ insert_position_start:insert_position_end] + target_include_statement + file_content[ insert_position_end:])
+            match_set_target = re.search(set_target_pattern, file_content, flags=re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    match_set_target = re.search(set_target_pattern, file_content, flags=re.IGNORECASE)
+            # Insert target_include statement
+            if match_set_target:
+                insert_position = match_set_target.regs[1][0]
+            else:
+                # If set_target_properties is not found, raise an error
+                raise ValueError(f'set_target_properties statement not found.')
 
-    # Insert function code
-    if match_set_target:
-        # TODO cm
-        insert_position = match_set_target.regs[1][0]
-    else:
-        # If set_target_properties is not found, raise an error
-        raise ValueError(f'set_target_properties statement not found.')
-
-    # Insert function name into set_target_properties statement
-    file_content = ( file_content[:insert_position] + " " + " ".join(function_names) + file_content[insert_position:])
+            # Insert function name into set_target_properties statement
+            file_content = (file_content[:insert_position] + " " + sut_name + file_content[insert_position:])
 
     return file_content
+
+
 def fortran_merge(insert_content_list: List[str], file_content):
     """
     Insert operation into fortran code at the module end.

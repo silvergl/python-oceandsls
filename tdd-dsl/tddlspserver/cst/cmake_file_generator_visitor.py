@@ -67,9 +67,6 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             test_case = self.visit(case)
             sut = self.visit(case)
 
-            # Add name
-            sut_names.append(test_case[0])
-
             # Add name file mapping
             suts[test_case[0]] = list(test_case[1].lib_names.values())
 
@@ -79,15 +76,6 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             rel_test_dir = rel_test_dir if rel_test_dir != '.' else None
 
             test_dirs.append(rel_test_dir)
-
-        # Set template variables
-        template_vars = {
-            'PROJECTNAME': ctx.name.text,
-            'SUTS': suts,
-            'SUTNAMES': sut_names,
-            'TESTFOLDERS': test_dirs,
-            'RENDER_TEMPLATE' : ''
-        }
 
         # Load Jinja2 template
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
@@ -100,21 +88,42 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             # Generate parts to be merged into
             insert = True
 
-            template_vars['RENDER_TEMPLATE'] = 'add_library'
+            # Update sut with CMake statements
+            for sut_name, sut_files in suts.items():
 
-            library_statements = template.render(template_vars)
+                # Set template variables
+                template_vars = {
+                    'SUTNAME': sut_name,
+                    'SUTFILENAMES': sut_files,
+                    'RENDER_TEMPLATE' : 'add_library'
+                }
 
-            template_vars['RENDER_TEMPLATE'] = 'target_include'
+                # Render add_library statement
+                library_statement = template.render(template_vars)
 
-            target_include_statements = template.render(template_vars)
+                # Update template render switch
+                template_vars['RENDER_TEMPLATE'] = 'target_include'
 
-            content = [library_statements, target_include_statements, sut_names]
+                # Render target_include statement
+                target_include_statement = template.render(template_vars)
+
+                # Update sut mapping
+                suts[sut_name] = [library_statement,target_include_statement]
+
+            # Forward statements to file writer
+            content = suts
 
         else:
             # Generate new file
             insert = False
 
-            template_vars['RENDER_TEMPLATE'] = 'new'
+            # Set template variables
+            template_vars = {
+                'PROJECTNAME': ctx.name.text,
+                'SUTS': suts,
+                'TESTFOLDERS': test_dirs,
+                'RENDER_TEMPLATE' : 'new'
+            }
 
             # Render template
             content = template.render(template_vars)
@@ -158,7 +167,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         abs_path: str = os.path.join(test_file[0], "CMakeLists.txt")
         file_attr = self.files.get(abs_path)
 
-        # TODO 19.08 existing file
+        # Write CMake file for test case. Overwrite if existing
         self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
 
         # Return system under test details

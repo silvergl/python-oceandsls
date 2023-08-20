@@ -56,12 +56,12 @@ from pygls.workspace import Document
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
 
 # user relative imports
-from exampleLSPServer.utils.computeTokenIndex import CaretPosition, TokenPosition, computeTokenPosition
-from exampleLSPServer.utils.suggestVariables import suggestVariables
-from exampleLSPServer.cst.DiagnosticListener import DiagnosticListener
-from exampleLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
-from exampleLSPServer.gen.python.exampleDsl.exampleDslLexer import exampleDslLexer
-from exampleLSPServer.gen.python.exampleDsl.exampleDslParser import exampleDslParser
+from examplelspserver.utils.compute_token_index import CaretPosition, TokenPosition, compute_token_position
+from examplelspserver.utils.suggest_variables import suggest_variables
+from examplelspserver.cst.diagnostic_listener import DiagnosticListener
+from examplelspserver.cst.symbol_table_visitor import SymbolTableVisitor
+from examplelspserver.gen.python.exampleDsl.exampleDslLexer import exampleDslLexer
+from examplelspserver.gen.python.exampleDsl.exampleDslParser import exampleDslParser
 
 # debug import
 # from pprint import pprint
@@ -74,7 +74,7 @@ COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1
 
 
-class exampleLSPServer(LanguageServer):
+class ExampleLSPServer(LanguageServer):
     CMD_COUNT_DOWN_BLOCKING = 'countDownBlocking'
     CMD_COUNT_DOWN_NON_BLOCKING = 'countDownNonBlocking'
     CMD_PROGRESS = 'progress'
@@ -109,12 +109,12 @@ class exampleLSPServer(LanguageServer):
         self.parser.addErrorListener(self.error_listener)
 
 
-example_server = exampleLSPServer('pygls-odsl-example-prototype', 'v0.1')
+example_server = ExampleLSPServer('pygls-odsl-example-prototype', 'v0.1')
 
 logger = logging.getLogger(__name__)
 
 
-def _validate(ls: exampleLSPServer, params):
+def _validate(ls: ExampleLSPServer, params):
     # msg to debug console
     # TODO setup debug logger
     # ls.show_message_log( 'Validating file...' )
@@ -128,7 +128,7 @@ def _validate(ls: exampleLSPServer, params):
     ls.publish_diagnostics(text_doc.uri, diagnostics)
 
 
-def _validate_format(ls: exampleLSPServer, source: str):
+def _validate_format(ls: ExampleLSPServer, source: str):
     """Validates file format."""
     # get input stream of characters for lexer
     input_stream: InputStream = InputStream(source)
@@ -181,7 +181,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
     # get token index under caret position
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
-    tokenIndex: TokenPosition = computeTokenPosition(
+    tokenIndex: TokenPosition = compute_token_position(
         parseTree, example_server.tokenStream,
         CaretPosition(
             params.position.line + 1,
@@ -190,12 +190,12 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     )
 
     # set emtpy return list
-    completionList: CompletionList = CompletionList(is_incomplete=False, items=[])
+    completion_list: CompletionList = CompletionList(is_incomplete=False, items=[])
 
     # return if no index could be determined
     if tokenIndex is None:
         # TODO add exception
-        return completionList
+        return completion_list
 
     # launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore(example_server.parser)
@@ -211,19 +211,19 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
             [exampleDslParser.RULE_variableRef, exampleDslParser.RULE_functionRef]
     ):
 
-        symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor('completions')
+        symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor('completions')
 
-        symbolTable = symbolTableVisitor.visit(parseTree)
+        symbol_table = symbol_table_visitor.visit(parseTree)
 
-        variables = suggestVariables(symbolTable, tokenIndex)
+        variables = suggest_variables(symbol_table, tokenIndex)
 
         for variable in variables:
-            completionList.items.append(CompletionItem(label=variable))
+            completion_list.items.append(CompletionItem(label=variable))
 
     # get labels of completion candidates to return
     labels_list: List[str] = []
     for key, valueList in candidates.tokens.items():
-        completionList.items.append(
+        completion_list.items.append(
             CompletionItem(
                 label=IntervalSet.elementName(
                     IntervalSet, example_server.parser.literalNames,
@@ -233,11 +233,11 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         )
 
     # return completion candidates labels
-    return completionList
+    return completion_list
 
 
 # @odsl_server.thread()
-@example_server.command(exampleLSPServer.CMD_COUNT_DOWN_BLOCKING)
+@example_server.command(ExampleLSPServer.CMD_COUNT_DOWN_BLOCKING)
 def count_down_10_seconds_blocking(ls, *args):
     """Starts counting down and showing message synchronously.
     It will `block` the main thread, which can be tested by trying to show
@@ -248,7 +248,7 @@ def count_down_10_seconds_blocking(ls, *args):
         time.sleep(COUNT_DOWN_SLEEP_IN_SECONDS)
 
 
-@example_server.command(exampleLSPServer.CMD_COUNT_DOWN_NON_BLOCKING)
+@example_server.command(ExampleLSPServer.CMD_COUNT_DOWN_NON_BLOCKING)
 async def count_down_10_seconds_non_blocking(ls, *args):
     """Starts counting down and showing message asynchronously.
     It won't `block` the main thread, which can be tested by trying to show
@@ -266,13 +266,13 @@ def did_change(ls, params: DidChangeTextDocumentParams):
 
 
 @example_server.feature(TEXT_DOCUMENT_DID_CLOSE)
-def did_close(server: exampleLSPServer, params: DidCloseTextDocumentParams):
+def did_close(server: ExampleLSPServer, params: DidCloseTextDocumentParams):
     """Text document did close notification."""
     server.show_message('Text Document Did Close')
 
 
 @example_server.feature(TEXT_DOCUMENT_DID_SAVE)
-def did_save(server: exampleLSPServer, params: DidSaveTextDocumentParams):
+def did_save(server: ExampleLSPServer, params: DidSaveTextDocumentParams):
     """Text document did save notification."""
 
     # set input stream of characters for lexer
@@ -305,7 +305,7 @@ async def did_open(ls, params: DidOpenTextDocumentParams):
     TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
     SemanticTokensLegend(token_types=["operator"], token_modifiers=[])
 )
-def semantic_tokens(ls: exampleLSPServer, params: SemanticTokensParams):
+def semantic_tokens(ls: ExampleLSPServer, params: SemanticTokensParams):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
     for details on how semantic tokens are encoded."""
 
@@ -332,8 +332,8 @@ def semantic_tokens(ls: exampleLSPServer, params: SemanticTokensParams):
     return SemanticTokens(data=data)
 
 
-@example_server.command(exampleLSPServer.CMD_PROGRESS)
-async def progress(ls: exampleLSPServer, *args):
+@example_server.command(ExampleLSPServer.CMD_PROGRESS)
+async def progress(ls: ExampleLSPServer, *args):
     """Create and start the progress on the client."""
     token = 'token'
     # Create
@@ -348,8 +348,8 @@ async def progress(ls: exampleLSPServer, *args):
     ls.progress.end(token, WorkDoneProgressEnd(message='Finished'))
 
 
-@example_server.command(exampleLSPServer.CMD_REGISTER_COMPLETIONS)
-async def register_completions(ls: exampleLSPServer, *args):
+@example_server.command(ExampleLSPServer.CMD_REGISTER_COMPLETIONS)
+async def register_completions(ls: ExampleLSPServer, *args):
     """Register completions method on the client."""
     params = RegistrationParams(
         registrations=[Registration(
@@ -364,13 +364,13 @@ async def register_completions(ls: exampleLSPServer, *args):
         ls.show_message('Error happened during completions registration.', MessageType.Error)
 
 
-@example_server.command(exampleLSPServer.CMD_SHOW_CONFIGURATION_ASYNC)
-async def show_configuration_async(ls: exampleLSPServer, *args):
+@example_server.command(ExampleLSPServer.CMD_SHOW_CONFIGURATION_ASYNC)
+async def show_configuration_async(ls: ExampleLSPServer, *args):
     """Gets exampleConfiguration from the client settings using coroutines."""
     try:
         config = await ls.get_configuration_async(
             ConfigurationParams(
-                items=[ConfigurationItem(scope_uri='', section=exampleLSPServer.CONFIGURATION_SECTION)]
+                items=[ConfigurationItem(scope_uri='', section=ExampleLSPServer.CONFIGURATION_SECTION)]
             )
         )
 
@@ -382,8 +382,8 @@ async def show_configuration_async(ls: exampleLSPServer, *args):
         ls.show_message_log(f'Error ocurred: {e}')
 
 
-@example_server.command(exampleLSPServer.CMD_SHOW_CONFIGURATION_CALLBACK)
-def show_configuration_callback(ls: exampleLSPServer, *args):
+@example_server.command(ExampleLSPServer.CMD_SHOW_CONFIGURATION_CALLBACK)
+def show_configuration_callback(ls: ExampleLSPServer, *args):
     """Gets exampleConfiguration from the client settings using callback."""
 
     def _config_callback(config):
@@ -397,20 +397,20 @@ def show_configuration_callback(ls: exampleLSPServer, *args):
 
     ls.get_configuration(
         ConfigurationParams(
-            items=[ConfigurationItem(scope_uri='', section=exampleLSPServer.CONFIGURATION_SECTION)]
+            items=[ConfigurationItem(scope_uri='', section=ExampleLSPServer.CONFIGURATION_SECTION)]
         ),
         _config_callback
     )
 
 
 @example_server.thread()
-@example_server.command(exampleLSPServer.CMD_SHOW_CONFIGURATION_THREAD)
-def show_configuration_thread(ls: exampleLSPServer, *args):
+@example_server.command(ExampleLSPServer.CMD_SHOW_CONFIGURATION_THREAD)
+def show_configuration_thread(ls: ExampleLSPServer, *args):
     """Gets exampleConfiguration from the client settings using thread pool."""
     try:
         config = ls.get_configuration(
             ConfigurationParams(
-                items=[ConfigurationItem(scope_uri='', section=exampleLSPServer.CONFIGURATION_SECTION)]
+                items=[ConfigurationItem(scope_uri='', section=ExampleLSPServer.CONFIGURATION_SECTION)]
             )
         ).result(2)
 
@@ -422,8 +422,8 @@ def show_configuration_thread(ls: exampleLSPServer, *args):
         ls.show_message_log(f'Error occurred: {e}')
 
 
-@example_server.command(exampleLSPServer.CMD_UNREGISTER_COMPLETIONS)
-async def unregister_completions(ls: exampleLSPServer, *args):
+@example_server.command(ExampleLSPServer.CMD_UNREGISTER_COMPLETIONS)
+async def unregister_completions(ls: ExampleLSPServer, *args):
     """Unregister completions method on the client."""
     params = UnregistrationParams(
         unregisterations=[Unregistration(id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION)]

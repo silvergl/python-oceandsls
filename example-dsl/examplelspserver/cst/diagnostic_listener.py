@@ -30,7 +30,7 @@ class DiagnosticListener(ErrorListener):
 
     logger = logging.getLogger(__name__)
     # Enables printing ATN state info to terminal.
-    showDebugOutput: bool = False
+    show_debug_output: bool = False
 
     # reset the listener's state
     def reset(self):
@@ -52,7 +52,7 @@ class DiagnosticListener(ErrorListener):
             )
         )
 
-        if self.showDebugOutput and self.logger.isEnabledFor(logging.DEBUG):
+        if self.show_debug_output and self.logger.isEnabledFor(logging.DEBUG):
             self.logger.debug('ERROR: when parsing line %d column %d: %s\n' % (line, column, msg))
         # dev alternatives
         # print('ERROR: when parsing line %d column %d: %s\n' % (line, column, msg), file=sys.stderr)

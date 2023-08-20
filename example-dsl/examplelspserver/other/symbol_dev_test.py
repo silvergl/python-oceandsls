@@ -15,7 +15,7 @@ from antlr4.Token import CommonToken
 from antlr4.tree.Tree import TerminalNodeImpl
 
 # user relative imports
-from ..symbolTable.SymbolTable import Symbol, SymbolTable, NamespaceSymbol, ClassSymbol, InterfaceSymbol, FieldSymbol, \
+from ..symboltable.symbol_table import Symbol, SymbolTable, NamespaceSymbol, ClassSymbol, InterfaceSymbol, FieldSymbol, \
     MethodSymbol, BlockSymbol, FundamentalType, VariableSymbol, LiteralSymbol, ScopedSymbol, SymbolTableOptions, \
     UnitSymbol, FundamentalUnit, UnitPrefix, UnitKind
 
@@ -112,7 +112,7 @@ async def asyncWrapper(t: Callable, *my_args: P.args or None, **my_kwargs: P.kwa
 
 def getAllSymbolsOfType(scope: ScopedSymbol, symbolType: type):
     # symbols: List[Symbol] = asyncio.run( asyncWrapper( scope.getSymbolsOfType, symbolType ) )
-    symbols: List[Symbol] = asyncio.run(scope.getSymbolsOfType(symbolType))
+    symbols: List[Symbol] = asyncio.run(scope.get_symbols_of_type(symbolType))
     parent = scope.parent()
     while parent is not None and not isinstance(parent, ScopedSymbol):
         parent = parent.parent()

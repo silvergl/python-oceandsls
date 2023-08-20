@@ -87,27 +87,27 @@ async def createClassSymbolTable(name: str, counts: List[int], namespaces: Optio
     if namespaces is not None and len(namespaces) > 0:
         nsCount = len(namespaces)
         for i in range(nsCount):
-            nsSymbols.append(await symbolTable.addNewNamespaceFromPath(None, namespaces[i]))
+            nsSymbols.append(await symbolTable.add_new_namespace_from_path(None, namespaces[i]))
     else:
         nsSymbols.append(None)
 
     for i in range(counts[0]):
-        classSymbol = symbolTable.addNewSymbolOfType(ClassSymbol, nsSymbols[nsIndex], 'class%s' % i, [], [])
-        interfaceSymbol = symbolTable.addNewSymbolOfType(InterfaceSymbol, None, 'interface%s' % i, [])
+        classSymbol = symbolTable.add_new_symbol_of_type(ClassSymbol, nsSymbols[nsIndex], 'class%s' % i, [], [])
+        interfaceSymbol = symbolTable.add_new_symbol_of_type(InterfaceSymbol, None, 'interface%s' % i, [])
 
         for j in range(counts[2]):
-            symbolTable.addNewSymbolOfType(FieldSymbol, classSymbol, 'field%s' % j)
-            symbolTable.addNewSymbolOfType(FieldSymbol, interfaceSymbol, 'field%s' % j)
+            symbolTable.add_new_symbol_of_type(FieldSymbol, classSymbol, 'field%s' % j)
+            symbolTable.add_new_symbol_of_type(FieldSymbol, interfaceSymbol, 'field%s' % j)
 
         for j in range(counts[1]):
-            method = symbolTable.addNewSymbolOfType(MethodSymbol, classSymbol, 'method%s' % j)
-            symbolTable.addNewSymbolOfType(MethodSymbol, interfaceSymbol, 'method%s' % j)
+            method = symbolTable.add_new_symbol_of_type(MethodSymbol, classSymbol, 'method%s' % j)
+            symbolTable.add_new_symbol_of_type(MethodSymbol, interfaceSymbol, 'method%s' % j)
 
             # Blocks are created and added in an alternative way (only for classes).
-            block1 = symbolTable.addNewSymbolOfType(BlockSymbol, None, 'block1')  # Block at top level.
-            symbolTable.addNewSymbolOfType(VariableSymbol, block1, "var1", 17, FundamentalType.integerType)
-            block2 = symbolTable.addNewSymbolOfType(BlockSymbol, None, 'block2')
-            symbol = symbolTable.addNewSymbolOfType(VariableSymbol, block2, 'var1', 3.142, FundamentalType.floatType)
+            block1 = symbolTable.add_new_symbol_of_type(BlockSymbol, None, 'block1')  # Block at top level.
+            symbolTable.add_new_symbol_of_type(VariableSymbol, block1, "var1", 17, FundamentalType.integerType)
+            block2 = symbolTable.add_new_symbol_of_type(BlockSymbol, None, 'block2')
+            symbol = symbolTable.add_new_symbol_of_type(VariableSymbol, block2, 'var1', 3.142, FundamentalType.floatType)
             if j == 1:
                 symbol.context = dummyNode
 
@@ -120,10 +120,10 @@ async def createClassSymbolTable(name: str, counts: List[int], namespaces: Optio
             nsIndex = 0
 
     for i in range(counts[3]):
-        symbolTable.addNewSymbolOfType(VariableSymbol, None, 'globalVar%s' % i, 42, FundamentalType.integerType)
+        symbolTable.add_new_symbol_of_type(VariableSymbol, None, 'globalVar%s' % i, 42, FundamentalType.integerType)
 
     for i in range(counts[4]):
-        symbolTable.addNewSymbolOfType(
+        symbolTable.add_new_symbol_of_type(
             LiteralSymbol, None, 'globalConst%s' % i, "string constant",
             FundamentalType.stringType
         )
@@ -156,7 +156,7 @@ class SymbolTableTest(IsolatedAsyncioTestCase):
         self.assertEqual(self.info.symbolCount, 16)  # 5 + 5 top level symbols + 3 classes + 3 interfaces.
 
         with self.assertRaises(DuplicateSymbolError) as ctx:
-            self.symbolTable.addNewSymbolOfType(VariableSymbol, None, "globalVar3")
+            self.symbolTable.add_new_symbol_of_type(VariableSymbol, None, "globalVar3")
         self.assertEqual(ctx.exception.args[0]["message"], "Attempt to add duplicate symbol 'globalVar3'")
 
         class1 = await self.symbolTable.resolve("class1")
@@ -169,7 +169,7 @@ class SymbolTableTest(IsolatedAsyncioTestCase):
         self.assertIsInstance(block1, ScopedSymbol)
 
         with self.assertRaises(DuplicateSymbolError) as ctx:
-            duplicateMethod = self.symbolTable.addNewSymbolOfType(MethodSymbol, None, "method2")
+            duplicateMethod = self.symbolTable.add_new_symbol_of_type(MethodSymbol, None, "method2")
             class1.addSymbol(duplicateMethod)  # Must throw.
         self.assertEqual(ctx.exception.args[0]["message"], "Attempt to add duplicate symbol 'method2'")
 
@@ -183,11 +183,11 @@ class SymbolTableTest(IsolatedAsyncioTestCase):
 
         variable = await block1.resolve("var1")  # Now resolves to local var.
         self.assertEqual(variable.root(), class1)
-        self.assertEqual(variable.getParentOfType(MethodSymbol), method2)
+        self.assertEqual(variable.get_parent_of_type(MethodSymbol), method2)
 
-        methods = await class1.getSymbolsOfType(MethodSymbol)
+        methods = await class1.get_symbols_of_type(MethodSymbol)
         self.assertEqual(len(methods), 3)
-        symbols = await method2.getSymbolsOfType(ScopedSymbol)
+        symbols = await method2.get_symbols_of_type(ScopedSymbol)
         self.assertEqual(len(symbols), 2)
         self.assertEqual(await block1.resolve("class1", False), class1)
 
@@ -207,13 +207,13 @@ class SymbolTableTest(IsolatedAsyncioTestCase):
         self.assertEqual(variable.qualifiedName(".", True, False), "main.class1.method2.block1.var1")
         self.assertEqual(variable.qualifiedName(".", True, True), "main.class1.method2.block1.var1")
 
-        allSymbols = await self.symbolTable.getAllNestedSymbols()
+        allSymbols = await self.symbolTable.get_all_nested_symbols()
         self.assertEqual(len(allSymbols), 94)
 
         symbolPath = allSymbols[59].qualifiedName(".", True)
         self.assertEqual(symbolPath, "main.class1.method2.block1.var1")
 
-        foundSymbol = self.symbolTable.symbolFromPath("main.class2.method0.block2.var1")
+        foundSymbol = self.symbolTable.symbol_from_path("main.class2.method0.block2.var1")
         self.assertEqual(foundSymbol, allSymbols[78])
 
         self.assertEqual(self.symbolTable, self.symbolTable.symbolTable())
@@ -228,22 +228,22 @@ class SymbolTableTest(IsolatedAsyncioTestCase):
                 # 1000])
                 symbolTable = await createClassSymbolTable("table", [300, 30, 20, 1000, 1000])
 
-                symbols = await symbolTable.getAllNestedSymbols()
+                symbols = await symbolTable.get_all_nested_symbols()
 
                 self.assertEqual(len(symbols), 68600)
-                symbols = await symbolTable.getNestedSymbolsOfType(ClassSymbol)
+                symbols = await symbolTable.get_nested_symbols_of_type(ClassSymbol)
                 self.assertEqual(len(symbols), 300)
-                symbols = await symbolTable.getNestedSymbolsOfType(MethodSymbol)
+                symbols = await symbolTable.get_nested_symbols_of_type(MethodSymbol)
                 self.assertEqual(len(symbols), 18000)
-                symbols = await symbolTable.getNestedSymbolsOfType(ScopedSymbol)
+                symbols = await symbolTable.get_nested_symbols_of_type(ScopedSymbol)
                 self.assertEqual(len(symbols), 36600)
 
                 # Includes class fields.
-                symbols = await symbolTable.getNestedSymbolsOfType(VariableSymbol)
+                symbols = await symbolTable.get_nested_symbols_of_type(VariableSymbol)
                 self.assertEqual(len(symbols), 31000)
-                symbols = await symbolTable.getNestedSymbolsOfType(FieldSymbol)
+                symbols = await symbolTable.get_nested_symbols_of_type(FieldSymbol)
                 self.assertEqual(len(symbols), 12000)
-                symbols = await symbolTable.getNestedSymbolsOfType(LiteralSymbol)
+                symbols = await symbolTable.get_nested_symbols_of_type(LiteralSymbol)
                 self.assertEqual(len(symbols), 1000)
 
                 # symbols = symbolTable.getAllNestedSymbolsSync()
@@ -276,12 +276,12 @@ class SymbolTableTest(IsolatedAsyncioTestCase):
             ["ns1", "ns2", "ns1.ns3.ns5", "ns1.ns4.ns6.ns8"]
         )
 
-        namespaces = await symbolTable.getNestedSymbolsOfType(NamespaceSymbol)
+        namespaces = await symbolTable.get_nested_symbols_of_type(NamespaceSymbol)
         self.assertEqual(len(namespaces), 7)
 
         # This call does a depth-first search, so all the deeper nested namespaces appear at the lower indexes
         # and the less nested ones at the end of the list.
-        methods = await symbolTable.getNestedSymbolsOfType(MethodSymbol)
+        methods = await symbolTable.get_nested_symbols_of_type(MethodSymbol)
         self.assertEqual(len(methods), 600)
         self.assertEqual(methods[2].qualifiedName(".", True), "main.ns1.ns3.ns5.class2.method2")
         self.assertEqual(methods[299].qualifiedName(".", True), "main.ns2.class29.method9")
@@ -294,62 +294,62 @@ class SymbolTableTest(IsolatedAsyncioTestCase):
         #   functions and one in a different namespace)
         main = await createClassSymbolTable("main", [30, 10, 10, 100, 100])
         systemFunctions = SymbolTable("system functions", SymbolTableOptions(False))
-        namespace1 = systemFunctions.addNewSymbolOfType(NamespaceSymbol, None, "ns1")
+        namespace1 = systemFunctions.add_new_symbol_of_type(NamespaceSymbol, None, "ns1")
         for i in range(333):
-            systemFunctions.addNewSymbolOfType(RoutineSymbol, namespace1, 'func%s' % i)
+            systemFunctions.add_new_symbol_of_type(RoutineSymbol, namespace1, 'func%s' % i)
         main.addDependencies(systemFunctions)
 
         libFunctions = SymbolTable("library functions", SymbolTableOptions(False))
-        namespace2 = libFunctions.addNewSymbolOfType(NamespaceSymbol, None, "ns2")
+        namespace2 = libFunctions.add_new_symbol_of_type(NamespaceSymbol, None, "ns2")
         for i in range(444):
             # Same names as in the system functions but different namespace.
-            libFunctions.addNewSymbolOfType(RoutineSymbol, namespace2, 'func%s' % i)
+            libFunctions.add_new_symbol_of_type(RoutineSymbol, namespace2, 'func%s' % i)
 
         libVariables = SymbolTable("library variables", SymbolTableOptions(False))
 
         # Like for the system functions.
-        namespace3 = libVariables.addNewSymbolOfType(NamespaceSymbol, None, "ns1")
+        namespace3 = libVariables.add_new_symbol_of_type(NamespaceSymbol, None, "ns1")
         for i in range(555):
-            libVariables.addNewSymbolOfType(VariableSymbol, namespace3, 'var%s' % i)
+            libVariables.add_new_symbol_of_type(VariableSymbol, namespace3, 'var%s' % i)
 
         libFunctions2 = SymbolTable("library functions 2", SymbolTableOptions(False))
-        namespace4 = libFunctions2.addNewSymbolOfType(NamespaceSymbol, None, "ns1")
+        namespace4 = libFunctions2.add_new_symbol_of_type(NamespaceSymbol, None, "ns1")
         for i in range(666):
             # Same names as in the system functions but different namespace.
-            libFunctions2.addNewSymbolOfType(RoutineSymbol, namespace4, 'func%s' % i)
+            libFunctions2.add_new_symbol_of_type(RoutineSymbol, namespace4, 'func%s' % i)
 
         libVariables.addDependencies(libFunctions, libFunctions2)
         main.addDependencies(systemFunctions, libVariables)
 
         # Note: namespaces are handled in the context of their parent.
         # Symbols in a namespace/module/library are accessible from their parent.
-        allSymbols = await main.getAllSymbols(Symbol)
+        allSymbols = await main.get_all_symbols(Symbol)
         self.assertEqual(len(allSymbols), 2262)
 
-        allSymbols = await main.getAllSymbols(RoutineSymbol)
+        allSymbols = await main.get_all_symbols(RoutineSymbol)
         self.assertEqual(len(allSymbols), 1443)
 
         # System functions alone + the namespace.
-        self.assertEqual(len(await systemFunctions.getAllSymbols(Symbol)), 334)
+        self.assertEqual(len(await systemFunctions.get_all_symbols(Symbol)), 334)
 
         # Lib functions alone + the namespace.
-        self.assertEqual(len(await libFunctions.getAllSymbols(Symbol)), 445)
+        self.assertEqual(len(await libFunctions.get_all_symbols(Symbol)), 445)
 
         # Lib variables + lib functions + namespaces.
-        self.assertEqual(len(await libVariables.getAllSymbols(Symbol)), 1668)
+        self.assertEqual(len(await libVariables.get_all_symbols(Symbol)), 1668)
 
         # Lib functions in "ns1" only + the namespace.
-        self.assertEqual(len(await libFunctions2.getAllSymbols(RoutineSymbol)), 666)
+        self.assertEqual(len(await libFunctions2.get_all_symbols(RoutineSymbol)), 666)
 
     async def test_symbol_navigation(self):
         symbolTable = await createClassSymbolTable("main", [10, 10, 10, 20, 34], [])
 
-        namespaces = await symbolTable.getNestedSymbolsOfType(NamespaceSymbol)
+        namespaces = await symbolTable.get_nested_symbols_of_type(NamespaceSymbol)
         self.assertEqual(len(namespaces), 0)
 
         # Does not include constant values (which are literals). Still such variables may appear in
         # below navigation methods and are compared by name, instead of reference.
-        variables = await symbolTable.getNestedSymbolsOfType(VariableSymbol)
+        variables = await symbolTable.get_nested_symbols_of_type(VariableSymbol)
         self.assertEqual(len(variables), 420)
 
         # A class member.
@@ -410,6 +410,6 @@ class SymbolTableTest(IsolatedAsyncioTestCase):
         self.assertIsNotNone(next)
         self.assertEqual(next.qualifiedName(".", True), "main.class6.method7.block1.var1")
 
-        symbol = await symbolTable.symbolWithContext(dummyNode)
+        symbol = await symbolTable.symbol_with_context(dummyNode)
         self.assertIsNotNone(symbol)
         self.assertEqual(symbol.qualifiedName(".", True), "main.class0.method1.block2.var1")

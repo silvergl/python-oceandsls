@@ -159,7 +159,7 @@ class Type:
 
 @dataclass
 class SymbolTableOptions:
-    allowDuplicateSymbols: Optional[bool] = None
+    allow_duplicate_symbols: Optional[bool] = None
 
 
 class classproperty(property):
@@ -291,7 +291,7 @@ class Symbol:
         if not isinstance(self.__theParent, ScopedSymbol):
             return self
 
-        return self.__theParent.previousSiblingOf(self)
+        return self.__theParent.previous_sibling_of(self)
 
     def nextSibling(self) -> Optional[Symbol]:
         """
@@ -300,7 +300,7 @@ class Symbol:
         if not isinstance(self.__theParent, ScopedSymbol):
             return self
 
-        return self.__theParent.nextSiblingOf(self)
+        return self.__theParent.next_sibling_of(self)
 
     def lastSibling(self) -> Symbol:
         if isinstance(self.__theParent, ScopedSymbol):
@@ -314,7 +314,7 @@ class Symbol:
         :return: the next symbol in definition order, regardless of the scope.
         """
         if isinstance(self.__theParent, ScopedSymbol):
-            return self.__theParent.nextOf(self)
+            return self.__theParent.next_of(self)
 
         return None
 
@@ -370,7 +370,7 @@ class Symbol:
         """
         self.__theParent = parent
 
-    def removeFromParent(self) -> None:
+    def remove_from_parent(self) -> None:
         if isinstance(self.__theParent, ScopedSymbol):
             self.__theParent.removeSymbol(self)
             self.__theParent = None
@@ -391,7 +391,7 @@ class Symbol:
 
         return None
 
-    def resolveSync(self, name: str, localOnly=False) -> Optional[Symbol]:
+    def resolve_sync(self, name: str, localOnly=False) -> Optional[Symbol]:
         """
         Synchronously looks up a symbol with a given name, in a bottom-up manner.
 
@@ -402,11 +402,11 @@ class Symbol:
         scopes (conditionally).
         """
         if isinstance(self.__theParent, ScopedSymbol):
-            return self.__theParent.resolveSync(name, localOnly)
+            return self.__theParent.resolve_sync(name, localOnly)
 
         return None
 
-    def getParentOfType(self, t: type) -> Optional[T]:
+    def get_parent_of_type(self, t: type) -> Optional[T]:
         """
         :param t: The type of objects to return.
         :return: the next enclosing parent of the given type.
@@ -508,7 +508,7 @@ class ScopedSymbol(Symbol):
         """
         :return: A promise resolving to all direct child symbols with a scope (e.g. classes in a module).
         """
-        return self.getSymbolsOfType(ScopedSymbol)
+        return self.get_symbols_of_type(ScopedSymbol)
 
     def children(self) -> List[Symbol]:
         return self.__childSymbols
@@ -536,11 +536,11 @@ class ScopedSymbol(Symbol):
         :param symbol: The symbol to add as a child.
         :return:
         """
-        symbol.removeFromParent()
+        symbol.remove_from_parent()
 
         # Check for duplicates first.
         symbolTable = self.symbolTable()
-        if symbolTable is None or not symbolTable.options.allowDuplicateSymbols:
+        if symbolTable is None or not symbolTable.options.allow_duplicate_symbols:
             for child in self.children():
                 if child == symbol or (len(symbol.name) > 0 and child.name == symbol.name):
                     name = symbol.name
@@ -557,7 +557,7 @@ class ScopedSymbol(Symbol):
             self.children().remove(symbol)
             symbol.setParent(None)
 
-    async def getNestedSymbolsOfType(self, t: type) -> List[T]:
+    async def get_nested_symbols_of_type(self, t: type) -> List[T]:
         """
         Asynchronously retrieves child symbols of a given type from this symbol.
 
@@ -572,7 +572,7 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                childPromises.append(child.getNestedSymbolsOfType(t))
+                childPromises.append(child.get_nested_symbols_of_type(t))
 
         childSymbols = await asyncio.gather(*childPromises)
         for entry in childSymbols:
@@ -580,7 +580,7 @@ class ScopedSymbol(Symbol):
 
         return result
 
-    def getNestedSymbolsOfTypeSync(self, t: type) -> List[T]:
+    def get_nested_symbols_of_type_sync(self, t: type) -> List[T]:
         """
         Synchronously retrieves child symbols of a given type from this symbol.
 
@@ -594,11 +594,11 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                result.extend(child.getNestedSymbolsOfTypeSync(t))
+                result.extend(child.get_nested_symbols_of_type_sync(t))
 
         return result
 
-    async def getAllNestedSymbols(self, name: str = None) -> List[Symbol]:
+    async def get_all_nested_symbols(self, name: str = None) -> List[Symbol]:
         """
         :param name: If given only returns symbols with that name.
         :return: A promise resolving to symbols from this and all nested scopes in the order they were defined.
@@ -611,7 +611,7 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                childPromises.append(child.getAllNestedSymbols(name))
+                childPromises.append(child.get_all_nested_symbols(name))
 
         childSymbols = await asyncio.gather(*childPromises)
         for entry in childSymbols:
@@ -619,7 +619,7 @@ class ScopedSymbol(Symbol):
 
         return result
 
-    def getAllNestedSymbolsSync(self, name: str = None) -> List[Symbol]:
+    def get_all_nested_symbols_sync(self, name: str = None) -> List[Symbol]:
         """
         :param name: If given only returns symbols with that name.
         :return: A list of all symbols from this and all nested scopes in the order they were defined.
@@ -631,11 +631,11 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
             if isinstance(child, ScopedSymbol):
-                result.extend(child.getAllNestedSymbolsSync(name))
+                result.extend(child.get_all_nested_symbols_sync(name))
 
         return result
 
-    async def getSymbolsOfType(self, t: type) -> List[T]:
+    async def get_symbols_of_type(self, t: type) -> List[T]:
         """
         :param t: The type of the objects to return.
         :return: A promise resolving to direct children of a given type.
@@ -648,7 +648,7 @@ class ScopedSymbol(Symbol):
         return result
 
     # TODO: add optional position dependency (only symbols defined before a given caret pos are viable).
-    async def getAllSymbols(self, t: type, localOnly=False) -> List[T]:
+    async def get_all_symbols(self, t: type, localOnly=False) -> List[T]:
         """
         :param t: The type of the objects to return.
         :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
@@ -665,16 +665,16 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
             if isinstance(child, NamespaceSymbol):
-                childSymbols = await child.getAllSymbols(t, True)
+                childSymbols = await child.get_all_symbols(t, True)
                 result.extend(childSymbols)
 
         if not localOnly and isinstance(self.parent(), ScopedSymbol):
-            childSymbols = await self.getAllSymbols(t, True)
+            childSymbols = await self.get_all_symbols(t, True)
             result.extend(childSymbols)
 
         return result
 
-    def getAllSymbolsSync(self, t: type, localOnly: bool = False) -> List[T]:
+    def get_all_symbols_sync(self, t: type, localOnly: bool = False) -> List[T]:
         """
         TODO: add optional position dependency (only symbols defined before a given caret pos are viable).
 
@@ -693,11 +693,11 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
             if isinstance(child, NamespaceSymbol):
-                childSymbols = child.getAllSymbolsSync(t, True)
+                childSymbols = child.get_all_symbols_sync(t, True)
                 result.extend(childSymbols)
 
         if not localOnly and isinstance(self.parent(), ScopedSymbol):
-            childSymbols = self.getAllSymbolsSync(t, True)
+            childSymbols = self.get_all_symbols_sync(t, True)
             result.extend(childSymbols)
 
         return result
@@ -720,7 +720,7 @@ class ScopedSymbol(Symbol):
 
         return None
 
-    def resolveSync(self, name: str, localOnly=False) -> Optional[Symbol]:
+    def resolve_sync(self, name: str, localOnly=False) -> Optional[Symbol]:
         """
         :param name: The name of the symbol to resolve.
         :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
@@ -734,11 +734,11 @@ class ScopedSymbol(Symbol):
 
         # Nothing found locally. the parent continues.
         if not localOnly and isinstance(self.parent(), ScopedSymbol):
-            return self.parent().resolveSync(name, False)
+            return self.parent().resolve_sync(name, False)
 
         return None
 
-    def getTypedSymbols(self, localOnly=True) -> List[TypedSymbol]:
+    def get_typed_symbols(self, localOnly=True) -> List[TypedSymbol]:
         """
         :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
         (recursively).
@@ -751,12 +751,12 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
         if not localOnly and isinstance(self.parent(), ScopedSymbol):
-            localList = self.parent().getTypedSymbols(True)
+            localList = self.parent().get_typed_symbols(True)
             result.extend(localList)
 
         return result
 
-    def getTypedSymbolNames(self, localOnly=True) -> List[str]:
+    def get_typed_symbol_names(self, localOnly=True) -> List[str]:
         """
         The names of all accessible symbols with a type.
 
@@ -770,12 +770,12 @@ class ScopedSymbol(Symbol):
                 result.append(child.name)
 
         if not localOnly and isinstance(self.parent(), ScopedSymbol):
-            localList = self.parent().getTypedSymbolNames(True)
+            localList = self.parent().get_typed_symbol_names(True)
             result.extend(localList)
 
         return result
 
-    def symbolFromPath(self, path: str, separator=".") -> Optional[Symbol]:
+    def symbol_from_path(self, path: str, separator=".") -> Optional[Symbol]:
         """
         :param path: The path consisting of symbol names separator by `separator`.
         :param separator: The character to separate path segments.
@@ -813,7 +813,7 @@ class ScopedSymbol(Symbol):
         except ValueError:
             return -1
 
-    def nextSiblingOf(self, child: Symbol) -> Optional[Symbol]:
+    def next_sibling_of(self, child: Symbol) -> Optional[Symbol]:
         """
         :param child: The reference node.
         :return: the sibling symbol after the given child symbol, if one exists.
@@ -824,7 +824,7 @@ class ScopedSymbol(Symbol):
 
         return self.children()[index + 1]
 
-    def previousSiblingOf(self, child: Symbol) -> Optional[Symbol]:
+    def previous_sibling_of(self, child: Symbol) -> Optional[Symbol]:
         """
         :param child: The reference node.
         :return: the sibling symbol before the given child symbol, if one exists.
@@ -835,7 +835,7 @@ class ScopedSymbol(Symbol):
 
         return self.children()[index - 1]
 
-    def nextOf(self, child: Symbol) -> Optional[Symbol]:
+    def next_of(self, child: Symbol) -> Optional[Symbol]:
         """
         :param child: The reference node.
         :return: the next symbol in definition order, regardless of the scope.
@@ -849,11 +849,11 @@ class ScopedSymbol(Symbol):
         if isinstance(child, ScopedSymbol) and len(child.children()) > 0:
             return child.children()[0]
 
-        sibling = self.nextSiblingOf(child)
+        sibling = self.next_sibling_of(child)
         if sibling is not None:
             return sibling
 
-        return self.parent().nextOf(self)
+        return self.parent().next_of(self)
 
 
 class NamespaceSymbol(ScopedSymbol):
@@ -899,10 +899,10 @@ class RoutineSymbol(ScopedSymbol):
         self.returnType = returnType
 
     def getVariables(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType(VariableSymbol)
+        return self.get_symbols_of_type(VariableSymbol)
 
     def getParameters(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.getSymbolsOfType(ParameterSymbol)
+        return self.get_symbols_of_type(ParameterSymbol)
 
 
 class MethodFlags(Enum):
@@ -974,14 +974,14 @@ class ClassSymbol(ScopedSymbol, Type):
         :param includeInherited: Not used.
         :return: a list of all methods.
         """
-        return self.getSymbolsOfType(MethodSymbol)
+        return self.get_symbols_of_type(MethodSymbol)
 
     def getFields(self, includeInherited=False) -> Coroutine[List[T]]:
         """
         :param includeInherited: Not used.
         :return: all fields.
         """
-        return self.getSymbolsOfType(FieldSymbol)
+        return self.get_symbols_of_type(FieldSymbol)
 
 
 class InterfaceSymbol(ScopedSymbol, Type):
@@ -1011,14 +1011,14 @@ class InterfaceSymbol(ScopedSymbol, Type):
         :param includeInherited: Not used.
         :return: a list of all methods.
         """
-        return self.getSymbolsOfType(MethodSymbol)
+        return self.get_symbols_of_type(MethodSymbol)
 
     def getFields(self, includeInherited=False) -> Coroutine[List[T]]:
         """
         :param includeInherited: Not used.
         :return: all fields.
         """
-        return self.getSymbolsOfType(FieldSymbol)
+        return self.get_symbols_of_type(FieldSymbol)
 
 
 class ArrayType(Symbol, Type):
@@ -1085,8 +1085,8 @@ class SymbolTable(ScopedSymbol):
         if table in self.dependencies:
             self.dependencies.remove(table)
 
-    def addNewSymbolOfType(self, t: type, parent: Optional[ScopedSymbol] = None, *my_args: P.args or None,
-                           **my_kwargs: P.kwargs or None) -> T:
+    def add_new_symbol_of_type(self, t: type, parent: Optional[ScopedSymbol] = None, *my_args: P.args or None,
+                               **my_kwargs: P.kwargs or None) -> T:
         result = t(*my_args, **my_kwargs)
         if parent is None or parent is self:
             self.addSymbol(result)
@@ -1095,8 +1095,8 @@ class SymbolTable(ScopedSymbol):
 
         return result
 
-    async def addNewNamespaceFromPath(self, parent: Optional[ScopedSymbol], path: str,
-                                      delimiter=".") -> NamespaceSymbol:
+    async def add_new_namespace_from_path(self, parent: Optional[ScopedSymbol], path: str,
+                                          delimiter=".") -> NamespaceSymbol:
         """
         Asynchronously adds a new namespace to the symbol table or the given parent. The path parameter specifies a
         single namespace name or a chain of namespaces (which can be e.g. "outer.intermittent.inner.final"). If any of
@@ -1114,14 +1114,14 @@ class SymbolTable(ScopedSymbol):
         while i < len(parts) - 1:
             namespace: NamespaceSymbol = await currentParent.resolve(parts[i], True)
             if namespace is None:
-                namespace = self.addNewSymbolOfType(NamespaceSymbol, currentParent, parts[i])
+                namespace = self.add_new_symbol_of_type(NamespaceSymbol, currentParent, parts[i])
 
             currentParent = namespace
             i += 1
 
-        return self.addNewSymbolOfType(NamespaceSymbol, currentParent, parts[len(parts) - 1])
+        return self.add_new_symbol_of_type(NamespaceSymbol, currentParent, parts[len(parts) - 1])
 
-    def addNewNamespaceFromPathSync(self, parent: Optional[ScopedSymbol], path: str, delimiter=".") -> NamespaceSymbol:
+    def add_new_namespace_from_path_sync(self, parent: Optional[ScopedSymbol], path: str, delimiter=".") -> NamespaceSymbol:
         """
         Synchronously adds a new namespace to the symbol table or the given parent. The path parameter specifies a
         single namespace name or a chain of namespaces (which can be e.g. "outer.intermittent.inner.final"). If any of
@@ -1138,16 +1138,16 @@ class SymbolTable(ScopedSymbol):
         currentParent = self if parent is None else parent
 
         while i < len(parts) - 1:
-            namespace: NamespaceSymbol = currentParent.resolveSync(parts[i], True)
+            namespace: NamespaceSymbol = currentParent.resolve_sync(parts[i], True)
             if namespace is None:
-                namespace = self.addNewSymbolOfType(NamespaceSymbol, currentParent, parts[i])
+                namespace = self.add_new_symbol_of_type(NamespaceSymbol, currentParent, parts[i])
 
             currentParent = namespace
             i += 1
 
-        return self.addNewSymbolOfType(NamespaceSymbol, currentParent, parts[len(parts) - 1])
+        return self.add_new_symbol_of_type(NamespaceSymbol, currentParent, parts[len(parts) - 1])
 
-    async def getAllSymbols(self, t: type, localOnly=False) -> List[T]:
+    async def get_all_symbols(self, t: type, localOnly=False) -> List[T]:
         """
         Asynchronously returns all symbols from this scope (and optionally those from dependencies) of a specific type.
 
@@ -1155,20 +1155,20 @@ class SymbolTable(ScopedSymbol):
         :param localOnly: If true do not search dependencies.
         :return: A promise which resolves when all symbols are collected.
         """
-        result: List[T] = await super().getAllSymbols(t, localOnly)
+        result: List[T] = await super().get_all_symbols(t, localOnly)
 
         if not localOnly:
             # TODO alternative
             # dependencyResults = await asyncio.gather(*[x.getAllSymbols(t, localOnly) for x in self.dependencies])
             dependencyResults = await asyncio.gather(
-                *(map((lambda x: x.getAllSymbols(t, localOnly)), self.dependencies)))
+                *(map((lambda x: x.get_all_symbols(t, localOnly)), self.dependencies)))
 
             for value in dependencyResults:
                 result.extend(value)
 
         return result
 
-    def getAllSymbolsSync(self, t: type, localOnly=False) -> List[T]:
+    def get_all_symbols_sync(self, t: type, localOnly=False) -> List[T]:
         """
         Synchronously returns all symbols from this scope (and optionally those from dependencies) of a specific type.
 
@@ -1176,15 +1176,15 @@ class SymbolTable(ScopedSymbol):
         :param localOnly: If true do not search dependencies.
         :return: A list with all symbols.
         """
-        result: List[T] = super().getAllSymbolsSync(t, localOnly)
+        result: List[T] = super().get_all_symbols_sync(t, localOnly)
 
         if not localOnly:
             for dependency in self.dependencies:
-                result.extend(dependency.getAllSymbolsSync(t, localOnly))
+                result.extend(dependency.get_all_symbols_sync(t, localOnly))
 
         return result
 
-    async def symbolWithContext(self, context: ParseTree) -> Optional[Symbol]:
+    async def symbol_with_context(self, context: ParseTree) -> Optional[Symbol]:
         """
         Asynchronously looks for a symbol which is connected with a given parse tree context.
 
@@ -1210,14 +1210,14 @@ class SymbolTable(ScopedSymbol):
 
             return None
 
-        symbols = await self.getAllSymbols(Symbol)
+        symbols = await self.get_all_symbols(Symbol)
         for symbol in symbols:
             result = findRecursive(symbol)
             if result is not None:
                 return result
 
         for dependency in self.dependencies:
-            symbols = await dependency.getAllSymbols(Symbol)
+            symbols = await dependency.get_all_symbols(Symbol)
             for symbol in symbols:
                 result = findRecursive(symbol)
                 if result is not None:
@@ -1225,7 +1225,7 @@ class SymbolTable(ScopedSymbol):
 
         return None
 
-    def symbolWithContextSync(self, context: ParseTree) -> Optional[Symbol]:
+    def symbol_with_context_sync(self, context: ParseTree) -> Optional[Symbol]:
         """
         Synchronously looks for a symbol which is connected with a given parse tree context.
 
@@ -1251,14 +1251,14 @@ class SymbolTable(ScopedSymbol):
 
             return None
 
-        symbols = self.getAllSymbolsSync(Symbol)
+        symbols = self.get_all_symbols_sync(Symbol)
         for symbol in symbols:
             result = findRecursive(symbol)
             if result is not None:
                 return result
 
         for dependency in self.dependencies:
-            symbols = dependency.getAllSymbolsSync(Symbol)
+            symbols = dependency.get_all_symbols_sync(Symbol)
             for symbol in symbols:
                 result = findRecursive(symbol)
                 if result is not None:
@@ -1283,7 +1283,7 @@ class SymbolTable(ScopedSymbol):
 
         return result
 
-    def resolveSync(self, name: str, localOnly=False) -> Optional[Symbol]:
+    def resolve_sync(self, name: str, localOnly=False) -> Optional[Symbol]:
         """
         Synchronously resolves a name to a symbol.
 
@@ -1291,10 +1291,10 @@ class SymbolTable(ScopedSymbol):
         :param localOnly: A flag indicating if only this symbol table should be used or also its dependencies.
         :return: The found symbol or undefined.
         """
-        result = super().resolveSync(name, localOnly)
+        result = super().resolve_sync(name, localOnly)
         if result is None and not localOnly:
             for dependency in self.dependencies:
-                result = dependency.resolveSync(name, False)
+                result = dependency.resolve_sync(name, False)
                 if result is not None:
                     return result
 

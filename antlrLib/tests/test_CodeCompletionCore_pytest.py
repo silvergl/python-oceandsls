@@ -13,8 +13,8 @@ from antlr4 import CommonTokenStream, DiagnosticErrorListener, InputStream
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
 
 # grammar imports (example-DSL module dependency)
-from exampleLSPServer.gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
-from exampleLSPServer.gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
+from examplelspserver.gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
+from examplelspserver.gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
 
 # tokenIndexes for collect_candidates test parameterization
 inputTokenIndex: Set[ int ] = {0, 1, 2, 4, 6, 8}

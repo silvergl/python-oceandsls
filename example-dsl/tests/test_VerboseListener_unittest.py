@@ -10,7 +10,7 @@ from antlr4.CommonTokenStream import CommonTokenStream
 from antlr4.InputStream import InputStream
 
 # user relative imports
-from cst.VerboseListener import VerboseListener
+from cst.verbose_listener import VerboseListener
 from gen.python.exampleDsl.exampleDslLexer import exampleDslLexer
 from gen.python.exampleDsl.exampleDslParser import exampleDslParser
 

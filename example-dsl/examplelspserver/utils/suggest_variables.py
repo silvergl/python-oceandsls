@@ -1,7 +1,5 @@
 """computeTokenIndex module."""
 
-from .computeTokenIndex import TokenPosition
-from ..symbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 __author__ = 'sgu'
 
 # utils
@@ -13,7 +11,9 @@ from typing import List, ParamSpec
 from antlr4 import ParserRuleContext
 
 # user relative imports
+from .compute_token_index import TokenPosition
 from ..gen.python.exampleDsl.exampleDslParser import exampleDslParser
+from ..symboltable.symbol_table import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 
 Top_levelContext = exampleDslParser.StatContext
 del exampleDslParser
@@ -57,7 +57,7 @@ def getScope(context: ParserRuleContext, symbolTable: SymbolTable):
     if context is None:
         return None
 
-    scope = run_async(symbolTable.symbolWithContext, context)
+    scope = run_async(symbolTable.symbol_with_context, context)
 
     if scope is not None:
         return scope
@@ -65,33 +65,33 @@ def getScope(context: ParserRuleContext, symbolTable: SymbolTable):
         return getScope(context.parentCtx, symbolTable)
 
 
-def getAllSymbolsOfType(scope: ScopedSymbol, symbolType: type):
-    symbols: List[Symbol] = run_async(scope.getSymbolsOfType, symbolType)
+def get_all_symbols_of_type(scope: ScopedSymbol, symbolType: type):
+    symbols: List[Symbol] = run_async(scope.get_symbols_of_type, symbolType)
     parent = scope.parent()
     while parent is not None and not isinstance(parent, ScopedSymbol):
         parent = parent.parent()
     if parent is not None:
-        symbols.extend(getAllSymbolsOfType(parent, symbolType))
+        symbols.extend(get_all_symbols_of_type(parent, symbolType))
     return symbols
 
 
-def suggestVariables(symbolTable: SymbolTable, position: TokenPosition):
+def suggest_variables(symbolTable: SymbolTable, position: TokenPosition):
     context = position.context
     scope = getScope(context, symbolTable)
     symbols: List[Symbol]
     if isinstance(scope, ScopedSymbol):  # Local scope
-        symbols = getAllSymbolsOfType(scope, VariableSymbol)
+        symbols = get_all_symbols_of_type(scope, VariableSymbol)
     else:  # Global scope
-        symbols = run_async(symbolTable.getSymbolsOfType, VariableSymbol)
+        symbols = run_async(symbolTable.get_symbols_of_type, VariableSymbol)
 
     variable = position.context
     while not isinstance(variable, Top_levelContext) and variable.parentCtx is not None:
         variable = variable.parentCtx
 
-    return filterTokens(position.text if variable is not None else '', list(map(lambda s: s.name, symbols)))
+    return filter_tokens(position.text if variable is not None else '', list(map(lambda s: s.name, symbols)))
 
 
-def filterTokens(text: str, candidates: List[str]):
+def filter_tokens(text: str, candidates: List[str]):
     if len(text.strip()) == 0:
         return candidates
     else:

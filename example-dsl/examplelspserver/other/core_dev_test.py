@@ -20,7 +20,7 @@ from codeCompletionCore.CodeCompletionCore import CodeCompletionCore
 from ..gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
 from ..gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
 from ..gen.python.TestExprCore.TestExprCoreVisitor import TestExprCoreVisitor
-from ..cst.DiagnosticListener import DiagnosticListener
+from ..cst.diagnostic_listener import DiagnosticListener
 
 # debug import
 from pprint import pprint

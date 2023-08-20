@@ -70,13 +70,22 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             sut_names.append(sut[0])
 
             # Extract file name
-            rel_sut_file = os.path.relpath(sut[1],self.work_path)
-            rel_sut_file = rel_sut_file if rel_sut_file != '.' else None
-            # Add name file mapping
-            suts[sut[0]] = suts.get(sut[0], rel_sut_file)
+
+            # TODO rm depr
+            # # Build folder structure from working directory
+            # rel_sut_file = os.path.relpath(sut[1],self.work_path)
+            # rel_sut_file = rel_sut_file if rel_sut_file != '.' else None
+            # # Add name file mapping
+            # suts[sut[0]] = suts.get(sut[0], rel_sut_file)
+
+            # Add name file mapping based on source file folder
+            suts[sut[0]] = os.path.split(sut[1])[1]
+
+        # Set project_folder
+        abs_prj_dir = os.path.split(sut[1])[0]
 
         # Set test folder
-        rel_test_dir = sut[2]
+        rel_test_dir = os.path.relpath(sut[2],abs_prj_dir)
 
         # Set template variables
         template_vars = {
@@ -90,9 +99,10 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Load Jinja2 template
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        # Check if file exists and need to be merged
-        abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
+        # Write CMake file into project folder
+        abs_path: str = os.path.join(abs_prj_dir, "CMakeLists.txt")
 
+        # Check if file exists and need to be merged
         if os.path.exists(abs_path):
             # Generate parts to be merged into
             insert = True
@@ -134,9 +144,12 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         rel_test_dir = os.path.relpath(test_file[0], self.work_path)
         rel_test_dir = rel_test_dir if rel_test_dir != '.' else None
 
+        # Set sut name according to test name
+        sut_name = f'{test_case_symbol.test_name}_sut'
+
         # Set template variables
         template_vars = {
-            'SUTNAME': test_case_symbol.sut_name,  # 'MySUT', # cfo_example
+            'SUTNAME': sut_name,  # 'MySUT', # cfo_example
             'TESTNAME': test_case_symbol.test_name,  # 'MyTest',   # test_fT_ME
             'TESTFILENAME': test_file[1]  # 'test_source.f90'
         }
@@ -155,6 +168,6 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
 
         # Return system under test details
-        sut : Tuple = (test_case_symbol.sut_name,test_case_symbol.sut_file_path, rel_test_dir)
+        sut : Tuple = (sut_name,test_case_symbol.sut_file_path, rel_test_dir)
 
         return sut

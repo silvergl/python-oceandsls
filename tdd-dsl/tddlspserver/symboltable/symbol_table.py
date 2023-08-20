@@ -1000,8 +1000,10 @@ class TestCaseSymbol(ScopedSymbol):
     __sut_name: str
     # System file path to the sut file
     __sut_file_path: str
+    # List of used libraries
+    __lib_names: List[str]
 
-    def __init__(self, test_name=None, test_file_path=None, sut_name=None, sut_file_path=None, ):
+    def __init__(self, test_name=None, test_file_path=None, sut_name=None, sut_file_path=None, lib_names=None ):
         """
         A symbol representing a test case from TDD-DSL used for CMake file generation.
 
@@ -1015,6 +1017,8 @@ class TestCaseSymbol(ScopedSymbol):
         self.__test_file_path = test_file_path
         self.__sut_name = sut_name
         self.__sut_file_path = sut_file_path
+
+        self.__lib_names = lib_names
 
     @property
     def sut_name(self) -> str:
@@ -1047,6 +1051,14 @@ class TestCaseSymbol(ScopedSymbol):
     @test_file_path.setter
     def test_file_path(self, test_file_path: str):
         self.__test_file_path = test_file_path
+
+    @property
+    def lib_names(self) -> List[str]:
+        return self.__lib_names
+
+    @lib_names.setter
+    def lib_names(self, lib_names: List[str]):
+        self.__lib_names = lib_names
 
 class ModuleSymbol(ScopedSymbol):
     def __init__(self, name: str = "", file: str = None):

@@ -101,7 +101,7 @@ def compute_token_position_of_child_node(parser_rule_context: ParserRuleContext,
     logger.info('parser_rule_context.start is not None = %s, parser_rule-_context.stop is not None = %s',
                 parser_rule_context.start is not None, parser_rule_context.stop is not None)
     if (parser_rule_context.start is not None and parser_rule_context.start.line > caretPosition.line) or (
-        parser_rule_context.stop is not None and parser_rule_context.stop.line < caretPosition.line):
+            parser_rule_context.stop is not None and parser_rule_context.stop.line < caretPosition.line):
         logger.info('return None\n')
         return None
     i = 0

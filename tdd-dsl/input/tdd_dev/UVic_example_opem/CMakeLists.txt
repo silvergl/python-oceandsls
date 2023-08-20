@@ -19,11 +19,7 @@ add_library(cfo_example
   cfo_sut_example.f90
   )
 
-
-
-
 target_include_directories(cfo_example PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-
 
 set_target_properties (cfo_example PROPERTIES
   Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})

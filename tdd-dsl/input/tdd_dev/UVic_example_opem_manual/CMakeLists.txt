@@ -17,6 +17,8 @@ find_package(PFUNIT REQUIRED)
 
 add_library(cfo_example
   cfo_sut_example.f90
+  additional_use_0.f90
+  additional_use_1.f90
   )
 
 target_include_directories(cfo_example PUBLIC ${CMAKE_CURRENT_BINARY_DIR})

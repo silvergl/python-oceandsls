@@ -4,6 +4,8 @@ test test_fT_ME :
     scope :
         modules :
             cfo_example
+            additional_use_0
+            additional_use_1
     var :
         dp : integer, PARAMETER = KIND( 0D0 )
         xIntercept : real( dp ) = 283D0 / 19D0

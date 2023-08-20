@@ -289,7 +289,8 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     tdd_server.files = f90_file_generator_visitor.visit(parse_tree)
 
     # Generate CMake files
-    cmake_file_generator_visitor: CMakeFileGeneratorVisitor = CMakeFileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    cmake_file_generator_visitor: CMakeFileGeneratorVisitor = CMakeFileGeneratorVisitor(
+        work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
     # update CMake files and save generated files
     tdd_server.files = cmake_file_generator_visitor.visit(parse_tree)
 

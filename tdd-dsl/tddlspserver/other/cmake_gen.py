@@ -14,8 +14,8 @@ show_debug_output: bool = True
 
 # Define the template variables
 template_vars = {
-    'PROJECTNAME': 'MyProject', # TODO
-    'SUTNAME': 'MySUT', # cfo_example
+    'PROJECTNAME': 'MyProject',  # TODO
+    'SUTNAME': 'MySUT',  # cfo_example
     'SUTFILENAME': 'sut_source.f90',
     'TESTFOLDER': 'test',   # test
     'TESTNAME': 'MyTest',   # test_fT_ME
@@ -23,7 +23,8 @@ template_vars = {
 }
 
 # Initialize Jinja2 environment
-template_env = Environment(loader=FileSystemLoader('/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake'))  # Assuming your templates are in a 'templates' folder
+# Assuming your templates are in a 'templates' folder
+template_env = Environment(loader=FileSystemLoader('/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake'))
 
 # Load the templates
 cmakelists_template = template_env.get_template('CMakeLists_template.txt')
@@ -47,7 +48,7 @@ if not os.path.isdir(path):
 with open(file_path, 'w') as f:
     f.write(cmakelists_content)
 
-file_path = os.path.join(path,template_vars["TESTFOLDER"],'CMakeLists.txt')
+file_path = os.path.join(path, template_vars["TESTFOLDER"], 'CMakeLists.txt')
 path = os.path.dirname(file_path)
 
 # Create folder if it doesn't exist

@@ -72,7 +72,8 @@ def cmake_merge(insert_content_list: Dict[str, str], file_content):
                 raise ValueError(f'target_include_directories statement not found.')
 
             # Insert library and target statement
-            file_content = (file_content[:insert_position_start] + library_statement + "\n\n" + file_content[insert_position_start:insert_position_end] + target_include_statements + "\n" + file_content[insert_position_end:])
+            file_content = (file_content[:insert_position_start] + library_statement + "\n\n" +
+                            file_content[insert_position_start:insert_position_end] + target_include_statements + "\n" + file_content[insert_position_end:])
 
             match_set_target = re.search(set_target_pattern, file_content, flags=re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
@@ -138,7 +139,7 @@ def fortran_merge(insert_content_list: List[str], file_content):
 
     # Insert public statement with line insertion
     file_content = (file_content[:insert_position] + file_content[line_insertion[0]:line_insertion[1]] + f'PUBLIC :: {function_name}' + '\n' + file_content[
-                                                                                                                                               insert_position:])
+        insert_position:])
 
     match_module_end = re.search(module_end_pattern, file_content, flags=re.IGNORECASE)
 

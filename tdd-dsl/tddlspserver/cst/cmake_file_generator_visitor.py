@@ -20,12 +20,12 @@ from ..utils.suggest_variables import get_scope
 class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     symbol_table: SymbolTable
     work_path: str
-    cwd : str
+    cwd: str
 
     def __init__(
         self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake', files: Dict[str, Tuple[float, str, str]] = {},
         symbol_table: SymbolTable = None, work_path: str = 'tdd-dsl/output'
-        ):
+    ):
         """
         Generate CMake files for test case
 
@@ -56,8 +56,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             i += 1
 
     # Visit a parse tree produced by TestSuiteParser#test_suite.
-    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
-
+    def visitTest_suite(self, ctx: TestSuiteParser.Test_suiteContext):
 
         suts = {}
         sut_names = []
@@ -95,7 +94,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
                 template_vars = {
                     'SUTNAME': sut_name,
                     'SUTFILENAMES': sut_files,
-                    'RENDER_TEMPLATE' : 'add_library'
+                    'RENDER_TEMPLATE': 'add_library'
                 }
 
                 # Render add_library statement
@@ -108,7 +107,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
                 target_include_statement = template.render(template_vars)
 
                 # Update sut mapping
-                suts[sut_name] = [library_statement,target_include_statement]
+                suts[sut_name] = [library_statement, target_include_statement]
 
             # Forward statements to file writer
             content = suts
@@ -122,7 +121,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
                 'PROJECTNAME': ctx.name.text,
                 'SUTS': suts,
                 'TESTFOLDERS': test_dirs,
-                'RENDER_TEMPLATE' : 'new'
+                'RENDER_TEMPLATE': 'new'
             }
 
             # Render template
@@ -172,7 +171,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
         # Return system under test details
         # sut : Tuple = (sut_name,test_case_symbol.sut_file_path, rel_test_dir, test_case_symbol.lib_names)
-        sut : Tuple = (sut_name,test_case_symbol)
+        sut: Tuple = (sut_name, test_case_symbol)
 
         return sut
 

@@ -502,6 +502,7 @@ class TypeAlias(Symbol, Type):
     def reference(self) -> ReferenceKind:
         return ReferenceKind.Irrelevant
 
+
 class ScopedSymbol(Symbol):
     """
     A symbol with a scope (so it can have child symbols).
@@ -1060,6 +1061,7 @@ class TestCaseSymbol(ScopedSymbol):
     @lib_names.setter
     def lib_names(self, lib_names: Dict[str, str]):
         self.__lib_names = lib_names
+
 
 class ModuleSymbol(ScopedSymbol):
     def __init__(self, name: str = "", file: str = None):

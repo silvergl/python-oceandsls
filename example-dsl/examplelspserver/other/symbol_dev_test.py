@@ -15,7 +15,7 @@ from antlr4.Token import CommonToken
 from antlr4.tree.Tree import TerminalNodeImpl
 
 # user relative imports
-from ..symbolTable.SymbolTable import Symbol, SymbolTable, NamespaceSymbol, ClassSymbol, InterfaceSymbol, FieldSymbol, \
+from ..symboltable.symbol_table import Symbol, SymbolTable, NamespaceSymbol, ClassSymbol, InterfaceSymbol, FieldSymbol, \
     MethodSymbol, BlockSymbol, FundamentalType, VariableSymbol, LiteralSymbol, ScopedSymbol, SymbolTableOptions, \
     UnitSymbol, FundamentalUnit, UnitPrefix, UnitKind
 
@@ -28,7 +28,7 @@ from ..symbolTable.SymbolTable import Symbol, SymbolTable, NamespaceSymbol, Clas
 #         self.name = name
 
 
-P = ParamSpec( "P" )
+P = ParamSpec("P")
 
 
 class Foobar:
@@ -38,18 +38,18 @@ class Foobar:
     pass
 
 
-class Bar( Foobar ):
+class Bar(Foobar):
 
     def __init__(self, args: str = "", kwargs: str = "", name: str = ""):
         self.args = args
         self.kwargs = kwargs
 
 
-class Foo( Foobar ):
+class Foo(Foobar):
     pass
 
 
-T = TypeVar( 'T', bound=Symbol )
+T = TypeVar('T', bound=Symbol)
 
 
 # class ScopedSymbol( Symbol, Generic[T] ):
@@ -90,15 +90,15 @@ T = TypeVar( 'T', bound=Symbol )
 
 async def recursive(n: int) -> str:
     if n > 0:
-        return await recursive( n - 1 )
+        return await recursive(n - 1)
     else:
         return ' done'
 
 
 async def main():
-    print( f"started at {time.strftime( '%X' )}" )
-    await recursive( 10 )
-    print( f"finished at {time.strftime( '%X' )}" )
+    print(f"started at {time.strftime( '%X' )}")
+    await recursive(10)
+    print(f"finished at {time.strftime( '%X' )}")
 
 
 async def asyncWrapper(t: Callable, *my_args: P.args or None, **my_kwargs: P.kwargs or None):
@@ -107,17 +107,17 @@ async def asyncWrapper(t: Callable, *my_args: P.args or None, **my_kwargs: P.kwa
 
     :return:
     '''
-    return await t( *my_args, **my_kwargs )
+    return await t(*my_args, **my_kwargs)
 
 
 def getAllSymbolsOfType(scope: ScopedSymbol, symbolType: type):
     # symbols: List[Symbol] = asyncio.run( asyncWrapper( scope.getSymbolsOfType, symbolType ) )
-    symbols: List[Symbol] = asyncio.run( scope.getSymbolsOfType( symbolType ) )
+    symbols: List[Symbol] = asyncio.run(scope.get_symbols_of_type(symbolType))
     parent = scope.parent()
-    while parent is not None and not isinstance( parent, ScopedSymbol ):
+    while parent is not None and not isinstance(parent, ScopedSymbol):
         parent = parent.parent()
     if parent is not None:
-        symbols.extend( getAllSymbolsOfType( parent, symbolType ) )
+        symbols.extend(getAllSymbolsOfType(parent, symbolType))
     return symbols
 
 
@@ -179,14 +179,14 @@ if __name__ == "__main__":
 
     secondUnit = FundamentalUnit.secondUnit
 
-    custom_kilogram = FundamentalUnit( name="my_kilogram", unitPrefix=UnitPrefix.Kilo, unitKind=UnitKind.Gram )
+    custom_kilogram = FundamentalUnit(name="my_kilogram", unitPrefix=UnitPrefix.Kilo, unitKind=UnitKind.Gram)
 
     #########################################
 
     l1 = [1, 2, 3, 4]
     l2 = [2, 7]
 
-    print( any( x in l1 for x in l2 ) )
+    print(any(x in l1 for x in l2))
 
     for x in l2:
-        print( "%d in l1 %s" % (x, x in l1) )
+        print("%d in l1 %s" % (x, x in l1))

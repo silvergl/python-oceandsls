@@ -12,8 +12,8 @@ from antlr4 import InputStream, CommonTokenStream, DiagnosticErrorListener
 from codeCompletionCore.CodeCompletionCore import CodeCompletionCore
 
 # grammar imports (example-DSL module dependency)
-from exampleLSPServer.gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
-from exampleLSPServer.gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
+from examplelspserver.gen.python.TestExprCore.TestExprCoreLexer import TestExprCoreLexer
+from examplelspserver.gen.python.TestExprCore.TestExprCoreParser import TestExprCoreParser
 
 
 class TestCodeCompletionCore( TestCase ):

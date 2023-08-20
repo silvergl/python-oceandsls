@@ -130,9 +130,11 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             # Update test case symbol
             test_case_symbol = get_scope(ctx, self.symbol_table)
             if test_case_symbol:
+                # Add first used module as system under test
                 test_case_symbol.sut_name = module_symbols[0].name
                 test_case_symbol.sut_file_path = abs_path
-            # TODO else error
+                # Add remaining used modules as additional libraries
+                test_case_symbol.lib_names = list(map(lambda module: module.name, module_symbols[1:]))  # TODO else error
 
         # Return list of generated files
         return self.files

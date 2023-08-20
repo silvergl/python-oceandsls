@@ -1,4 +1,4 @@
-'''FileGeneratorVisitor module for pFunit pf files.'''
+"""FileGeneratorVisitor module for pFunit pf files."""
 
 __author__ = 'sgu'
 
@@ -10,9 +10,11 @@ from typing import Dict, List, Tuple
 from jinja2 import Environment, FileSystemLoader
 
 # user relative imports
+from ..symboltable.symbol_table import SymbolTable
 from ..filewriter.file_writer import write_file
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
+from ..utils.suggest_variables import get_scope
 
 
 class PFFileGeneratorVisitor(TestSuiteVisitor):
@@ -25,28 +27,34 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
     file_suffix: str
     found_ref: bool
     found_par: bool
+    symbol_table: SymbolTable
 
     # TODO hc
     def __init__(
         self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/pf', files: Dict[str, Tuple[float, str, str]] = {},
-        test_work_path: str = 'tdd-dsl/output', test_folder: str = 'tests', file_suffix: str = 'pf'
+        symbol_table: SymbolTable = None, test_work_path: str = 'tdd-dsl/output', test_folder: str = 'tests', file_suffix: str = 'pf'
     ):
-        '''
+        """
         pfUnit test file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
         Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
 
-        :param template_path: relative filepath for jinja templates
+        :param template_path: absolute filepath for jinja templates
         :param test_work_path: relative path to generate test suite
         :param test_folder: relative path under :testWorkPath: to save pfUnit tests
-        '''
+        """
         super().__init__()
+
         self.files: dict[str, Tuple[float, str, str]] = files
+
+        self.symbol_table = symbol_table
+
         self.template_path = template_path
         self.test_path = test_work_path
         # TODO add test directory option
         self.test_folder = test_folder
         self.file_suffix = file_suffix
+
         # Load Jinja2 templates
         self.environment = Environment(loader=FileSystemLoader(template_path))
 
@@ -63,6 +71,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext) -> dict[str, Tuple[float, str, str]]:
+
         # Load Jinja2 template
         template = self.environment.get_template(self.file_templates[ctx.getRuleIndex()])
         # Render template
@@ -75,12 +84,18 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
             assertions.append(self.visit(assertion))
         content = template.render(name=name, scope=scope, vars_=vars_, assertions=assertions)
 
-        abs_path: str = os.path.join(os.getcwd(), self.test_path, self.test_folder, name)
+        # Write pf file
+        abs_path: str = os.path.join(os.getcwd(), self.test_path, self.test_folder, f"{name}.{self.file_suffix}")
         file_attr = self.files.get(abs_path)
-        self.files[abs_path] = write_file('.'.join([abs_path, self.file_suffix]), [content], file_attr, False)
+        self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
 
-        # TODO find test cases in children?
-        self.visitChildren(ctx)
+        # Update test case symbol
+        test_case_symbol = get_scope(ctx, self.symbol_table)
+        if test_case_symbol:
+            test_case_symbol.test_file_path = abs_path
+        # TODO else error
+
+        # Return list of generated files
         return self.files
 
     # Visit a parse tree produced by TestSuiteParser#src_path.

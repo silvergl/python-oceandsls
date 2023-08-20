@@ -1,4 +1,4 @@
-''' enum test file'''
+"""enum test file"""
 
 __author__ = 'sgu'
 

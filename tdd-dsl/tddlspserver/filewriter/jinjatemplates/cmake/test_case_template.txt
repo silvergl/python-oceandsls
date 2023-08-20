@@ -1,0 +1,5 @@
+# pFUnit test source files
+add_pfunit_ctest ({{ TESTNAME }}
+  TEST_SOURCES {{ TESTFILENAME }}
+  LINK_LIBRARIES {{ SUTNAME }}
+)

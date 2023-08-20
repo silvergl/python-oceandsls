@@ -15,8 +15,8 @@ from ..utils.suggest_variables import get_all_symbols_of_type
 from ..fxca.util.fxtran_utils import filter_xml, get_files, write_decorate_src_xml
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
-from ..symboltable.symbol_table import BlockSymbol, FunctionSymbol, ModuleSymbol, ParameterSymbol, RoutineSymbol, ScopedSymbol, SymbolTable, \
-    SymbolTableOptions, VariableSymbol, P, T
+from ..symboltable.symbol_table import FunctionSymbol, ModuleSymbol, ParameterSymbol, RoutineSymbol, ScopedSymbol, SymbolTable, \
+    SymbolTableOptions, TestCaseSymbol, VariableSymbol, P, T
 
 
 class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
@@ -46,7 +46,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
         # Extract symbols from path, scope and variables
-        return self.with_scope(ctx, False, BlockSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        return self.with_scope(ctx, False, TestCaseSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
 
     # Visit a parse tree produced by TestSuiteParser#test_var.
     def visitTest_var(self, ctx: TestSuiteParser.Test_varContext):

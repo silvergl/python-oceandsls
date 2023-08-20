@@ -28,7 +28,7 @@ if "." in __name__:
 else:
     pprint(__name__)
 
-logging.basicConfig( filename="exampleDSL_pygls.log", level=logging.DEBUG, filemode="w" )
+logging.basicConfig(filename="exampleDSL_pygls.log", level=logging.DEBUG, filemode="w")
 
 
 def add_arguments(parser):
@@ -58,9 +58,9 @@ def main():
     args = parser.parse_args()
 
     if args.tcp:
-        example_server.start_tcp( args.host, args.port )
+        example_server.start_tcp(args.host, args.port)
     elif args.ws:
-        example_server.start_ws( args.host, args.port )
+        example_server.start_ws(args.host, args.port)
     else:
         example_server.start_io()
 

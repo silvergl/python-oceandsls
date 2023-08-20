@@ -3,7 +3,8 @@
 __author__ = 'sgu'
 
 # utils
-import sys, os
+import sys
+import os
 import logging
 from typing import List, Union
 
@@ -24,16 +25,16 @@ from lsprotocol.types import (Diagnostic, Range, Position)
 # debug import
 from pprint import pprint
 
-pprint( sys.path )
+pprint(sys.path)
 
 
-class VerboseListener( ErrorListener ):
+class VerboseListener(ErrorListener):
     def __init__(self):
         self.diagnostics: List[Diagnostic] = []
         super().__init__()
 
     def test(self=None, msg: str = "bar"):
-        print( msg )
+        print(msg)
 
     def syntaxError(self, recognizer: Recognizer, offendingSymbol: Token, line: int, column: int, msg: str,
                     e: RecognitionException = None):
@@ -42,15 +43,15 @@ class VerboseListener( ErrorListener ):
                 range=Range(
                     start=Position(
                         line=line - 1,
-                        character=column - 1 ),
+                        character=column - 1),
                     end=Position(
                         line=line - 1,
-                        character=column )
+                        character=column)
                 ),
                 message=msg
             )
         )
-        print( 'ERROR: when parsing line %d column %d: %s\n' % (line, column, msg), file=sys.stderr )
+        print('ERROR: when parsing line %d column %d: %s\n' % (line, column, msg), file=sys.stderr)
         # raise Exception("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg))
 
 
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     # set listener
     error_listener = VerboseListener()
     # create input stream of characters for lexer
-    input_stream = InputStream( "c = + b()\n" )
+    input_stream = InputStream("c = + b()\n")
     # if len(sys.argv) > 1:
     #     pass
     #     # input_stream = FileStream(sys.argv[1])
@@ -67,21 +68,21 @@ if __name__ == '__main__':
     #     input_stream = InputStream(sys.stdin.readline())
 
     # create lexer and parser objects and token stream pipe between them
-    lexer = exampleDslLexer( input_stream )
+    lexer = exampleDslLexer(input_stream)
     lexer.removeErrorListeners()
-    lexer.addErrorListener( error_listener )
+    lexer.addErrorListener(error_listener)
 
-    tokenStream = CommonTokenStream( lexer )
+    tokenStream = CommonTokenStream(lexer)
 
-    parser = exampleDslParser( tokenStream )
+    parser = exampleDslParser(tokenStream)
     parser.removeErrorListeners()
-    parser.addErrorListener( error_listener )
+    parser.addErrorListener(error_listener)
 
     # launch parser by invoking rule 'prog'
     try:
         ast = parser.prog()
     except SyntaxError as syn_inst:
-        logging.exception( "parser raised syntax exception" )
+        logging.exception("parser raised syntax exception")
     except Exception as inst:
         # print(type(inst))    # the exception instance
         # print(inst.args)     # arguments stored in .args
@@ -91,7 +92,7 @@ if __name__ == '__main__':
         # print('x =', x)
         # print('y =', y)
 
-        logging.exception( "parser raised exception" )
+        logging.exception("parser raised exception")
         # logging.exception("the exception instance '" + str(type(inst)) + "'")
         # logging.exception("arguments stored in .args '" + str(inst.args) + "'")
         # logging.exception("__str__ allows args to be printed directly '" + str(inst) + "'")

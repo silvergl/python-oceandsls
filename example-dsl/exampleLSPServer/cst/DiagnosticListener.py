@@ -20,15 +20,15 @@ from antlr4.error.Errors import RecognitionException
 from lsprotocol.types import (Diagnostic, Range, Position)
 
 # debug
-logging.basicConfig( level=logging.DEBUG )
+logging.basicConfig(level=logging.DEBUG)
 
 
-class DiagnosticListener( ErrorListener ):
+class DiagnosticListener(ErrorListener):
     def __init__(self):
         self.diagnostics: List[Diagnostic] = []
         super().__init__()
 
-    logger = logging.getLogger( __name__ )
+    logger = logging.getLogger(__name__)
     # Enables printing ATN state info to terminal.
     showDebugOutput: bool = False
 
@@ -43,17 +43,17 @@ class DiagnosticListener( ErrorListener ):
                 range=Range(
                     start=Position(
                         line=line - 1,
-                        character=column - 1 ),
+                        character=column - 1),
                     end=Position(
                         line=line - 1,
-                        character=column )
+                        character=column)
                 ),
                 message=msg
             )
         )
 
-        if self.showDebugOutput and self.logger.isEnabledFor( logging.DEBUG ):
-            self.logger.debug( 'ERROR: when parsing line %d column %d: %s\n' % (line, column, msg) )
+        if self.showDebugOutput and self.logger.isEnabledFor(logging.DEBUG):
+            self.logger.debug('ERROR: when parsing line %d column %d: %s\n' % (line, column, msg))
         # dev alternatives
         # print('ERROR: when parsing line %d column %d: %s\n' % (line, column, msg), file=sys.stderr)
         # raise Exception("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg))

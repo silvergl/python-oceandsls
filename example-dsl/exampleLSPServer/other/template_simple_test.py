@@ -9,8 +9,8 @@ from jinja2 import Environment, FileSystemLoader
 
 # direct string template
 environment = Environment()
-template = environment.from_string( "string0 '{{ str0 }}'" )
-template.render( str0="Foobar" )
+template = environment.from_string("string0 '{{ str0 }}'")
+template.render(str0="Foobar")
 
 # use test_template.txt
 int_1 = -1
@@ -21,8 +21,8 @@ list_dict = [
     {"str_0": "Test str_0_2", "int_0": 2},
 ]
 
-environment = Environment( loader=FileSystemLoader( "templates/" ) )
-template = environment.get_template( "test_template.txt" )
+environment = Environment(loader=FileSystemLoader("templates/"))
+template = environment.get_template("test_template.txt")
 
 for dict in list_dict:
     filename = f"gen/plain_{dict['str_0'].lower()}.txt"
@@ -31,6 +31,6 @@ for dict in list_dict:
         int_1=int_1,
         str_1=str_1
     )
-    with open( filename, mode="w", encoding="utf-8" ) as message:
-        message.write( content )
-        print( f"... wrote {filename}" )
+    with open(filename, mode="w", encoding="utf-8") as message:
+        message.write(content)
+        print(f"... wrote {filename}")

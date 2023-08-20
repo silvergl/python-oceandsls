@@ -1,5 +1,7 @@
 """computeTokenIndex module."""
 
+from .computeTokenIndex import TokenPosition
+from ..symbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 __author__ = 'sgu'
 
 # utils
@@ -15,13 +17,11 @@ from ..gen.python.exampleDsl.exampleDslParser import exampleDslParser
 
 Top_levelContext = exampleDslParser.StatContext
 del exampleDslParser
-from ..symbolTable.SymbolTable import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
-from .computeTokenIndex import TokenPosition
 
-P = ParamSpec( 'P' )
+P = ParamSpec('P')
 
 
-class RunThread( threading.Thread ):
+class RunThread(threading.Thread):
     def __init__(self, func, *args: P.args or None, **kwargs: P.kwargs or None):
         self.func = func
         self.args = args
@@ -30,7 +30,7 @@ class RunThread( threading.Thread ):
         super().__init__()
 
     def run(self):
-        self.result = asyncio.run( self.func( *self.args, **self.kwargs ) )
+        self.result = asyncio.run(self.func(*self.args, **self.kwargs))
 
 
 def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
@@ -39,7 +39,7 @@ def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
     except RuntimeError:  # 'RuntimeError: There is no current event loop...'
         loop = None
     if loop and loop.is_running():
-        thread = RunThread( func, *args, **kwargs )
+        thread = RunThread(func, *args, **kwargs)
         thread.start()
         thread.join()
         return thread.result
@@ -50,49 +50,49 @@ def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
         # Optionally, a callback function can be executed when the coroutine completes
         # tsk.add_done_callback( lambda t: print(f'Task done with result={t.result()}  << return val of main()'))
     else:
-        return asyncio.run( func( *args, **kwargs ) )
+        return asyncio.run(func(*args, **kwargs))
 
 
 def getScope(context: ParserRuleContext, symbolTable: SymbolTable):
     if context is None:
         return None
 
-    scope = run_async( symbolTable.symbolWithContext, context )
+    scope = run_async(symbolTable.symbolWithContext, context)
 
     if scope is not None:
         return scope
     else:
-        return getScope( context.parentCtx, symbolTable )
+        return getScope(context.parentCtx, symbolTable)
 
 
 def getAllSymbolsOfType(scope: ScopedSymbol, symbolType: type):
-    symbols: List[Symbol] = run_async( scope.getSymbolsOfType, symbolType )
+    symbols: List[Symbol] = run_async(scope.getSymbolsOfType, symbolType)
     parent = scope.parent()
-    while parent is not None and not isinstance( parent, ScopedSymbol ):
+    while parent is not None and not isinstance(parent, ScopedSymbol):
         parent = parent.parent()
     if parent is not None:
-        symbols.extend( getAllSymbolsOfType( parent, symbolType ) )
+        symbols.extend(getAllSymbolsOfType(parent, symbolType))
     return symbols
 
 
 def suggestVariables(symbolTable: SymbolTable, position: TokenPosition):
     context = position.context
-    scope = getScope( context, symbolTable )
+    scope = getScope(context, symbolTable)
     symbols: List[Symbol]
-    if isinstance( scope, ScopedSymbol ):  # Local scope
-        symbols = getAllSymbolsOfType( scope, VariableSymbol )
+    if isinstance(scope, ScopedSymbol):  # Local scope
+        symbols = getAllSymbolsOfType(scope, VariableSymbol)
     else:  # Global scope
-        symbols = run_async( symbolTable.getSymbolsOfType, VariableSymbol )
+        symbols = run_async(symbolTable.getSymbolsOfType, VariableSymbol)
 
     variable = position.context
-    while not isinstance( variable, Top_levelContext ) and variable.parentCtx is not None:
+    while not isinstance(variable, Top_levelContext) and variable.parentCtx is not None:
         variable = variable.parentCtx
 
-    return filterTokens( position.text if variable is not None else '', list( map( lambda s: s.name, symbols ) ) )
+    return filterTokens(position.text if variable is not None else '', list(map(lambda s: s.name, symbols)))
 
 
 def filterTokens(text: str, candidates: List[str]):
-    if len( text.strip() ) == 0:
+    if len(text.strip()) == 0:
         return candidates
     else:
-        return list( filter( lambda c: c.lower().startswith( text.lower() ), candidates ) )
+        return list(filter(lambda c: c.lower().startswith(text.lower()), candidates))

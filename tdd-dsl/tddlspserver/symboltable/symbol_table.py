@@ -10,7 +10,7 @@ __author__ = 'sgu'
 import asyncio
 from dataclasses import dataclass
 from enum import Enum
-from typing import Coroutine, List, Optional, ParamSpec, Set, TypeVar
+from typing import Coroutine, Dict, List, Optional, ParamSpec, Set, TypeVar
 
 # antlr4
 from antlr4.tree.Tree import ParseTree
@@ -987,6 +987,80 @@ class NamespaceSymbol(ScopedSymbol):
 
 class BlockSymbol(ScopedSymbol):
     pass
+
+
+class TestCaseSymbol(ScopedSymbol):
+    """
+    A symbol representing a test case from TDD-DSL used for CMake file generation.
+    """
+
+    # Symbol name of the test
+    __test_name: str
+    # System file path to the test file
+    __test_file_path: str
+    # Symbol name of the sut
+    __sut_name: str
+    # System file path to the sut file
+    __sut_file_path: str
+    # List of used libraries
+    __lib_names: Dict[str, str]
+
+    def __init__(self, test_name=None, test_file_path=None, sut_name=None, sut_file_path=None, lib_names=None):
+        """
+        A symbol representing a test case from TDD-DSL used for CMake file generation.
+
+        :param test_name: Symbol name of the test
+        :param test_file_path: System file path to the test file
+        :param sut_name: Symbol name of the sut
+        :param sut_file_path: System file path to the sut file
+        """
+        super().__init__(test_name)
+        self.__test_name = test_name
+        self.__test_file_path = test_file_path
+        self.__sut_name = sut_name
+        self.__sut_file_path = sut_file_path
+
+        self.__lib_names = lib_names
+
+    @property
+    def sut_name(self) -> str:
+        return self.__sut_name
+
+    @sut_name.setter
+    def sut_name(self, sut_name: str):
+        self.__sut_name = sut_name
+
+    @property
+    def sut_file_path(self) -> str:
+        return self.__sut_file_path
+
+    @sut_file_path.setter
+    def sut_file_path(self, sut_file_path: str):
+        self.__sut_file_path = sut_file_path
+
+    @property
+    def test_name(self) -> str:
+        return self.__test_name
+
+    @test_name.setter
+    def test_name(self, test_name: str):
+        self.__test_name = test_name
+
+    @property
+    def test_file_path(self) -> str:
+        return self.__test_file_path
+
+    @test_file_path.setter
+    def test_file_path(self, test_file_path: str):
+        self.__test_file_path = test_file_path
+
+    @property
+    def lib_names(self) -> Dict[str, str]:
+        return self.__lib_names
+
+    @lib_names.setter
+    def lib_names(self, lib_names: Dict[str, str]):
+        self.__lib_names = lib_names
 
 
 class ModuleSymbol(ScopedSymbol):

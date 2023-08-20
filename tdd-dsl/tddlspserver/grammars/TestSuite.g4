@@ -26,7 +26,8 @@ grammar TestSuite;
 import Keyword, Typing, Reference, PhysicalUnits, CommonLexerRules;
 
 /** test_suite ; top-level rule; begin parsing here */
-test_suite              : cases+=test_case
+test_suite              : 'suite' name=ID ':' NEWLINE
+                          cases+=test_case
                           (NEWLINE cases+=test_case+)*
                         ;
 

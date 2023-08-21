@@ -1,0 +1,432 @@
+for uvic
+
+file "mk2.in" : '''
+# Add version directory for use
+# for Uvic_ESCM 2.9 version reference run with the opem extension
+
+### Add your directory path here:
+Version_Directory = /home/reiner/Projects/OceanDSL/case-studies/uvic-model/2.9
+
+Model_Options = 
+#O_even_fluxes
+#O_read_my_kmt
+#O_read_my_grid
+#O_cyclic
+#O_time_averages
+#O_time_step_monitor
+#O_sbc_in_memory
+#O_fourfil
+#O_constant_flux_reference
+#O_global_sums
+#O_idealized_ic
+#O_replacst
+#O_restorst
+#O_save_flxadj
+#O_read_my_stf
+#O_min_window
+#O_restart_2
+#O_align_coupling_output
+#O_time_averages_monthly_continuous
+#O_shortwave
+#O_neptune
+#O_solid_walls
+#O_firfil
+#O_profiling
+O_generic
+O_embm
+#O_embm_mgrid
+#O_embm_awind
+#O_embm_adiff
+#O_embm_vcs
+#O_save_embm_diff
+#O_save_embm_wind
+#O_embm_slap
+#O_embm_essl
+#O_embm_solve2y
+#O_embm_solve2x
+#O_embm_sparskit
+#O_embm_adi
+#O_embm_explicit
+#O_embm_explicit_q
+#O_embm_running_average
+#O_read_rivers_map
+#O_plume
+O_ice
+#O_ice_evp
+#O_ice_fourfil
+#O_ice_cpts
+#O_ice_cpts3
+#O_ice_cpts5
+#O_ice_cpts10
+#O_ice_firfil
+#O_ice_cpts_roth_press
+#O_ice_cpts_simple_growth
+#O_correct_ice_to_ocean_stress
+O_mtlm
+#O_mtlm_segday
+O_mom
+#O_ramdrive
+#O_stream_function
+#O_conjugate_gradient
+#O_oldrelax
+#O_hypergrid
+#O_sf_5_point
+#O_sf_9_point
+#O_consthmix
+#O_constvmix
+#O_fullconvect
+#O_save_convection
+#O_stability_tests
+#O_gyre_components
+#O_term_balances
+#O_energy_analysis
+#O_meridional_overturning
+#O_tracer_averages
+#O_bryan_lewis_horizontal
+#O_bryan_lewis_vertical
+#O_gent_mcwilliams
+#O_isopycmix
+#O_fct
+#O_fct_3d
+#O_quicker
+#O_save_kv
+#O_tidal_kv
+#O_highmix_Southern_Ocean
+#O_anisotropic_viscosity
+#O_save_anisotropic_viscosity
+#O_increase_isopyc_diff
+#O_increase_isopyc_diff_smooth
+#O_increase_isopyc_diff_everywhere
+#O_fourth_order_tracer_advection
+#O_biharmonic
+#O_pressure_gradient_average
+#O_read_denscoef
+#O_save_cross_flow
+#O_save_mixing_coeff
+#O_save_convection_full
+#O_matrix_sections
+#O_show_external_mode
+#O_tracer_yz
+#O_show_zonal_mean_of_sbc
+#O_diagnostic_surf_height
+#O_xbts
+#O_mom_tbt
+#O_meridional_tracer_budget
+#O_npzd
+#O_npzd_alk
+#O_npzd_nitrogen
+#O_npzd_no_vflux
+#O_npzd_o2
+#O_save_npzd
+#O_npzd_extra_diagnostics
+#O_npzd_fe_limitation
+#O_zoop_graz_upper_temp_limit
+#O_no_remi_w_no_no3
+#O_npzd_cdom_attenuation
+#O_light_bug_in_Ref_Run
+#O_zoop_not_o2_limited
+#O_npzd_iron
+#O_npzd_iron_diagnostics
+#O_npzd_chl
+#O_npzd_subgridbathy
+#O_npzzd
+#O_opem
+#O_opem_chl
+#O_opem_pos
+#O_sed
+#O_sed_weath_diag
+#O_sed_uncoupled
+#O_sed_constrain_rainr
+#O_sed_constrain_weath
+O_carbon
+#O_carbon_co2_2d
+#O_carbon_uncoupled
+#O_save_carbon_carbonate_chem
+#O_save_carbon_totals
+#O_co2emit_diag
+#O_co2emit_track_sat
+#O_co2emit_track_co2
+#O_carbon_14
+#O_carbon_14_coupled
+#O_c14ccn_data
+#O_c14ccn_data_transient
+#O_c14ccn_data_transient_repyr
+#O_carbon_fnpzd
+#O_co2ccn_user
+O_Forcing
+#O_co2ccn_data
+#O_co2emit_data
+#O_co2emit_data_land
+#O_co2emit_data_fuel
+#O_agric_data
+#O_landice_data
+#O_solar_data
+#O_c14ccn_data
+#O_volcano_data
+#O_sulphate_data
+#O_sulphate_data_direct
+#O_sulphate_data_indirect
+#O_aggfor_data
+#O_cfcs_data
+#O_orbit_user
+#O_ForcingTransient
+#O_co2ccn_data_transient
+#O_co2emit_data_transient
+#O_agric_data_transient
+#O_landice_data_transient
+#O_solar_data_transient
+#O_orbit_transient
+#O_volcano_data_transient
+#O_sulphate_data_transient
+#O_aggfor_data_transient
+#O_cfcs_data_transient
+#O_c14ccn_data_transient
+#O_fwa
+#O_fwa_compevap
+#O_fwa_precip
+#O_sealev
+#O_sealev_data
+#O_sealev_data_transient
+#O_sealev_salinity
+O_Timestep
+#O_tai_otsf
+#O_tai_ns
+#O_tai_lo
+#O_tai_slh
+#O_tai_rad
+#O_tai_slh_from_averages
+#O_tai_otsf_from_averages
+O_Units
+#O_units_temperature_Celsius
+#O_units_time_years
+#O_save_time_relyear0
+#O_save_time_startper
+#O_save_time_endper
+
+
+'''Code_Extension(0) = ['''
+'''Code_Extension(1) = ('''
+'''Code_Extension(2) = ''''
+'''Code_Extension(3) = f'''
+'''Code_Extension(4) = 9'''
+'''Code_Extension(5) = 0'''
+'''Code_Extension(6) = ''''
+'''Code_Extension(7) = ,'''
+'''Code_Extension(8) =  '''
+'''Code_Extension(9) = 0'''
+'''Code_Extension(10) = )'''
+'''Code_Extension(11) = ,'''
+'''Code_Extension(12) =  '''
+'''Code_Extension(13) = ('''
+'''Code_Extension(14) = ''''
+'''Code_Extension(15) = f'''
+'''Code_Extension(16) = ''''
+'''Code_Extension(17) = ,'''
+'''Code_Extension(18) =  '''
+'''Code_Extension(19) = 1'''
+'''Code_Extension(20) = )'''
+'''Code_Extension(21) = ,'''
+'''Code_Extension(22) =  '''
+'''Code_Extension(23) = ('''
+'''Code_Extension(24) = ''''
+'''Code_Extension(25) = f'''
+'''Code_Extension(26) = ''''
+'''Code_Extension(27) = ,'''
+'''Code_Extension(28) =  '''
+'''Code_Extension(29) = 1'''
+'''Code_Extension(30) = )'''
+'''Code_Extension(31) = ,'''
+'''Code_Extension(32) =  '''
+'''Code_Extension(33) = ('''
+'''Code_Extension(34) = ''''
+'''Code_Extension(35) = f'''
+'''Code_Extension(36) = ''''
+'''Code_Extension(37) = ,'''
+'''Code_Extension(38) =  '''
+'''Code_Extension(39) = 1'''
+'''Code_Extension(40) = )'''
+'''Code_Extension(41) = ,'''
+'''Code_Extension(42) =  '''
+'''Code_Extension(43) = ('''
+'''Code_Extension(44) = ''''
+'''Code_Extension(45) = f'''
+'''Code_Extension(46) = ''''
+'''Code_Extension(47) = ,'''
+'''Code_Extension(48) =  '''
+'''Code_Extension(49) = 1'''
+'''Code_Extension(50) = )'''
+'''Code_Extension(51) = ,'''
+'''Code_Extension(52) =  '''
+'''Code_Extension(53) = ('''
+'''Code_Extension(54) = ''''
+'''Code_Extension(55) = f'''
+'''Code_Extension(56) = ''''
+'''Code_Extension(57) = ,'''
+'''Code_Extension(58) =  '''
+'''Code_Extension(59) = 1'''
+'''Code_Extension(60) = )'''
+'''Code_Extension(61) = ,'''
+'''Code_Extension(62) =  '''
+'''Code_Extension(63) = ('''
+'''Code_Extension(64) = ''''
+'''Code_Extension(65) = f'''
+'''Code_Extension(66) = ''''
+'''Code_Extension(67) = ,'''
+'''Code_Extension(68) =  '''
+'''Code_Extension(69) = 1'''
+'''Code_Extension(70) = )'''
+'''Code_Extension(71) = ,'''
+'''Code_Extension(72) =  '''
+'''Code_Extension(73) = ('''
+'''Code_Extension(74) = ''''
+'''Code_Extension(75) = f'''
+'''Code_Extension(76) = ''''
+'''Code_Extension(77) = ,'''
+'''Code_Extension(78) =  '''
+'''Code_Extension(79) = 1'''
+'''Code_Extension(80) = )'''
+'''Code_Extension(81) = ]'''
+
+### source code directories (if excluded, exclude equivalent option)
+'''Source_Directory(0) = ['''
+'''Source_Directory(1) = ''''
+'''Source_Directory(2) = u'''
+'''Source_Directory(3) = p'''
+'''Source_Directory(4) = d'''
+'''Source_Directory(5) = a'''
+'''Source_Directory(6) = t'''
+'''Source_Directory(7) = e'''
+'''Source_Directory(8) = s'''
+'''Source_Directory(9) = /'''
+'''Source_Directory(10) = f'''
+'''Source_Directory(11) = 9'''
+'''Source_Directory(12) = 0'''
+'''Source_Directory(13) = ''''
+'''Source_Directory(14) = ,'''
+'''Source_Directory(15) =  '''
+'''Source_Directory(16) = ''''
+'''Source_Directory(17) = s'''
+'''Source_Directory(18) = o'''
+'''Source_Directory(19) = u'''
+'''Source_Directory(20) = r'''
+'''Source_Directory(21) = c'''
+'''Source_Directory(22) = e'''
+'''Source_Directory(23) = /'''
+'''Source_Directory(24) = c'''
+'''Source_Directory(25) = o'''
+'''Source_Directory(26) = m'''
+'''Source_Directory(27) = m'''
+'''Source_Directory(28) = o'''
+'''Source_Directory(29) = n'''
+'''Source_Directory(30) = ''''
+'''Source_Directory(31) = ,'''
+'''Source_Directory(32) =  '''
+'''Source_Directory(33) = ''''
+'''Source_Directory(34) = s'''
+'''Source_Directory(35) = o'''
+'''Source_Directory(36) = u'''
+'''Source_Directory(37) = r'''
+'''Source_Directory(38) = c'''
+'''Source_Directory(39) = e'''
+'''Source_Directory(40) = /'''
+'''Source_Directory(41) = n'''
+'''Source_Directory(42) = e'''
+'''Source_Directory(43) = t'''
+'''Source_Directory(44) = c'''
+'''Source_Directory(45) = d'''
+'''Source_Directory(46) = f'''
+'''Source_Directory(47) = ''''
+'''Source_Directory(48) = ,'''
+'''Source_Directory(49) =  '''
+'''Source_Directory(50) = ''''
+'''Source_Directory(51) = s'''
+'''Source_Directory(52) = o'''
+'''Source_Directory(53) = u'''
+'''Source_Directory(54) = r'''
+'''Source_Directory(55) = c'''
+'''Source_Directory(56) = e'''
+'''Source_Directory(57) = /'''
+'''Source_Directory(58) = e'''
+'''Source_Directory(59) = m'''
+'''Source_Directory(60) = b'''
+'''Source_Directory(61) = m'''
+'''Source_Directory(62) = ''''
+'''Source_Directory(63) = ,'''
+'''Source_Directory(64) =  '''
+'''Source_Directory(65) = ''''
+'''Source_Directory(66) = s'''
+'''Source_Directory(67) = o'''
+'''Source_Directory(68) = u'''
+'''Source_Directory(69) = r'''
+'''Source_Directory(70) = c'''
+'''Source_Directory(71) = e'''
+'''Source_Directory(72) = /'''
+'''Source_Directory(73) = i'''
+'''Source_Directory(74) = c'''
+'''Source_Directory(75) = e'''
+'''Source_Directory(76) = ''''
+'''Source_Directory(77) = ,'''
+'''Source_Directory(78) =  '''
+'''Source_Directory(79) = ''''
+'''Source_Directory(80) = s'''
+'''Source_Directory(81) = o'''
+'''Source_Directory(82) = u'''
+'''Source_Directory(83) = r'''
+'''Source_Directory(84) = c'''
+'''Source_Directory(85) = e'''
+'''Source_Directory(86) = /'''
+'''Source_Directory(87) = m'''
+'''Source_Directory(88) = t'''
+'''Source_Directory(89) = l'''
+'''Source_Directory(90) = m'''
+'''Source_Directory(91) = ''''
+'''Source_Directory(92) = ,'''
+'''Source_Directory(93) =  '''
+'''Source_Directory(94) = ''''
+'''Source_Directory(95) = s'''
+'''Source_Directory(96) = o'''
+'''Source_Directory(97) = u'''
+'''Source_Directory(98) = r'''
+'''Source_Directory(99) = c'''
+'''Source_Directory(100) = e'''
+'''Source_Directory(101) = /'''
+'''Source_Directory(102) = m'''
+'''Source_Directory(103) = o'''
+'''Source_Directory(104) = m'''
+'''Source_Directory(105) = ''''
+'''Source_Directory(106) = ,'''
+'''Source_Directory(107) =  '''
+'''Source_Directory(108) = ''''
+'''Source_Directory(109) = s'''
+'''Source_Directory(110) = o'''
+'''Source_Directory(111) = u'''
+'''Source_Directory(112) = r'''
+'''Source_Directory(113) = c'''
+'''Source_Directory(114) = e'''
+'''Source_Directory(115) = /'''
+'''Source_Directory(116) = s'''
+'''Source_Directory(117) = e'''
+'''Source_Directory(118) = d'''
+'''Source_Directory(119) = ''''
+'''Source_Directory(120) = ]'''
+
+### data source directories
+Data_Source(1) = data.100.100.19
+
+### miscellaneous settings
+Executable_File = UVic_ESCM
+Input_File = control.in
+Output_File = pr 
+Code_Directory = code
+Data_Directory = data
+Updates_Level = latest
+No_Warnings = True
+Preprocessor = fpp
+Libraries = [ '''-l#{it}'''' '''-l#{it}'''n '''-l#{it}'''e '''-l#{it}'''t '''-l#{it}'''c '''-l#{it}'''d '''-l#{it}'''f '''-l#{it}'''' '''-l#{it}''', '''-l#{it}'''  '''-l#{it}'''' '''-l#{it}'''n '''-l#{it}'''e '''-l#{it}'''t '''-l#{it}'''c '''-l#{it}'''d '''-l#{it}'''f '''-l#{it}'''f '''-l#{it}'''' '''-l#{it}'''] [ '''-L#{it}'''' '''-L#{it}'''/ '''-L#{it}'''u '''-L#{it}'''s '''-L#{it}'''r '''-L#{it}'''/ '''-L#{it}'''l '''-L#{it}'''i '''-L#{it}'''b '''-L#{it}'''/ '''-L#{it}'''x '''-L#{it}'''8 '''-L#{it}'''6 '''-L#{it}'''_ '''-L#{it}'''6 '''-L#{it}'''4 '''-L#{it}'''- '''-L#{it}'''l '''-L#{it}'''i '''-L#{it}'''n '''-L#{it}'''u '''-L#{it}'''x '''-L#{it}'''- '''-L#{it}'''g '''-L#{it}'''n '''-L#{it}'''u '''-L#{it}'''' '''-L#{it}''', '''-L#{it}'''  '''-L#{it}'''' '''-L#{it}'''/ '''-L#{it}'''h '''-L#{it}'''o '''-L#{it}'''m '''-L#{it}'''e '''-L#{it}'''/ '''-L#{it}'''r '''-L#{it}'''e '''-L#{it}'''i '''-L#{it}'''n '''-L#{it}'''e '''-L#{it}'''r '''-L#{it}'''/ '''-L#{it}'''P '''-L#{it}'''r '''-L#{it}'''o '''-L#{it}'''j '''-L#{it}'''e '''-L#{it}'''c '''-L#{it}'''t '''-L#{it}'''s '''-L#{it}'''/ '''-L#{it}'''K '''-L#{it}'''i '''-L#{it}'''e '''-L#{it}'''k '''-L#{it}'''e '''-L#{it}'''r '''-L#{it}'''/ '''-L#{it}'''k '''-L#{it}'''i '''-L#{it}'''e '''-L#{it}'''k '''-L#{it}'''e '''-L#{it}'''r '''-L#{it}'''- '''-L#{it}'''l '''-L#{it}'''a '''-L#{it}'''n '''-L#{it}'''g '''-L#{it}'''- '''-L#{it}'''p '''-L#{it}'''a '''-L#{it}'''c '''-L#{it}'''k '''-L#{it}'''- '''-L#{it}'''c '''-L#{it}'''/ '''-L#{it}'''l '''-L#{it}'''i '''-L#{it}'''b '''-L#{it}'''k '''-L#{it}'''i '''-L#{it}'''e '''-L#{it}'''k '''-L#{it}'''e '''-L#{it}'''r '''-L#{it}'''/ '''-L#{it}'''. '''-L#{it}'''l '''-L#{it}'''i '''-L#{it}'''b '''-L#{it}'''s '''-L#{it}'''' '''-L#{it}''']
+
+Compiler_F = ifort -r8 -warn nouncalled -c -O3
+Compiler_f = ifort -r8 -warn nouncalled -c -O3
+Compiler_F90 = ifort -r8 -warn nouncalled -c -O3
+Compiler_f90 = ifort -r8 -warn nouncalled -c -O3
+Linker = ifort -r8 -warn nouncalled -o -O3
+'''

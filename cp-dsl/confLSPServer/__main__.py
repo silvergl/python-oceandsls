@@ -52,7 +52,7 @@ def main():
     )
     args = parser.parse_args()
     if args.test:
-        import confLSPServer.test
+        import test
     if args.tcp:
         conf_server.start_tcp( args.host, args.port )
     elif args.ws:
@@ -70,6 +70,7 @@ if __name__ == '__main__':
     from confLSPServer.symbolTable.SymbolTable import VariableSymbol
     from confLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
     from confLSPServer.utils.calc import DeclarationCalculator, ConfigurationCalculator
+    from .fileWriter.UvicCodeGenerator import UvicCodeGenerator
     tableVisitor = SymbolTableVisitor("testConf")
 
 
@@ -81,12 +82,10 @@ if __name__ == '__main__':
         dcl_parsed = ConfigurationParser(stream).configurationModel()
         tableVisitor.visit(dcl_parsed)
         tableCalc = DeclarationCalculator(tableVisitor.symbolTable)
-        table = ConfigurationCalculator(tableCalc.calculate()).calculate()
-        for elem in table.getAllNestedSymbolsSync():
-            if elem.name == "offline":
-                print(elem.is_activated)
-            if isinstance(elem, VariableSymbol):
-                print(elem.name, elem.toArray())
+        table = ConfigurationCalculator(tableCalc.calculate(), tableVisitor.configurationList).calculate()
+        generator = UvicCodeGenerator(table)
+        generator.generate()
+        
 
 
     # from confLSPServer.gen.python.Declaration.DeclarationLexer import DeclarationLexer

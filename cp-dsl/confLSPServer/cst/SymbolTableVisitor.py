@@ -9,17 +9,17 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 from antlr4.tree.Tree import ParseTree
 from antlr4 import InputStream, CommonTokenStream
 
-from confLSPServer.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
-from confLSPServer.gen.python.Configuration.ConfigurationParser import ConfigurationParser
 
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..gen.python.Declaration.DeclarationLexer import DeclarationLexer
 # user relative imports
-from .SymbolTableVisitorDcl import SymbolTableVisitorDecl as DeclSymbolTableVisitor
+from .SymbolTableVisitorDcl import SymbolTableVisitorDcl as DeclSymbolTableVisitor
 from ..symbolTable.SymbolTable import SymbolTable, P, T, GroupSymbol, FeatureSymbol, SymbolTableOptions, VariableSymbol, FundamentalUnit, UnitPrefix, UnitKind, EnumSymbol, ArraySymbol
 from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Configuration.ConfigurationVisitor import ConfigurationVisitor
+from ..gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
+from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 
 import os
 
@@ -27,13 +27,15 @@ import os
 class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
     _symbolTable: SymbolTable
 
-    def __init__(self, name: str = '', ):
+    def __init__(self, name: str = '', cwd : str = "."):
         super().__init__()
         # creates a new symboltable with no duplicate symbols
         self._symbolTable = SymbolTable(name, SymbolTableOptions(False))
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = self._symbolTable
+        self.cwd = cwd
+        self.configurationList = []
 
     @property
     def symbolTable(self) -> SymbolTable:
@@ -51,9 +53,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
     
     def visitDeclarationTable(self, declarationName : str):
         declVisitor = DeclSymbolTableVisitor(declarationName + "_ConfDeclVisit")
-        # TODO: How do we know where the dcl file is placed?
-        # TODO: Maybe: Copy TDD-DSL Pattern for os paths
-        with open(os.path.join(os.getcwd(),declarationName + ".decl")) as dcl_file:
+        with open(os.path.join(self.cwd, declarationName + ".decl")) as dcl_file:
             data = dcl_file.read()
             input_stream = InputStream(data)
             lexer = DeclarationLexer(input_stream)
@@ -69,9 +69,9 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         #isArray = True if len(ctx.selectors) > 0 else False
         symbol = self._scope.getAllNestedSymbolsSync(varName)[0]
         if prefix != UnitPrefix.NoP:
-            print("ungleich!!")
             symbol.unit.prefix = prefix
         symbol.configuration.append(ctx)
+        self.configurationList.append((symbol, len(symbol.configuration) - 1))
         
     def visitParameterGroup(self, ctx: ConfigurationParser.ParameterGroupContext):
         self.withScope(GroupSymbol, ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
@@ -94,7 +94,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         self.withScope(FeatureSymbol, ctx, ctx.declaration.text, lambda: self.visitChildren(ctx))
 
     def visitFeatureActivation(self, ctx : ConfigurationParser.FeatureActivationContext):
-        for feature in self._scope.getFeatures():
+        for feature in self._scope.getNestedSymbolsOfTypeSync(FeatureSymbol):
             if feature.name == ctx.declaration.text:
                 try:
                     # if is_activated is set to false it is not none
@@ -107,8 +107,7 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
         info = ctx.importedNamespace.text.split(".")
         #visit configuration table
         confVisitor = SymbolTableVisitor(info[0] + "_ConfVisit")
-        # TODO: Maybe: Copy TDD-DSL Pattern for os paths
-        with open(os.path.join(os.getcwd(),info[0] + ".oconf")) as conf_file:
+        with open(os.path.join(self.cwd, info[0] + ".oconf")) as conf_file:
             data = conf_file.read()
             input_stream = InputStream(data)
             lexer = ConfigurationLexer(input_stream)
@@ -116,7 +115,6 @@ class SymbolTableVisitor( ConfigurationVisitor, Generic[T] ):
             dcl_parsed = ConfigurationParser(stream).configurationModel()
             confVisitor.visit(dcl_parsed)
             table = confVisitor._symbolTable
-        #TODO: Not sure if this is gonna work
         scope = None
         #go through all symbols
         for i in range(1,len(info)):

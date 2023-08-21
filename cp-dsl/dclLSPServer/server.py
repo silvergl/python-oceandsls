@@ -59,7 +59,7 @@ from lsprotocol.types import (TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE
 from .utils.computeTokenIndex import computeTokenPosition, computeTokenIndex, CaretPosition, TokenPosition
 from .utils.suggestVariables import suggestVariables
 
-from .cst.SymbolTableVisitor import SymbolTableVisitor
+from .cst.SymbolTableVisitorDcl import SymbolTableVisitorDcl
 from .cst.DiagnosticListener import DiagnosticListener
 
 from .gen.python.Declaration.DeclarationLexer import DeclarationLexer
@@ -264,7 +264,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # Variables finding
     if any( rule in candidates.rules for rule in [ DeclarationParser.declarationModel ] ):
 
-        symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
+        symbolTableVisitor: SymbolTableVisitorDcl = SymbolTableVisitorDcl( 'completions' )
 
         symbolTable = symbolTableVisitor.visit( parseTree )
 

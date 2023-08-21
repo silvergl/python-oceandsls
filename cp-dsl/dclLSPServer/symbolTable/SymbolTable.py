@@ -933,7 +933,7 @@ class ArraySymbol(VariableSymbol):
                     self.vectors.append(vector[0])
                     self.value.append(val)
                 else:
-                    print("ERROR: Array out of bound error for index", vector)
+                    print("ERROR: Array", self.name,"out of bound error for index", vector)
 
 
     def get(self, index) -> T:
@@ -1012,6 +1012,9 @@ class ArraySymbol(VariableSymbol):
         if len(self.vectors) == 0:
             return 0
         return max(self.vectors) + 1
+    
+    def __str__(self):
+        return str(self.toArray()).replace("None, ", "")
 
 
 class GroupSymbol(ScopedSymbol):
@@ -1039,10 +1042,11 @@ class FeatureSymbol( ScopedSymbol ):
     returnType: Optional[Type]  # Can be null if result is void.
     is_activated: bool = False # set if the feature is activated
 
-    def __init__(self, name: str, returnType: Type = None):
+    def __init__(self, name: str, description : str = "", returnType: Type = None):
         super().__init__( name )
         self.returnType = returnType
         self.is_activated = False
+        self.description = description
 
     def getVariables(self, localOnly=True) -> Coroutine[List[T]]:
         return self.getNestedSymbolsOfTypeSync( VariableSymbol )

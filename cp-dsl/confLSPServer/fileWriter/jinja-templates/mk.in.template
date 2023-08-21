@@ -1,0 +1,44 @@
+{%- macro codeExtensionsTemplate(elem, count) -%}
+    '''Code_Extension({{ count }}) = {{ elem }}'''
+{%- endmacro -%}
+{%- macro printSourceDirectory(elem, count) -%}
+    '''Source_Directory({{ count }}) = {{ elem }}'''
+{%- endmacro -%}
+for uvic
+
+file "mk2.in" : '''
+# Add version directory for use
+# for Uvic_ESCM 2.9 version reference run with the opem extension
+
+### Add your directory path here:
+Version_Directory = {{ general["version_directory"] }}
+
+Model_Options = 
+{% for feature in features %}{% if feature.is_activated %}O_{{feature.name}}{% else %}#O_{{feature.name}}{% endif %}
+{% endfor %}
+
+{% for i in range(source["code_extensions"].__len__()) %}{{ codeExtensionsTemplate(source["code_extensions"][i], i) }}
+{% endfor %}
+### source code directories (if excluded, exclude equivalent option)
+{% for i in range(source["directories"].__len__()) %}{{ printSourceDirectory(source["directories"][i], i) }}
+{% endfor %}
+### data source directories
+Data_Source(1) = data.100.100.19
+
+### miscellaneous settings
+Executable_File = {{ general["executable_file"] }}
+Input_File = control.in
+Output_File = {{ general["output_file"] }} 
+Code_Directory = {{ general["code_directory"] }}
+Data_Directory = {{ general["data_directory"] }}
+Updates_Level = {{ general["updates_level"] }}
+No_Warnings = {{ general["no_warnings"] }}
+Preprocessor = {{ general["preprocessor"] }}
+Libraries = {{ " '''-l#{it}'''".join(general["libraries"]) }} {{ " '''-L#{it}'''".join(general["library_paths"]) }}
+
+Compiler_F = {{ general["compiler_f"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+Compiler_f = {{ general["compiler_f"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+Compiler_F90 = {{ general["compiler_f90"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+Compiler_f90 = {{ general["compiler_f90"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+Linker = {{ general["linker"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+'''

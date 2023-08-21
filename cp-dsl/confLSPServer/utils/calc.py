@@ -4,17 +4,17 @@ __author__ = "stu222808"
 
 import operator as op
 
-from confLSPServer.symbolTable.SymbolTable import ArraySymbol
 
 # Relative Imports
 from ..symbolTable.SymbolTable import SymbolTable, VariableSymbol, ArraySymbol, ScopedSymbol, EnumSymbol
-from confLSPServer.gen.python.Configuration.ConfigurationParser import ConfigurationParser
-from confLSPServer.gen.python.Declaration.DeclarationParser import DeclarationParser
+from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
+from ..gen.python.Declaration.DeclarationParser import DeclarationParser
+from ..symbolTable.SymbolTable import ArraySymbol, SymbolTable
 
 class DeclarationCalculator():
     def __init__(self, symbolTable : SymbolTable) -> None:
         self._symbolTable = symbolTable
-        self._scope = None
+        self._scope = symbolTable
 
     def calcVariable(self, variableSymbol : VariableSymbol):
         # check if the context is a Array or a simple Value
@@ -42,12 +42,10 @@ class DeclarationCalculator():
                 vector.append(0)
             else: 
                 vector[depht] = 0
-            print(rangeList)
             #rangeList is empty so there is no given range
             if len(rangeList) == 0:
                 for i in range(len(calcList)):
                     vector[depht] = i
-                    print(vector)
                     if isinstance(calcList[i], list):
                         convertToTupleList(rangeList, calcList[i], vector.copy(), depht + 1)
                     arraySymbol.add(vector, calcList[i])
@@ -142,6 +140,10 @@ class DeclarationCalculator():
     def calcNamedElementReference(self, ctx : DeclarationParser.NamedElementReferenceContext, variableSymbol : VariableSymbol):
         #what is attribute? element is maybe a group
         elementAttribute = ctx.attribute.text if ctx.attribute else None
+        if ctx.element.text == "true" or ctx.element.text == "false":
+            print("WARNING: wrong parsing in variable", variableSymbol.name, "try to compensate to value", ctx.element.text)
+            variableSymbol.value = bool(ctx.element.text)
+            return variableSymbol.value
         elementValue = self._scope.resolveSync(ctx.element.text)
         if elementValue:
             #just return the value here should work due to scopeing
@@ -209,19 +211,25 @@ class DeclarationCalculator():
 
 
 class ConfigurationCalculator(DeclarationCalculator):
-    def __init__(self, symbolTable : SymbolTable):
+    def __init__(self, symbolTable : SymbolTable, configurationList : list):
         super().__init__(symbolTable)
+        self.configurationList = configurationList
 
-    def calcVariable(self, variableSymbol : VariableSymbol):
-        for ctx in variableSymbol.configuration:
-            # check if the context is a Array or a simple Value
-            if variableSymbol.is_array:
-                # Array
-                self.calcArithmeticExpressionArray(ctx, ctx.value, variableSymbol)
-            else:
-                # simple Value
-                variableSymbol.value = self.calcArithmeticExpression(ctx.value, variableSymbol)
-                variableSymbol.is_tree = False
+    def calculate(self) -> SymbolTable:
+        for elem, index in self.configurationList:
+            self.calcVariable(elem, index)
+        return self._symbolTable
+
+    def calcVariable(self, variableSymbol : VariableSymbol, index : int):
+        ctx = variableSymbol.configuration[index]
+        # check if the context is a Array or a simple Value
+        if variableSymbol.is_array:
+            # Array
+            self.calcArithmeticExpressionArray(ctx, ctx.value, variableSymbol)
+        else:
+            # simple Value
+            variableSymbol.value = self.calcArithmeticExpression(ctx.value, variableSymbol)
+            variableSymbol.is_tree = False
 
     def calcArithmeticExpressionArray(self, varctx : ConfigurationParser.ParameterAssignmentContext, ctx : ConfigurationParser.ArithmeticExpressionContext, arraySymbol: ArraySymbol):
         #tupleList representation: list[2:4,5] = [range(2,4), range(5)]
@@ -231,12 +239,10 @@ class ConfigurationCalculator(DeclarationCalculator):
                 vector.append(0)
             else: 
                 vector[depht] = 0
-            print(rangeList)
             #rangeList is empty so there is no given range
             if len(rangeList) == 0:
                 for i in range(len(calcList)):
                     vector[depht] = i
-                    print(vector)
                     if isinstance(calcList[i], list):
                         convertToTupleList(rangeList, calcList[i], vector.copy(), depht + 1)
                     arraySymbol.add(vector, calcList[i])

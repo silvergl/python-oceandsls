@@ -43,6 +43,18 @@ class Scope:
         return len(self.branches)
 
     @property
+    def n_declarations(self) -> int:
+        return len(self.declarations)
+
+    @property
+    def n_other_stmts(self) -> int:
+        return len(self.other_stmt)
+
+    @property
+    def n_arguments(self) -> int:
+        return len(self.arguments)
+
+    @property
     def cyclomatic_complexity(self) -> int | None:
         """
         Cyclomatic complexity function for structures with only one entry point and one exit point.
@@ -64,7 +76,7 @@ class Scope:
         return len(self.loops) + len(self.branches) + len(self.declarations) + len(self.other_stmt)
 
     @property
-    def decision_points(self) -> int:
+    def n_decision_points(self) -> int:
         """
         :return: Number of decision points in scope
         """

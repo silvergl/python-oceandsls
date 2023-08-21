@@ -65,10 +65,6 @@ class Scope:
         return len(self.__scope_result_decl)
 
     @property
-    def scope_result_decl(self) -> UniqueList:
-        return self.__scope_result_decl
-
-    @property
     def n_conditionals(self) -> int:
         return len(self.conditionals)
 
@@ -100,7 +96,7 @@ class Scope:
         :return:
         """
         # Check if type is a simple structure
-        if self.type in self.routine_types:
+        if self.is_routine:
             return self.n_conditionals + self.n_loops + self.n_branches + 1
         else:
             # TODO add more types
@@ -129,6 +125,23 @@ class Scope:
         for scope in self.scopes:
             depth_of_nesting = max(depth_of_nesting, 1 + scope.depth_of_nesting)
         return depth_of_nesting
+
+    @property
+    def is_routine(self) -> bool:
+        return self.type in self.routine_types
+
+    def close_result(self):
+        self.__scope_result_decl.close()
+
+    def extend_result(self, elements):
+        for element in elements:
+            self.append_result(element)
+
+    def append_result(self, element):
+        element_name = element.find('.//fx:n', ns)
+        element_name = element_name.text if element_name is not None else None
+        if self.is_routine and ( element_name in self.scope_result_names or not self.scope_result_names):
+            self.__scope_result_decl.append(element)
 
     def __str__(self):
         """ toString method """
@@ -241,7 +254,7 @@ def calculate_metrics(xml_path: str = None):
 
         # Extract branching statements
         elif element.tag.endswith(tuple(branch_end_elements)):
-            current_scope.scope_result_decl.close()
+            current_scope.close_result()
 
         # Extract branching statements
         elif element.tag.endswith(tuple(branch_elements)):
@@ -249,12 +262,14 @@ def calculate_metrics(xml_path: str = None):
 
             # Extract optional return statements
             branch_assignments = element.findall(path='.//fx:a.stmt', namespaces=ns)
-            current_scope.scope_result_decl.extend(branch_assignments)
+            current_scope.extend_result(branch_assignments)
 
         # Extract declaration statements
         elif element.tag.endswith(tuple(declaration_elements)):
             current_scope.declarations.append(element)
-            current_scope.scope_result_decl.append(element)
+
+            # Add as result statement if it is the last call of the return statement
+            current_scope.append_result(element)
 
         # Extract declaration statements
         elif element.tag.endswith(tuple(other_stmt_elements)):

@@ -7,6 +7,37 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Set
 
 
+class UniqueList(list):
+    """
+    List with unique elements. Resets if added to closed list.
+    """
+    __closed : bool = False
+
+    def close(self):
+        # Close list
+        self.__closed = True
+
+    def extend(self, elements: List):
+        # Reset if closed
+        if self.__closed:
+            self.clear()
+            __close = False
+
+        # Add elements if not in list
+        for element in elements:
+            self.append(element)
+
+    def append(self, element):
+        # Reset if closed
+        if self.__closed:
+            self.clear()
+            __close = False
+
+        # Add element if not in list
+        if not self.__contains__(element):
+            super().append(element)
+
+
 @dataclass
 class Scope:
     """
@@ -24,6 +55,18 @@ class Scope:
     other_stmt: List[ET.Element] = field(default_factory=lambda: [])
     arguments: List[ET.Element] = field(default_factory=lambda: [])
     scopes: List = field(default_factory=lambda: [])
+    scope_result_names: List[str] = field(default_factory=lambda: [])
+
+    # List of last result declarations
+    __scope_result_decl : UniqueList = field(default_factory=lambda: UniqueList())
+
+    @property
+    def n_results(self) -> int:
+        return len(self.__scope_result_decl)
+
+    @property
+    def scope_result_decl(self) -> UniqueList:
+        return self.__scope_result_decl
 
     @property
     def n_conditionals(self) -> int:
@@ -91,22 +134,22 @@ class Scope:
         """ toString method """
         return (f"Scope: {self.name}\n"
                 f"Cyclomatic Complexity: {self.cyclomatic_complexity}\n"
-                f"Number of Parameters: {self.n_arguments}\n"
                 f"Depth of Nesting: {self.depth_of_nesting}\n"
                 f"Lines of Code (LOC): {self.loc}\n"
+                f"Number of Parameters: {self.n_arguments}\n"
                 f"Number of Conditionals: {self.n_conditionals}\n"
                 f"Number of Loops: {self.n_loops}\n"
                 f"Number of Branches: {self.n_branches}\n"
                 f"Number of Variables: {self.n_declarations}\n"
-                f"Number of Return Statements: TODO \n"
+                f"Number of Return Statements: {self.n_results} \n"
                 f"Number of Calls to External Functions/Procedures: TODO \n"
                 f"Number of Decision Points: {self.n_decision_points}\n"
-                f"Halstead Complexity Metrics: TODO \n")
+                f"Halstead Complexity Metrics: TODO\n"
+                f"Results: {' '.join(self.scope_result_names)}\n")
 
 
 # Set the namespace as Fxtran for XPath expressions
 ns = {'fx': 'http://fxtran.net/#syntax'}
-
 
 def calculate_metrics(xml_path: str = None):
     """
@@ -122,6 +165,7 @@ def calculate_metrics(xml_path: str = None):
     conditionals_elements: Set = {'condition-E'}
     loop_elements: Set = {'do-stmt'}
     branch_elements: Set = {'if-then-stmt', 'else-stmt'}
+    branch_end_elements: Set = {'end-if-stmt'}
     declaration_elements: Set = {'a-stmt'}
     other_stmt_elements: Set = {'-stmt'}
 
@@ -171,7 +215,14 @@ def calculate_metrics(xml_path: str = None):
 
             scope_arguments = element.findall(path='.//fx:arg-N', namespaces=ns)
 
-            routine = Scope(name=scope_name, type=scope_type, arguments=scope_arguments)
+            scope_result_elements = element.findall(path='.//fx:result-spec', namespaces=ns)
+
+            scope_results: List[str] = []
+
+            for result_element in scope_result_elements:
+                scope_results.extend(list(map(lambda element: element.text, result_element.findall('.//fx:n', ns))))
+
+            routine = Scope(name=scope_name, type=scope_type, arguments=scope_arguments, scope_result_names=scope_results)
 
             # Add scope to parent
             if current_scope:
@@ -189,12 +240,21 @@ def calculate_metrics(xml_path: str = None):
             current_scope.loops.append(element)
 
         # Extract branching statements
+        elif element.tag.endswith(tuple(branch_end_elements)):
+            current_scope.scope_result_decl.close()
+
+        # Extract branching statements
         elif element.tag.endswith(tuple(branch_elements)):
             current_scope.branches.append(element)
+
+            # Extract optional return statements
+            branch_assignments = element.findall(path='.//fx:a.stmt', namespaces=ns)
+            current_scope.scope_result_decl.extend(branch_assignments)
 
         # Extract declaration statements
         elif element.tag.endswith(tuple(declaration_elements)):
             current_scope.declarations.append(element)
+            current_scope.scope_result_decl.append(element)
 
         # Extract declaration statements
         elif element.tag.endswith(tuple(other_stmt_elements)):
@@ -204,7 +264,7 @@ def calculate_metrics(xml_path: str = None):
     for scope_name, scope in scope_routines.items():
         print(
             scope
-            )  # print(f"Scope: {scope_name}")  # print(f"Cyclomatic Complexity: {scope.cyclomatic_complexity}")  # print(f"Lines of Code: {scope.loc}\n")
+        )  # print(f"Scope: {scope_name}")  # print(f"Cyclomatic Complexity: {scope.cyclomatic_complexity}")  # print(f"Lines of Code: {scope.loc}\n")
 
 
 def python_docs():
@@ -227,3 +287,10 @@ def python_docs():
 xml_file_path = '/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/opem/cfo_sut_example.f90.xml'
 
 calculate_metrics(xml_file_path)
+
+foo_list : UniqueList = UniqueList()
+foo_list.append(1)
+foo_list.extend([1,2,3])
+print (foo_list)
+foo_list.clear()
+print(foo_list)

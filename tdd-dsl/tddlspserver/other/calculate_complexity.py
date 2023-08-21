@@ -53,6 +53,7 @@ class Scope:
         if self.type in self.routine_types:
             return self.n_conditionals + self.n_loops + self.n_branches + 1
         else:
+            # TODO add more types
             return None
 
     @property
@@ -61,6 +62,23 @@ class Scope:
         :return: Lines of codes in a scope as number of statements
         """
         return len(self.loops) + len(self.branches) + len(self.declarations) + len(self.other_stmt)
+
+    @property
+    def decision_points(self) -> int:
+        """
+        :return: Number of decision points in scope
+        """
+        return self.n_loops + self.n_branches
+
+    @property
+    def depth_of_nesting(self) -> int:
+        """
+        :return: Maximum depth of nesting of scope
+        """
+        depth_of_nesting: int = 0
+        for scope in self.scopes:
+            depth_of_nesting = max(depth_of_nesting, scope.depth_of_nesting)
+        return depth_of_nesting
 
 
 # Set the namespace as Fxtran for XPath expressions
@@ -131,6 +149,10 @@ def calculate_metrics(xml_path: str = None):
             scope_arguments = element.findall(path='.//fx:arg-N', namespaces=ns)
 
             routine = Scope(name=scope_name, type=scope_type, arguments=scope_arguments)
+
+            # Add scope to parent
+            if current_scope:
+                current_scope.scopes.append(routine)
 
             # Update scope stack
             scope_stack.append(routine)

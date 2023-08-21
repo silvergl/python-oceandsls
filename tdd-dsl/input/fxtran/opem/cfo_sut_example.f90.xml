@@ -6,6 +6,7 @@
   <private-stmt>PRIVATE :: <EN-LT><EN><N n="GET_SUM"><n>get_sum</n></N></EN></EN-LT></private-stmt>
   <public-stmt>PUBLIC :: <EN-LT><EN><N n="FT_ME"><n>fT_ME</n></N></EN></EN-LT></public-stmt>
   <public-stmt>PUBLIC :: <EN-LT><EN><N n="FOO"><n>foo</n></N></EN></EN-LT></public-stmt>
+  <public-stmt><EN-LT>PUBLIC ::</EN-LT></public-stmt> 
 
   <T-decl-stmt><_T-spec_><derived-T-spec>TYPE(<T-N><N n="OCF"><n>ocf</n></N></T-N>)</derived-T-spec></_T-spec_>, <attribute><attribute-N>DIMENSION</attribute-N><array-spec>(<shape-spec-LT><shape-spec>:</shape-spec></shape-spec-LT>)</array-spec></attribute>, <attribute><attribute-N>ALLOCATABLE</attribute-N></attribute>, <attribute><attribute-N>PUBLIC</attribute-N></attribute> :: <EN-decl-LT><EN-decl><EN-N><N n="ZOO"><n>zoo</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
 
@@ -52,7 +53,7 @@
     <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_> :: <EN-decl-LT><EN-decl><EN-N><N n="N1"><n>n1</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="N2"><n>n2</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="SUM"><n>sum</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
 
     
-    <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a>=</a> <E-2><op-E><named-E><N n="N1"><n>n1</n></N></named-E> <op n="+"><o>+</o></op> <named-E><N n="N2"><n>n2</n></N></named-E></op-E></E-2></a-stmt>
+    <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a>=</a> <E-2><named-E><N n="GET_SUM2"><n>get_sum2</n></N><R-LT><parens-R>(<element-LT><element><named-E><N n="N1"><n>n1</n></N></named-E></element>, <element><named-E><N n="N2"><n>n2</n></N></named-E></element></element-LT>)</parens-R></R-LT></named-E></E-2></a-stmt>
   <end-function-stmt>end function <function-N><N n="GET_SUM"><n>get_sum</n></N></function-N></end-function-stmt>
 
   
@@ -62,7 +63,7 @@
     
     <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_>, <attribute><attribute-N>intent</attribute-N>(<intent-spec>in</intent-spec>)</attribute> :: <EN-decl-LT><EN-decl><EN-N><N n="N1"><n>n1</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="N2"><n>n2</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
     <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_> :: <EN-decl-LT><EN-decl><EN-N><N n="SUM"><n>sum</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
-    <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a>=</a> <E-2><op-E><named-E><N n="N1"><n>n1</n></N></named-E> <op n="+"><o>+</o></op> <named-E><N n="N2"><n>n2</n></N></named-E></op-E></E-2></a-stmt>
+    <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a>=</a> <E-2><named-E><N n="GET_SUM3"><n>get_sum3</n></N><R-LT><parens-R>(<element-LT><element><named-E><N n="N1"><n>n1</n></N></named-E></element>, <element><named-E><N n="N2"><n>n2</n></N></named-E></element></element-LT>)</parens-R></R-LT></named-E></E-2></a-stmt>
   <end-function-stmt>end function <function-N><N n="GET_SUM2"><n>get_sum2</n></N></function-N></end-function-stmt>
 
   
@@ -82,16 +83,12 @@
     <end-if-stmt>end if</end-if-stmt>
   <end-function-stmt>end function <function-N><N n="GET_SUM3"><n>get_sum3</n></N></function-N></end-function-stmt>
   
-  
-  <function-stmt>FUNCTION <function-N><N n="FOO"><n>foo</n></N></function-N> (<dummy-arg-LT><arg-N><N n="ARG0"><n>arg0</n></N></arg-N></dummy-arg-LT>) <result-spec>RESULT (<N n="OUT"><n>out</n></N>)</result-spec></function-stmt>
-    <implicit-none-stmt>IMPLICIT NONE</implicit-none-stmt>
-    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>real</T-N></intrinsic-T-spec></_T-spec_>, <attribute><attribute-N>INTENT</attribute-N>(<intent-spec>IN</intent-spec>)</attribute>  :: <EN-decl-LT><EN-decl><EN-N><N n="ARG0"><n>arg0</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
-    
-
-
-
-    <a-stmt><E-1><named-E><N n="OUT"><n>out</n></N></named-E></E-1> <a>=</a><E-2></E-2></a-stmt> 
-  <end-function-stmt>END FUNCTION <function-N><N n="FOO"><n>foo</n></N></function-N></end-function-stmt>
+  <subroutine-stmt>subroutine <subroutine-N><N n="PLUS_TWO"><n>plus_two</n></N></subroutine-N>(<dummy-arg-LT><arg-N><N n="N"><n>n</n></N></arg-N>, <arg-N><N n="PLUS1"><n>plus1</n></N></arg-N>, <arg-N><N n="PLUS2"><n>plus2</n></N></arg-N></dummy-arg-LT>)</subroutine-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_>, <attribute><attribute-N>intent</attribute-N>(<intent-spec>in</intent-spec>)</attribute> :: <EN-decl-LT><EN-decl><EN-N><N n="N"><n>n</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N>integer</T-N></intrinsic-T-spec></_T-spec_>, <attribute><attribute-N>intent</attribute-N>(<intent-spec>out</intent-spec>)</attribute> :: <EN-decl-LT><EN-decl><EN-N><N n="PLUS1"><n>plus1</n></N></EN-N></EN-decl>, <EN-decl><EN-N><N n="PLUS2"><n>plus2</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt> 
+    <a-stmt><E-1><named-E><N n="PLUS1"><n>plus1</n></N></named-E></E-1> <a>=</a> <E-2><op-E><named-E><N n="N"><n>n</n></N></named-E> <op n="+"><o>+</o></op> <literal-E><l>1</l></literal-E></op-E></E-2></a-stmt>
+    <a-stmt><E-1><named-E><N n="PLUS2"><n>plus2</n></N></named-E></E-1> <a>=</a> <E-2><op-E><named-E><N n="N"><n>n</n></N></named-E> <op n="+"><o>+</o></op> <literal-E><l>2</l></literal-E></op-E></E-2></a-stmt>
+  <end-subroutine-stmt>end subroutine <subroutine-N><N n="PLUS_TWO"><n>plus_two</n></N></subroutine-N></end-subroutine-stmt>
 
 <end-module-stmt>END MODULE <module-N><N n="CFO_EXAMPLE"><n>cfo_example</n></N></module-N></end-module-stmt>
 </file></object>

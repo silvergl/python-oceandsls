@@ -11,7 +11,7 @@ class UniqueList(list):
     """
     List with unique elements. Resets if added to closed list.
     """
-    __closed : bool = False
+    __closed: bool = False
 
     def close(self):
         # Close list
@@ -59,7 +59,7 @@ class Scope:
     scope_result_names: List[str] = field(default_factory=lambda: [])
 
     # List of last result declarations
-    __scope_result_decl : UniqueList = field(default_factory=lambda: UniqueList())
+    __scope_result_decl: UniqueList = field(default_factory=lambda: UniqueList())
 
     @property
     def n_results(self) -> int:
@@ -145,7 +145,7 @@ class Scope:
     def append_result(self, element):
         element_name = element.find('.//fx:n', ns)
         element_name = element_name.text if element_name is not None else None
-        if self.is_routine and ( element_name in self.scope_result_names or not self.scope_result_names):
+        if self.is_routine and (element_name in self.scope_result_names or not self.scope_result_names):
             self.__scope_result_decl.append(element)
 
     def __str__(self):
@@ -168,9 +168,11 @@ class Scope:
 # Set the namespace as Fxtran for XPath expressions
 ns = {'fx': 'http://fxtran.net/#syntax'}
 
+
 def is_external_call(a_stmt_element):
     # check if an element contains a routine call
     return a_stmt_element.find(path=f".//fx:parens-R", namespaces=ns) is not None
+
 
 def calculate_metrics(xml_path: str = None):
     """
@@ -268,10 +270,7 @@ def calculate_metrics(xml_path: str = None):
         elif element.tag.endswith(tuple(branch_elements)):
             current_scope.branches.append(element)
 
-            # TODO depr included in assignment statements
-            # # Extract optional return statements
-            # branch_assignments = element.findall(path='.//fx:a-stmt', namespaces=ns)
-            # current_scope.extend_result(branch_assignments)
+            # TODO depr included in assignment statements  # # Extract optional return statements  # branch_assignments = element.findall(path='.//fx:a-stmt', namespaces=ns)  # current_scope.extend_result(branch_assignments)
 
         # Extract declaration statements
         elif element.tag.endswith(tuple(declaration_elements)):

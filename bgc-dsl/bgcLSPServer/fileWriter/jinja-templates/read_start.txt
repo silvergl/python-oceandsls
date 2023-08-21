@@ -1,0 +1,5 @@
+    IMPLICIT NONE
+    CLASS({{class_name}}), TARGET, INTENT(INOUT) :: grp
+    TYPE(local), TARGET, INTENT(IN) :: env
+    INTEGER, INTENT(IN) :: lun
+

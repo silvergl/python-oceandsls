@@ -51,39 +51,40 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
         return self._symbolTable
 
     def visitUnit(self, ctx:BgcDslParser.UnitContext):
+        elements = []
         for element in ctx.elements:
-            self.visitUnitElement(element)
+            elements.append(self.visitUnitElement(element))
 
-        return self.visitChildren(ctx)
+        return AggregatedUnit("bla", elements )
 
     def visitPrefixUnit(self, ctx:BgcDslParser.PrefixUnitContext):
         prefix = _stringToPrefix(str(ctx.UNIT_STRING()))
         unit = _stringToUnitType(str(ctx.UNIT_STRING()))
-        return FundamentalUnit(unit, unit, prefix, unit, ReferenceKind.Irrelevant)
+        return FundamentalUnit(unit, baseTypes=[],
+                               unitPrefix=prefix,
+                               unitKind=unit,
+                               referenceKind=ReferenceKind.Irrelevant)
 
     def visitGroupUnit(self, ctx:BgcDslParser.GroupUnitContext):
         fundamental_units = []
         for element in ctx.elements:
             fundamental_units.append(self.visitUnitElement(element))
 
-        unit_name = ''
-        for fundamental_unit in fundamental_units:
-           unit_name+=str(fundamental_unit)
-        return FundamentalUnit(unit_name, fundamental_units, UnitPrefix.NoP, UnitKind.Unknown, ReferenceKind.Irrelevant )
+        return AggregatedUnit("bla", fundamental_units)
 
     # Visit a parse tree produced by BgcDslParser#substanceDeclaration.
     def visitSubstanceDeclaration(self, ctx:BgcDslParser.SubstanceDeclarationContext):
         # TODO
         # save type
         # save unit as node
-        unit =self.visit(ctx.unit())
-       # unit_node = self.visitUnit(unit)
+        unit =self.visit(ctx.unit)
         self._symbolTable.addNewSymbolOfType( VariableSymbol,
-                                              self._scope, ctx.name.text,
+                                              self._scope,
+                                              ctx.name.text,
                                               ctx,
-                                              attached_unit=unit,
+                                              attached_unit=ctx.unit(),
                                               attached_type=ctx.type_)
-        print("d")
+
         return self.visitChildren( ctx )
 
     def visitParameterDeclaration(self, ctx:BgcDslParser.ParameterDeclarationContext):
@@ -93,8 +94,6 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
 
         unit = ctx.unit()
         unit_node = self.visit(ctx.unit())
-      #  expr = ctx.arithmeticExpression()
-      #  expr_node = self.visitArithmeticExpression(expr)
         self._symbolTable.addNewSymbolOfType( VariableSymbol,
                                               self._scope,
                                               ctx.name.text,
@@ -109,8 +108,6 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
         # save unit, expression as node
         unit = ctx.unit()
         unit_node = self.visitUnit(unit)
-        #expr = ctx.arithmeticExpression()
-        #expr_node = self.visitArithmeticExpression(expr)
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope,
                                               ctx.name.text,
                                               value = ctx,
@@ -119,17 +116,15 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
         return self.visitChildren( ctx )
 
     # Visit a parse tree produced by BgcDslParser#compartment.
+
     def visitCompartment(self, ctx:BgcDslParser.CompartmentContext):
-        # TODO
-        # save node as expression
+
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BgcDslParser#connection.
     def visitConnection(self, ctx:BgcDslParser.ConnectionContext):
         # TODO
-        # save name
-        # save node as expression
         # the name needs to be more complex, here:
         name = ctx.name.text + ' from ' + ctx.sourceCompartment.text + ' to ' + ctx.targetCompartment.text
         self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, name, ctx )

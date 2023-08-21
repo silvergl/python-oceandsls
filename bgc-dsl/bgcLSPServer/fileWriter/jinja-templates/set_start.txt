@@ -1,0 +1,5 @@
+IMPLICIT NONE
+    CLASS({{class_name}}), TARGET, INTENT(INOUT) :: grp
+    TYPE(state), DIMENSION(:), INTENT(IN) :: grps
+    TYPE(local), TARGET, INTENT(INOUT) :: env
+

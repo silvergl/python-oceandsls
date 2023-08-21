@@ -1,0 +1,2 @@
+{% for user in users %}
+    %include 'parameter_declaration' %

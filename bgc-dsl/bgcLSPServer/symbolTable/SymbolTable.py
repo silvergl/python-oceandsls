@@ -127,6 +127,7 @@ class UnitPrefix(Enum):
     Quecto = 24
 
 
+
 @dataclass
 class Unit:
     """
@@ -140,6 +141,7 @@ class Unit:
     baseTypes: List[Unit]
     prefix: UnitPrefix
     kind: UnitKind
+    exponent: int
     reference: ReferenceKind
 
 
@@ -168,6 +170,7 @@ class classproperty( property ):
         return classmethod( self.fget ).__get__( None, owner )()
 
 
+
 class FundamentalUnit( Unit ):
     """
     A single class for all fundamental units which are mostly SI units. They are distinguished via the kind field.
@@ -175,7 +178,7 @@ class FundamentalUnit( Unit ):
 
     def __init__(self, name: str, baseTypes=[], unitPrefix=UnitPrefix.NoP, unitKind=UnitKind.Unknown,
                  referenceKind=ReferenceKind.Irrelevant):
-        super().__init__( name=name, baseTypes=baseTypes, kind=unitKind, reference=referenceKind, prefix=unitPrefix )
+        super().__init__( name=name, baseTypes=baseTypes, kind=unitKind, reference=referenceKind, prefix=unitPrefix, exponent = 0 )
 
     @classproperty
     def secondUnit(self) -> FundamentalUnit:
@@ -224,6 +227,10 @@ class FundamentalUnit( Unit ):
     def TonUnit(self) -> FundamentalUnit:
         return FundamentalUnit( name="Ton", unitPrefix=UnitPrefix.Mega, unitKind=UnitKind.Gram )
 
+class AggregatedUnit(Unit):
+    def __init__(self, name: str, units, exponent = 1):
+        super().__init__(name=name, baseTypes=[], kind=UnitKind.Unknown, reference=ReferenceKind.Irrelevant, prefox=UnitPrefix.Nop, exponent=exponent)
+        self.units = units
 
 class FundamentalType( Type ):
     """

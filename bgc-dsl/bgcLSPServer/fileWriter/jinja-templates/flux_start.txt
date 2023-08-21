@@ -1,0 +1,7 @@
+IMPLICIT NONE
+    CLASS({{class_name}}), INTENT(INOUT) :: grp
+    TYPE(state), DIMENSION(:), INTENT(IN) :: grps
+    TYPE(local), INTENT(INOUT) :: env
+    TYPE(layer), INTENT(INOUT) :: box(0:)
+    TYPE(timing), INTENT(IN) :: times
+

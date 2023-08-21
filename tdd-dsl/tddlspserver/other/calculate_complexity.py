@@ -89,7 +89,7 @@ class Scope:
         """
         depth_of_nesting: int = 0
         for scope in self.scopes:
-            depth_of_nesting = max(depth_of_nesting, scope.depth_of_nesting)
+            depth_of_nesting = max(depth_of_nesting, 1 + scope.depth_of_nesting)
         return depth_of_nesting
 
 

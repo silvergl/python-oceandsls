@@ -25,11 +25,6 @@ class Scope:
     arguments: List[ET.Element] = field(default_factory=lambda: [])
     scopes: List = field(default_factory=lambda: [])
 
-    __n_conditionals: int = 0
-    __n_loops: int = 0
-    __n_branches: int = 0
-    __loc: int = 0
-
     @property
     def n_conditionals(self) -> int:
         return len(self.conditionals)
@@ -73,7 +68,7 @@ class Scope:
         """
         :return: Lines of codes in a scope as number of statements
         """
-        return len(self.loops) + len(self.branches) + len(self.declarations) + len(self.other_stmt)
+        return self.n_loops + self.n_branches + self.n_declarations + self.n_other_stmts
 
     @property
     def n_decision_points(self) -> int:

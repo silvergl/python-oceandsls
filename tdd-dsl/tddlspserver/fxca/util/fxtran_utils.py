@@ -140,7 +140,7 @@ def filter_xml(
 
         # Extend the scope stack when entering scopes
         elif element.tag.endswith(tuple(dyn_scope_elements)):
-            # Extract scope name logical sector size zero
+            # Extract scope name
             scope_name = name_element.find('.//fx:n', ns).text
 
             if stmt_name == 'module':

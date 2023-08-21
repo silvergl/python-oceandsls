@@ -54,6 +54,7 @@ class Scope:
     declarations: List[ET.Element] = field(default_factory=lambda: [])
     other_stmt: List[ET.Element] = field(default_factory=lambda: [])
     arguments: List[ET.Element] = field(default_factory=lambda: [])
+    external_calls: List[ET.Element] = field(default_factory=lambda: [])
     scopes: List = field(default_factory=lambda: [])
     scope_result_names: List[str] = field(default_factory=lambda: [])
 
@@ -87,6 +88,10 @@ class Scope:
     @property
     def n_arguments(self) -> int:
         return len(self.arguments)
+
+    @property
+    def n_external_calls(self) -> int:
+        return len(self.external_calls)
 
     @property
     def cyclomatic_complexity(self) -> int | None:
@@ -155,14 +160,17 @@ class Scope:
                 f"Number of Branches: {self.n_branches}\n"
                 f"Number of Variables: {self.n_declarations}\n"
                 f"Number of Return Statements: {self.n_results} \n"
-                f"Number of Calls to External Functions/Procedures: TODO \n"
+                f"Number of Calls to External Functions/Procedures: {self.n_external_calls} \n"
                 f"Number of Decision Points: {self.n_decision_points}\n"
-                f"Halstead Complexity Metrics: TODO\n"
-                f"Results: {' '.join(self.scope_result_names)}\n")
+                f"Halstead Complexity Metrics: TODO\n")
 
 
 # Set the namespace as Fxtran for XPath expressions
 ns = {'fx': 'http://fxtran.net/#syntax'}
+
+def is_external_call(a_stmt_element):
+    # check if an element contains a routine call
+    return a_stmt_element.find(path=f".//fx:parens-R", namespaces=ns) is not None
 
 def calculate_metrics(xml_path: str = None):
     """
@@ -260,9 +268,10 @@ def calculate_metrics(xml_path: str = None):
         elif element.tag.endswith(tuple(branch_elements)):
             current_scope.branches.append(element)
 
-            # Extract optional return statements
-            branch_assignments = element.findall(path='.//fx:a.stmt', namespaces=ns)
-            current_scope.extend_result(branch_assignments)
+            # TODO depr included in assignment statements
+            # # Extract optional return statements
+            # branch_assignments = element.findall(path='.//fx:a-stmt', namespaces=ns)
+            # current_scope.extend_result(branch_assignments)
 
         # Extract declaration statements
         elif element.tag.endswith(tuple(declaration_elements)):
@@ -270,6 +279,12 @@ def calculate_metrics(xml_path: str = None):
 
             # Add as result statement if it is the last call of the return statement
             current_scope.append_result(element)
+
+            # Check for external calls
+            named_elements = element.findall(path='.//fx:named-E', namespaces=ns)
+            for named_element in named_elements:
+                if is_external_call(named_element):
+                    current_scope.external_calls.append(named_element)
 
         # Extract declaration statements
         elif element.tag.endswith(tuple(other_stmt_elements)):
@@ -302,10 +317,3 @@ def python_docs():
 xml_file_path = '/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/opem/cfo_sut_example.f90.xml'
 
 calculate_metrics(xml_file_path)
-
-foo_list : UniqueList = UniqueList()
-foo_list.append(1)
-foo_list.extend([1,2,3])
-print (foo_list)
-foo_list.clear()
-print(foo_list)

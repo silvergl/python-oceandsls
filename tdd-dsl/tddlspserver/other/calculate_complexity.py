@@ -87,6 +87,22 @@ class Scope:
             depth_of_nesting = max(depth_of_nesting, 1 + scope.depth_of_nesting)
         return depth_of_nesting
 
+    def __str__(self):
+        """ toString method """
+        return (f"Scope: {self.name}\n"
+                f"Cyclomatic Complexity: {self.cyclomatic_complexity}\n"
+                f"Number of Parameters: {self.n_arguments}\n"
+                f"Depth of Nesting: {self.depth_of_nesting}\n"
+                f"Lines of Code (LOC): {self.loc}\n"
+                f"Number of Conditionals: {self.n_conditionals}\n"
+                f"Number of Loops: {self.n_loops}\n"
+                f"Number of Branches: {self.n_branches}\n"
+                f"Number of Variables: {self.n_declarations}\n"
+                f"Number of Return Statements: TODO \n"
+                f"Number of Calls to External Functions/Procedures: TODO \n"
+                f"Number of Decision Points: {self.n_decision_points}\n"
+                f"Halstead Complexity Metrics: TODO \n")
+
 
 # Set the namespace as Fxtran for XPath expressions
 ns = {'fx': 'http://fxtran.net/#syntax'}
@@ -186,9 +202,9 @@ def calculate_metrics(xml_path: str = None):
 
     # TODO debug output
     for scope_name, scope in scope_routines.items():
-        print(f"Scope: {scope_name}")
-        print(f"Cyclomatic Complexity: {scope.cyclomatic_complexity}")
-        print(f"Lines of Code: {scope.loc}\n")
+        print(
+            scope
+            )  # print(f"Scope: {scope_name}")  # print(f"Cyclomatic Complexity: {scope.cyclomatic_complexity}")  # print(f"Lines of Code: {scope.loc}\n")
 
 
 def python_docs():

@@ -22,6 +22,7 @@ class Scope:
     branches : List[ET.Element] = field(default_factory=lambda: [])
     declarations : List[ET.Element] = field(default_factory=lambda: [])
     other_stmt : List[ET.Element] = field(default_factory=lambda: [])
+    arguments : List[ET.Element] = field(default_factory=lambda: [])
     scopes : List = field(default_factory=lambda: [])
 
     __n_conditionals : int = 0
@@ -118,8 +119,10 @@ def calculate_metrics(xml_path: str = None):
             scope_name = name_element.find('.//fx:n', ns).text
 
             scope_type = element.tag.split(ns['fx']+"}",1)[1]
+            scope_arguments = element.findall(path= './/fx:arg-N', namespaces= ns)
 
             routine = Scope(name = scope_name, type = scope_type)
+            routine = Scope(name = scope_name, type = scope_type, arguments=  scope_arguments)
 
             # Update scope stack
             scope_stack.append(routine)

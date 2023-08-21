@@ -4,7 +4,7 @@ __author__ = 'sgu'
 
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
-from typing import Dict, List, Set
+from typing import Dict, List, Self, Set
 
 
 @dataclass
@@ -19,6 +19,7 @@ class Scope:
     loops : List[ET.Element] = field(default_factory=lambda: [])
     branches : List[ET.Element] = field(default_factory=lambda: [])
     declarations : List[ET.Element] = field(default_factory=lambda: [])
+    scopes : List[Self] = field(default_factory=lambda: [])
 
     __n_conditionals : int = 0
     __n_loops : int = 0
@@ -45,8 +46,16 @@ class Scope:
 # Set the namespace as Fxtran for XPath expressions
 ns = {'fx': 'http://fxtran.net/#syntax'}
 
-def calculate_cyclomatic_complexity(n_conditionals, n_loops, n_branches):
-    return n_conditionals + n_loops + n_branches + 1
+def calculate_cyclomatic_complexity(n_predicate_variables, n_loops, n_branches):
+    """
+    Cyclomatic complexity function for structures with only one entry point and one exit point.
+     Number of predicate variables involved plus decision points ("if" statements and loops) plus one.
+    :param n_predicate_variables:
+    :param n_loops:
+    :param n_branches:
+    :return:
+    """
+    return n_predicate_variables + n_loops + n_branches + 1
 
 def calculate_metrics(xml_path: str = None):
     # Get the root element
@@ -128,7 +137,7 @@ def calculate_metrics(xml_path: str = None):
 
         cyclomatic_complexity = calculate_cyclomatic_complexity(scope.n_conditionals, scope.n_loops, scope.n_branches)
 
-        print(f"Function/Subroutine: {scope_name}")
+        print(f"Scope: {scope_name}")
         print(f"Cyclomatic Complexity: {cyclomatic_complexity}")
         print(f"Lines of Code: {scope.loc}\n")
 

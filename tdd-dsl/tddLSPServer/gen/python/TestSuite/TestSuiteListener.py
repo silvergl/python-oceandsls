@@ -1,6 +1,6 @@
-# Generated from TestSuite.g4 by ANTLR 4.12.0
+# Generated from TestSuite.g4 by ANTLR 4.13.0
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .TestSuiteParser import TestSuiteParser
 else:
     from TestSuiteParser import TestSuiteParser
@@ -23,6 +23,15 @@ class TestSuiteListener(ParseTreeListener):
 
     # Exit a parse tree produced by TestSuiteParser#test_case.
     def exitTest_case(self, ctx:TestSuiteParser.Test_caseContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#src_path.
+    def enterSrc_path(self, ctx:TestSuiteParser.Src_pathContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#src_path.
+    def exitSrc_path(self, ctx:TestSuiteParser.Src_pathContext):
         pass
 
 
@@ -62,21 +71,12 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TestSuiteParser#test_files.
-    def enterTest_files(self, ctx:TestSuiteParser.Test_filesContext):
+    # Enter a parse tree produced by TestSuiteParser#use_modules.
+    def enterUse_modules(self, ctx:TestSuiteParser.Use_modulesContext):
         pass
 
-    # Exit a parse tree produced by TestSuiteParser#test_files.
-    def exitTest_files(self, ctx:TestSuiteParser.Test_filesContext):
-        pass
-
-
-    # Enter a parse tree produced by TestSuiteParser#test_modules.
-    def enterTest_modules(self, ctx:TestSuiteParser.Test_modulesContext):
-        pass
-
-    # Exit a parse tree produced by TestSuiteParser#test_modules.
-    def exitTest_modules(self, ctx:TestSuiteParser.Test_modulesContext):
+    # Exit a parse tree produced by TestSuiteParser#use_modules.
+    def exitUse_modules(self, ctx:TestSuiteParser.Use_modulesContext):
         pass
 
 

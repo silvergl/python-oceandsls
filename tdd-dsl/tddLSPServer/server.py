@@ -23,6 +23,7 @@ import logging
 import re
 import sys
 import uuid
+import os.path
 # debug import
 from pprint import pprint
 from typing import List, Optional
@@ -35,7 +36,7 @@ from lsprotocol.types import (
     CompletionItem, CompletionList, CompletionOptions, CompletionParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, MessageType, Registration, RegistrationParams,
     SemanticTokens, SemanticTokensLegend, SemanticTokensParams, TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_DID_SAVE, TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, Unregistration,
     UnregistrationParams, WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport
-    )
+)
 from pygls.server import LanguageServer
 from pygls.workspace import Document
 
@@ -43,14 +44,16 @@ from pygls.workspace import Document
 # TODO fail relative import beyond top-level package
 # from ...antlrLib.CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
-from .cst.DiagnosticListener import DiagnosticListener
 # user relative imports
+from .cst.DiagnosticListener import DiagnosticListener
 from .cst.FileGeneratorVisitor import FileGeneratorVisitor
+from .cst.SystemFileVisitor import SystemFileVisitor
 from .cst.SymbolTableVisitor import SymbolTableVisitor
 from .gen.python.TestSuite.TestSuiteLexer import TestSuiteLexer
 from .gen.python.TestSuite.TestSuiteParser import TestSuiteParser
+from .symbolTable.SymbolTable import FunctionSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, Symbol, SymbolTable, VariableSymbol
 from .utils.computeTokenIndex import CaretPosition, TokenPosition, computeTokenPosition
-from .utils.suggestVariables import suggestVariables
+from .utils.suggestVariables import suggestSymbols
 
 # python path hacking / DO NOT USE for live code
 # if not os.path.join(sys.path[0], 'example-dsl', 'lspExampleServer') in sys.path:
@@ -168,8 +171,8 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
             CaretPosition(
                     params.position.line + 1,
                     params.position.character
-                    )
             )
+    )
 
     # set emtpy return list
     completionList: CompletionList = CompletionList( is_incomplete = False, items = [ ] )
@@ -179,41 +182,58 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
         # TODO add exception
         return completionList
 
-    # TODO build symboltable
-    symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions' )
-    symbolTable = symbolTableVisitor.visit( parseTree )
-
     # launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore( tdd_server.parser )
 
     core.ignoredTokens = {Token.EPSILON}
-    core.preferredRules = {TestSuiteParser, TestSuiteParser}
+    core.preferredRules = {TestSuiteParser.RULE_reference, TestSuiteParser.RULE_src_path, TestSuiteParser.RULE_test_module}
 
     # get completion candidates
     candidates: CandidatesCollection = core.collectCandidates( tokenIndex.index )
 
-    # TODO read references from symboltable
-    if any(
-            rule in candidates.rules for rule in
-            [ TestSuiteParser.RULE_reference ]
-            ):
+    # Resolve candidates for preferred rules
+    if len( candidates.rules ) != 0:
 
-        variables = suggestVariables( symbolTable, tokenIndex )
+        symbolTypes: List[ Symbol ] = [ ]
 
-        for variable in variables:
-            completionList.items.append( CompletionItem( label = variable ) )
+        if any( rule in candidates.rules for rule in [ TestSuiteParser.RULE_reference ] ):
 
-    # get labels of completion candidates to return
-    labels_list: List[ str ] = [ ]
+            symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions', os.getcwd( ) )
+            symbolTable = symbolTableVisitor.visit( parseTree )
+            # FunctionSymbol is derived from RoutineSymbol
+            symbolTypes.extend( [ VariableSymbol, RoutineSymbol] )
+
+        elif any( rule in candidates.rules for rule in [ TestSuiteParser.RULE_test_module ] ):
+
+            symbolTableVisitor: SymbolTableVisitor = SymbolTableVisitor( 'completions', os.getcwd( ) )
+            symbolTable = symbolTableVisitor.visit( parseTree )
+            symbolTypes.append( ModuleSymbol )
+
+        elif any( rule in candidates.rules for rule in [ TestSuiteParser.RULE_src_path ] ):
+
+            symbolTableVisitor: SystemFileVisitor = SystemFileVisitor( 'paths', os.getcwd( ) )
+            symbolTable = symbolTableVisitor.visit( parseTree )
+            symbolTypes.append( PathSymbol )
+
+        symbols: List[ str ] = [ ]
+        for symbolType in symbolTypes:
+            symbols.extend( suggestSymbols( symbolTable, tokenIndex, symbolType ) )
+
+        for symbol in symbols:
+            completionList.items.append( CompletionItem( label = symbol ) )
+
+    # TODO modules, type check, asserts, functions, subroutines
+
+    # add tokens to completion candidates
     for key, valueList in candidates.tokens.items( ):
         completionList.items.append(
                 CompletionItem(
                         label = IntervalSet.elementName(
                                 IntervalSet, tdd_server.parser.literalNames,
                                 tdd_server.parser.symbolicNames, key
-                                )
                         )
                 )
+        )
 
     # return completion candidates labels
     return completionList
@@ -236,7 +256,8 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     """Text document did save notification."""
 
     # set input stream of characters for lexer
-    text_doc: Document = tdd_server.workspace.get_document( params.text_document.uri )
+    textURI = params.text_document.uri
+    text_doc: Document = tdd_server.workspace.get_document( textURI )
     source: str = text_doc.source
     input_stream: InputStream = InputStream( source )
 
@@ -249,7 +270,8 @@ def did_save( server: tddLSPServer, params: DidSaveTextDocumentParams ):
     Top_levelContext = TestSuiteParser.Test_suiteContext
     parseTree: Top_levelContext = tdd_server.parser.test_suite( )
 
-    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor( )
+    # set current working directory as working directory for test files
+    fileGeneratorVisitor: FileGeneratorVisitor = FileGeneratorVisitor( testWorkPath = os.getcwd( ) )
 
     # TODO add arguments templatePath testPath testFolder
     # write files
@@ -268,7 +290,7 @@ async def did_open( ls, params: DidOpenTextDocumentParams ):
 @tdd_server.feature(
         TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
         SemanticTokensLegend( token_types = [ "operator" ], token_modifiers = [ ] )
-        )
+)
 def semantic_tokens( ls: tddLSPServer, params: SemanticTokensParams ):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
     for details on how semantic tokens are encoded."""
@@ -319,8 +341,8 @@ async def register_completions( ls: tddLSPServer, *args ):
             registrations = [ Registration(
                     id = str( uuid.uuid4( ) ), method = TEXT_DOCUMENT_COMPLETION,
                     register_options = {"triggerCharacters": "[':']"}
-                    ) ]
-            )
+            ) ]
+    )
     response = await ls.register_capability_async( params )
     if response is None:
         ls.show_message( 'Successfully registered completions method' )
@@ -333,7 +355,7 @@ async def unregister_completions( ls: tddLSPServer, *args ):
     """Unregister completions method on the client."""
     params = UnregistrationParams(
             unregisterations = [ Unregistration( id = str( uuid.uuid4( ) ), method = TEXT_DOCUMENT_COMPLETION ) ]
-            )
+    )
     response = await ls.unregister_capability_async( params )
     if response is None:
         ls.show_message( 'Successfully unregistered completions method' )

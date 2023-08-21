@@ -1,4 +1,4 @@
-// Generated from TestSuite.g4 by ANTLR 4.12.0
+// Generated from TestSuite.g4 by ANTLR 4.13.0
 package TestSuite;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -26,6 +26,13 @@ public class TestSuiteBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitTest_case(TestSuiteParser.Test_caseContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitSrc_path(TestSuiteParser.Src_pathContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -60,14 +67,7 @@ public class TestSuiteBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTest_files(TestSuiteParser.Test_filesContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitTest_modules(TestSuiteParser.Test_modulesContext ctx) { return visitChildren(ctx); }
+	@Override public T visitUse_modules(TestSuiteParser.Use_modulesContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

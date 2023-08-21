@@ -1,11 +1,28 @@
 # exampleDSL for reference
 
+## Install ANTlR4 for development
+- https://www.antlr.org/download.html
+- https://www.antlr3.org/works/
+- move to /usr/local/lib
+- update CLASSPATH (source.sh)
+- require java versions up to 55.0 (JDK Version Java 11 Bytecode Version 55.0)
+    - sudo apt-get install openjdk-11-jre openjdk-11-jdk openjdk-11-demo openjdk-11-doc openjdk-11-jre-headless openjdk-11-source
+    - sudo update-alternatives --config javac
+
+## Add pFUnit4
+- sudo apt-get install cmake
+- sudo apt install gfortran
+- sudo apt install m4
+# Example installation of pFUnit and pFUnit_demos — Software testing documentation
+- https://coderefinery.github.io/testing/code/fortran/build_pFUnit/#on-own-computer
+     - export FC=/usr/bin/gfortran
+     - export PFUNIT_DIR=/usr/local/PFUNIT-4.7
+
 ## Optional: check python packages
 
 - update package manager tools
     - `python -m pip install --upgrade pip setuptools wheel`
-- check if python package `virtualenv` is installed if Python < 3.3 is used else a subset of it has been integrated into
-  the standard library under `venv`
+- check if python package `virtualenv` is installed if Python < 3.3 is used else a subset of it has been integrated into the standard library under `venv`
     - `python -m pip show virtualenv`
     - if not install package `virtualenv` into global system environment
         - `python -m pip install virtualenv`
@@ -17,18 +34,21 @@
     - alternative use `virtualenv`, see optional python packages
 - activate virtual environment `.venv`
     - `source .venv/bin/activate`
-- install `antlr4-python3-runtime`, `graphviz`, `Jinja2`, `mock`, `pygls`, `pygraphviz` and `pytest` package into
-  virtual environment `.venv`
-    - `python -m pip install antlr4-python3-runtime graphviz Jinja2 mock pygls pygraphviz pytest`
+- install `antlr4-python3-runtime`, `Jinja2`, `mock`, `pygls` and `pytest` package into virtual environment `.venv`
+    - `python -m pip install antlr4-python3-runtime Jinja2 mock pygls pytest`
 
 ## Optional: update npm and node
 
 - check `npm` version
     - `npm --version`
-- install latest `npm` version globally (`-g` or `--global`)
-    - `sudo npm install -g npm@latest`
+- install `npm` and `node` if necessary 
+    - `sudo apt-get install npm nodejs`
+- install the Node manager via `npm`
+    `sudo npm install -g n`
 - install latest `node` version
     - `sudo n latest`
+- install latest `npm` version globally (`-g` or `--global`)
+    - `sudo npm install -g npm@latest`
 - Install the dependencies to the global mode (`-g` or `--global`)
     - `sudo npm update -g`
 
@@ -51,14 +71,12 @@
 
 ## Troubleshooting
 
-- If VS Code doesn`t automatically locate the interpreter of the virtual
-  environment. [Set it manually](https://code.visualstudio.com/docs/python/environments#_manually-specify-an-interpreter)
+- If VS Code doesn`t automatically locate the interpreter of the virtual environment. [Set it manually](https://code.visualstudio.com/docs/python/environments#_manually-specify-an-interpreter)
     - Open Command prompt
       `Ctrl/Cmd+Shift+P`
         - Run select interpreter command
           `Python: Select Interpreter`
-    - Alternative create `.vscode/settings.json` file in `python-oceandsls/tdd-dsl` directory and
-      set `python.defaultInterpreterPath` to point to the virtual environment
+    - Alternative create `.vscode/settings.json` file in `python-oceandsls/tdd-dsl` directory and set `python.defaultInterpreterPath` to point to the virtual environment
         - settings.json
 
               {

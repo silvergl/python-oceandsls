@@ -38,8 +38,7 @@ class SymbolTableVisitor( exampleDslVisitor, Generic[T] ):
     # def visitFuncExpr(self, ctx: exampleDslParser.FuncExprContext):
     #     return self.withScope( ctx, RoutineSymbol, lambda: self.visitChildren( ctx ), ctx.ID().getText() )
 
-    def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None,
-                  **my_kwargs: P.kwargs or None) -> T:
+    def withScope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None, **my_kwargs: P.kwargs or None) -> T:
         scope = self._symbolTable.addNewSymbolOfType( t, self._scope, *my_args, **my_kwargs )
         scope.context = tree
         self._scope = scope

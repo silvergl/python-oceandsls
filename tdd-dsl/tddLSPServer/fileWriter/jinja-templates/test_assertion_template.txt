@@ -1,2 +1,2 @@
- {% if comment is defined %}! {{ comment }}
-{% endif %} @assert{{ directive }}( {{ output }}, {{ input_ }}{% if pubAttributes is defined %}, {{ pubAttributes }}{% endif %})
+ {% if comment is not none %}! {{ comment }}
+{% endif %} @assert{{ directive }}( {{ output }}, {{ input_ }}{% if pubAttributes != none %}, {{ pubAttributes }}{% endif %})

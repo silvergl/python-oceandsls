@@ -1,1 +1,1 @@
-{{parameter.name}} {%if parameter.values %} = {{parameter.value}}, \n
+{{param.name}} {%if param.values %} = {{parameter.value}} {{% endif %}} &, 

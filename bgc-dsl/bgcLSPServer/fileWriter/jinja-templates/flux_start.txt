@@ -1,4 +1,5 @@
-IMPLICIT NONE
+SUBROUTINE {{module_name}}_flux (grp, grps, env, box, times)
+    IMPLICIT NONE
     CLASS({{class_name}}), INTENT(INOUT) :: grp
     TYPE(state), DIMENSION(:), INTENT(IN) :: grps
     TYPE(local), INTENT(INOUT) :: env

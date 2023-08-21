@@ -1,0 +1,2 @@
+TYPE, EXTENDS(fungroup), PUBLIC :: {{class_name}}
+    {%include parameter_list.txt%}

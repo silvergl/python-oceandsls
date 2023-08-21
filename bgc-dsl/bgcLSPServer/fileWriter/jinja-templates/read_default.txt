@@ -1,0 +1,15 @@
+DO
+    {%for param in namelist}
+        {%include value_initialization%}
+    {% endfor %}
+    READ (lun, NML=bac, END=100, IOMSG=msg, ERR=900)
+    IF (TRIM(species).EQ.TRIM(grp%name)) EXIT
+END DO
+
+{% for param in namelist %}
+    {% if param.type is bool%}
+       {{param.name}} = .FALSE
+    {% else %}
+    grp%{{param}} = {{param}}
+    {% endif %}
+{% endfor %}

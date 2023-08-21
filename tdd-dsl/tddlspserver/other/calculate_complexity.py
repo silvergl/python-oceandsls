@@ -15,6 +15,8 @@ class Scope:
     name: str = field(default='')
     type : str = field(default='')
 
+    routine_types: Set = field(default_factory=lambda: {"function-stmt","subroutine-stmt"})
+
     conditionals : List[ET.Element] = field(default_factory=lambda: [])
     loops : List[ET.Element] = field(default_factory=lambda: [])
     branches : List[ET.Element] = field(default_factory=lambda: [])
@@ -40,23 +42,25 @@ class Scope:
         return len(self.branches)
 
     @property
+    def cyclomatic_complexity(self) -> int | None:
+        """
+        Cyclomatic complexity function for structures with only one entry point and one exit point.
+        Number of predicate variables involved plus decision points ("if" statements and loops) plus one.
+        :return:
+        """
+        # Check if type is a simple structure
+        if self.type in self.routine_types:
+            return self.n_conditionals + self.n_loops + self.n_branches + 1
+        else:
+            return None
+
+    @property
     def loc(self) -> int:
         return len(self.loops)+len(self.branches)+len(self.declarations)+len(self.other_stmt)
 
 
 # Set the namespace as Fxtran for XPath expressions
 ns = {'fx': 'http://fxtran.net/#syntax'}
-
-def calculate_cyclomatic_complexity(n_predicate_variables, n_loops, n_branches):
-    """
-    Cyclomatic complexity function for structures with only one entry point and one exit point.
-     Number of predicate variables involved plus decision points ("if" statements and loops) plus one.
-    :param n_predicate_variables:
-    :param n_loops:
-    :param n_branches:
-    :return:
-    """
-    return n_predicate_variables + n_loops + n_branches + 1
 
 def calculate_metrics(xml_path: str = None):
     # Get the root element
@@ -81,6 +85,7 @@ def calculate_metrics(xml_path: str = None):
 
     for element in root.iter():
         # Check if element is scope-changing by searching for scope-ending element
+
         # Extract the tag name without the namespace
         tag = element.tag.rsplit('}', 1)[-1]
 
@@ -140,11 +145,8 @@ def calculate_metrics(xml_path: str = None):
             current_scope.other_stmt.append(element)
 
     for scope_name, scope in scope_routines.items():
-
-        cyclomatic_complexity = calculate_cyclomatic_complexity(scope.n_conditionals, scope.n_loops, scope.n_branches)
-
         print(f"Scope: {scope_name}")
-        print(f"Cyclomatic Complexity: {cyclomatic_complexity}")
+        print(f"Cyclomatic Complexity: {scope.cyclomatic_complexity}")
         print(f"Lines of Code: {scope.loc}\n")
 
 def python_docs():

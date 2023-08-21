@@ -4,7 +4,7 @@ __author__ = 'sgu'
 
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
-from typing import Dict, List, Self, Set
+from typing import Dict, List, Set
 
 
 @dataclass
@@ -19,7 +19,8 @@ class Scope:
     loops : List[ET.Element] = field(default_factory=lambda: [])
     branches : List[ET.Element] = field(default_factory=lambda: [])
     declarations : List[ET.Element] = field(default_factory=lambda: [])
-    scopes : List[Self] = field(default_factory=lambda: [])
+    other_stmt : List[ET.Element] = field(default_factory=lambda: [])
+    scopes : List = field(default_factory=lambda: [])
 
     __n_conditionals : int = 0
     __n_loops : int = 0
@@ -40,7 +41,7 @@ class Scope:
 
     @property
     def loc(self) -> int:
-        return len(self.declarations)
+        return len(self.loops)+len(self.branches)+len(self.declarations)+len(self.other_stmt)
 
 
 # Set the namespace as Fxtran for XPath expressions
@@ -71,6 +72,7 @@ def calculate_metrics(xml_path: str = None):
     loop_elements : Set =  {'do-stmt'}
     branch_elements : Set =  {'if-then-stmt', 'else-stmt'}
     declaration_elements : Set =  {'a-stmt'}
+    other_stmt_elements : Set =  {'-stmt'}
 
     # Stack to track the current scope
     scope_stack = []
@@ -132,6 +134,10 @@ def calculate_metrics(xml_path: str = None):
         # Extract declaration statements
         elif element.tag.endswith(tuple(declaration_elements)):
             current_scope.declarations.append(element)
+
+        # Extract declaration statements
+        elif element.tag.endswith(tuple(other_stmt_elements)):
+            current_scope.other_stmt.append(element)
 
     for scope_name, scope in scope_routines.items():
 

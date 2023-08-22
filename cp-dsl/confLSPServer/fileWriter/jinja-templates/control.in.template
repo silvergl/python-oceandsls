@@ -1,33 +1,28 @@
-{% macro typeDeciderTemplate(elem) -%}
+{% macro typeDeciderTemplate(elem, lastSymbol) -%}
     {% if isinstance(elem, featureSymbol) -%}
         {{ featureTemplate(elem) }}
     {%- elif isinstance(elem, groupSymbol) -%}
         {{ groupTemplate(elem) }}
+    {%- elif isinstance(elem, enumSymbol) -%}
     {%- else -%}
-        {{parameterTemplate(elem)}}
+        {{parameterTemplate(elem, lastSymbol)}}
     {%- endif %}
 {%- endmacro -%}
-
-{%- macro parameterTemplate(parameter) -%}
-    {{ parameter.name }} = {% if not parameter.is_array -%}
+{%- macro parameterTemplate(parameter, lastSymbol) -%}
+    {{ parameter.name }}={% if not parameter.is_array -%}
                                 {{ parameter.value }}
                            {%- else -%}
-                                {{ parameter.__str__() }}
+                                {{ parameter.toNormalizedArray().__str__().replace("[", "").replace("]", "").replace(" ", "") }}
                             {%- endif -%}
+    {%- if not lastSymbol %},{% endif -%}
 {%- endmacro -%}
-
 {%- macro groupTemplate(group) -%}
-    &{{group.name}}: {% for parameter in group.children() %}{{ typeDeciderTemplate(parameter) }},
-          {%endfor -%} 
+    {% if group.type == VariableSymbol and not group.name == "" and not (group.name == "general" or group.name == "source" or group.name == "data") %} &{{group.name}} {% for index, parameter in enumerate(group.children()) %}{{ typeDeciderTemplate(parameter, group.children().__len__()-1 == index) }} {% endfor %} /
+{% endif -%}
 {%- endmacro -%}
-
 {% macro featureTemplate(feature) -%}
-    {% if not feature.is_activated %}#{% endif %}{% for elem in feature.children() -%}
-                                                    {{ typeDeciderTemplate(elem) }}
-                                                 {%- endfor -%}
-{%- endmacro %}
-
+    {%- if feature.is_activated -%}{%- for elem in feature.children() -%}{{ typeDeciderTemplate(elem) }}{%- endfor -%}{% endif -%}
+{%- endmacro -%}
 for uvic
 
-{% for symbol in symbols %}{{ typeDeciderTemplate(symbol) }}
-{% endfor %}
+{% for symbol in symbols %}{{ typeDeciderTemplate(symbol) }}{% endfor %}

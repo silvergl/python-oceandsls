@@ -1003,6 +1003,23 @@ class ArraySymbol(VariableSymbol):
             else:
                 returnVal.append(None)
         return returnVal
+    
+    def toNormalizedArray(self, recursive = True) -> list:
+        """
+        converts the array in a pyton list without nones
+        """
+        returnVal = []
+        for i in range(len(self)):
+            if i in self.vectors:
+                if not recursive:
+                    returnVal.append(self.get(i[0])) if isinstance(self.get(i), tuple) else returnVal.append(self.get(i))
+                else:
+                    elem = self.get(i)
+                    if isinstance(elem, ArraySymbol):
+                        returnVal.append(elem.toNormalizedArray())
+                    else:
+                        returnVal.append(elem[0]) if isinstance(elem, tuple) else returnVal.append(elem)
+        return returnVal        
 
     def clear(self) -> None:
         self.vectors = []

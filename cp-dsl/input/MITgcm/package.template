@@ -1,0 +1,19 @@
+for mitgcm
+
+file '''#{name}/data.pkg''' : '''
+# Packages
+ &PACKAGES
+#{for features join "\n" use packageItem(it)}
+#{if exists(features['diagnostics']) " useDiagnostics=.TRUE.," }
+ &
+'''
+
+template packageItem(Feature package) ''' use#{package.name}=.TRUE.,'''
+
+file '''#{name}/packages.conf''' : '''
+#-- list of packages (or group of packages) to compile for this experiment:
+#{for features join "\n" use modulePackageTemplate(it)}
+#{if exists(features['diagnostics']) "diagnostics" }
+'''
+
+template modulePackageTemplate(Feature package) '''#{lowerCase(package.name)}'''

@@ -1,12 +1,12 @@
 {%- macro codeExtensionsTemplate(elem, count) -%}
-    '''Code_Extension({{ count }}) = {{ elem }}'''
+    Code_Extension({{ count }}) = {% if isinstance(elem, tuple) %}{{ elem[0] }}{% else %}{{ elem }}{% endif %}
 {%- endmacro -%}
 {%- macro printSourceDirectory(elem, count) -%}
-    '''Source_Directory({{ count }}) = {{ elem }}'''
+    Source_Directory({{ count }}) = {{ elem }}
 {%- endmacro -%}
 for uvic
 
-file "mk2.in" : '''
+file "mk2.in" :
 # Add version directory for use
 # for Uvic_ESCM 2.9 version reference run with the opem extension
 
@@ -19,6 +19,7 @@ Model_Options =
 
 {% for i in range(source["code_extensions"].__len__()) %}{{ codeExtensionsTemplate(source["code_extensions"][i], i) }}
 {% endfor %}
+
 ### source code directories (if excluded, exclude equivalent option)
 {% for i in range(source["directories"].__len__()) %}{{ printSourceDirectory(source["directories"][i], i) }}
 {% endfor %}
@@ -34,11 +35,10 @@ Data_Directory = {{ general["data_directory"] }}
 Updates_Level = {{ general["updates_level"] }}
 No_Warnings = {{ general["no_warnings"] }}
 Preprocessor = {{ general["preprocessor"] }}
-Libraries = {{ " '''-l#{it}'''".join(general["libraries"]) }} {{ " '''-L#{it}'''".join(general["library_paths"]) }}
+Libraries ={% for elem in general["libraries"] %}{{ " -l"+elem }}{% endfor %}{% for elem in general["library_paths"] %}{{" -L"+elem}}{% endfor %}
 
-Compiler_F = {{ general["compiler_f"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
-Compiler_f = {{ general["compiler_f"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
-Compiler_F90 = {{ general["compiler_f90"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
-Compiler_f90 = {{ general["compiler_f90"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
-Linker = {{ general["linker"] }} {% if profiling["enabled"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
-'''
+Compiler_F = {{ general["compiler_f"] }} {% if general["allow_profiling"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+Compiler_f = {{ general["compiler_f"] }} {% if general["allow_profiling"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+Compiler_F90 = {{ general["compiler_f90"] }} {% if general["allow_profiling"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+Compiler_f90 = {{ general["compiler_f90"] }} {% if general["allow_profiling"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}
+Linker = {{ general["linker"] }} {% if general["allow_profiling"] %}-O0 -finstrument-functions{% else %}-O3{% endif %}

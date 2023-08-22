@@ -44,7 +44,7 @@ group general : "general settings" {
 	def compiler_f string : "" = "ifort -r8 -warn nouncalled -c"
 	def compiler_f90 string : "" = "ifort -r8 -warn nouncalled -c"
 	def linker string : "" = "ifort -r8 -warn nouncalled -o"
-	def allow_profiling boolean : "switch to activate profiling" = false
+	def allow_profiling boolean : "" , "switch to activate profiling" = false
 }
 
 group source : "source code types and locations" {
@@ -53,7 +53,7 @@ group source : "source code types and locations" {
 }
 
 group data : "data related parameters" {
-	def directories file[] : "data directory"
+	def directories file[] : "", "data directory"
 }
 
 // Note this is a temporary measure, better assign groups to individual features below

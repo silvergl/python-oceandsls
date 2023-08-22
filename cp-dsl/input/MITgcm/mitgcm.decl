@@ -1,0 +1,329 @@
+model mitgcm
+
+group PARM01 : "parm01" {
+	def viscAh float : "" = 4.0E2
+	def viscAr float : ""
+	def no_slip_sides boolean : ""
+ 	def no_slip_bottom boolean : ""
+ 	def diffKhT float : ""
+ 	def diffKrT float : ""
+ 	def ivdc_kappa float : ""
+ 	def implicitDiffusion boolean : ""
+ 	def implicitViscosity boolean : ""
+ 	def eosType string : ""
+ 	def tRef float[] : ""
+ 	def sRef float : ""
+ 	def tAlpha float : ""
+ 	def sBeta float : ""
+ 	def rhoNil float : ""
+ 	def gravity float : ""
+ 	def f0 float : "" = 1.0E-4
+	def beta float : "" = 1.0E-11
+	def selectCoriScheme int : ""
+	def rhoConst float : "" = 1000.0
+	def gBaro float : "" = 9.81
+	def rigidLid boolean : "" = false
+	def implicitFreeSurface boolean : "" = true
+	def startTime int : ""
+	def momAdvection boolean : "" = false
+	def tempStepping boolean : "" = false
+	def exactConserv boolean : ""
+	def saltStepping boolean : "" = false
+	def hFacMinDr float : ""
+ 	def hFacMin float : ""
+ 	def tempAdvScheme int : ""
+ 	def	staggerTimeStep boolean : ""
+ 	def viscAz float : ""
+ 	def diffKzT float : ""
+ 	def readBinaryPrec int : ""
+ 	def useSingleCPUio boolean : ""
+ 	def globalFiles boolean : ""
+ 	def diffKhS float :""
+ 	def diffKrS float : ""
+ 	def rhoConstFresh int : ""
+ 	def  allowFreezing boolean :""
+ 	def useRealFreshWaterFlux boolean: "" 
+ 	def useCDscheme boolean:""
+    def hFacMin int:""
+    def hFacMindr int:"" 
+    def readBinaryPrec int :"" 
+    def cosPower float :""
+    def buoyancyRelation string:""
+ 	def integr_GeoPot int:""
+    def useNHMTerms boolean:""
+ 	def nonlinFreeSurf int: ""
+ 	def hFacInf float:""
+ 	def hFacSup float :""
+ 	def doResetHFactors boolean :""
+  	def writeBinaryPrec int :""
+  	def diffKzS float :""
+  	def Ro_SeaLevel float : ""
+  	def tRef float[] : ""
+  	def rotationPeriod float : ""
+  	def select_rStar int : ""
+  	def uniformLin_PhiSurf boolean : ""
+  	def momViscosity boolean : ""
+  	def vectorInvariantMomentum boolean : ""
+  	def heatCapacity_Cp float : ""
+  	def nonHydrostatic boolean : ""
+  	def viscA4 float :""
+  	def bottomDragLinear float:""
+  	def diffK4T float : ""
+    def plotLevel int:""
+    def diffKrBL79surf float: ""
+    def diffKrBL79deep float: ""
+    def diffKrBL79Ho float : ""
+    def  diffKrBL79scl float: ""
+    def saltAdvScheme int      : ""
+    def hFacMindz float :""
+    def multiDimAdvection  boolean : ""
+}
+
+group PARM02 : "parm02" {
+	def cg2dTargetResidual float : ""
+ 	def cg2dMaxIters int : ""
+ 	def cg2dTargetResWunit float : ""
+ 	def cg3dMaxIters int : ""
+    def cg3dTargetResidual float :""
+}
+
+group PARM03 :"parm03" {
+	def startTime float : ""
+	def endTime float : ""
+	def nIter0 int : ""
+ 	def nTimeSteps int : ""
+ 	def deltaT float : ""
+ 	def pChkptFreq float : ""
+ 	def chkptFreq float : ""
+ 	def dumpFreq float : ""
+ 	def monitorFreq float : ""
+ 	def monitorSelect int : ""
+ 	def tauThetaClimRelax float : ""
+ 	def momDissip_In_AB boolean : ""
+ 	def deltaTmom float :""
+ 	def deltaTtracer float: ""
+ 	def abEps float: ""
+ 	def deltaTMom int : ""
+ 	def tauCD int : ""
+ 	def deltaTClock int : ""
+    def deltaTfreesurf int : ""
+    def taveFreq int : ""
+    def tauSaltClimRelax int : ""
+ 	def periodicExternalForcing boolean:""
+ 	def externForcingPeriod int:""
+ 	def externForcingCycle int :""
+ 	def deltaTFreeSurf float : ""
+ 	def tracForcingOutAB int : ""
+ 	def pChkptFreq float: ""
+ 	def chkptFreq float : ""
+ 	def dumpFreq float : ""
+ 	def taveFreq float : ""
+    def nTimeSteps int : ""
+    def monitorFreq float : ""
+
+}
+
+group PARM04 : "parm04" {
+	def usingSphericalPolarGrid boolean : ""
+	def usingCartesianGrid boolean : ""
+ 	def delX float : ""
+ 	def delY float : ""
+ 	def xgOrigin float : ""
+ 	def ygOrigin float : ""
+ 	def delR float[] : ""
+ 	def delZ float:""
+ 	def dySpacing int:""
+ 	def dxSpacing int:""
+ 	def top_Pres float :""
+ 	def usingCurvilinearGrid boolean : ""
+ 	def horizGridFile string: ""
+ 	def radius_fromHorizGrid float : ""
+ 	def dXspacing float : ""
+ 	def dYspacing float : ""
+ 	def delXfile file :""
+ 	def usingCylindricalGrid boolean: ""
+}
+
+group PARM05 : "parm05" {
+	def bathyFile file : ""
+ 	def zonalWindFile file : ""
+ 	def meridWindFile file : ""
+ 	def thetaClimFile file : ""
+ 	def hydrogThetaFile file : ""
+ 	def saltClimFile string:""
+    def surfQnetFile string:""
+    def the_run_name string:""
+ 	def EmPmRFile string:""
+ 	def hydrogSaltFile string: ""
+ 	def geoPotAnomFile string: ""
+ 	def pSurfInitFile file: ""
+ 	def uVelInitFile file : ""
+ 	def vVelInitFile file : ""
+ 	def bathyFiLe  file :""
+ 	def tCylIn float  : ""
+    def tCylOut float: ""
+}
+group EEPARMS : "eeparms" {
+	def nTx int : ""
+ 	def nTy int : ""
+ 	def useCubedSphereExchange boolean : ""
+}
+
+group size : "size" {
+	def sNx int : "" = 1
+    def sNy int : "" = 1
+    def OLx int : ""
+    def OLy int : ""
+    def nSx int : "" = 1
+    def nSy int : "" = 1
+    def nPx int : "" = 1
+    def nPy int : "" = 1
+    def Nx int : "" = sNx*nSx*nPx
+    def Ny int : "" = sNy*nSy*nPy
+    def Nr int : ""
+}
+
+group layers_size : "layers size "{
+	def Nlayers int : ""
+	def FineGridFact int : ""
+	def FineGridMax int : ""
+	def layers_maxNum int : ""
+}
+
+feature MNC : "mnc" {
+	group MNC_01 : "" {
+ 		def monitor_mnc boolean : ""
+ 		def mnc_use_outdir boolean : ""
+ 		def mnc_outdir_str string : ""
+ 		def mnc_use_name_ni0 boolean: ""
+ 		def mnc_outdir_date boolean : ""
+ 		def pickup_write_mnc boolean :""
+ 		def pickup_read_mnc boolean : ""
+	}
+}
+
+feature diagnostics : "diagnostics package" {
+	
+}
+
+feature PTRACERS : "ptracers" {
+	group PTRACERS_PARM01 : "ptraces parm01" {
+		def PTRACERS_numInUse int:""
+ 		def PTRACERS_advScheme int :""
+ 		def PTRACERS_diffKh int :""
+ 		def PTRACERS_diffK4 float :""
+ 		def PTRACERS_diffKr int: ""
+ 		def PTRACERS_Iter0 int :""
+ 		def PTRACERS_initialFile string[]:""
+ 		def PTRACERS_names string[]:""
+ 		def PTRACERS_long_names string[]:""
+ 		def PTRACERS_units string[]:""
+ 		def PTRACERS_useGMRedi boolean[]:""
+ 		def PTRACERS_ref float :""
+		def PTRACERS_useGMRedi boolean :"" 
+		def PTRACERS_ref float[]: ""  
+	    def PTRACERS_useGMRedi boolean[]:"" 
+		def PTRACERS_ref float[] :""
+		def PTRACERS_EvPrRn float []: ""
+		def PTRACERS_monitorFreq float:""
+		def PTRACERS_useKPP boolean[]:""
+		def PTRACERS_useKPP boolean[]:""
+	}
+}
+
+// gfd is a meta package in mitgcm
+feature GFD : "gfd meta package" {
+	
+}
+
+feature GMRedi : "" {
+	group GM_PARM01 : "" {
+  		def GM_background_K float : ""
+  		def GM_taper_scheme string : ""
+  		def GM_AdvForm boolean : ""
+  		def GM_maxSlope float : ""
+  		def GM_Kmin_horiz  float : ""
+  		def GM_Scrit float : ""
+  		def GM_Sd float : ""
+  	}
+}
+
+feature RBCS : "" {
+	group RBCS_PARM01 : "" {
+		def useRBCtemp boolean : ""
+ 		def tauRelaxT float : ""
+ 		def relaxMaskFile file : ""
+ 		def relaxTFile file : ""
+	}
+	group RBCS_PARM02 : "" {
+		
+	}
+}
+
+feature Layers : "" {
+	group LAYERS_PARM01 : "" { 
+ 		def layers_name string[] : ""
+ 		def	layers_bounds float[,] : ""
+ 	}
+}
+
+feature shap_filt : "" {
+	group SHAP_PARM01 : "" { 
+ 		def shap_filt_uvStar boolean : ""
+ 		def shap_filt_TrStagg boolean:""
+ 		def Shap_funct int :""
+ 		def nShapT int : ""
+ 		def nShapUV int : ""
+		def nShapTrPhys int : ""
+ 		def nShapUVPhys int : ""
+		def Shap_TrLength float : ""
+		def Shap_uvLength float : ""
+		def Shap_Trtau float : ""
+		def Shap_uvtau float: ""
+		def Shap_diagFreq float : ""
+ 	}
+}
+
+feature obcs : "" {
+	 group OBCS_PARM01 : "" {
+		 def OB_Ieast int : ""
+		 def useOrlanskiEast boolean: ""
+		 def useOBCSbalance boolean : ""
+		 def OBCS_monitorFreq float :  ""
+	 }
+	
+	 group OBCS_PARM02 : "" {
+		 def Cmax float : ""
+		 def cVelTimeScale float : ""
+	 }
+}
+feature GCHEM : "" {
+	group GCHEM_PARM01 : "" {
+		def useDIC boolean :""
+		def nsubtime int: ""
+		def  useCFC boolean :""
+	}
+}
+
+feature Offline : "" {
+	
+	group OFFLINE_PARM01 : "" {
+		def UvelFile file: ""
+		def VvelFile file: ""
+		def WvelFile file : ""
+		def GMwxFile file : ""
+		def GMwyFile file: ""
+		def GMwzFile file : ""
+		def ConvFile file: ""
+		def SaltFile file: ""
+		def ThetFile file: ""
+		def SFluxFile file:""
+		def HFluxFile file:""
+	}
+	group OFFLINE_PARM02 : "" {
+	  def offlineIter0 int:""
+	  def deltaToffline float :""
+	  def offlineForcingPeriod float:""
+	  def offlineForcingCycle float:""
+	}
+}

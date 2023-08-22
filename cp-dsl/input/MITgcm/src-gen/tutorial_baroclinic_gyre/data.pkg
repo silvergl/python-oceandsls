@@ -1,0 +1,6 @@
+# Packages
+ &PACKAGES
+ useGFD=.TRUE.,
+ useMNC=.TRUE.,
+ useDiagnostics=.TRUE.,
+ &

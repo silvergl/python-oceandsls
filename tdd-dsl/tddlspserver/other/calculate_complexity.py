@@ -55,7 +55,7 @@ class Scope:
     other_stmt: List[ET.Element] = field(default_factory=lambda: [])
     arguments: List[ET.Element] = field(default_factory=lambda: [])
     external_calls: List[ET.Element] = field(default_factory=lambda: [])
-    scopes: List = field(default_factory=lambda: [])
+    sub_scopes: List = field(default_factory=lambda: [])
     scope_result_names: List[str] = field(default_factory=lambda: [])
 
     # List of last result declarations
@@ -127,8 +127,8 @@ class Scope:
         :return: Maximum depth of nesting of scope
         """
         depth_of_nesting: int = 0
-        for scope in self.scopes:
-            depth_of_nesting = max(depth_of_nesting, 1 + scope.depth_of_nesting)
+        for sub_scope in self.sub_scopes:
+            depth_of_nesting = max(depth_of_nesting, 1 + sub_scope.depth_of_nesting)
         return depth_of_nesting
 
     @property
@@ -234,25 +234,27 @@ def calculate_metrics(xml_path: str = None):
             # Extract scope name
             scope_name = name_element.find(path='.//fx:n', namespaces=ns).text
 
+            # Extract scope type
             scope_type = element.tag.split(ns['fx'] + "}", maxsplit=1)[1]
 
+            # Extract scope parameters
             scope_arguments = element.findall(path='.//fx:arg-N', namespaces=ns)
 
+            # Extract names of scope return statements in scope declaration
             scope_result_elements = element.findall(path='.//fx:result-spec', namespaces=ns)
-
             scope_results: List[str] = []
-
             for result_element in scope_result_elements:
                 scope_results.extend(list(map(lambda element: element.text, result_element.findall('.//fx:n', ns))))
 
-            routine = Scope(name=scope_name, type=scope_type, arguments=scope_arguments, scope_result_names=scope_results)
+            # Build new scope
+            new_scope = Scope(name=scope_name, type=scope_type, arguments=scope_arguments, scope_result_names=scope_results)
 
             # Add scope to parent
             if current_scope:
-                current_scope.scopes.append(routine)
+                current_scope.sub_scopes.append(new_scope)
 
             # Update scope stack
-            scope_stack.append(routine)
+            scope_stack.append(new_scope)
 
         # Extract conditional statements
         elif element.tag.endswith(tuple(conditionals_elements)):

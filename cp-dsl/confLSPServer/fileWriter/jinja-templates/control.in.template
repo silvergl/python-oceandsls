@@ -10,7 +10,7 @@
 {%- endmacro -%}
 {%- macro parameterTemplate(parameter, lastSymbol) -%}
     {{ parameter.name }}={% if not parameter.is_array -%}
-                                {{ parameter.value }}
+                                {% if isinstance(parameter.value, bool) %}.{{ parameter.value.__str__().lower() }}.{% else %}{{parameter.value}}
                            {%- else -%}
                                 {{ parameter.toNormalizedArray().__str__().replace("[", "").replace("]", "").replace(" ", "") }}
                             {%- endif -%}

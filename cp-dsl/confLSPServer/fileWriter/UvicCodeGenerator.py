@@ -16,7 +16,7 @@ class UvicCodeGenerator():
         templatecontr = self.templateEnv.get_template("control.in.template")
         controlPath = os.path.join(self.outputPath, "control.in")
         control = open(controlPath, "w")
-        control.write(templatecontr.render(symbols = self._symbolTable.children(), groupSymbol=GroupSymbol, paramSymbol=VariableSymbol, featureSymbol = FeatureSymbol, isinstance=isinstance, enumSymbol = EnumSymbol, enumerate = enumerate))
+        control.write(templatecontr.render(symbols = self._symbolTable.children(), groupSymbol=GroupSymbol, paramSymbol=VariableSymbol, featureSymbol = FeatureSymbol, isinstance=isinstance, enumSymbol = EnumSymbol, enumerate = enumerate, bool = bool))
         control.close()
         #mk in template
         templatemk = self.templateEnv.get_template("mk.in.template")

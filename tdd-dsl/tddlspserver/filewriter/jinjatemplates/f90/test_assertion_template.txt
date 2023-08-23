@@ -1,10 +1,10 @@
 {% if comment %}
   ! {{ comment }}
 {% endif %}
-  FUNCTION {{ name }} ({% if argNames %}{{ argNames |list |join(', ') }}{% endif %}) RESULT (out)
+  FUNCTION {{ name }} ({% if argNames %}{{ argNames |list |join(", ") }}{% endif %}) RESULT (out)
     IMPLICIT NONE
     {% if argsDecl %}
-    {{ argsDecl|join('\n    ') }}
+    {{ argsDecl|join("\n    ") }}
     {% endif %}
     {% if returnType%}
     {{ returnType }}

@@ -20,7 +20,7 @@ add_library(cfo_example
   )
 
 add_library(test_fT_ME_sut
-  cfo_sut_example.f90
+  cfo_example.f90
   additional_use_0.f90
   additional_use_1.f90
   )

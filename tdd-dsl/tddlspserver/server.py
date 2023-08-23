@@ -60,20 +60,20 @@ from .utils.suggest_variables import suggest_symbols
 
 # TODO rm or move to debug logger
 # python path hacking / DO NOT USE for live code
-# if not os.path.join(sys.path[0], 'example-dsl', 'lspExampleServer') in sys.path:
-#     sys.path.append(os.path.join( sys.path[0], 'example-dsl', 'lspExampleServer') )
-# pprint( f'sys.path {sys.path}' )
+# if not os.path.join(sys.path[0], "example-dsl", "lspExampleServer") in sys.path:
+#     sys.path.append(os.path.join( sys.path[0], "example-dsl", "lspExampleServer") )
+# pprint( f"sys.path {sys.path}" )
 
 COUNT_DOWN_START_IN_SECONDS = 10
 COUNT_DOWN_SLEEP_IN_SECONDS = 1
 
 
 class TDDLSPServer(LanguageServer):
-    CMD_PROGRESS = 'progress'
-    CMD_REGISTER_COMPLETIONS = 'registerCompletions'
-    CMD_UNREGISTER_COMPLETIONS = 'unregisterCompletions'
+    CMD_PROGRESS = "progress"
+    CMD_REGISTER_COMPLETIONS = "registerCompletions"
+    CMD_UNREGISTER_COMPLETIONS = "unregisterCompletions"
 
-    CONFIGURATION_SECTION = 'ODslExampleServer'
+    CONFIGURATION_SECTION = "ODslExampleServer"
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -101,7 +101,7 @@ class TDDLSPServer(LanguageServer):
         self.files: dict[str, Tuple[float, str, str]] = {}
 
 
-tdd_server = TDDLSPServer('pygls-odsl-tdd-prototype', 'v0.1')
+tdd_server = TDDLSPServer("pygls-odsl-tdd-prototype", "v0.1")
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +109,7 @@ logger = logging.getLogger(__name__)
 def _validate(ls: TDDLSPServer, params):
     # msg to debug console
     # TODO setup debug logger
-    # ls.show_message_log( 'Validating file...' )
+    # ls.show_message_log( "Validating file..." )
 
     # get file content for lexer input stream
     text_doc: Document = ls.workspace.get_document(params.text_document.uri)
@@ -145,11 +145,11 @@ def _validate_format(ls: TDDLSPServer, source: str):
 
 
 def get_symbol_name_at_position(uri, position):
-    logger.info('uri: %s\n', uri, 'position: %s\n', position)
+    logger.info("uri: %s\n", uri, "position: %s\n", position)
 
 
 def lookup_symbol(uri, name):
-    logger.info('uri: %s\n', uri, 'name: %s\n', name)
+    logger.info("uri: %s\n", uri, "name: %s\n", name)
 
 
 @tdd_server.feature(TEXT_DOCUMENT_COMPLETION, CompletionOptions(trigger_characters=[',']))
@@ -203,20 +203,20 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
         if any(rule in candidates.rules for rule in [TestSuiteParser.RULE_reference]):
 
-            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor('completions', os.getcwd())
+            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("completions", os.getcwd())
             symbol_table = symbol_table_visitor.visit(parse_tree)
             # FunctionSymbol is derived from RoutineSymbol
             symbol_types.extend([VariableSymbol, RoutineSymbol])
 
         elif any(rule in candidates.rules for rule in [TestSuiteParser.RULE_test_module]):
 
-            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor('completions', os.getcwd())
+            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("completions", os.getcwd())
             symbol_table = symbol_table_visitor.visit(parse_tree)
             symbol_types.append(ModuleSymbol)
 
         elif any(rule in candidates.rules for rule in [TestSuiteParser.RULE_src_path]):
 
-            symbol_table_visitor: SystemFileVisitor = SystemFileVisitor('paths', os.getcwd())
+            symbol_table_visitor: SystemFileVisitor = SystemFileVisitor("paths", os.getcwd())
             symbol_table = symbol_table_visitor.visit(parse_tree)
             symbol_types.append(PathSymbol)
 
@@ -252,7 +252,7 @@ def did_change(ls, params: DidChangeTextDocumentParams):
 @tdd_server.feature(TEXT_DOCUMENT_DID_CLOSE)
 def did_close(server: TDDLSPServer, params: DidCloseTextDocumentParams):
     """Text document did close notification."""
-    server.show_message('Text Document Did Close')
+    server.show_message("Text Document Did Close")
 
 
 @tdd_server.feature(TEXT_DOCUMENT_DID_SAVE)
@@ -275,7 +275,7 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     parse_tree: top_level_context = tdd_server.parser.test_suite()
 
     # get symboltable for f90 generator
-    symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor('variables', os.getcwd())
+    symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("variables", os.getcwd())
     symbol_table = symbol_table_visitor.visit(parse_tree)
 
     # Generate pf files
@@ -294,13 +294,13 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     # update CMake files and save generated files
     tdd_server.files = cmake_file_generator_visitor.visit(parse_tree)
 
-    server.show_message('Text Document Did Save')
+    server.show_message("Text Document Did Save")
 
 
 @tdd_server.feature(TEXT_DOCUMENT_DID_OPEN)
 async def did_open(ls, params: DidOpenTextDocumentParams):
     """Text document did open notification."""
-    ls.show_message('Text Document Did Open')
+    ls.show_message("Text Document Did Open")
     _validate(ls, params)
 
 
@@ -337,17 +337,17 @@ def semantic_tokens(ls: TDDLSPServer, params: SemanticTokensParams):
 @tdd_server.command(TDDLSPServer.CMD_PROGRESS)
 async def progress(ls: TDDLSPServer, *args):
     """Create and start the progress on the client."""
-    token = 'token'
+    token = "token"
     # Create
     await ls.progress.create_async(token)
     # Begin
-    ls.progress.begin(token, WorkDoneProgressBegin(title='Indexing', percentage=0))
+    ls.progress.begin(token, WorkDoneProgressBegin(title="Indexing", percentage=0))
     # Report
     for i in range(1, 10):
-        ls.progress.report(token, WorkDoneProgressReport(message=f'{i * 10}%', percentage=i * 10), )
+        ls.progress.report(token, WorkDoneProgressReport(message=f"{i * 10}%", percentage=i * 10), )
         await asyncio.sleep(2)
     # End
-    ls.progress.end(token, WorkDoneProgressEnd(message='Finished'))
+    ls.progress.end(token, WorkDoneProgressEnd(message="Finished"))
 
 
 @tdd_server.command(TDDLSPServer.CMD_REGISTER_COMPLETIONS)
@@ -355,14 +355,14 @@ async def register_completions(ls: TDDLSPServer, *args):
     """Register completions method on the client."""
     params = RegistrationParams(
         registrations=[Registration(
-            id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION, register_options={"triggerCharacters": "[':']"}
+            id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION, register_options={"triggerCharacters": "[\":\"]"}
         )]
     )
     response = await ls.register_capability_async(params)
     if response is None:
-        ls.show_message('Successfully registered completions method')
+        ls.show_message("Successfully registered completions method")
     else:
-        ls.show_message('Error happened during completions registration.', MessageType.Error)
+        ls.show_message("Error happened during completions registration.", MessageType.Error)
 
 
 @tdd_server.command(TDDLSPServer.CMD_UNREGISTER_COMPLETIONS)
@@ -373,6 +373,6 @@ async def unregister_completions(ls: TDDLSPServer, *args):
     )
     response = await ls.unregister_capability_async(params)
     if response is None:
-        ls.show_message('Successfully unregistered completions method')
+        ls.show_message("Successfully unregistered completions method")
     else:
-        ls.show_message('Error happened during completions unregistration.', MessageType.Error)
+        ls.show_message("Error happened during completions unregistration.", MessageType.Error)

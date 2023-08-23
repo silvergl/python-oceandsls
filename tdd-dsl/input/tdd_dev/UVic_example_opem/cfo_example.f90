@@ -5,7 +5,6 @@ MODULE cfo_example
   PRIVATE
   PRIVATE :: get_sum
   PUBLIC :: fT_ME
-  PUBLIC :: foo
 
   TYPE(ocf), DIMENSION(:), ALLOCATABLE, PUBLIC :: zoo
 
@@ -52,7 +51,7 @@ CONTAINS
     integer :: n1, n2, sum
 
     ! The last value defined is returned
-    sum = n1 + n2
+    sum = get_sum2(n1, n2)
   end function get_sum
 
   ! Define variable to be returned
@@ -62,7 +61,7 @@ CONTAINS
     ! Don't allow variable values to change
     integer, intent(in) :: n1, n2
     integer :: sum
-    sum = n1 + n2
+    sum = get_sum3(n1, n2)
   end function get_sum2
 
   ! Block functions from changing input
@@ -82,15 +81,11 @@ CONTAINS
     end if
   end function get_sum3
   
-  !  asserts y-Intercept
-  FUNCTION foo (arg0) RESULT (out)
-    IMPLICIT NONE
-    real, INTENT(IN)  :: arg0
-    ! <<Add return type here>>, INTENT(OUT) :: out
-
-
-
-    out = ! <<Add return expression here>>
-  END FUNCTION foo
+  subroutine plus_two(n, plus1, plus2)
+    integer, intent(in) :: n
+    integer, intent(out) :: plus1, plus2 ! Output
+    plus1 = n + 1
+    plus2 = n + 2
+  end subroutine plus_two
 
 END MODULE cfo_example

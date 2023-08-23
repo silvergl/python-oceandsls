@@ -1,6 +1,6 @@
 """pfUnit generator using jinja2 templates to generate Fortran Unit Tests"""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # TODO license
 
@@ -19,11 +19,11 @@ from jinja2 import Environment, FileSystemLoader
 # from enum import StrEnum
 #
 # class CallableType(StrEnum):
-#     Function = 'function',
-#     Subroutine = 'subroutine',
-#     Procedure = 'procedure',
-#     Subprogram = 'subprogram',
-#     Method = 'method'
+#     Function = "function",
+#     Subroutine = "subroutine",
+#     Procedure = "procedure",
+#     Subprogram = "subprogram",
+#     Method = "method"
 #
 # @dataclass
 # class Callable:
@@ -38,8 +38,8 @@ class CallableType(Enum):
     """
     Types of callable for unit test case
     """
-    Function = 'function'
-    Subroutine = 'subroutine'
+    Function = "function"
+    Subroutine = "subroutine"
 
 
 @dataclass
@@ -89,13 +89,13 @@ class TestCase:
 
 
 def merge_file_content(file_content_0: str, file_content_1: str) -> str:
-    '''
+    """
     Merge two file contents based on difflib.
 
     :param file_content_0: Content of first file
     :param file_content_1: Content of second file
     :return: 3-way merge of comparing the first file and second file
-    '''
+    """
     return "\n".join(
         lines[2:] for lines in difflib.Differ().compare(
             file_content_0.split("\n"),
@@ -106,27 +106,27 @@ def merge_file_content(file_content_0: str, file_content_1: str) -> str:
 
 
 def gen_test_data(num_files: int = 1, num_mods: int = 1, num_ass: int = 1) -> List[TestCase]:
-    '''
+    """
     Generate test data for jinja_tdd
 
     :param num_files: number of test files
     :param num_mods: number of modules in each file
     :param num_ass: number of assertions in each file
     :return: list of unit tests
-    '''
+    """
     list_tests = []
     for i in range(num_files):
         list_mods = []
         for j in range(num_mods):
-            # list_mods.append( {'name': f"module_{i}_{j}"} )
+            # list_mods.append( {"name": f"module_{i}_{j}"} )
             list_mods.append(Module(f"module_{i}_{j}"))
 
         list_ass = []
         for j in range(num_ass):
-            # list_ass.append( {'name': f"assertion_{i}_{j}", 'input': i, 'output': j} )
+            # list_ass.append( {"name": f"assertion_{i}_{j}", "input": i, "output": j} )
             list_ass.append(Assertion(f"assertion_{i}_{j}", i, j))
 
-        # list_tests.append( {'fn': f"file_{i}", 'sub': {'name': f"sub_{i}"}, 'mods': list_mods, 'assertions':
+        # list_tests.append( {"fn": f"file_{i}", "sub": {"name": f"sub_{i}"}, "mods": list_mods, "assertions":
         # list_ass} )
         list_tests.append(
             TestCase(f"file_{i}", Callable(f"sub_{i}", CallableType.Subroutine), list_mods, list_ass)
@@ -136,12 +136,12 @@ def gen_test_data(num_files: int = 1, num_mods: int = 1, num_ass: int = 1) -> Li
 
 
 def write_tdd(
-        list_tests: List[TestCase], template_path: str = 'tdd-dsl/tdd_lsp_server/fileWriter/dev',
-        template_files: List[str] = ['tdd_pf_template.txt', 'tdd_module_template.txt',
-                                     'tdd_assertion_template.txt'],
-        test_path: str = 'gen', test_folder: str = 'test', test_file_pr: str = 'test_'
+        list_tests: List[TestCase], template_path: str = "tdd-dsl/tdd_lsp_server/fileWriter/dev",
+        template_files: List[str] = ["tdd_pf_template.txt", "tdd_module_template.txt",
+                                     "tdd_assertion_template.txt"],
+        test_path: str = "gen", test_folder: str = "test", test_file_pr: str = "test_"
 ) -> None:
-    '''
+    """
     Write pFUnit files using Jinja2 Template files.
 
     :param list_tests: List of unit test data
@@ -151,7 +151,7 @@ def write_tdd(
     :param test_folder: test folder under system path for *.pf files
     :param test_files: prefix_name of *.pf files
     :return:
-    '''
+    """
     # Load Jinja2 template
     environment = Environment(loader=FileSystemLoader(template_path))
     # Use test_template.txt
@@ -173,22 +173,22 @@ def write_tdd(
         if not os.path.isdir(path):
             os.makedirs(path)
             # TODO add to debug info
-            print(f'... create {path}')
+            print(f"... create {path}")
 
         # Create file if it doesn't exist else merge with existing file
-        # filename = f"test_{test['fn'].lower()}.pf"
+        # filename = f"test_{test["fn"].lower()}.pf"
         filename = f"{test_file_pr}{test.fn.lower( )}.pf"
         path = os.path.join(os.getcwd(), path, filename)
         if os.path.exists(path):
-            with open(path, mode='r', encoding='utf-8') as f:
+            with open(path, mode="r", encoding="utf-8") as f:
                 content_org = f.read()
             content = merge_file_content(content, content_org)
 
         # Write rendered and optional merged content to file
-        with open(path, mode='w', encoding='utf-8') as f:
+        with open(path, mode="w", encoding="utf-8") as f:
             f.write(content)
             # TODO add to debug info
-            print(f'... wrote {path}')
+            print(f"... wrote {path}")
 
 
 # test function
@@ -196,13 +196,13 @@ def write_tdd(
 write_tdd(gen_test_data(num_mods=2))
 
 assert_operands = {
-    'fail': 0, 'equal': 2, 'notequal': 2, 'true': 1, 'false': 1,
-    'lessthan': 2, 'lessthanorequal': 2, 'greaterthan': 2,
-    'greaterthanorequal': 2, 'notequal': 2,
-    'relativelyequal': 2, 'isinfinite': 1, 'isfinite': 1,
-    'isnan': 1, 'ismemberof': 2, 'contains': 2, 'any': 1,
-    'all': 1, 'notall': 1, 'none': 1, 'ispermutationof': 2,
-    'exceptionraised': 0, 'sameshape': 2, 'that': 2, '_that': 2
+    "fail": 0, "equal": 2, "notequal": 2, "true": 1, "false": 1,
+    "lessthan": 2, "lessthanorequal": 2, "greaterthan": 2,
+    "greaterthanorequal": 2, "notequal": 2,
+    "relativelyequal": 2, "isinfinite": 1, "isfinite": 1,
+    "isnan": 1, "ismemberof": 2, "contains": 2, "any": 1,
+    "all": 1, "notall": 1, "none": 1, "ispermutationof": 2,
+    "exceptionraised": 0, "sameshape": 2, "that": 2, "_that": 2
 }
 
-assert_variants = '|'.join(assert_operands.keys())
+assert_variants = "|".join(assert_operands.keys())

@@ -1,6 +1,6 @@
 '''fxtran wrapper using XPath Expression to parse Fortran source code into xml(http://fxtran.net/#syntax)'''
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # TODO license
 
@@ -46,13 +46,13 @@ def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path:
         try:
             # create output directory if it doesn't exist
             rel_path = os.path.relpath(filepath, src_dir)
-            rel_out_dir = os.path.join(out_dir, rel_path) if rel_path != '.' else out_dir
+            rel_out_dir = os.path.join(out_dir, rel_path) if rel_path != "." else out_dir
             pathlib.Path(rel_out_dir).mkdir(mode=0o750, parents=True, exist_ok=True)
         except PermissionError as e:
-            raise RuntimeError(f"Permission denied for output directory '{out_dir}'. Error (code {e.errno}): {e.strerror} '{e.filename}'")
+            raise RuntimeError(f"Permission denied for output directory \"{out_dir}\". Error (code {e.errno}): {e.strerror} \"{e.filename}\"")
 
         # Exchange the output name ending with xml
-        out_filename = filename.rsplit('.', 1)[0] + ".xml"
+        out_filename = filename.rsplit(".", 1)[0] + ".xml"
         # Build output path for xml file
         out_file_path = os.path.join(rel_out_dir, out_filename)
         # Build the fxtran command
@@ -62,9 +62,9 @@ def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path:
             # Call fxtran via subprocess with filepath as working directory
             subprocess.check_output(fxtran_cmd, shell=True, stderr=subprocess.STDOUT, cwd=filepath)
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"command '{e.cmd}' return with error (code {e.returncode}): {e.output}")
+            raise RuntimeError(f"command \"{e.cmd}\" return with error (code {e.returncode}): {e.output}")
         except PermissionError as e:
-            raise RuntimeError(f"Permission denied for calling fxtran parser '{fxtran_path}'. Error (code {e.errno}): {e.strerror} '{e.filename}'")
+            raise RuntimeError(f"Permission denied for calling fxtran parser \"{fxtran_path}\". Error (code {e.errno}): {e.strerror} \"{e.filename}\"")
 
 
 def read_decorate_src_xml(xml_filepath: str = "", xml_filename: str = ""):
@@ -103,7 +103,7 @@ fxtran_path: str = "/home/sgu/Documents/fxtran/bin/fxtran"
 out_dir: str = "/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML"
 
 # Fxtran syntax xml namespace
-ns = {'fx': 'http://fxtran.net/#syntax'}
+ns = {"fx": "http://fxtran.net/#syntax"}
 
 # Write XML files
 write_decorate_src_xml(src_dir, out_dir, fxtran_path)
@@ -132,7 +132,7 @@ for path, xml_filename in xml_files:
     root_element = read_decorate_src_xml(path, xml_filename)
 
     en_decl_lt_elems = root_element.findall(".//fx:EN-decl-LT", ns)
-    en_n_elems = root_element.findall('.//fx:EN-N', ns)
+    en_n_elems = root_element.findall(".//fx:EN-N", ns)
 
     en_n_text_list = []
     for en_decl_lt_elem in en_decl_lt_elems:
@@ -143,47 +143,47 @@ for path, xml_filename in xml_files:
     en_decl_lt_content = [elem.text for elem in en_decl_lt_elems]
     en_n_content = [elem.text for elem in en_n_elems]
 
-    result = {'EN_decl_LT': en_decl_lt_content, 'EN_N': en_n_content}
+    result = {"EN_decl_LT": en_decl_lt_content, "EN_N": en_n_content}
 
     current_subroutine = []
 
     for item in root_element.iter():
 
         match item.tag:
-            case 'file':
+            case "file":
                 # file path
                 # '/home/sgu/IdeaProjects/antlr4-python/src/fxtran/fortrantut.f90'
-                print(item.attrib['name'])
-            case 'program-stmt':
+                print(item.attrib["name"])
+            case "program-stmt":
                 for subitem in item:
                     match subitem.tag:
-                        case 'program-N':
+                        case "program-N":
                             # program Name
                             print(item[0][0].text)
-            case 'EN-decl-LT':
+            case "EN-decl-LT":
                 for subitem in item:
                     match subitem.tag:
-                        case 'EN-decl':
+                        case "EN-decl":
                             # local variable name
                             # print(subitem[0][0][0].text)
                             for subsubitem in subitem:
                                 match subsubitem.tag:
-                                    case 'EN-N':
+                                    case "EN-N":
                                         # local variable name
                                         print(subsubitem[0][0].text)
-                                    case 'array-spec':
+                                    case "array-spec":
                                         # upper-bound
                                         print(subsubitem[0][0][0][0][0][0].text)
                                         # TODO lower-bound
                                         print(subsubitem[0][1][0])
-            case 'subroutine-stmt':
+            case "subroutine-stmt":
                 for subitem in item:
                     match subitem.tag:
-                        case 'subroutine-N':
+                        case "subroutine-N":
                             pass
-            case 'end-subroutine-stmt':
+            case "end-subroutine-stmt":
                 pass
-            case 'call-stmt':
+            case "call-stmt":
                 pass
 
 # graphviz
@@ -197,7 +197,7 @@ for path, xml_filename in xml_files:
 #     for item in root_element.iter():
 #         if item.tag == "subroutine-stmt":
 #             for subsubroutine in item:
-#                 if subsubroutine.tag == 'subroutine-N':
+#                 if subsubroutine.tag == "subroutine-N":
 #                     nom = subsubroutine[0][0].text
 #                     current_subroutine.append( nom )
 #                     subroutine_calls[current_subroutine[-1]] = []

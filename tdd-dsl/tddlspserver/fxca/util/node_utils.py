@@ -1,6 +1,6 @@
 """ Accessor functions for nodes of Fortran parse objects from xml(http://fxtran.net/#syntax)"""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 from typing import Any, Callable, List
 
@@ -66,11 +66,11 @@ class NodeUtils():
         spaces: List[str] = [" "] * depth
 
         number_of_printed_nodes: int = 1
-        print(''.join(spaces) + "[node type] " + NodeUtils.node_type(node.getNodeType()))
-        print(''.join(spaces) + "[node name] " + node.getNodeName())
-        print(''.join(spaces) + "[node value] " + node.getNodeValue())
-        print(''.join(spaces) + "[node text content] " + node.getTextContent())
-        print(''.join(spaces) + "[node #kids] " + node.getChildNodes().getLength())
+        print("".join(spaces) + "[node type] " + NodeUtils.node_type(node.getNodeType()))
+        print("".join(spaces) + "[node name] " + node.getNodeName())
+        print("".join(spaces) + "[node value] " + node.getNodeValue())
+        print("".join(spaces) + "[node text content] " + node.getTextContent())
+        print("".join(spaces) + "[node #kids] " + node.getChildNodes().getLength())
         i = 0
         while i < node.getChildNodes().getLength():
             number_of_printed_nodes += NodeUtils.print_node(child, depth + 1)

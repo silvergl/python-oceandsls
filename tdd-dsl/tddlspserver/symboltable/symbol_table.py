@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # TODO license
 
@@ -69,11 +69,11 @@ class TypeKind(Enum):
 
 class ReferenceKind(Enum):
     Irrelevant = 0
-    # Default for most languages for dynamically allocated memory ('Type*' in C++).
+    # Default for most languages for dynamically allocated memory ("Type*" in C++).
     Pointer = 1
-    # 'Type&' in C++
+    # "Type&" in C++
     Reference = 2
-    # 'Type' as such and default for all value types.
+    # "Type" as such and default for all value types.
     Instance = 3
 
 
@@ -269,7 +269,7 @@ class Symbol:
 
     __the_parent: Optional[Symbol] = None
 
-    def __init__(self, name: str = ''):
+    def __init__(self, name: str = ""):
         self.name = name
         self.context = None
 
@@ -430,13 +430,13 @@ class Symbol:
         :return: the constructed qualified identifier.
         """
         if not include_anonymous and len(self.name) == 0:
-            return ''
+            return ""
 
-        result: str = '<anonymous>' if len(self.name) == 0 else self.name
+        result: str = "<anonymous>" if len(self.name) == 0 else self.name
         run = self.__the_parent
         while run:
             if include_anonymous or len(run.name) > 0:
-                result = ('<anonymous>' if len(run.name) == 0 else run.name) + separator + result
+                result = ("<anonymous>" if len(run.name) == 0 else run.name) + separator + result
 
             if not full or run.__the_parent is None:
                 break
@@ -446,8 +446,8 @@ class Symbol:
         return result
 
 
-P = ParamSpec('P')
-T = TypeVar('T', bound=Symbol)
+P = ParamSpec("P")
+T = TypeVar("T", bound=Symbol)
 
 
 class TypedSymbol(Symbol):
@@ -555,9 +555,9 @@ class ScopedSymbol(Symbol):
                 if child == symbol or (len(symbol.name) > 0 and child.name == symbol.name):
                     name = symbol.name
                     if len(name) == 0:
-                        name = '<anonymous>'
+                        name = "<anonymous>"
 
-                    raise DuplicateSymbolError({"message": "Attempt to add duplicate symbol '%s'" % name})
+                    raise DuplicateSymbolError({"message": "Attempt to add duplicate symbol \"%s\"" % name})
 
         self.children().append(symbol)
         symbol.set_parent(self)
@@ -1101,19 +1101,6 @@ class VariableSymbol(UnitSymbol):
 class PathSymbol(VariableSymbol):
     pass
 
-
-class LiteralSymbol(UnitSymbol):
-
-    def __init__(self, name: str, value=None, attached_type: Type = None):
-        super().__init__(name, attached_type)
-
-        self._value = value
-
-    @property
-    def value(self):
-        return self._value
-
-
 class ParameterSymbol(VariableSymbol):
     pass
 
@@ -1137,150 +1124,6 @@ class RoutineSymbol(ScopedSymbol):
 
 class FunctionSymbol(RoutineSymbol):
     pass
-
-
-class MethodFlags(Enum):
-    NoneFL = 0
-    Virtual = 1
-    Const = 2
-    Overwritten = 4
-
-    # Distinguished by the return type.
-    SetterOrGetter = 8
-
-    # Special flag used e.g. in C++ for explicit c-tors.
-    Explicit = 16
-
-
-class MethodSymbol(RoutineSymbol):
-    """
-    A function which belongs to a class or other outer container structure.
-    """
-    method_flags = MethodFlags.NoneFL
-
-
-class FieldSymbol(VariableSymbol):
-    """
-    A field which belongs to a class or other outer container structure.
-    """
-    setter: Optional[MethodSymbol] = None
-    getter: Optional[MethodSymbol] = None
-
-
-class ClassSymbol(ScopedSymbol, Type):
-    """
-    Classes and structs.
-    """
-    is_struct: bool
-    reference: ReferenceKind
-
-    @property
-    def extends(self) -> List[ClassSymbol]:
-        """
-        Usually only one member, unless the language supports multiple inheritance (like C++).
-        """
-        return self._extends
-
-    @property
-    def implements(self) -> List[tuple[ClassSymbol, InterfaceSymbol]]:
-        """
-        Typescript allows a class to implement a class, not only interfaces.
-        """
-        return self._implements
-
-    def __init__(self, name: str, ext: List[ClassSymbol], impl: List[tuple[ClassSymbol, InterfaceSymbol]]):
-        super().__init__(name)
-        self._extends = ext
-        self._implements = impl
-
-        self.is_struct = False
-        self.reference = ReferenceKind.Irrelevant
-
-    def base_types(self) -> List[Type]:
-        return self._extends
-
-    def kind(self) -> TypeKind:
-        return TypeKind.Class
-
-    def get_methods(self, include_inherited=False) -> Coroutine[List[T]]:
-        """
-
-        :param include_inherited: Not used.
-        :return: a list of all methods.
-        """
-        return self.get_symbols_of_type(MethodSymbol)
-
-    def get_fields(self, include_inherited=False) -> Coroutine[List[T]]:
-        """
-        :param include_inherited: Not used.
-        :return: all fields.
-        """
-        return self.get_symbols_of_type(FieldSymbol)
-
-
-class InterfaceSymbol(ScopedSymbol, Type):
-    reference: ReferenceKind
-
-    def __init__(self, name: str, ext: List[tuple[ClassSymbol, InterfaceSymbol]]):
-        super().__init__(name)
-        self._extends = ext
-
-        self.reference = ReferenceKind.Irrelevant
-
-    @property
-    def extends(self) -> List[tuple[ClassSymbol, InterfaceSymbol]]:
-        """
-        Typescript allows an interface to extend a class, not only interfaces.
-        """
-        return self._extends
-
-    def base_types(self) -> List[Type]:
-        return self._extends
-
-    def kind(self) -> TypeKind:
-        return TypeKind.Interface
-
-    def get_methods(self, include_inherited=False) -> Coroutine[List[MethodSymbol]]:
-        """
-        :param include_inherited: Not used.
-        :return: a list of all methods.
-        """
-        return self.get_symbols_of_type(MethodSymbol)
-
-    def get_fields(self, include_inherited=False) -> Coroutine[List[T]]:
-        """
-        :param include_inherited: Not used.
-        :return: all fields.
-        """
-        return self.get_symbols_of_type(FieldSymbol)
-
-
-class ArrayType(Symbol, Type):
-    __reference_kind: ReferenceKind
-
-    def __init__(self, name: str, reference_kind: ReferenceKind, elem_type: Type, size=0):
-        super().__init__(name)
-        self.__reference_kind = reference_kind
-        self._element_type = elem_type
-        self._size = size
-
-    @property
-    def element_type(self) -> Type:
-        return self._element_type
-
-    @property
-    def size(self) -> int:
-        return self._size  # > 0 if fixed length.
-
-    def base_types(self) -> List[Type]:
-        return []
-
-    def kind(self) -> TypeKind:
-        return TypeKind.Array
-
-    def reference(self) -> ReferenceKind:
-        return self.__reference_kind
-
 
 @dataclass
 class SymbolTableInfo:

@@ -1,6 +1,6 @@
 """CMake file generator visitor module."""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 import os
 # util
@@ -23,8 +23,8 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     cwd: str
 
     def __init__(
-        self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake', files: Dict[str, Tuple[float, str, str]] = {},
-        symbol_table: SymbolTable = None, work_path: str = 'tdd-dsl/output'
+        self, template_path: str = "tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake", files: Dict[str, Tuple[float, str, str]] = {},
+        symbol_table: SymbolTable = None, work_path: str = "tdd-dsl/output"
     ):
         """
         Generate CMake files for test case
@@ -52,7 +52,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Get template file names from grammar
         i: int = 0
         for rule in TestSuiteParser.ruleNames:
-            self.file_templates[i] = f'{rule}_template.txt'
+            self.file_templates[i] = f"{rule}_template.txt"
             i += 1
 
     # Visit a parse tree produced by TestSuiteParser#test_suite.
@@ -72,14 +72,14 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             # Add test directory
             test_file = os.path.split(test_case[1].test_file_path)
             rel_test_dir = os.path.relpath(test_file[0], self.work_path)
-            rel_test_dir = rel_test_dir if rel_test_dir != '.' else None
+            rel_test_dir = rel_test_dir if rel_test_dir != "." else None
 
             test_dirs.append(rel_test_dir)
 
         # Load Jinja2 template
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        # Write CMake file into project folder
+        # # Set CMake file path to project folder
         abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
 
         # Check if file exists and need to be merged
@@ -92,16 +92,16 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
                 # Set template variables
                 template_vars = {
-                    'SUTNAME': sut_name,
-                    'SUTFILENAMES': sut_files,
-                    'RENDER_TEMPLATE': 'add_library'
+                    "SUTNAME": sut_name,
+                    "SUTFILENAMES": sut_files,
+                    "RENDER_TEMPLATE": "add_library"
                 }
 
                 # Render add_library statement
                 library_statement = template.render(template_vars)
 
                 # Update template render switch
-                template_vars['RENDER_TEMPLATE'] = 'target_include'
+                template_vars["RENDER_TEMPLATE"] = "target_include"
 
                 # Render target_include statement
                 target_include_statement = template.render(template_vars)
@@ -118,10 +118,10 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
             # Set template variables
             template_vars = {
-                'PROJECTNAME': ctx.name.text,
-                'SUTS': suts,
-                'TESTFOLDERS': test_dirs,
-                'RENDER_TEMPLATE': 'new'
+                "PROJECTNAME": ctx.name.text,
+                "SUTS": suts,
+                "TESTFOLDERS": test_dirs,
+                "RENDER_TEMPLATE": "new"
             }
 
             # Render template
@@ -147,30 +147,49 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         test_file = os.path.split(test_case_symbol.test_file_path)
 
         # Set sut name according to test name
-        sut_name = f'{test_case_symbol.test_name}_sut'
+        sut_name = f"{test_case_symbol.test_name}_sut"
 
-        # Set template variables
-        template_vars = {
-            'SUTNAME': sut_name,  # 'MySUT', # cfo_example
-            'TESTNAME': test_case_symbol.test_name,  # 'MyTest',   # test_fT_ME
-            'TESTFILENAME': test_file[1]  # 'test_source.f90'
-        }
 
         # Load Jinja2 template
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        # Render template
-        content = template.render(template_vars)
+        # Set CMake file path to test folder
+        abs_path: str = os.path.join(test_file[0], "CMakeLists.txt")
+
+        # Set template variables
+        template_vars = {
+            "SUTNAME": sut_name,
+            "TESTNAME": test_case_symbol.test_name,
+            "TESTFILENAME": test_file[1],
+            "RENDER_TEMPLATE": ""
+        }
+
+        # Check if file exists and need to be merged
+        if os.path.exists(abs_path):
+            # Generate parts to be merged into
+            insert = True
+
+            # Render pfunit template
+            template_vars["RENDER_TEMPLATE"] = "add_pfunit"
+            content = template.render(template_vars)
+
+            # Forward test name with test statement to file writer
+            tests = {test_case_symbol.test_name: [content]}
+            content = tests
+
+        else:
+            # Generate new file
+            insert = False
+
+            # Render new template
+            template_vars["RENDER_TEMPLATE"] = "new"
+            content = template.render(template_vars)
 
         # Write the rendered content to files
-        abs_path: str = os.path.join(test_file[0], "CMakeLists.txt")
         file_attr = self.files.get(abs_path)
-
-        # Write CMake file for test case. Overwrite if existing
-        self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
+        self.files[abs_path] = write_file(abs_path, content, file_attr, insert)
 
         # Return system under test details
-        # sut : Tuple = (sut_name,test_case_symbol.sut_file_path, rel_test_dir, test_case_symbol.lib_names)
         sut: Tuple = (sut_name, test_case_symbol)
 
         return sut
@@ -178,7 +197,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     # Save the source path to scan for existing variables
     def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):
         # Strip string terminals
-        user_path: str = ctx.path.text.strip('\'')
+        user_path: str = ctx.path.text.strip("\'")
 
         # TODO document
         # Update source directory

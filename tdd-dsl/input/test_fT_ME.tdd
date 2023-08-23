@@ -21,7 +21,7 @@ test test_fT_ME :
         )
     assert Equal (
         in :
-            fT_ME( 0D0 )*foo( 0D0 ) , K # input 0 Kelvin
+            fT_ME( 0D0 ) , K # input 0 Kelvin
         out :
             yIntercept , K # output in Kelvin
         tolerance : 1D-12

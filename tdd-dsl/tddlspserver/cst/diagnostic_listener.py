@@ -1,6 +1,6 @@
 """Diagnostic listener module."""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # util imports
 import logging
@@ -53,7 +53,7 @@ class DiagnosticListener(ErrorListener):
         )
 
         if self.show_debug_output and self.logger.isEnabledFor(logging.DEBUG):
-            self.logger.debug('ERROR: when parsing line %d column %d: %s\n' % (line, column, msg))
+            self.logger.debug("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg))
         # dev alternatives
         # print('ERROR: when parsing line %d column %d: %s\n' % (line, column, msg), file=sys.stderr)
         # raise Exception("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg))

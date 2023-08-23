@@ -1,6 +1,6 @@
 """SymbolTableVisitor module."""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 import os
 import shutil
@@ -23,7 +23,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     _symbol_table: SymbolTable
     _test_path: str
 
-    def __init__(self, name: str = '', test_work_path: str = 'tdd-dsl/output'):
+    def __init__(self, name: str = "", test_work_path: str = "tdd-dsl/output"):
         super().__init__()
         self._symbol_table = SymbolTable(name, SymbolTableOptions(False))
         # TODO scope marker
@@ -114,7 +114,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         args = []
         for arg in ctx.args:
             args.append(self.visit(arg))
-        return name + '(' + ', '.join(args) + ')'
+        return name + "(" + ", ".join(args) + ")"
 
     # Visit a parse tree produced by TestSuiteParser#varRef.
     def visitVarRef(self, ctx: TestSuiteParser.VarRefContext):
@@ -134,7 +134,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     # Save the source path to scan for existing variables
     def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):
         # Strip string terminals
-        user_path: str = ctx.path.text.strip('\'')
+        user_path: str = ctx.path.text.strip("\'")
 
         # TODO document
         # Update source directory
@@ -151,10 +151,10 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         module_symbols = get_all_symbols_of_type(self._scope, ModuleSymbol)
 
         # TODO hc
-        xml_path = os.path.join(self._test_path, 'tmp')
+        xml_path = os.path.join(self._test_path, "tmp")
         # TODO hc
         # Write XML files
-        write_decorate_src_xml(self._test_path, xml_path, '/home/sgu/IdeaProjects/fxtran/bin/fxtran')  # /home/sgu/Documents/fxtran/bin/fxtran
+        write_decorate_src_xml(self._test_path, xml_path, "/home/sgu/IdeaProjects/fxtran/bin/fxtran")  # /home/sgu/Documents/fxtran/bin/fxtran
 
         # TODO hc, specify modules
         # Get Fortran files
@@ -174,14 +174,14 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
                     scope_sym = self._scope.resolve_sync(parent_scopes)
 
                     match scope_type:
-                        case 'module':
+                        case "module":
                             self._symbol_table.add_new_symbol_of_type(ModuleSymbol, scope_sym, scope_name)
-                        case 'subroutine':
+                        case "subroutine":
                             current_scope = self._scope
                             self._scope = scope_sym
                             self.with_scope(ctx, False, RoutineSymbol, lambda: list(map(lambda arg: self.addRoutineParams(arg), scope_args)), scope_name)
                             self._scope = current_scope
-                        case 'function':
+                        case "function":
                             current_scope = self._scope
                             self._scope = scope_sym
                             self.with_scope(

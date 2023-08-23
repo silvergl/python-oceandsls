@@ -91,13 +91,18 @@ CONTAINS
     plus2 = n + 2
   end subroutine plus_two
 
-  !  asserts y-Intercept
-  FUNCTION foo (arg0) RESULT (out)
+  FUNCTION foo (arg0, unit) RESULT (out)
     IMPLICIT NONE
     real, INTENT(IN)  :: arg0
     ! <<Add return type here>>, INTENT(OUT) :: out
 
 
+    character(len = *),optional :: unit
+    if(present(unit))then
+        if ( unit /= {{unit}} ) then
+          print *, "{{ name }}: Expected {{ unit }} as input unit but got ", unit
+        endif
+    endif
 
     out = ! <<Add return expression here>>
   END FUNCTION foo

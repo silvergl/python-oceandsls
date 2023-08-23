@@ -2,12 +2,12 @@ MODULE {{ name }}{# TODO {% if gen_comment is not none %}{{ gen_comment }}{% end
   IMPLICIT NONE
 
   PRIVATE{# private by default +#}
-  PUBLIC :: {{ opsNames|join(', ') }}{# functions and methods from assertions +#}
+  PUBLIC :: {{ opsNames|join(", ") }}{# functions and methods from assertions +#}
 
 {# TODO INCLUDE +#}
 
 CONTAINS
 
-{{ ops|join('\n\n') }}
+{{ ops|join("\n\n") }}
 
 END MODULE {{ name }}

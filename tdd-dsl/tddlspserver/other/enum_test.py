@@ -1,6 +1,6 @@
 """enum test file"""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 from enum import Enum
 from typing import final
@@ -11,7 +11,7 @@ class Foobar:
     _file_name: str
 
     def __init__(self):
-        self._file_name = 'Foobar'
+        self._file_name = "Foobar"
 
     @final
     @property
@@ -38,7 +38,7 @@ class Mood(Enum):
 
     def __str__(self):
 
-        return 'my custom str! {0}'.format(self.name)
+        return "my custom str! {0}".format(self.name)
 
     def merge(self, direction):
         match self:
@@ -46,19 +46,19 @@ class Mood(Enum):
                 # return 'merge FUNKY: {0}'.format(self.name)
                 match direction:
                     case self.FUNKY:
-                        return 'merge FUNKY FUNKY: {0}'.format(self.name)
+                        return "merge FUNKY FUNKY: {0}".format(self.name)
 
                     case self.HAPPY:
-                        return 'merge FUNKY HAPPY: {0}'.format(self.name)
+                        return "merge FUNKY HAPPY: {0}".format(self.name)
 
             case self.HAPPY:
                 # return 'merge HAPPY: {0}'.format(self.name)
                 match direction:
                     case self.FUNKY:
-                        return 'merge HAPPY FUNKY: {0}'.format(self.name)
+                        return "merge HAPPY FUNKY: {0}".format(self.name)
 
                     case self.HAPPY:
-                        return 'merge HAPPY HAPPY: {0}'.format(self.name)
+                        return "merge HAPPY HAPPY: {0}".format(self.name)
 
     @classmethod
     def favorite_mood(cls):

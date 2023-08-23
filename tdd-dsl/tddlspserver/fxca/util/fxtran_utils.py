@@ -1,6 +1,6 @@
 '''utils for the Fxtran parser'''
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 import fnmatch
 import os
@@ -41,12 +41,12 @@ class PublicObj:
 
 # TODO hc
 # Set the namespace as Fxtran for XPath expressions
-ns = {'fx': 'http://fxtran.net/#syntax'}
+ns = {"fx": "http://fxtran.net/#syntax"}
 
 
 # TODO hc
 def filter_xml(
-    xml_path: str = '/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML/subfolder/cfo_sut_example.xml', need_public: bool = False,
+    xml_path: str = "/home/sgu/Documents/python-oceandsls/tdd-dsl/input/fxtran/standaloneXML/subfolder/cfo_sut_example.xml", need_public: bool = False,
     modules: List[ModuleSymbol] = []
 ) -> Tuple[List[Tuple[str]], List[Tuple[str, str, List[str]]]]:
     """
@@ -78,13 +78,13 @@ def filter_xml(
 
     # TODO deprecated
     # Scope-changing elements
-    scope_elements = ['subroutine-stmt', 'program-stmt', 'function-stmt']
-    scope_block_statement = ['do-stmt']
-    end_scope_elements = ['end-subroutine-stmt', 'end-program-stmt', 'end-function-stmt']
-    contain_statement = ['contains-stmt']
+    scope_elements = ["subroutine-stmt", "program-stmt", "function-stmt"]
+    scope_block_statement = ["do-stmt"]
+    end_scope_elements = ["end-subroutine-stmt", "end-program-stmt", "end-function-stmt"]
+    contain_statement = ["contains-stmt"]
 
     # last defined value
-    last_variable_type: str = ''
+    last_variable_type: str = ""
 
     # Dynamically extracted scope-changing elements
     dyn_scope_elements = set()
@@ -97,16 +97,16 @@ def filter_xml(
 
         # Check if element is scope-changing by searching for scope-ending element
         # Extract the tag name without the namespace
-        tag = element.tag.rsplit('}', 1)[-1]
+        tag = element.tag.rsplit("}", 1)[-1]
 
-        if tag.endswith('-stmt'):
+        if tag.endswith("-stmt"):
             # Extract the statement name
-            stmt_name = tag.rsplit('-', 1)[0]
+            stmt_name = tag.rsplit("-", 1)[0]
             # Find scope name element
             name_element = element.find(f".//fx:{stmt_name}-N", ns)
 
             if tag not in dyn_scope_elements and name_element is not None:
-                end_tag = 'end-' + tag
+                end_tag = "end-" + tag
                 if root.find(f".//fx:{end_tag}", ns) is not None:
                     dyn_scope_elements.add(tag)
                     dyn_end_scope_elements.add(end_tag)
@@ -115,17 +115,17 @@ def filter_xml(
         if element.tag.endswith(tuple(dyn_end_scope_elements)):
 
             # Update return name of first functions without result statement
-            scope_name = element.find('.//fx:n', ns).text
+            scope_name = element.find(".//fx:n", ns).text
 
             # Dereference returnType for functions
-            if is_filtered_scope and element.tag.endswith('function-stmt') and pub_element.is_public(scope_name):
+            if is_filtered_scope and element.tag.endswith("function-stmt") and pub_element.is_public(scope_name):
 
                 # Get the current scope from the scope stack
-                current_scope = '.'.join(scope_stack)
+                current_scope = ".".join(scope_stack)
                 # Get return name
-                result_id = scope_stack_var.get(current_scope).get('-1')
+                result_id = scope_stack_var.get(current_scope).get("-1")
                 # Get return type
-                result_type = last_variable_type if result_id == -1 else scope_stack_var.get(current_scope).get(result_id, 'None')
+                result_type = last_variable_type if result_id == -1 else scope_stack_var.get(current_scope).get(result_id, "None")
                 # Set return type for corresponding scope
                 for scope in reversed(scopes):
                     if scope_stack[-1] == scope[1] and scope[3] == result_id:
@@ -141,9 +141,9 @@ def filter_xml(
         # Extend the scope stack when entering scopes
         elif element.tag.endswith(tuple(dyn_scope_elements)):
             # Extract scope name
-            scope_name = name_element.find('.//fx:n', ns).text
+            scope_name = name_element.find(".//fx:n", ns).text
 
-            if stmt_name == 'module':
+            if stmt_name == "module":
 
                 # TODO depr rm
                 # # set top level module as scope if filtered scope is empty
@@ -168,18 +168,18 @@ def filter_xml(
             if is_filtered_scope:
                 # Extract arguments
                 argument_names = []
-                for itm in element.findall('.//fx:arg-N', ns):
-                    argument_names.append(itm.find('.//fx:n', ns).text)
+                for itm in element.findall(".//fx:arg-N", ns):
+                    argument_names.append(itm.find(".//fx:n", ns).text)
 
                 # Get the current scope from the scope stack
-                current_scope = '.'.join(scope_stack)
+                current_scope = ".".join(scope_stack)
 
                 # Extract resultId for functions
                 result_id = None
-                if element.tag.endswith('function-stmt'):
-                    result_element = element.find('.//fx:result-spec', ns)
+                if element.tag.endswith("function-stmt"):
+                    result_element = element.find(".//fx:result-spec", ns)
                     if result_element:
-                        result_id = result_element.find('.//fx:n', ns).text
+                        result_id = result_element.find(".//fx:n", ns).text
                     else:
                         result_id = -1
 
@@ -189,30 +189,30 @@ def filter_xml(
                     scopes.append([stmt_name, scope_name, argument_names, result_id, current_scope])
 
                 # save result_id for dereference
-                scope_stack_var['.'.join(scope_stack)] = {'-1': result_id} if result_id else {}
+                scope_stack_var[".".join(scope_stack)] = {"-1": result_id} if result_id else {}
 
         # Store assignment statements for optional return values of functions
-        elif element.tag.endswith('a-stmt'):
+        elif element.tag.endswith("a-stmt"):
             # Check scope is filtered and is in filtered scope
             if is_filtered_scope:
                 # Get current variable name
-                variable_name = element.find('.//fx:n', ns).text
+                variable_name = element.find(".//fx:n", ns).text
 
                 # Get the current scope from the scope stack
-                current_scope = '.'.join(scope_stack)
+                current_scope = ".".join(scope_stack)
 
                 # Type for return type of functions, None if not found
                 last_variable_type = scope_stack_var.get(current_scope).get(variable_name, None)
 
         # Store public available ids
-        elif element.tag.endswith('public-stmt'):
-            pub_ids = list(map((lambda itm: itm.text), element.findall('.//fx:n', ns)))
+        elif element.tag.endswith("public-stmt"):
+            pub_ids = list(map((lambda itm: itm.text), element.findall(".//fx:n", ns)))
             for item in pub_ids:
                 pub_element.pub_elements[item] = pub_element.pub_elements.get(item, [])
 
         # Store private available ids
-        elif element.tag.endswith('private-stmt'):
-            pr_ids = list(map((lambda itm: itm.text), element.findall('.//fx:n', ns)))
+        elif element.tag.endswith("private-stmt"):
+            pr_ids = list(map((lambda itm: itm.text), element.findall(".//fx:n", ns)))
 
             # Elements are private by default if no variable is given. Else extract private elements.
             if not pr_ids:
@@ -222,17 +222,17 @@ def filter_xml(
                     pub_element.pr_elements[item] = pub_element.pr_elements.get(item, [])
 
         # Extract variables, public only, if needed
-        elif element.tag.endswith('contains-stmt'):
+        elif element.tag.endswith("contains-stmt"):
             # Check if top level scope is in filtered scope or if filtered scope is empty
             if is_filtered_scope and len(scope_stack) == 1 and scope_stack[0] == base_module.name:
                 base_module.contains_function = True
 
         # Extract variables, public only, if needed
-        elif element.tag.endswith('T-decl-stmt'):
+        elif element.tag.endswith("T-decl-stmt"):
 
             # Check scope is filtered and is in filtered scope
             if is_filtered_scope:
-                attributes = list(map(lambda itm: itm.text, element.findall('.//fx:attribute-N', ns)))
+                attributes = list(map(lambda itm: itm.text, element.findall(".//fx:attribute-N", ns)))
 
                 # TODO deprecated?
                 # Check if variable is not an output
@@ -240,10 +240,10 @@ def filter_xml(
                 # if intentSpec is None or intentSpec.text != 'out':
 
                 # Get the current scope from the scope stack
-                current_scope = '.'.join(scope_stack)
+                current_scope = ".".join(scope_stack)
 
                 # Get the type of the variable if it exists
-                t_spec_element = element.findall('.//fx:T-N', ns)
+                t_spec_element = element.findall(".//fx:T-N", ns)
 
                 # Extract variable type
                 if t_spec_element:
@@ -252,23 +252,23 @@ def filter_xml(
                         variable_type = t_spec_element[0].text
                     else:
                         # Derived type name
-                        derived_element: str = element.find('.//fx:derived-T-spec', ns)
+                        derived_element: str = element.find(".//fx:derived-T-spec", ns)
                         # TODO hc default ''
-                        derived_type: str = derived_element.text if derived_element else ''
-                        variable_type = ''.join([derived_type, t_spec_element[0].find('.//fx:n', ns).text, ')'])
+                        derived_type: str = derived_element.text if derived_element else ""
+                        variable_type = "".join([derived_type, t_spec_element[0].find(".//fx:n", ns).text, ")"])
                 else:
                     # TODO check no type value
                     # No type found
-                    variable_type = ''
+                    variable_type = ""
 
-                for en_decl in element.findall('.//fx:EN-decl', ns):
+                for en_decl in element.findall(".//fx:EN-decl", ns):
                     # Get the name of the variable from the named element
-                    variable_name = en_decl.find('.//fx:n', ns).text
+                    variable_name = en_decl.find(".//fx:n", ns).text
 
                     # Add element to public object if Public attribute is found or extend attributes if element is already public
                     pub_element_entry = pub_element.pub_elements.get(item, attributes)
                     # TODO hc Public
-                    if pub_element_entry or 'PUBLIC' in attributes:
+                    if pub_element_entry or "PUBLIC" in attributes:
                         pub_element.pub_elements[variable_name] = pub_element_entry
 
                     # Save name for return type of functions
@@ -314,7 +314,7 @@ def get_subdirectories(path: str = "", recursive: bool = False, follow_symlinks:
     :param follow_symlinks: follow symlinks
     :return: subdirectories
     """
-    sub_dirs: List[str] = [entry.path for entry in os.scandir(path) if not entry.name.startswith('.') and entry.is_dir(follow_symlinks=follow_symlinks)]
+    sub_dirs: List[str] = [entry.path for entry in os.scandir(path) if not entry.name.startswith(".") and entry.is_dir(follow_symlinks=follow_symlinks)]
     if recursive:
         for path in sub_dirs:
             sub_dirs.extend(get_subdirectories(path))
@@ -331,14 +331,14 @@ def get_subdirectories_gen(path: str = "", recursive: bool = False, follow_symli
     :return: yielded subdirectories
     """
     for entry in os.scandir(path):
-        if not entry.name.startswith('.') and entry.is_dir(follow_symlinks=follow_symlinks):
+        if not entry.name.startswith(".") and entry.is_dir(follow_symlinks=follow_symlinks):
             yield entry
             if recursive:
                 yield from get_subdirectories_gen(entry.path, recursive)
 
 
 # TODO hc
-def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path: str = '/home/sgu/IdeaProjects/fxtran/bin/fxtran'):
+def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path: str = "/home/sgu/IdeaProjects/fxtran/bin/fxtran"):
     '''
     run Fxtran decorating source code with XML tags
 
@@ -366,10 +366,10 @@ def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path:
             # create output directory relativ to source directory if it doesn't exist
             # TODO cm subdirectories
             rel_path = os.path.relpath(filepath, src_dir)
-            rel_out_dir = os.path.join(out_dir, rel_path) if rel_path != '.' else out_dir
+            rel_out_dir = os.path.join(out_dir, rel_path) if rel_path != "." else out_dir
             pathlib.Path(rel_out_dir).mkdir(mode=0o750, parents=True, exist_ok=True)
         except PermissionError as e:
-            raise RuntimeError(f"Permission denied for output directory '{out_dir}'. Error (code {e.errno}): {e.strerror} '{e.filename}'")
+            raise RuntimeError(f"Permission denied for output directory \"{out_dir}\". Error (code {e.errno}): {e.strerror} \"{e.filename}\"")
 
         # TODO deprecated
         # set file ending to xml
@@ -389,7 +389,7 @@ def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path:
             pass
         except PermissionError as e:
             # TODO continue without parsing
-            raise RuntimeError(f"Permission denied for calling fxtran parser '{fxtran_path}'. Error (code {e.errno}): {e.strerror} '{e.filename}'")
+            raise RuntimeError(f"Permission denied for calling fxtran parser \"{fxtran_path}\". Error (code {e.errno}): {e.strerror} \"{e.filename}\"")
 
 
 def read_decorate_src_xml(xml_filepath: str = "", xml_filename: str = ""):

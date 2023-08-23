@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # TODO license
 
@@ -69,11 +69,11 @@ class TypeKind(Enum):
 
 class ReferenceKind(Enum):
     Irrelevant = 0
-    # Default for most languages for dynamically allocated memory ('Type*' in C++).
+    # Default for most languages for dynamically allocated memory ("Type*" in C++).
     Pointer = 1
-    # 'Type&' in C++
+    # "Type&" in C++
     Reference = 2
-    # 'Type' as such and default for all value types.
+    # "Type" as such and default for all value types.
     Instance = 3
 
 
@@ -269,7 +269,7 @@ class Symbol:
 
     __the_parent: Optional[Symbol] = None
 
-    def __init__(self, name: str = ''):
+    def __init__(self, name: str = ""):
         self.name = name
         self.context = None
 
@@ -430,13 +430,13 @@ class Symbol:
         :return: the constructed qualified identifier.
         """
         if not include_anonymous and len(self.name) == 0:
-            return ''
+            return ""
 
-        result: str = '<anonymous>' if len(self.name) == 0 else self.name
+        result: str = "<anonymous>" if len(self.name) == 0 else self.name
         run = self.__the_parent
         while run:
             if include_anonymous or len(run.name) > 0:
-                result = ('<anonymous>' if len(run.name) == 0 else run.name) + separator + result
+                result = ("<anonymous>" if len(run.name) == 0 else run.name) + separator + result
 
             if not full or run.__the_parent is None:
                 break
@@ -446,8 +446,8 @@ class Symbol:
         return result
 
 
-P = ParamSpec('P')
-T = TypeVar('T', bound=Symbol)
+P = ParamSpec("P")
+T = TypeVar("T", bound=Symbol)
 
 
 class TypedSymbol(Symbol):
@@ -555,9 +555,9 @@ class ScopedSymbol(Symbol):
                 if child == symbol or (len(symbol.name) > 0 and child.name == symbol.name):
                     name = symbol.name
                     if len(name) == 0:
-                        name = '<anonymous>'
+                        name = "<anonymous>"
 
-                    raise DuplicateSymbolError({"message": "Attempt to add duplicate symbol '%s'" % name})
+                    raise DuplicateSymbolError({"message": "Attempt to add duplicate symbol \"%s\"" % name})
 
         self.children().append(symbol)
         symbol.set_parent(self)

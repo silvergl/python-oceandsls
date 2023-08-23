@@ -1,6 +1,6 @@
 '''File generator visitor module.'''
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # util
 import os
@@ -33,8 +33,8 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
     # TODO hc
     def __init__(
-        self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/f90', files: Dict[str, Tuple[float, str, str]] = {},
-        symbol_table: SymbolTable = None, work_path: str = 'tdd-dsl/output', file_suffix: str = 'f90'
+        self, template_path: str = "tdd-dsl/tddlspserver/filewriter/jinjatemplates/f90", files: Dict[str, Tuple[float, str, str]] = {},
+        symbol_table: SymbolTable = None, work_path: str = "tdd-dsl/output", file_suffix: str = "f90"
     ):
         '''
         Fortran 90 source code file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
@@ -64,7 +64,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         self.file_templates = {}
         i: int = 0
         for rule in TestSuiteParser.ruleNames:
-            self.file_templates[i] = f'{rule}_template.txt'
+            self.file_templates[i] = f"{rule}_template.txt"
             i += 1
 
         # Initialize dictionary to track operations of assertions
@@ -107,7 +107,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 module_file = module_symbols[0].file
 
                 if ops_names or ops_impl:
-                    content = {module_symbols[0].name: [', '.join(ops_names), '\n\n'.join(ops_impl)]}
+                    content = {module_symbols[0].name: [", ".join(ops_names), "\n\n".join(ops_impl)]}
                 else:
                     content = {}
 
@@ -117,7 +117,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
                 # Set module file
                 module_name = module_symbols[0].name
-                module_file = '.'.join([module_name, self.file_suffix])
+                module_file = ".".join([module_name, self.file_suffix])
 
                 # Render template with new operations
                 content = template.render(name=module_name, opsNames=ops_names, ops=ops_impl)
@@ -147,7 +147,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
     # Save the source path to scan for existing variables
     def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):
         # Strip string terminals
-        user_path: str = ctx.path.text.strip('\'')
+        user_path: str = ctx.path.text.strip("\'")
 
         # TODO document
         # Update source directory
@@ -176,7 +176,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
         # extract comment
         # TODO remove comment
-        comment = ctx.comment.text.rstrip('\n').lstrip('#') if ctx.comment is not None else None
+        comment = ctx.comment.text.rstrip("\n").lstrip("#") if ctx.comment is not None else None
 
         # extract id and optional arguments
         self.visit(ctx.input_)
@@ -197,13 +197,13 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             arg_names: List[str] = []
             args_decl: List[str] = []
             for idx, arg_type in enumerate(value_list[0]):
-                arg_name = f'arg{idx}'
+                arg_name = f"arg{idx}"
                 arg_names.append(arg_name)
-                args_decl.append(f'{arg_type}, INTENT(IN)  :: {arg_name}')
+                args_decl.append(f"{arg_type}, INTENT(IN)  :: {arg_name}")
             # Unit
             unit = value_list[1]
             # Add unit parameter if unit exists
-            arg_names += ['unit'] if unit is not None else []
+            arg_names += ["unit"] if unit is not None else []
             # ReturnType
             return_type = value_list[2]
 
@@ -304,18 +304,18 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         # determine type of expression
         # https://web.chem.ox.ac.uk/fortran/arithmetic.html
         match (left_type.lower() if left_type else None, right_type.lower() if right_type else None):
-            case ['real', _]:
+            case ["real", _]:
                 # if any of the operands are real then result of the operation will be real
-                expr_type: str = 'real'
-            case [_, 'real']:
+                expr_type: str = "real"
+            case [_, "real"]:
                 # if any of the operands are real then result of the operation will be real
-                expr_type: str = 'real'
-            case ['integer', 'integer']:
-                if ctx.op == '*':
+                expr_type: str = "real"
+            case ["integer", "integer"]:
+                if ctx.op == "*":
                     # if all the operands are integer then result of the operation will be integer
-                    expr_type: str = 'integer'
+                    expr_type: str = "integer"
                 else:
-                    expr_type: str = 'real'
+                    expr_type: str = "real"
             case [None, None]:
                 # if both operands are None then result of the operation will be None
                 expr_type: str = None
@@ -339,15 +339,15 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         # extract types from function references
         # https://web.chem.ox.ac.uk/fortran/arithmetic.html
         match (left_type.lower() if left_type else None, right_type.lower() if right_type else None):
-            case ['real', _]:
+            case ["real", _]:
                 # if any of the operands are real then result of the operation will be real
-                expr_type: str = 'real'
-            case [_, 'real']:
+                expr_type: str = "real"
+            case [_, "real"]:
                 # if any of the operands are real then result of the operation will be real
-                expr_type: str = 'real'
-            case ['integer', 'integer']:
+                expr_type: str = "real"
+            case ["integer", "integer"]:
                 # if all the operands are integer then result of the operation will be integer
-                expr_type: str = 'integer'
+                expr_type: str = "integer"
             case [None, None]:
                 # if both operands are None then result of the operation will be None
                 expr_type: str = None
@@ -370,18 +370,18 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
     # Visit a parse tree produced by TestSuiteParser#numberExpr.
     def visitNumberExpr(self, ctx: TestSuiteParser.NumberExprContext):
         # power and decimal operation will be real
-        return 'real'
+        return "real"
 
     # Visit a parse tree produced by TestSuiteParser#strExpr.
     def visitStrExpr(self, ctx: TestSuiteParser.StrExprContext):
         # custom types will be string
         # TODO add specific custom types
-        return 'character(len = *)'
+        return "character(len = *)"
 
     # Visit a parse tree produced by TestSuiteParser#intExpr.
     def visitIntExpr(self, ctx: TestSuiteParser.IntExprContext):
         # Integer operation will be integer
-        return 'integer'
+        return "integer"
 
     # Visit a parse tree produced by TestSuiteParser#refExpr.
     def visitRefExpr(self, ctx: TestSuiteParser.RefExprContext):

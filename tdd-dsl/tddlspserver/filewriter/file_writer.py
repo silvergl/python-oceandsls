@@ -1,6 +1,6 @@
 """pfUnit generator utils to generate *.pf Fortran unit tests files"""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # TODO license
 
@@ -55,7 +55,7 @@ def cmake_merge(insert_contents: Dict[str, str], file_content):
             target_include_statements = sut_statements[1]
 
             # Check if library exists
-            add_library_pattern = r'^ *add_library *\( *' + sut_name + r'[^\)]*\)$'
+            add_library_pattern = r"^ *add_library *\( *" + sut_name + r"[^\)]*\)$"
             match_add_library = re.search(add_library_pattern, file_content, re.IGNORECASE | re.MULTILINE | re.DOTALL)
             if match_add_library:
                 # Replace add_library statement
@@ -63,8 +63,8 @@ def cmake_merge(insert_contents: Dict[str, str], file_content):
             else:
                 # Add library statement and target include statement and extend set_target statement
 
-                target_include_pattern = r'(^target_include_directories\([^\)]*\)$\n)+'
-                set_target_pattern = r'^set_target_properties \([^\n]*( PROPERTIES)$'
+                target_include_pattern = r"(^target_include_directories\([^\)]*\)$\n)+"
+                set_target_pattern = r"^set_target_properties \([^\n]*( PROPERTIES)$"
 
                 # Find the position to insert the new code
                 match_target_include = re.search(target_include_pattern, file_content, flags=re.IGNORECASE | re.MULTILINE | re.DOTALL)
@@ -75,7 +75,7 @@ def cmake_merge(insert_contents: Dict[str, str], file_content):
                     insert_position_end = match_target_include.end()
                 else:
                     # If target_include_directories is not found, raise an error
-                    raise ValueError(f'target_include_directories statement not found.')
+                    raise ValueError(f"target_include_directories statement not found.")
 
                 # Insert library and target statement
                 file_content = (file_content[:insert_position_start] + library_statement + "\n\n" + file_content[
@@ -89,7 +89,7 @@ def cmake_merge(insert_contents: Dict[str, str], file_content):
                     insert_position = match_set_target.regs[1][0]
                 else:
                     # If set_target_properties is not found, raise an error
-                    raise ValueError(f'set_target_properties statement not found.')
+                    raise ValueError(f"set_target_properties statement not found.")
 
                 # Insert function name into set_target_properties statement
                 file_content = (file_content[:insert_position] + " " + sut_name + file_content[insert_position:])
@@ -100,7 +100,7 @@ def cmake_merge(insert_contents: Dict[str, str], file_content):
             test_statement = test_statements[0]
 
             # Check if test exists
-            add_pfunit_pattern = r'^ *add_pfunit_ctest *\( *' + test_name + r'[^\)]*\)$'
+            add_pfunit_pattern = r"^ *add_pfunit_ctest *\( *" + test_name + r"[^\)]*\)$"
             match_add_pfunit = re.search(add_pfunit_pattern, file_content, re.IGNORECASE | re.MULTILINE | re.DOTALL)
             if match_add_pfunit:
                 # Replace add_library statement
@@ -125,12 +125,12 @@ def fortran_merge(insert_content: Dict[str, List[str]], file_content):
         ops_names: str = ops[0]
         ops_impls: str = ops[1]
 
-        public_pattern = r'\n(( *)public(?: *\:\:.*)?\n)+'
-        private_pattern = r'\n(( *)private(?: *\:\:.*)?\n)+'
-        implicit_pattern = r'\n( *)implicit none *\n'
+        public_pattern = r"\n(( *)public(?: *\:\:.*)?\n)+"
+        private_pattern = r"\n(( *)private(?: *\:\:.*)?\n)+"
+        implicit_pattern = r"\n( *)implicit none *\n"
 
-        module_start_pattern = r'(\n( *)module +' + module_name + ' *\n?)'
-        module_end_pattern = r'(\n( *)end +module +' + module_name + ' *\n?)'
+        module_start_pattern = r"(\n( *)module +" + module_name + " *\n?)"
+        module_end_pattern = r"(\n( *)end +module +" + module_name + " *\n?)"
 
         # Find the position to insert the new code
         match_public = re.search(public_pattern, file_content, flags=re.IGNORECASE)
@@ -157,10 +157,10 @@ def fortran_merge(insert_content: Dict[str, List[str]], file_content):
             line_insertion = match_module_start.regs[-1]
         else:
             # If neither "contains" nor the function/subroutine is found, raise an error
-            raise ValueError(f'Private/Public, Module or "Implicit" statement not found. Module: {module_name}')
+            raise ValueError(f"Private/Public, Module or \"Implicit\" statement not found. Module: {module_name}")
 
         # Insert public statement with line insertion
-        file_content = (file_content[:insert_position] + file_content[line_insertion[0]:line_insertion[1]] + f'PUBLIC :: {ops_names}' + '\n' + file_content[
+        file_content = (file_content[:insert_position] + file_content[line_insertion[0]:line_insertion[1]] + f"PUBLIC :: {ops_names}" + "\n" + file_content[
                                                                                                                                                    insert_position:])
 
         match_module_end = re.search(module_end_pattern, file_content, flags=re.IGNORECASE)
@@ -172,11 +172,11 @@ def fortran_merge(insert_content: Dict[str, List[str]], file_content):
             line_insertion = match_module_end.regs[-1]
         else:
             # If neither "contains" nor the module is found, raise an error
-            raise ValueError(f'Module statement not found. Module: {module_name}')
+            raise ValueError(f"Module statement not found. Module: {module_name}")
 
         # Insert function code with line insertion
         file_content = (
-            file_content[:insert_position] + '\n' + file_content[line_insertion[0]:line_insertion[1]] + ops_impls + '\n' + file_content[insert_position:])
+            file_content[:insert_position] + "\n" + file_content[line_insertion[0]:line_insertion[1]] + ops_impls + "\n" + file_content[insert_position:])
 
     return file_content
 
@@ -203,14 +203,14 @@ def file_modified(path=None, mtime: float = 0, fileHash: str = None) -> bool:
     :return: If modification time or file hash is changed
     """
     if os.path.getmtime(path) > mtime or fileHash != hash_file(path):
-        logger.debug(f'... modified {path}')
+        logger.debug(f"... modified {path}")
         return True
     else:
-        logger.debug(f'... not modified {path}')
+        logger.debug(f"... not modified {path}")
         return False
 
 
-def write_file(file_path: str = '', content: str | Dict = '', file_attr: tuple[float, str, str] = None, insert: bool = False) -> (tuple)[float, str, str]:
+def write_file(file_path: str = "", content: str | Dict = "", file_attr: tuple[float, str, str] = None, insert: bool = False) -> (tuple)[float, str, str]:
     """
     Write/merge pFUnit-file under :test_path:/:test_folder:/:filename:.pf for test-case.
     Merges file if it exists using difflib.
@@ -230,7 +230,7 @@ def write_file(file_path: str = '', content: str | Dict = '', file_attr: tuple[f
     if not os.path.isdir(path):
         os.makedirs(path)
         if show_debug_output and logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f'... create {path}')
+            logger.debug(f"... create {path}")
 
     # TODO hc
     # Create file if it doesn't exist else merge with existing file
@@ -238,7 +238,7 @@ def write_file(file_path: str = '', content: str | Dict = '', file_attr: tuple[f
         # check if file is known or was modified
         if file_attr is None or file_modified(file_path, file_attr[0], file_attr[1]):
             # reload file from disk if it is unknown or modified
-            with open(file_path, mode='r', encoding='utf-8') as f:
+            with open(file_path, mode="r", encoding="utf-8") as f:
                 content_org = f.read()
         else:
             # Keep original file content
@@ -246,18 +246,18 @@ def write_file(file_path: str = '', content: str | Dict = '', file_attr: tuple[f
 
         # Log
         if show_debug_output and logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f'...try merge {file_path}')
+            logger.debug(f"...try merge {file_path}")
 
         # Merge current content with original file content based on file extension
         extension: str = os.path.splitext(file_path)[1]
         match extension:
-            case '.f90':
+            case ".f90":
                 # Insert operation at the module end
                 content = fortran_merge(content, content_org) if insert else content
-            case '.pf':
+            case ".pf":
                 # Difflib merge of file
                 content = difflib_merge(content, content_org)
-            case '.txt':
+            case ".txt":
                 content = cmake_merge(content, content_org) if insert else content
             case _:
                 # TODO error
@@ -265,12 +265,12 @@ def write_file(file_path: str = '', content: str | Dict = '', file_attr: tuple[f
 
     else:
         # Set emtpy original content
-        content_org = ''
+        content_org = ""
 
     # Write rendered and optional merged content to file
-    with open(file_path, mode='w', encoding='utf-8') as f:
+    with open(file_path, mode="w", encoding="utf-8") as f:
         f.write(content)
         if show_debug_output and logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f'... write {file_path}')
+            logger.debug(f"... write {file_path}")
 
     return os.path.getmtime(file_path), hash_file(file_path), content_org

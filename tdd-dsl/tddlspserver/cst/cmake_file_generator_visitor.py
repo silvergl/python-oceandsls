@@ -1,6 +1,6 @@
 """CMake file generator visitor module."""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 import os
 # util
@@ -23,8 +23,8 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     cwd: str
 
     def __init__(
-        self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake', files: Dict[str, Tuple[float, str, str]] = {},
-        symbol_table: SymbolTable = None, work_path: str = 'tdd-dsl/output'
+        self, template_path: str = "tdd-dsl/tddlspserver/filewriter/jinjatemplates/cmake", files: Dict[str, Tuple[float, str, str]] = {},
+        symbol_table: SymbolTable = None, work_path: str = "tdd-dsl/output"
     ):
         """
         Generate CMake files for test case
@@ -52,7 +52,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Get template file names from grammar
         i: int = 0
         for rule in TestSuiteParser.ruleNames:
-            self.file_templates[i] = f'{rule}_template.txt'
+            self.file_templates[i] = f"{rule}_template.txt"
             i += 1
 
     # Visit a parse tree produced by TestSuiteParser#test_suite.
@@ -72,7 +72,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             # Add test directory
             test_file = os.path.split(test_case[1].test_file_path)
             rel_test_dir = os.path.relpath(test_file[0], self.work_path)
-            rel_test_dir = rel_test_dir if rel_test_dir != '.' else None
+            rel_test_dir = rel_test_dir if rel_test_dir != "." else None
 
             test_dirs.append(rel_test_dir)
 
@@ -92,16 +92,16 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
                 # Set template variables
                 template_vars = {
-                    'SUTNAME': sut_name,
-                    'SUTFILENAMES': sut_files,
-                    'RENDER_TEMPLATE': 'add_library'
+                    "SUTNAME": sut_name,
+                    "SUTFILENAMES": sut_files,
+                    "RENDER_TEMPLATE": "add_library"
                 }
 
                 # Render add_library statement
                 library_statement = template.render(template_vars)
 
                 # Update template render switch
-                template_vars['RENDER_TEMPLATE'] = 'target_include'
+                template_vars["RENDER_TEMPLATE"] = "target_include"
 
                 # Render target_include statement
                 target_include_statement = template.render(template_vars)
@@ -118,10 +118,10 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
             # Set template variables
             template_vars = {
-                'PROJECTNAME': ctx.name.text,
-                'SUTS': suts,
-                'TESTFOLDERS': test_dirs,
-                'RENDER_TEMPLATE': 'new'
+                "PROJECTNAME": ctx.name.text,
+                "SUTS": suts,
+                "TESTFOLDERS": test_dirs,
+                "RENDER_TEMPLATE": "new"
             }
 
             # Render template
@@ -147,7 +147,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         test_file = os.path.split(test_case_symbol.test_file_path)
 
         # Set sut name according to test name
-        sut_name = f'{test_case_symbol.test_name}_sut'
+        sut_name = f"{test_case_symbol.test_name}_sut"
 
 
         # Load Jinja2 template
@@ -158,10 +158,10 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
         # Set template variables
         template_vars = {
-            'SUTNAME': sut_name,
-            'TESTNAME': test_case_symbol.test_name,
-            'TESTFILENAME': test_file[1],
-            'RENDER_TEMPLATE': ''
+            "SUTNAME": sut_name,
+            "TESTNAME": test_case_symbol.test_name,
+            "TESTFILENAME": test_file[1],
+            "RENDER_TEMPLATE": ""
         }
 
         # Check if file exists and need to be merged
@@ -170,7 +170,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             insert = True
 
             # Render pfunit template
-            template_vars['RENDER_TEMPLATE'] = "add_pfunit"
+            template_vars["RENDER_TEMPLATE"] = "add_pfunit"
             content = template.render(template_vars)
 
             # Forward test name with test statement to file writer
@@ -182,7 +182,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             insert = False
 
             # Render new template
-            template_vars['RENDER_TEMPLATE'] = "new"
+            template_vars["RENDER_TEMPLATE"] = "new"
             content = template.render(template_vars)
 
         # Write the rendered content to files
@@ -197,7 +197,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     # Save the source path to scan for existing variables
     def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):
         # Strip string terminals
-        user_path: str = ctx.path.text.strip('\'')
+        user_path: str = ctx.path.text.strip("\'")
 
         # TODO document
         # Update source directory

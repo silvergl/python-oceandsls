@@ -1,6 +1,6 @@
 """ Demo implementation for cyclomatic complexity calculation"""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
@@ -43,8 +43,8 @@ class Scope:
     """
     Scope for cyclomatic complexity
     """
-    name: str = field(default='')
-    type: str = field(default='')
+    name: str = field(default="")
+    type: str = field(default="")
 
     routine_types: Set = field(default_factory=lambda: {"function-stmt", "subroutine-stmt"})
 
@@ -143,7 +143,7 @@ class Scope:
             self.append_result(element)
 
     def append_result(self, element):
-        element_name = element.find('.//fx:n', ns)
+        element_name = element.find(".//fx:n", ns)
         element_name = element_name.text if element_name is not None else None
         if self.is_routine and (element_name in self.scope_result_names or not self.scope_result_names):
             self.__scope_result_decl.append(element)
@@ -166,7 +166,7 @@ class Scope:
 
 
 # Set the namespace as Fxtran for XPath expressions
-ns = {'fx': 'http://fxtran.net/#syntax'}
+ns = {"fx": "http://fxtran.net/#syntax"}
 
 
 def is_external_call(a_stmt_element):
@@ -185,12 +185,12 @@ def calculate_metrics(xml_path: str = None):
     root = tree.getroot()
 
     # Filters
-    conditionals_elements: Set = {'condition-E'}
-    loop_elements: Set = {'do-stmt'}
-    branch_elements: Set = {'if-then-stmt', 'else-stmt'}
-    branch_end_elements: Set = {'end-if-stmt'}
-    declaration_elements: Set = {'a-stmt'}
-    other_stmt_elements: Set = {'-stmt'}
+    conditionals_elements: Set = {"condition-E"}
+    loop_elements: Set = {"do-stmt"}
+    branch_elements: Set = {"if-then-stmt", "else-stmt"}
+    branch_end_elements: Set = {"end-if-stmt"}
+    declaration_elements: Set = {"a-stmt"}
+    other_stmt_elements: Set = {"-stmt"}
 
     # Dynamically extracted scope-changing elements
     dyn_scope_elements = set()
@@ -204,16 +204,16 @@ def calculate_metrics(xml_path: str = None):
         # Check if element is scope-changing by searching for scope-ending element
 
         # Extract the tag name without the namespace
-        tag = element.tag.rsplit(sep='}', maxsplit=1)[-1]
+        tag = element.tag.rsplit(sep="}", maxsplit=1)[-1]
 
-        if tag.endswith('-stmt'):
+        if tag.endswith("-stmt"):
             # Extract the statement name
-            stmt_name = tag.rsplit(sep='-', maxsplit=1)[0]
+            stmt_name = tag.rsplit(sep="-", maxsplit=1)[0]
             # Find scope name element
             name_element = element.find(path=f".//fx:{stmt_name}-N", namespaces=ns)
 
             if tag not in dyn_scope_elements and name_element is not None:
-                end_tag = 'end-' + tag
+                end_tag = "end-" + tag
                 if root.find(path=f".//fx:{end_tag}", namespaces=ns) is not None:
                     dyn_scope_elements.add(tag)
                     dyn_end_scope_elements.add(end_tag)
@@ -224,7 +224,7 @@ def calculate_metrics(xml_path: str = None):
         # Reduce the scope stack when leaving scopes
         if element.tag.endswith(tuple(dyn_end_scope_elements)):
 
-            name = '.'.join(list(map(lambda scope: scope.name, scope_stack)))
+            name = ".".join(list(map(lambda scope: scope.name, scope_stack)))
 
             scope_routines[name] = scope_stack.pop()
 
@@ -232,19 +232,19 @@ def calculate_metrics(xml_path: str = None):
         elif element.tag.endswith(tuple(dyn_scope_elements)):
 
             # Extract scope name
-            scope_name = name_element.find(path='.//fx:n', namespaces=ns).text
+            scope_name = name_element.find(path=".//fx:n", namespaces=ns).text
 
             # Extract scope type
-            scope_type = element.tag.split(ns['fx'] + "}", maxsplit=1)[1]
+            scope_type = element.tag.split(ns["fx"] + "}", maxsplit=1)[1]
 
             # Extract scope parameters
-            scope_arguments = element.findall(path='.//fx:arg-N', namespaces=ns)
+            scope_arguments = element.findall(path=".//fx:arg-N", namespaces=ns)
 
             # Extract names of scope return statements in scope declaration
-            scope_result_elements = element.findall(path='.//fx:result-spec', namespaces=ns)
+            scope_result_elements = element.findall(path=".//fx:result-spec", namespaces=ns)
             scope_results: List[str] = []
             for result_element in scope_result_elements:
-                scope_results.extend(list(map(lambda element: element.text, result_element.findall('.//fx:n', ns))))
+                scope_results.extend(list(map(lambda element: element.text, result_element.findall(".//fx:n", ns))))
 
             # Build new scope
             new_scope = Scope(name=scope_name, type=scope_type, arguments=scope_arguments, scope_result_names=scope_results)
@@ -282,7 +282,7 @@ def calculate_metrics(xml_path: str = None):
             current_scope.append_result(element)
 
             # Check for external calls
-            named_elements = element.findall(path='.//fx:named-E', namespaces=ns)
+            named_elements = element.findall(path=".//fx:named-E", namespaces=ns)
             for named_element in named_elements:
                 if is_external_call(named_element):
                     current_scope.external_calls.append(named_element)
@@ -303,7 +303,7 @@ def python_docs():
     TODO rm
     xml Path example from https://docs.python.org/3.10/library/xml.etree.elementtree.html#elementtree-xpath
     """
-    tree = ET.parse('/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/opem/country_data.xml')
+    tree = ET.parse("/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/opem/country_data.xml")
     root = tree.getroot()
 
     # Top-level elements
@@ -315,6 +315,6 @@ def python_docs():
 
 
 # Read and process the XML file
-xml_file_path = '/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/opem/cfo_sut_example.f90.xml'
+xml_file_path = "/home/sgu/IdeaProjects/python-oceandsls/tdd-dsl/input/fxtran/opem/cfo_sut_example.f90.xml"
 
 calculate_metrics(xml_file_path)

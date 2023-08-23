@@ -22,7 +22,7 @@ find_package(PFUNIT REQUIRED)
 {% include "test_suite_template_target_include.txt" %}
 {% endfor %}
 
-set_target_properties ({{ SUTNAMES|join(' ') }} PROPERTIES
+set_target_properties ({{ SUTNAMES|join(" ") }} PROPERTIES
   Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory({{ TESTFOLDER }})

@@ -79,7 +79,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Load Jinja2 template
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        # Write CMake file into project folder
+        # # Set CMake file path to project folder
         abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
 
         # Check if file exists and need to be merged
@@ -149,28 +149,47 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Set sut name according to test name
         sut_name = f'{test_case_symbol.test_name}_sut'
 
-        # Set template variables
-        template_vars = {
-            'SUTNAME': sut_name,  # 'MySUT', # cfo_example
-            'TESTNAME': test_case_symbol.test_name,  # 'MyTest',   # test_fT_ME
-            'TESTFILENAME': test_file[1]  # 'test_source.f90'
-        }
 
         # Load Jinja2 template
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        # Render template
-        content = template.render(template_vars)
+        # Set CMake file path to test folder
+        abs_path: str = os.path.join(test_file[0], "CMakeLists.txt")
+
+        # Set template variables
+        template_vars = {
+            'SUTNAME': sut_name,
+            'TESTNAME': test_case_symbol.test_name,
+            'TESTFILENAME': test_file[1],
+            'RENDER_TEMPLATE': ''
+        }
+
+        # Check if file exists and need to be merged
+        if os.path.exists(abs_path):
+            # Generate parts to be merged into
+            insert = True
+
+            # Render pfunit template
+            template_vars['RENDER_TEMPLATE'] = "add_pfunit"
+            content = template.render(template_vars)
+
+            # Forward test name with test statement to file writer
+            tests = {test_case_symbol.test_name: [content]}
+            content = tests
+
+        else:
+            # Generate new file
+            insert = False
+
+            # Render new template
+            template_vars['RENDER_TEMPLATE'] = "new"
+            content = template.render(template_vars)
 
         # Write the rendered content to files
-        abs_path: str = os.path.join(test_file[0], "CMakeLists.txt")
         file_attr = self.files.get(abs_path)
-
-        # Write CMake file for test case. Overwrite if existing
-        self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
+        self.files[abs_path] = write_file(abs_path, content, file_attr, insert)
 
         # Return system under test details
-        # sut : Tuple = (sut_name,test_case_symbol.sut_file_path, rel_test_dir, test_case_symbol.lib_names)
         sut: Tuple = (sut_name, test_case_symbol)
 
         return sut

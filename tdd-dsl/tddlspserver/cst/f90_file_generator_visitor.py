@@ -106,6 +106,8 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 insert = True
                 module_file = module_symbols[0].file
 
+                # TODO dict
+                # TODO empty
                 content = [', '.join(ops_names), '\n\n'.join(ops_impl), module_symbols[0].name]
 
             else:
@@ -117,7 +119,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 module_file = '.'.join([module_name, self.file_suffix])
 
                 # Render template with new operations
-                content = [template.render(name=module_name, opsNames=ops_names, ops=ops_impl)]
+                content = template.render(name=module_name, opsNames=ops_names, ops=ops_impl)
 
             # Get absolute file path
             self.visit(ctx.srcpath)

@@ -1,5 +1,4 @@
+{% if RENDER_TEMPLATE == "new" %}
 # pFUnit test source files
-add_pfunit_ctest ({{ TESTNAME }}
-  TEST_SOURCES {{ TESTFILENAME }}
-  LINK_LIBRARIES {{ SUTNAME }}
-)
+{% endif %}
+{% include "test_case_template_add_pfunit.txt" %}

@@ -13,5 +13,5 @@ SUBROUTINE test_fT_ME()
  ! # asserts x-Intercept
  @assertEqual( 0D0, fT_ME ( xIntercept ), message='fails x-Intercept at 14.89D0', tolerance=1D-12)
  ! # asserts y-Intercept
- @assertEqual( yIntercept, fT_ME ( 0D0 ) * foo ( 0D0 ), message='fails y-Intercept at -54.42D-2', tolerance=1D-12)
+ @assertEqual( yIntercept, fT_ME ( 0D0 ), message='fails y-Intercept at -54.42D-2', tolerance=1D-12)
 END SUBROUTINE test_fT_ME

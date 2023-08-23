@@ -1,6 +1,6 @@
 """FileGeneratorVisitor module for pFunit pf files."""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # util
 import os
@@ -31,8 +31,8 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
 
     # TODO hc
     def __init__(
-        self, template_path: str = 'tdd-dsl/tddlspserver/filewriter/jinjatemplates/pf', files: Dict[str, Tuple[float, str, str]] = {},
-        symbol_table: SymbolTable = None, test_work_path: str = 'tdd-dsl/output', test_folder: str = 'tests', file_suffix: str = 'pf'
+        self, template_path: str = "tdd-dsl/tddlspserver/filewriter/jinjatemplates/pf", files: Dict[str, Tuple[float, str, str]] = {},
+        symbol_table: SymbolTable = None, test_work_path: str = "tdd-dsl/output", test_folder: str = "tests", file_suffix: str = "pf"
     ):
         """
         pfUnit test file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
@@ -66,7 +66,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         # Get template file names from grammar
         i: int = 0
         for rule in TestSuiteParser.ruleNames:
-            self.file_templates[i] = f'{rule}_template.txt'
+            self.file_templates[i] = f"{rule}_template.txt"
             i += 1
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
@@ -87,7 +87,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         # Write pf file
         abs_path: str = os.path.join(os.getcwd(), self.test_path, self.test_folder, f"{name}.{self.file_suffix}")
         file_attr = self.files.get(abs_path)
-        self.files[abs_path] = write_file(abs_path, [content], file_attr, False)
+        self.files[abs_path] = write_file(abs_path, content, file_attr, False)
 
         # Update test case symbol
         test_case_symbol = get_scope(ctx, self.symbol_table)
@@ -103,7 +103,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         # Strip string terminals
         # TODO document
         # If the given path is an absolute path, then self.testPath is ignored and the joining is only the given path
-        return os.path.join(self.test_path, ctx.path.text.strip('\''))
+        return os.path.join(self.test_path, ctx.path.text.strip("\'"))
 
     # Visit a parse tree produced by TestSuiteParser#test_scope.
     def visitTest_scope(self, ctx: TestSuiteParser.Test_scopeContext):
@@ -195,7 +195,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
             # TODO check for parameter
             key_text: str = key.keyword.text
             # flag parameter
-            if key_text.lower() == 'parameter':
+            if key_text.lower() == "parameter":
                 self.found_par = True
             keys.append(key_text)
         # match keys:
@@ -316,7 +316,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         input_ = self.visit(ctx.input_)
         output = self.visit(ctx.output)
         pub_attributes = self.visit(ctx.attr)
-        comment = ctx.comment.text.rstrip('\n') if ctx.comment is not None else None
+        comment = ctx.comment.text.rstrip("\n") if ctx.comment is not None else None
         match (pub_attributes, comment):
             case [None, None]:
                 return template.render(directive=directive, input_=input_, output=output)
@@ -359,7 +359,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         path = os.path.join(os.getcwd(), path, filename)
         if not os.path.exists(path):
             # Write rendered and optional merged content to file
-            with open(path, mode='w', encoding='utf-8') as f:
+            with open(path, mode="w", encoding="utf-8") as f:
                 f.write()
                 # TODO add to debug info
-                print(f'... wrote {path}')
+                print(f"... wrote {path}")

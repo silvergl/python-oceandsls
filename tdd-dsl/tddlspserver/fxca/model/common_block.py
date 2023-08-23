@@ -1,6 +1,6 @@
 """Elements for Fortran statements from fxtran parsing"""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 from containment_hash_map import ContainmentHashMap
 

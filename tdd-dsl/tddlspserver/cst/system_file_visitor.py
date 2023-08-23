@@ -1,6 +1,6 @@
 """Visitor extracting system file information from the cst"""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 import os
 # util imports
@@ -20,7 +20,7 @@ class SystemFileVisitor(TestSuiteVisitor, Generic[T]):
     _symbol_table: SymbolTable
     _test_path: str
 
-    def __init__(self, name: str = '', test_work_path: str = 'tdd-dsl/output'):
+    def __init__(self, name: str = "", test_work_path: str = "tdd-dsl/output"):
         super().__init__()
         self._symbol_table = SymbolTable(name, SymbolTableOptions(False))
         self._scope = None
@@ -40,7 +40,7 @@ class SystemFileVisitor(TestSuiteVisitor, Generic[T]):
     # Return subdirectories under working path or user entered path
     def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):
         # Strip string terminals
-        user_path: str = ctx.path.text.strip('\'')
+        user_path: str = ctx.path.text.strip("\'")
         # candidates = list( map( lambda c: f"{os.sep}{c}" , candidates ) )
 
         # Remove incomplete basename from path

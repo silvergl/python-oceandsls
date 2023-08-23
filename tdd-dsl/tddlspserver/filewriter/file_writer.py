@@ -112,71 +112,71 @@ def cmake_merge(insert_contents: Dict[str, str], file_content):
     return file_content
 
 
-def fortran_merge(insert_content_list: List[str], file_content):
+def fortran_merge(insert_content: Dict[str, List[str]], file_content):
     """
     Insert operation into fortran code at the module end.
 
-    :param insert_content_list: List of code to be merged
+    :param insert_content: List of code to be merged
     :param file_content: File content in which to be merged
     :return: Merged content
     """
+    for module_name, ops in insert_content.items():
 
-    function_name: str = insert_content_list[0]
-    function_code: str = insert_content_list[1]
-    module_name: str = insert_content_list[2]
+        ops_names: str = ops[0]
+        ops_impls: str = ops[1]
 
-    public_pattern = r'\n(( *)public(?: *\:\:.*)?\n)+'
-    private_pattern = r'\n(( *)private(?: *\:\:.*)?\n)+'
-    implicit_pattern = r'\n( *)implicit none *\n'
+        public_pattern = r'\n(( *)public(?: *\:\:.*)?\n)+'
+        private_pattern = r'\n(( *)private(?: *\:\:.*)?\n)+'
+        implicit_pattern = r'\n( *)implicit none *\n'
 
-    module_start_pattern = r'(\n( *)module +' + module_name + ' *\n?)'
-    module_end_pattern = r'(\n( *)end +module +' + module_name + ' *\n?)'
+        module_start_pattern = r'(\n( *)module +' + module_name + ' *\n?)'
+        module_end_pattern = r'(\n( *)end +module +' + module_name + ' *\n?)'
 
-    # Find the position to insert the new code
-    match_public = re.search(public_pattern, file_content, flags=re.IGNORECASE)
-    match_private = re.search(private_pattern, file_content, flags=re.IGNORECASE)
-    match_implicit = re.search(implicit_pattern, file_content, flags=re.IGNORECASE)
-    match_module_start = re.search(module_start_pattern, file_content, flags=re.IGNORECASE)
+        # Find the position to insert the new code
+        match_public = re.search(public_pattern, file_content, flags=re.IGNORECASE)
+        match_private = re.search(private_pattern, file_content, flags=re.IGNORECASE)
+        match_implicit = re.search(implicit_pattern, file_content, flags=re.IGNORECASE)
+        match_module_start = re.search(module_start_pattern, file_content, flags=re.IGNORECASE)
 
-    # Insert code accessible
-    if match_public:
-        # Insert after the "public" statement
-        insert_position = match_public.end()
-        line_insertion = match_public.regs[-1]
-    elif match_private:
-        # Insert after the "private" statement
-        insert_position = match_private.end()
-        line_insertion = match_private.regs[-1]
-    elif match_implicit:
-        # Insert after the "implicit" statement
-        insert_position = match_implicit.end()
-        line_insertion = match_implicit.regs[-1]
-    elif match_module_start:
-        # Insert after the module start
-        insert_position = match_module_start.end()
-        line_insertion = match_module_start.regs[-1]
-    else:
-        # If neither "contains" nor the function/subroutine is found, raise an error
-        raise ValueError(f'Private/Public, Module or "Implicit" statement not found. Module: {module_name}')
+        # Insert code accessible
+        if match_public:
+            # Insert after the "public" statement
+            insert_position = match_public.end()
+            line_insertion = match_public.regs[-1]
+        elif match_private:
+            # Insert after the "private" statement
+            insert_position = match_private.end()
+            line_insertion = match_private.regs[-1]
+        elif match_implicit:
+            # Insert after the "implicit" statement
+            insert_position = match_implicit.end()
+            line_insertion = match_implicit.regs[-1]
+        elif match_module_start:
+            # Insert after the module start
+            insert_position = match_module_start.end()
+            line_insertion = match_module_start.regs[-1]
+        else:
+            # If neither "contains" nor the function/subroutine is found, raise an error
+            raise ValueError(f'Private/Public, Module or "Implicit" statement not found. Module: {module_name}')
 
-    # Insert public statement with line insertion
-    file_content = (file_content[:insert_position] + file_content[line_insertion[0]:line_insertion[1]] + f'PUBLIC :: {function_name}' + '\n' + file_content[
-                                                                                                                                               insert_position:])
+        # Insert public statement with line insertion
+        file_content = (file_content[:insert_position] + file_content[line_insertion[0]:line_insertion[1]] + f'PUBLIC :: {ops_names}' + '\n' + file_content[
+                                                                                                                                                   insert_position:])
 
-    match_module_end = re.search(module_end_pattern, file_content, flags=re.IGNORECASE)
+        match_module_end = re.search(module_end_pattern, file_content, flags=re.IGNORECASE)
 
-    # Insert function code
-    if match_module_end:
-        # Insert before the module end
-        insert_position = match_module_end.start()
-        line_insertion = match_module_end.regs[-1]
-    else:
-        # If neither "contains" nor the module is found, raise an error
-        raise ValueError(f'Module statement not found. Module: {module_name}')
+        # Insert function code
+        if match_module_end:
+            # Insert before the module end
+            insert_position = match_module_end.start()
+            line_insertion = match_module_end.regs[-1]
+        else:
+            # If neither "contains" nor the module is found, raise an error
+            raise ValueError(f'Module statement not found. Module: {module_name}')
 
-    # Insert function code with line insertion
-    file_content = (
-        file_content[:insert_position] + '\n' + file_content[line_insertion[0]:line_insertion[1]] + function_code + '\n' + file_content[insert_position:])
+        # Insert function code with line insertion
+        file_content = (
+            file_content[:insert_position] + '\n' + file_content[line_insertion[0]:line_insertion[1]] + ops_impls + '\n' + file_content[insert_position:])
 
     return file_content
 

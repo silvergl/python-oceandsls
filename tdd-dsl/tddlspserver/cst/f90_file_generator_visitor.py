@@ -106,9 +106,10 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 insert = True
                 module_file = module_symbols[0].file
 
-                # TODO dict
-                # TODO empty
-                content = [', '.join(ops_names), '\n\n'.join(ops_impl), module_symbols[0].name]
+                if ops_names or ops_impl:
+                    content = {module_symbols[0].name: [', '.join(ops_names), '\n\n'.join(ops_impl)]}
+                else:
+                    content = {}
 
             else:
                 # Module is new

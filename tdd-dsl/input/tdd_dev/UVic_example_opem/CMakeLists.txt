@@ -19,16 +19,9 @@ add_library(cfo_example
   cfo_sut_example.f90
   )
 
-add_library(test_fT_ME_sut
-  cfo_sut_example.f90
-  additional_use_0.f90
-  additional_use_1.f90
-  )
-
 target_include_directories(cfo_example PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(test_fT_ME_sut PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-set_target_properties (cfo_example test_fT_ME_sut PROPERTIES
+set_target_properties (cfo_example PROPERTIES
   Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 foobar  PROPERTIES

@@ -1,2 +1,13 @@
 TYPE, EXTENDS(fungroup), PUBLIC :: {{class_name}}
     {%include parameter_list.txt%}
+
+CONTAINS
+    PROCEDURE :: flux => {{class_name}}_flux
+    PROCEDURE :: read => {{class_name}}_read
+    PROCEDURE :: set => {{class_name}}_set 
+
+CONTAINS
+
+{%include 'read_start'%}
+{%include 'set_start'%}
+{%include 'flux_start'%}

@@ -879,6 +879,7 @@ class VariableSymbol( UnitSymbol ):
         self.value = value
 
 
+
 class LiteralSymbol( UnitSymbol ):
 
     def __init__(self, name: str, value=None, attached_type: Type = None):

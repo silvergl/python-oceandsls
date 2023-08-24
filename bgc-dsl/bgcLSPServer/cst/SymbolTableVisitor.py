@@ -119,7 +119,7 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
 
     def visitCompartment(self, ctx:BgcDslParser.CompartmentContext):
 
-        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, ctx )
+        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, value=ctx )
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BgcDslParser#connection.

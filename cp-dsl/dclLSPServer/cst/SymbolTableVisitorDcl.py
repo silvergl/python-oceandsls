@@ -49,21 +49,25 @@ class SymbolTableVisitorDcl( DeclarationVisitor, Generic[T] ):
         varType = varType if varType else self.visit(ctx.type_)
         description = ctx.description.text if ctx.description else ""
         # if it is a Array, it was already created, so no need for a variable Symbol
-        if isinstance(varType, ArraySymbol):
-            varType.name = ctx.name.text
-            varType.unit = unit
-            varType.context = ctx
-            varType.description = description
-            return varType
         # if the varName already exists in scope, just overwrite it
+        if isinstance(varType, ArraySymbol):
+            if oldSymbol == None:
+                varType.name = ctx.name.text
+                varType.unit = unit
+                varType.context = ctx
+                varType.description = description
+                return varType
+            else:
+                self._scope.removeSymbol(varType)
         if not oldSymbol == None:
             oldSymbol.unit = unit if unit else oldSymbol.unit
             oldSymbol.type = varType if varType else oldSymbol.type
             oldSymbol.description = description if description else oldSymbol.description
-            if not oldSymbol.ctx.defaultValue:
+            if not oldSymbol.context.defaultValue:
                 oldSymbol.context = ctx
-            if ctx.defaultValue and oldSymbol.ctx.defaultValue:
+            if ctx.defaultValue and oldSymbol.context.defaultValue:
                 print("ERROR: cannot merge", varName, "values")
+            symbol = oldSymbol
         else:
             symbol = self._symbolTable.addNewSymbolOfType(VariableSymbol, self._scope, varName, description, ctx, unit, varType)
             symbol.context = ctx

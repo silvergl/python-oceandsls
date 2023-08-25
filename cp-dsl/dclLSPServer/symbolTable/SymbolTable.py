@@ -865,13 +865,17 @@ class VariableSymbol( Symbol ):
         self.description = description
         self.unit = unitSpecification
         self.is_tree = isinstance(value, ParseTree)
-        if value:
-            self.value = value
-        else:
-            self.value = 0
-        #if None -> default type int
+        self.val = value if value else None
+        if type == "float":
+            value = 0.0
+        if type == "int":
+            value = 0
         self.type = type
         self.is_array = False
+
+    @property
+    def value(self):
+        return self.val
 
 class EnumSymbol(Symbol):
     def __init__(self, name: str = "", enums = None):
@@ -901,7 +905,11 @@ class ArraySymbol(VariableSymbol):
         self.lowerBound = lowerBound
         self.is_array = True
         self.vectors = []
-        self.value = []
+        self.arrVal = []
+
+    @property
+    def value(self):
+        return self.toNormalizedArray()
 
     #!!!!EXPERIMENTAL!!!!
     def add(self, vector, val) -> None:
@@ -922,16 +930,16 @@ class ArraySymbol(VariableSymbol):
             #check if vector already in array
             if vector[0] in self.vectors:
                 i = self.vectors.index(vector[0])
-                self.value[i] = val
+                self.arrVal[i] = val
                 return
             if self.upperBound == 0 and self.lowerBound == 0:
                 self.vectors.append(vector[0])
-                self.value.append(val)
+                self.arrVal.append(val)
             else:
                 #Check for the bounds
                 if self.lowerBound <= vector[0] and self.upperBound >= vector[0] or self.upperBound == 0:
                     self.vectors.append(vector[0])
-                    self.value.append(val)
+                    self.arrVal.append(val)
                 else:
                     print("ERROR: Array", self.name,"out of bound error for index", vector)
 
@@ -943,8 +951,8 @@ class ArraySymbol(VariableSymbol):
         """
         try:
             if isinstance(index, list):
-                return self.value[self.vectors.index(index[0])]
-            return self.value[self.vectors.index(index)]
+                return self.arrVal[self.vectors.index(index[0])]
+            return self.arrVal[self.vectors.index(index)]
         except:
             return None
     
@@ -974,16 +982,16 @@ class ArraySymbol(VariableSymbol):
         """
         i = self.vectors.index(index)
         self.vectors.pop(i)
-        return self.value.pop(i)
+        return self.arrVal.pop(i)
     
     def removeVal(self, val) -> None:
         """
         removes a given value from the array (first elem found)
         val: the value to remove
         """
-        i = self.value.index(val)
+        i = self.arrVal.index(val)
         self.vectors.pop(i)
-        self.value.pop(i)
+        self.arrVal.pop(i)
 
     def toArray(self, recursive = True) -> list:
         """
@@ -1023,7 +1031,7 @@ class ArraySymbol(VariableSymbol):
 
     def clear(self) -> None:
         self.vectors = []
-        self.value = []
+        self.arrVal = []
 
     def __len__(self):
         if len(self.vectors) == 0:

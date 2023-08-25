@@ -7,7 +7,6 @@ import operator as op
 
 # Relative Imports
 from ..symbolTable.SymbolTable import SymbolTable, VariableSymbol, ArraySymbol, ScopedSymbol, EnumSymbol
-from ..gen.python.Configuration.ConfigurationParser import ConfigurationParser
 from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..symbolTable.SymbolTable import ArraySymbol, SymbolTable
 
@@ -25,13 +24,15 @@ class DeclarationCalculator():
                 self.calcArithmeticExpressionArray(ctx, ctx.defaultValue, variableSymbol)
                 variableSymbol.is_tree = False
             else:
+                variableSymbol.val = None
                 print("WARNING: no default value defined for Array", variableSymbol.name)
         else:
             # simple Value
             if ctx.defaultValue:
-                variableSymbol.value = self.calcArithmeticExpression(ctx.defaultValue, variableSymbol)
+                variableSymbol.val = self.calcArithmeticExpression(ctx.defaultValue, variableSymbol)
                 variableSymbol.is_tree = False
             else:
+                variableSymbol.val = None
                 print("WARNING: no default value defined for Variable", variableSymbol.name)
 
     def calcArithmeticExpressionArray(self, varctx : DeclarationParser.ParamAssignStatContext, ctx : DeclarationParser.ArithmeticExpressionContext, arraySymbol : ArraySymbol):
@@ -53,6 +54,11 @@ class DeclarationCalculator():
             index = 0
             if not isinstance(calcList, list):
                 print("Warning: Array Value is not a list, proceed to convert it in to one")
+                if isinstance(calcList, str):
+                    if calcList.startswith("'"):
+                        calcList = calcList.strip("'")
+                    else:
+                        calcList = calcList.strip('"')
                 calcList = [calcList for _ in range(len(rangeList[0]))]
             if len(rangeList[0]) < len(calcList) and isinstance(calcList, list):
                 rangeList[0] = range(rangeList[0].start, len(calcList) + rangeList[0].start)
@@ -142,7 +148,9 @@ class DeclarationCalculator():
         elementAttribute = ctx.attribute.text if ctx.attribute else None
         if ctx.element.text == "true" or ctx.element.text == "false":
             print("WARNING: wrong parsing in variable", variableSymbol.name, "try to compensate to value", ctx.element.text)
-            variableSymbol.value = bool(ctx.element.text)
+            if ctx.element.text == "false":
+                variableSymbol.val = False
+            else: variableSymbol.val = True
             return variableSymbol.value
         elementValue = self._scope.resolveSync(ctx.element.text)
         if elementValue:
@@ -191,7 +199,9 @@ class DeclarationCalculator():
         if ctx.doubleValue():
             return float(ctx.doubleValue().value.text)
         if ctx.booleanValue():
-            return bool(ctx.booleanValue().value.text)
+            if ctx.booleanValue().value.text == "false":
+                return False
+            return True
     
     def calculate(self) -> SymbolTable:
         def recursionHelper(elem):
@@ -207,72 +217,3 @@ class DeclarationCalculator():
 
         recursionHelper(self._symbolTable)
         return self._symbolTable
-
-
-
-class ConfigurationCalculator(DeclarationCalculator):
-    def __init__(self, symbolTable : SymbolTable, configurationList : list):
-        super().__init__(symbolTable)
-        self.configurationList = configurationList
-
-    def calculate(self) -> SymbolTable:
-        for elem, index in self.configurationList:
-            self.calcVariable(elem, index)
-        return self._symbolTable
-
-    def calcVariable(self, variableSymbol : VariableSymbol, index : int):
-        ctx = variableSymbol.configuration[index]
-        # check if the context is a Array or a simple Value
-        if variableSymbol.is_array:
-            # Array
-            self.calcArithmeticExpressionArray(ctx, ctx.value, variableSymbol)
-        else:
-            # simple Value
-            variableSymbol.value = self.calcArithmeticExpression(ctx.value, variableSymbol)
-            variableSymbol.is_tree = False
-
-    def calcArithmeticExpressionArray(self, varctx : ConfigurationParser.ParameterAssignmentContext, ctx : ConfigurationParser.ArithmeticExpressionContext, arraySymbol: ArraySymbol):
-        #tupleList representation: list[2:4,5] = [range(2,4), range(5)]
-        #wanted: list[2,4:8] = [[(4,1),(5,2),(6,3),(7,4),(8,5)],[(4,1),(5,2),(6,3),(7,4),(8,5)],[(4,1),(5,2),(6,3),(7,4),(8,5)]]
-        def convertToTupleList(rangeList : list, calcList, vector : list, depht : int) -> list:
-            if len(vector) < depht+1:
-                vector.append(0)
-            else: 
-                vector[depht] = 0
-            #rangeList is empty so there is no given range
-            if len(rangeList) == 0:
-                for i in range(len(calcList)):
-                    vector[depht] = i
-                    if isinstance(calcList[i], list):
-                        convertToTupleList(rangeList, calcList[i], vector.copy(), depht + 1)
-                    arraySymbol.add(vector, calcList[i])
-                return
-            index = 0
-            if not isinstance(calcList, list):
-                print("Warning: Array Value is not a list, proceed to convert it in to one")
-                calcList = [calcList for _ in range(len(rangeList[0]))]
-            if len(rangeList[0]) < len(calcList) and isinstance(calcList, list):
-                rangeList[0] = range(rangeList[0].start, len(calcList) + rangeList[0].start)
-            for i in rangeList[0]:
-                vector[depht] = i
-                if isinstance(calcList[index], list):
-                    convertToTupleList(rangeList[1:], calcList[index], vector.copy(), depht + 1)
-                else:
-                    arraySymbol.add(vector, calcList[index])
-                index += 1
-            return
-
-        calcList = self.calcArithmeticExpression(ctx, arraySymbol)
-
-        rangeList = []
-        for i in varctx.selectors:
-            if i.rangeSelector():
-                j : ConfigurationParser.RangeSelectorContext = i.rangeSelector()
-                rangeList.append(range(int(j.lowerBound.text), int(j.upperBound.text) + 1))
-            else:
-                j : ConfigurationParser.ElementSelectorContext = i.elementSelector()
-                element = int(j.element.text)
-                rangeList.append(range(element, element + 1))
-        vector = []
-        convertToTupleList(rangeList, calcList, vector, 0)
-        

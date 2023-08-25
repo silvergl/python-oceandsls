@@ -1,0 +1,22 @@
+{%- macro groupTemplate(group, firstElemIndex) -%}
+	&{{group.name}}
+{%- for index, param in enumerate(group.getNestedSymbolsOfTypeSync(variableSymbol)) %}{% if not param.value is none %}{% if not index ==  firstElemIndex %},
+	{% else %}
+	{% endif %}{{ parameterTemplate(param) }}{% endif %}{% endfor %}
+	&
+{% endmacro -%}
+{%- macro parameterTemplate(param) -%}
+	{{ param.name }}={% if param.is_array %}{{ param.toNormalizedArray().__str__().replace("[", "").replace("]", "") }}{% else %}{{ valueTemplate(param.value) }}{% endif -%}
+{%- endmacro -%}
+{%- macro valueTemplate(val) -%}
+	{%- if isinstance(val, float) -%}{{val}}
+	{%- elif isinstance(val, bool) -%}{%- if val -%}.TRUE.{%- else -%}.FALSE.{%- endif -%}
+	{%- elif isinstance(val, int) -%}{{val}}
+	{%- elif isinstance(val, str) -%}{{val}}
+	{%- else -%}Type Not Supported{%- endif -%}
+{%- endmacro -%}
+{%- macro dataTemplate(feature) -%}
+	#{{feature.name}}
+	{% for group in feature.getNestedSymbolsOfTypeSync(groupSymbol) %}{{ groupTemplate(group, firstNotNoneElem(group, variableSymbol)) }}
+{% endfor -%}
+{%- endmacro -%}

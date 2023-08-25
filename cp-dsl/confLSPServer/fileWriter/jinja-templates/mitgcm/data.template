@@ -1,0 +1,10 @@
+{%- import "macros.j2" as mc with context -%}
+for mitgcm
+
+# Model parameters
+# Continuous equation parameters
+{{mc.groupTemplate(groups["PARM01"], firstNotNoneElem(groups["PARM01"], variableSymbol))}}
+{{mc.groupTemplate(groups["PARM02"], firstNotNoneElem(groups["PARM02"], variableSymbol))}}
+{{mc.groupTemplate(groups["PARM03"], firstNotNoneElem(groups["PARM03"], variableSymbol))}}
+{{mc.groupTemplate(groups["PARM04"], firstNotNoneElem(groups["PARM04"], variableSymbol))}}
+{{mc.groupTemplate(groups["PARM05"], firstNotNoneElem(groups["PARM05"], variableSymbol))}}

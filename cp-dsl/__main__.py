@@ -8,7 +8,7 @@ from .confLSPServer.gen.python.Configuration.ConfigurationParser import Configur
 from .confLSPServer.symbolTable.SymbolTable import VariableSymbol
 from .confLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
 from .confLSPServer.utils.calc import DeclarationCalculator, ConfigurationCalculator
-from .confLSPServer.fileWriter.UvicCodeGenerator import UvicCodeGenerator
+from .confLSPServer.fileWriter.CodeGenerator import UvicCodeGenerator, mitGcmCodeGenerator
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -24,6 +24,9 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "-u", "--uvic", dest="uvic", action="store_true", help="flag to generate for uvic"
+    )
+    parser.add_argument(
+        "-m", "--mitgcm", dest="mitgcm", action="store_true", help="flag to generate for mitgcm"
     )
     args = parser.parse_args()
     if not args.path:
@@ -65,4 +68,11 @@ if __name__ == '__main__':
                     generator.generate()
                 except AttributeError as e:
                     print("ERROR: Could not generate uvic files")
+                    print(e)
+            if args.mitgcm:
+                try:
+                    generator = mitGcmCodeGenerator(table, outputPath)
+                    generator.generate()
+                except AttributeError as e:
+                    print("ERROR: could not generate mitgcm files")
                     print(e)

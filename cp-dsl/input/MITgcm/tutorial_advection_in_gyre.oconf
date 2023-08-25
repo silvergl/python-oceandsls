@@ -1,7 +1,7 @@
 configuration tutorial_advection_in_gyre:mitgcm
 
 group PARM01 {
- tRef: [ 20 ]
+ tRef: [20]
  sRef:0.0  
  viscAz:1.0E-2  
  viscAh:4.0E2
@@ -92,7 +92,7 @@ feature PTRACERS {
 		 PTRACERS_diffK4:0.0000000001E9
 		 PTRACERS_diffKr:0
 		 PTRACERS_Iter0:259200
-		 PTRACERS_initialFile[1]: 'dye.bin'
-		 PTRACERS_names[1]:'Dye'
+		 PTRACERS_initialFile[1]: ['dye.bin']
+		 PTRACERS_names[1]:['Dye']
      }
  }

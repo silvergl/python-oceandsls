@@ -1,0 +1,6 @@
+{%- import "macros.j2" as mc with context-%}
+# Lines beginning "#" are comments
+#  nTx      :: No. threads per process in X
+#  nTy      :: No. threads per process in Y
+# debugMode :: print debug msg (sequence of S/R calls)
+{{ mc.groupTemplate(group, firstNotNoneElem(group, variableSymbol)) }}

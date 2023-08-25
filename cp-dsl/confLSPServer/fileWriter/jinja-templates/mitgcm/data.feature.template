@@ -1,0 +1,2 @@
+{%- import "macros.j2" as mc with context -%}
+{{mc.dataTemplate(feature)}}

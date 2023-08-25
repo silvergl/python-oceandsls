@@ -10,9 +10,9 @@
 {%- endmacro -%}
 {%- macro parameterTemplate(parameter, lastSymbol) -%}
     {{ parameter.name }}={% if not parameter.is_array -%}
-                                {% if isinstance(parameter.value, bool) %}.{{ parameter.value.__str__().lower() }}.{% else %}{{parameter.value}}
+                                {% if isinstance(parameter.value, bool) %}.{{ parameter.value.__str__().lower() }}.{% else %}{{parameter.value}}{% endif %}
                            {%- else -%}
-                                {{ parameter.toNormalizedArray().__str__().replace("[", "").replace("]", "").replace(" ", "") }}
+                                {{ parameter.toNormalizedArray().__str__().replace("[", "").replace("]", "") }}
                             {%- endif -%}
     {%- if not lastSymbol %},{% endif -%}
 {%- endmacro -%}

@@ -1,0 +1,7 @@
+for mitgcm
+
+# Packages
+ &PACKAGES
+{% for index, feature in enumerate(actData) %} use{{ feature }}=.TRUE.{% if not index == actData.__len__()-1 %},{% endif %}
+{% endfor -%}
+ &

@@ -25,13 +25,15 @@ class DeclarationCalculator():
                 self.calcArithmeticExpressionArray(ctx, ctx.defaultValue, variableSymbol)
                 variableSymbol.is_tree = False
             else:
+                variableSymbol.val = None
                 print("WARNING: no default value defined for Array", variableSymbol.name)
         else:
             # simple Value
             if ctx.defaultValue:
-                variableSymbol.value = self.calcArithmeticExpression(ctx.defaultValue, variableSymbol)
+                variableSymbol.val = self.calcArithmeticExpression(ctx.defaultValue, variableSymbol)
                 variableSymbol.is_tree = False
             else:
+                variableSymbol.val = None
                 print("WARNING: no default value defined for Variable", variableSymbol.name)
 
     def calcArithmeticExpressionArray(self, varctx : DeclarationParser.ParamAssignStatContext, ctx : DeclarationParser.ArithmeticExpressionContext, arraySymbol : ArraySymbol):
@@ -53,6 +55,11 @@ class DeclarationCalculator():
             index = 0
             if not isinstance(calcList, list):
                 print("Warning: Array Value is not a list, proceed to convert it in to one")
+                if isinstance(calcList, str):
+                    if calcList.startswith("'"):
+                        calcList = calcList.strip("'")
+                    else:
+                        calcList = calcList.strip('"')
                 calcList = [calcList for _ in range(len(rangeList[0]))]
             if len(rangeList[0]) < len(calcList) and isinstance(calcList, list):
                 rangeList[0] = range(rangeList[0].start, len(calcList) + rangeList[0].start)
@@ -142,7 +149,9 @@ class DeclarationCalculator():
         elementAttribute = ctx.attribute.text if ctx.attribute else None
         if ctx.element.text == "true" or ctx.element.text == "false":
             print("WARNING: wrong parsing in variable", variableSymbol.name, "try to compensate to value", ctx.element.text)
-            variableSymbol.value = bool(ctx.element.text)
+            if ctx.element.text == "false":
+                variableSymbol.val = False
+            else: variableSymbol.val = True
             return variableSymbol.value
         elementValue = self._scope.resolveSync(ctx.element.text)
         if elementValue:
@@ -191,7 +200,9 @@ class DeclarationCalculator():
         if ctx.doubleValue():
             return float(ctx.doubleValue().value.text)
         if ctx.booleanValue():
-            return bool(ctx.booleanValue().value.text)
+            if ctx.booleanValue().value.text == "false":
+                return False
+            return True
     
     def calculate(self) -> SymbolTable:
         def recursionHelper(elem):
@@ -217,6 +228,10 @@ class ConfigurationCalculator(DeclarationCalculator):
 
     def calculate(self) -> SymbolTable:
         for elem, index in self.configurationList:
+            if isinstance(elem, ScopedSymbol):
+                self._scope = elem
+            else:
+                self._scope = elem.parent()
             self.calcVariable(elem, index)
         return self._symbolTable
 
@@ -228,7 +243,7 @@ class ConfigurationCalculator(DeclarationCalculator):
             self.calcArithmeticExpressionArray(ctx, ctx.value, variableSymbol)
         else:
             # simple Value
-            variableSymbol.value = self.calcArithmeticExpression(ctx.value, variableSymbol)
+            variableSymbol.val = self.calcArithmeticExpression(ctx.value, variableSymbol)
             variableSymbol.is_tree = False
 
     def calcArithmeticExpressionArray(self, varctx : ConfigurationParser.ParameterAssignmentContext, ctx : ConfigurationParser.ArithmeticExpressionContext, arraySymbol: ArraySymbol):
@@ -249,17 +264,26 @@ class ConfigurationCalculator(DeclarationCalculator):
                 return
             index = 0
             if not isinstance(calcList, list):
-                print("Warning: Array Value is not a list, proceed to convert it in to one")
+                print("Warning: Array Value is not a list, proceed to convert it in to one", arraySymbol.name, "=", calcList)
+                if isinstance(calcList, str):
+                    if calcList.startswith("'"):
+                        calcList = calcList.strip("'")
+                    else:
+                        calcList = calcList.strip('"')
                 calcList = [calcList for _ in range(len(rangeList[0]))]
+                print("Converted to:", calcList)
             if len(rangeList[0]) < len(calcList) and isinstance(calcList, list):
                 rangeList[0] = range(rangeList[0].start, len(calcList) + rangeList[0].start)
             for i in rangeList[0]:
                 vector[depht] = i
-                if isinstance(calcList[index], list):
-                    convertToTupleList(rangeList[1:], calcList[index], vector.copy(), depht + 1)
+                if not len(calcList) == 0:
+                    if isinstance(calcList[index], list):
+                        convertToTupleList(rangeList[1:], calcList[index], vector.copy(), depht + 1)
+                    else:
+                        arraySymbol.add(vector, calcList[index])
+                    index += 1
                 else:
-                    arraySymbol.add(vector, calcList[index])
-                index += 1
+                    print("WARNING: didnt give enough values to ranged nd-array", arraySymbol.name)
             return
 
         calcList = self.calcArithmeticExpression(ctx, arraySymbol)

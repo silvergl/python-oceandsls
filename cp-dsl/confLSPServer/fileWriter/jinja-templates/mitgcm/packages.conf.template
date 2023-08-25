@@ -1,0 +1,6 @@
+{%- macro modulePackageTemplate(feature) -%}
+    {{feature.lower()}}
+{%- endmacro -%}
+#-- list of packages (or group of packages) to compile for this experiment:
+{% for feature in features -%}{{ modulePackageTemplate(feature) }}
+{% endfor -%}

@@ -180,7 +180,7 @@ feature RBCS {
 feature Layers {
 	group LAYERS_PARM01 {
  			layers_name[1] : 'TH'
- 			layers_bounds[1:38,1]: [ [ 
+ 			layers_bounds[1,1:38]: [ [ 
  				-2.00, -1.75, -1.50, -1.25,
                 -1.00, -0.75, -0.50, -0.25,
                  0.00,  0.25,  0.50,  0.75,

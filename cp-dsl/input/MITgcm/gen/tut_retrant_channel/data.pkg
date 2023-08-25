@@ -1,0 +1,10 @@
+for mitgcm
+
+# Packages
+ &PACKAGES
+ useDiagnostics=.TRUE.,
+ useGFD=.TRUE.,
+ useGMRedi=.TRUE.,
+ useRBCS=.TRUE.,
+ useLayers=.TRUE.
+&

@@ -15,8 +15,8 @@ from ..utils.suggest_variables import get_all_symbols_of_type
 from ..fxca.util.fxtran_utils import filter_xml, get_files, write_decorate_src_xml
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
-from ..symboltable.symbol_table import FunctionSymbol, ModuleSymbol, ParameterSymbol, RoutineSymbol, ScopedSymbol, SymbolTable, \
-    SymbolTableOptions, TestCaseSymbol, VariableSymbol, P, T
+from ..symboltable.symbol_table import FunctionSymbol, ModuleSymbol, ParameterSymbol, RoutineSymbol, ScopedSymbol, SymbolTable, SymbolTableOptions, \
+    TestCaseSymbol, VariableSymbol, P, T
 
 
 class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
@@ -147,8 +147,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         # Add module symbols to symboltable for XML scope filter
         module_symbols: List[ModuleSymbol] = []
         for module in ctx.modules:
-            self.visit(module)
-        module_symbols = get_all_symbols_of_type(self._scope, ModuleSymbol)
+            module_symbols.append(self.visit(module))
 
         # TODO hc
         xml_path = os.path.join(self._test_path, "tmp")
@@ -171,7 +170,11 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
                 # Top level symbols are omitted as they are only filtered modules in the current test case.
                 # Get scope from symboltable, add the scope if it does not exist
                 if parent_scopes:
-                    scope_sym = self._scope.resolve_sync(parent_scopes)
+                    # Resolve scope
+                    parent_scopes: List[str] = parent_scopes.split(".")
+                    scope_sym = self._scope
+                    for scope in parent_scopes:
+                        scope_sym = scope_sym.resolve_sync(scope)
 
                     match scope_type:
                         case "module":
@@ -198,7 +201,10 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
             for variable_name, variable_type, variableScope in xml_elements[0]:
                 # Get scope from symboltable
                 # TODO differentiate same scopes in different files -> error as unclear scoping
-                scope_sym: ScopedSymbol = self._scope.parent().resolve_sync(variableScope)
+                variableScope: List[str] = variableScope.split(".")
+                scope_sym = self._scope
+                for scope in variableScope:
+                    scope_sym = scope_sym.resolve_sync(scope)
 
                 # TODO add value, convert type
                 # Add the variable to the symboltable
@@ -212,16 +218,24 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
 
     # Visit a parse tree produced by TestSuiteParser#test_module.
     def visitTest_module(self, ctx: TestSuiteParser.Test_moduleContext):
-        return self.with_scope(ctx, True, ModuleSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
+        # Add module to symboltable
+        self.with_scope(ctx, True, ModuleSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
+
+        # Add module to included modules of testcase
+        module_symbol = self._symbol_table.resolve_sync(ctx.name.text)
+        self._scope.add_include(module_symbol)
+
+        # Return module symbol
+        return module_symbol
 
     def addRoutineParams(self, paramName: str = None):
         self._symbol_table.add_new_symbol_of_type(ParameterSymbol, self._scope, paramName)
 
-    def with_scope(self, tree: ParseTree, above: bool, t: type, action: Callable, *my_args: P.args or None, **my_kwargs: P.kwargs or None) -> T:
+    def with_scope(self, tree: ParseTree, sibling: bool, t: type, action: Callable, *my_args: P.args or None, **my_kwargs: P.kwargs or None) -> T:
         """
         Add a scoped symbol to the symboltable and recursively add all symbols inside this scope the symboltable
         :param tree: Context of the scoped symbol
-        :param above: Add scoped symbol above current scope
+        :param sibling: Add scoped symbol as sibling of current scope
         :param t: Symbol type
         :param action: Lambda function to add children symbols to symboltable
         :param my_args: Arguments of symbol type
@@ -229,9 +243,8 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         :return: Current scope
         """
         # Add scoped symbol to symboltable
-        if above:
+        if sibling:
             scope = self._symbol_table.add_new_symbol_of_type(t, self._scope.parent(), *my_args, **my_kwargs)
-            scope.add_symbol(self._scope)
         else:
             scope = self._symbol_table.add_new_symbol_of_type(t, self._scope, *my_args, **my_kwargs)
         scope.context = tree

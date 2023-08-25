@@ -513,6 +513,8 @@ class ScopedSymbol(Symbol):
     def __init__(self, name: str = ""):
         super().__init__(name)
         self.__child_symbols = []
+        # List of used libraries
+        self.__include_scopes: Optional[List[ScopedSymbol]] = []
 
     def direct_scopes(self) -> Coroutine[List[ScopedSymbol]]:
         """
@@ -538,6 +540,9 @@ class ScopedSymbol(Symbol):
     def clear(self) -> None:
         self.__child_symbols = []
 
+    def add_include(self, symbol: ScopedSymbol) -> None:
+        self.__include_scopes.append(symbol)
+
     def add_symbol(self, symbol: Symbol) -> None:
         """
         Adds the given symbol to this scope. If it belongs already to a different scope it is removed from that before
@@ -552,11 +557,12 @@ class ScopedSymbol(Symbol):
         symbol_table = self.symbol_table()
         if symbol_table is None or not symbol_table.options.allow_duplicate_symbols:
             for child in self.children():
-                if child == symbol or (len(symbol.name) > 0 and child.name == symbol.name):
+                if child == symbol or (len(symbol.name) > 0 and child.name == symbol.name) and type(child) == type(symbol):
                     name = symbol.name
                     if len(name) == 0:
                         name = "<anonymous>"
 
+                    print('stop')
                     raise DuplicateSymbolError({"message": "Attempt to add duplicate symbol \"%s\"" % name})
 
         self.children().append(symbol)
@@ -570,7 +576,7 @@ class ScopedSymbol(Symbol):
     def get_all_modules_with_file_sync(self, file: str = None, local_only: bool = False, callers: List[T] = []) -> List[ModuleSymbol]:
         """
         :param callers: List of visited scopes, that should not be visited again
-        :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
+        :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol and included scopes
         (recursively).
         :param file: If given only returns symbols from that file.
         :return: A list of all ModuleSymbol with implementing files from this and all nested scopes in the order they were defined.
@@ -587,9 +593,16 @@ class ScopedSymbol(Symbol):
                 result.extend(child.get_all_modules_with_file_sync(file, True, callers + [self]))
 
         # recursively call parent scopes, except for scopes that called us
-        if not local_only and isinstance(self.parent(), ScopedSymbol) and self.parent() not in callers:
-            local_list = self.parent().get_all_modules_with_file_sync(file, local_only, callers + [self])
-            result.extend(local_list)
+        if not local_only:
+            if isinstance(self.parent(), ScopedSymbol) and self.parent() not in callers:
+                local_list = self.parent().get_all_modules_with_file_sync(file, local_only, callers + [self])
+                result.extend(local_list)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol) and include_scope not in callers:
+                    local_list = include_scope.get_all_modules_with_file_sync(file, local_only, callers + [self])
+                    result.extend(local_list)
 
         return result
 
@@ -691,13 +704,13 @@ class ScopedSymbol(Symbol):
 
         return result
 
-    def get_symbols_of_type_and_name_sync(self, t: type, name: str = None, localOnly=True) -> List[T]:
+    def get_symbols_of_type_and_name_sync(self, t: type, name: str = None, local_only=True) -> List[T]:
         """
         Synchronously returns symbols of the type and optionally the name, if given.
 
         :param t: The type of the objects to return.
         :param name: If given only returns symbols with that name.
-        :param localOnly: If true only child symbols are returned, otherwise also symbols from the parent of this symbol (recursively).
+        :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol (recursively) and included scopes.
         :return: A promise resolving to direct children of a given type.
         """
         result: List[T] = []
@@ -705,8 +718,15 @@ class ScopedSymbol(Symbol):
             if isinstance(child, t) and (name is None or child.name == name):
                 result.append(child)
 
-        if not localOnly and isinstance(self.parent(), ScopedSymbol):
-            result.extend(self.parent().get_symbols_of_type_and_name_sync(t, name, localOnly))
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol):
+                result.extend(self.parent().get_symbols_of_type_and_name_sync(t, name, local_only))
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    result.extend(include_scope.get_symbols_of_type_and_name_sync(t, name, local_only))
 
         return result
 
@@ -716,7 +736,7 @@ class ScopedSymbol(Symbol):
 
         :param t: The type of the objects to return.
         :param name: If given only returns symbols with that name.
-        :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol (recursively).
+        :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol (recursively) and included scopes.
         :return: A promise resolving to direct children of a given type.
         """
         result: List[T] = []
@@ -724,9 +744,17 @@ class ScopedSymbol(Symbol):
             if isinstance(child, t) and (name is None or child.name == name):
                 result.append(child)
 
-        if not local_only and isinstance(self.parent(), ScopedSymbol):
-            local_list: List[T] = await self.parent().get_symbols_of_type_and_name(t, name, local_only)
-            result.extend(local_list)
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol):
+                local_list: List[T] = await self.parent().get_symbols_of_type_and_name(t, name, local_only)
+                result.extend(local_list)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    result.extend(include_scope.get_symbols_of_type_and_name_sync(t, name, local_only))
+
 
         return result
 
@@ -743,15 +771,23 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
         # TODO check modded by sgu?
-        if not local_only and isinstance(self.parent(), ScopedSymbol):
-            result.extend(self.parent().get_symbols_of_type_sync(t, local_only))
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol):
+                result.extend(self.parent().get_symbols_of_type_sync(t, local_only))
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    result.extend(include_scope.get_symbols_of_type_sync(t, local_only))
+
 
         return result
 
     async def get_symbols_of_type(self, t: type, local_only: bool = True) -> List[T]:
         """
         :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
-        (recursively).
+        (recursively) and scopes that are included.
         :param t: The type of the objects to return.
         :return: A promise resolving to direct children of a given type.
         """
@@ -761,9 +797,17 @@ class ScopedSymbol(Symbol):
                 result.append(child)
 
         # TODO check modded by sgu?
-        if not local_only and isinstance(self.parent(), ScopedSymbol):
-            localList: List[T] = await self.parent().get_symbols_of_type(t, local_only)
-            result.extend(localList)
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol):
+                localList: List[T] = await self.parent().get_symbols_of_type(t, local_only)
+                result.extend(localList)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    localList: List[T] = await include_scope.get_symbols_of_type(t, local_only)
+                    result.extend(localList)
 
         return result
 
@@ -773,8 +817,8 @@ class ScopedSymbol(Symbol):
         :param callers: List of visited scopes, that should not be visited again
         :param t: The type of the objects to return.
         :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
-        (recursively).
-        :return: A promise resolving to all symbols of the given type, accessible from this scope (if localOnly is
+        (recursively) and scopes that are included.
+        :return: A promise resolving to all symbols of the given type, accessible from this scope (if local_only is
         false), within the owning symbol table.
         """
         result: List[T] = []
@@ -790,9 +834,17 @@ class ScopedSymbol(Symbol):
                 result.extend(child_symbols)
 
         # TODO sgu fixed bug: no recursive call
-        if not local_only and isinstance(self.parent(), ScopedSymbol) and self.parent() not in callers:
-            localList: List[T] = await self.parent().get_all_symbols(t, local_only, callers + [self])
-            result.extend(localList)
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol) and self.parent() not in callers:
+                localList: List[T] = await self.parent().get_all_symbols(t, local_only, callers + [self])
+                result.extend(localList)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    localList: List[T] = await include_scope.get_all_symbols(t, local_only, callers + [self])
+                    result.extend(localList)
 
         return result
 
@@ -803,8 +855,8 @@ class ScopedSymbol(Symbol):
         :param callers: List of visited scopes, that should not be visited again
         :param t: The type of the objects to return.
         :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
-        (recursively).
-        :return: A list with all symbols of the the given type, accessible from this scope (if localOnly is false),
+        (recursively) and scopes that are included.
+        :return: A list with all symbols of the the given type, accessible from this scope (if local_only is false),
         within the owning symbol table.
         """
         result: List[T] = []
@@ -820,9 +872,17 @@ class ScopedSymbol(Symbol):
                 result.extend(child_symbols)
 
         # TODO sgu fixed bug: no recursive call
-        if not local_only and isinstance(self.parent(), ScopedSymbol) and self.parent() not in callers:
-            local_list: List[T] = self.parent().get_all_symbols_sync(t, local_only, callers + [self])
-            result.extend(local_list)
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol) and self.parent() not in callers:
+                local_list: List[T] = self.parent().get_all_symbols_sync(t, local_only, callers + [self])
+                result.extend(local_list)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    local_list: List[T] = include_scope.get_all_symbols_sync(t, local_only, callers + [self])
+                    result.extend(local_list)
 
         return result
 
@@ -830,17 +890,24 @@ class ScopedSymbol(Symbol):
         """
         :param name: The name of the symbol to resolve.
         :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
-        (recursively).
+        (recursively) or scopes that are included.
         :return: A promise resolving to the first symbol with a given name, in the order of appearance in this scope or
-        any of the parent scopes (conditionally).
+        any of the parent scopes (conditionally) or any scope included.
         """
         for child in self.children():
             if child.name == name:
                 return child
 
         # Nothing found locally. Let the parent continue.
-        if not local_only and isinstance(self.parent(), ScopedSymbol):
-            return await self.parent().resolve(name, local_only)
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol):
+                return await self.parent().resolve(name, local_only)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    return await include_scope.resolve(name, local_only)
 
         return None
 
@@ -848,24 +915,31 @@ class ScopedSymbol(Symbol):
         """
         :param name: The name of the symbol to resolve.
         :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
-        (recursively).
+        (recursively) or scopes that are included.
         :return: the first symbol with a given name, in the order of appearance in this scope or any of the parent
-        scopes (conditionally).
+        scopes (conditionally) or any scope included.
         """
         for child in self.children():
             if child.name == name:
                 return child
 
         # Nothing found locally. the parent continues.
-        if not local_only and isinstance(self.parent(), ScopedSymbol):
-            return self.parent().resolve_sync(name, local_only)
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol):
+                return self.parent().resolve_sync(name, local_only)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    return include_scope.resolve_sync(name, local_only)
 
         return None
 
     def get_typed_symbols(self, local_only: bool = True) -> List[TypedSymbol]:
         """
         :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
-        (recursively).
+        (recursively) and scopes that are included.
         :return: all accessible symbols that have a type assigned.
         """
         result: List[TypedSymbol] = []
@@ -874,9 +948,17 @@ class ScopedSymbol(Symbol):
             if isinstance(child, TypedSymbol):
                 result.append(child)
 
-        if not local_only and isinstance(self.parent(), ScopedSymbol):
-            local_list = self.parent().get_typed_symbols(local_only)
-            result.extend(local_list)
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol):
+                local_list = self.parent().get_typed_symbols(local_only)
+                result.extend(local_list)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    local_list = include_scope.get_typed_symbols(local_only)
+                    result.extend(local_list)
 
         return result
 
@@ -885,7 +967,7 @@ class ScopedSymbol(Symbol):
         The names of all accessible symbols with a type.
 
         :param local_only: If true only child symbols are returned, otherwise also symbols from the parent of this symbol
-        (recursively).
+        (recursively) and scopes that are included.
         :return: A list of names.
         """
         result: List[str] = []
@@ -893,9 +975,17 @@ class ScopedSymbol(Symbol):
             if isinstance(child, TypedSymbol):
                 result.append(child.name)
 
-        if not local_only and isinstance(self.parent(), ScopedSymbol):
-            local_list = self.parent().get_typed_symbol_names(local_only)
-            result.extend(local_list)
+        if not local_only:
+            # Call parent scope
+            if isinstance(self.parent(), ScopedSymbol):
+                local_list = self.parent().get_typed_symbol_names(local_only)
+                result.extend(local_list)
+
+            # Call scopes that are included
+            for include_scope in self.__include_scopes:
+                if isinstance(include_scope, ScopedSymbol):
+                    local_list = include_scope.get_typed_symbol_names(local_only)
+                    result.extend(local_list)
 
         return result
 
@@ -1115,11 +1205,11 @@ class RoutineSymbol(ScopedSymbol):
         super().__init__(name)
         self.return_type = returnType
 
-    def get_variables(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.get_symbols_of_type(VariableSymbol)
+    def get_variables(self, local_only=True) -> Coroutine[List[T]]:
+        return self.get_symbols_of_type(VariableSymbol, local_only)
 
-    def get_parameters(self, localOnly=True) -> Coroutine[List[T]]:
-        return self.get_symbols_of_type(ParameterSymbol)
+    def get_parameters(self, local_only=True) -> Coroutine[List[T]]:
+        return self.get_symbols_of_type(ParameterSymbol, local_only)
 
 
 class FunctionSymbol(RoutineSymbol):
@@ -1238,7 +1328,7 @@ class SymbolTable(ScopedSymbol):
 
         if not local_only and self.parent() not in callers:
             # TODO alternative
-            # dependencyResults = await asyncio.gather(*[x.getAllSymbols(t, localOnly) for x in self.dependencies])
+            # dependencyResults = await asyncio.gather(*[x.get_all_symbols(t, local_only) for x in self.dependencies])
             dependencyResults = await asyncio.gather(
                 *(map((lambda x: x.get_all_symbols(t, local_only, callers + [self])), self.dependencies))
             )

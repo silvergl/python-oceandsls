@@ -7,7 +7,7 @@ MODULE cfo_example
   !---------------------------------------------
 
   PRIVATE
-  PUBLIC :: ft_ME, zxrex, nprey
+  PUBLIC :: fT_ME, zxrex, nprey
 
   INTEGER, PARAMETER :: dp=KIND(0D0)
   INTEGER :: nprey=4
@@ -32,7 +32,8 @@ MODULE cfo_example
   !---------- FORTRAN EXAMPLE ------------------
   !---------------------------------------------
 
-  PRIVATE :: get_sum
+  PUBLIC :: get_sum0, get_sum1
+  PRIVATE :: get_sum2
 
   ! Set the super type as abstract
   type, abstract :: shape_m
@@ -92,27 +93,27 @@ CONTAINS
   !---------------------------------------------
 
   ! Return type, function, name, arguments
-  integer function get_sum(n1, n2)
+  integer function get_sum0(n1, n2)
     implicit none
     integer :: n1, n2, sum
 
     ! The last value defined is returned
-    sum = get_sum2(n1, n2)
-  end function get_sum
+    sum = get_sum1(n1, n2)
+  end function get_sum0
 
   ! Define variable to be returned
-  function get_sum2(n1, n2) result(sum)
+  function get_sum1(n1, n2) result(sum)
     implicit none
 
     ! Don't allow variable values to change
     integer, intent(in) :: n1, n2
     integer :: sum
-    sum = get_sum3(n1, n2)
-  end function get_sum2
+    sum = get_sum2(n1, n2)
+  end function get_sum1
 
   ! Block functions from changing input
   ! variables with pure
-  pure function get_sum3(n1, n2) result(sum)
+  pure function get_sum2(n1, n2) result(sum)
     implicit none
     integer, intent(in) :: n1
 
@@ -125,7 +126,7 @@ CONTAINS
     else
       sum = n1 + 1
     end if
-  end function get_sum3
+  end function get_sum2
   
   subroutine plus_two(n, plus1, plus2)
     integer, intent(in) :: n

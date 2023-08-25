@@ -2,15 +2,37 @@
 MODULE cfo_example  
   IMPLICIT NONE
 
-  PRIVATE
-  PRIVATE :: get_sum
-  PUBLIC :: fT_ME
+  !---------------------------------------------
+  !------------- UVIC EXAMPLE ------------------
+  !---------------------------------------------
 
-  TYPE(ocf), DIMENSION(:), ALLOCATABLE, PUBLIC :: zoo
+  PRIVATE
+  PUBLIC :: ft_ME, zxrex, nprey
 
   INTEGER, PARAMETER :: dp=KIND(0D0)
+  INTEGER :: nprey=4
+  REAL(dp), PARAMETER :: cfds=86.4D3
 
-  ! INCLUDE 'stdunits.h'
+  INCLUDE 'stdunits.h'
+
+  TYPE, PUBLIC :: ocf
+     REAL(dp) :: ngr,&  ! relative growth rate
+          ca=0.1D0,&    ! cost of assimilation coefficients
+          cf=0.1D0,&    ! cost of foraging coefficients
+          Af,&          ! foraging activity
+          IC,&          ! C ingestion
+          E,&           ! assimilation efficiency
+          POC,&         ! zooplankton biomass concentration
+          RC,&          ! respiration
+          XC            ! C excretion
+  END TYPE ocf
+  TYPE(ocf), DIMENSION(:), ALLOCATABLE, PUBLIC :: zoo
+
+  !---------------------------------------------
+  !---------- FORTRAN EXAMPLE ------------------
+  !---------------------------------------------
+
+  PRIVATE :: get_sum
 
   ! Set the super type as abstract
   type, abstract :: shape_m
@@ -35,7 +57,27 @@ MODULE cfo_example
     end function shape_area
   end interface
 
+  !---------------------------------------------
+  !---------------------------------------------
+  !---------------------------------------------
+
 CONTAINS
+
+  !---------------------------------------------
+  !------------- UVIC EXAMPLE ------------------
+  !---------------------------------------------
+
+  ! excrete (respire) extra C in food
+  SUBROUTINE zxrex (zoo, Rm, fQ)
+    IMPLICIT NONE
+    CLASS(ocf), INTENT(INOUT) :: zoo
+    REAL(dp), INTENT(IN) :: Rm, fQ
+    REAL(dp) :: EI
+    EI = zoo%E*zoo%IC
+    zoo%ngr = (EI*(1D0 - zoo%ca) - zoo%poc*(zoo%cf*zoo%Af + Rm))*fQ
+    zoo%RC  = EI - zoo%ngr        ! respiration
+    zoo%XC = zoo%IC*(1D0 - zoo%E) ! egestion
+  END SUBROUTINE zxrex
 
   ! temperature function for Mytilus edulis from Jenny's simulations
   FUNCTION fT_ME (temperature) RESULT (fT)
@@ -45,6 +87,10 @@ CONTAINS
     fT = (1D0 + (temperature - 15D0)*9.5D0)/260D0
   END FUNCTION fT_ME
   
+  !---------------------------------------------
+  !---------- FORTRAN EXAMPLE ------------------
+  !---------------------------------------------
+
   ! Return type, function, name, arguments
   integer function get_sum(n1, n2)
     implicit none
@@ -87,5 +133,9 @@ CONTAINS
     plus1 = n + 1
     plus2 = n + 2
   end subroutine plus_two
+
+  !---------------------------------------------
+  !---------------------------------------------
+  !---------------------------------------------
 
 END MODULE cfo_example

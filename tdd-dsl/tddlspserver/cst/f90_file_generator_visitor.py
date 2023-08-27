@@ -223,7 +223,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         # Update input unit of last new operation if no function expression was in between
         if self.last_op_id:
             last_op = self.ops.get(self.last_op_id)
-            if last_op[1] is not None:
+            if not last_op[1]:
                 last_op[1] = expr_unit
                 self.ops[self.last_op_id] = last_op
 

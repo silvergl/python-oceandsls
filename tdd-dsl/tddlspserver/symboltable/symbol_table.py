@@ -526,12 +526,12 @@ class ScopedSymbol(Symbol):
     # All child symbols in definition order.
     __child_symbols: List[Symbol]
     # List of scope symbols extending this symbol
-    __include_scopes: List[ScopedSymbol]
+    _include_scopes: List[ScopedSymbol]
 
     def __init__(self, name: str = ""):
         super().__init__(name)
         self.__child_symbols = []
-        self.__include_scopes: Optional[List[ScopedSymbol]] = []
+        self._include_scopes: Optional[List[ScopedSymbol]] = []
 
     def direct_scopes(self) -> Coroutine[List[ScopedSymbol]]:
         """
@@ -558,12 +558,12 @@ class ScopedSymbol(Symbol):
         self.__child_symbols = []
 
     def add_include(self, symbol: ScopedSymbol) -> None:
-        self.__include_scopes.append(symbol)
+        self._include_scopes.append(symbol)
 
     @property
     def include_names(self) -> List[str]:
         include_names: List[str] = []
-        for include in self.__include_scopes:
+        for include in self._include_scopes:
             include_names.append(include.name)
 
         return include_names
@@ -623,7 +623,7 @@ class ScopedSymbol(Symbol):
                 result.extend(local_list)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol) and include_scope not in callers:
                     local_list = include_scope.get_all_modules_with_file_sync(file, local_only, callers + [self])
                     result.extend(local_list)
@@ -748,7 +748,7 @@ class ScopedSymbol(Symbol):
                 result.extend(self.parent().get_symbols_of_type_and_name_sync(t, name, local_only))
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     result.extend(include_scope.get_symbols_of_type_and_name_sync(t, name, local_only))
 
@@ -775,7 +775,7 @@ class ScopedSymbol(Symbol):
                 result.extend(local_list)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     result.extend(include_scope.get_symbols_of_type_and_name_sync(t, name, local_only))
 
@@ -800,7 +800,7 @@ class ScopedSymbol(Symbol):
                 result.extend(self.parent().get_symbols_of_type_sync(t, local_only))
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     result.extend(include_scope.get_symbols_of_type_sync(t, local_only))
 
@@ -826,7 +826,7 @@ class ScopedSymbol(Symbol):
                 result.extend(localList)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     localList: List[T] = await include_scope.get_symbols_of_type(t, local_only)
                     result.extend(localList)
@@ -863,7 +863,7 @@ class ScopedSymbol(Symbol):
                 result.extend(localList)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     localList: List[T] = await include_scope.get_all_symbols(t, local_only, callers + [self])
                     result.extend(localList)
@@ -901,7 +901,7 @@ class ScopedSymbol(Symbol):
                 result.extend(local_list)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     local_list: List[T] = include_scope.get_all_symbols_sync(t, local_only, callers + [self])
                     result.extend(local_list)
@@ -927,7 +927,7 @@ class ScopedSymbol(Symbol):
                 return await self.parent().resolve(name, local_only)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     return await include_scope.resolve(name, local_only)
 
@@ -952,7 +952,7 @@ class ScopedSymbol(Symbol):
                 return self.parent().resolve_sync(name, local_only)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     return include_scope.resolve_sync(name, local_only)
 
@@ -977,7 +977,7 @@ class ScopedSymbol(Symbol):
                 result.extend(local_list)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     local_list = include_scope.get_typed_symbols(local_only)
                     result.extend(local_list)
@@ -1004,7 +1004,7 @@ class ScopedSymbol(Symbol):
                 result.extend(local_list)
 
             # Call scopes that are included
-            for include_scope in self.__include_scopes:
+            for include_scope in self._include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     local_list = include_scope.get_typed_symbol_names(local_only)
                     result.extend(local_list)
@@ -1110,12 +1110,8 @@ class TestCaseSymbol(ScopedSymbol):
     __test_name: str
     # System file path to the test file
     __test_file_path: str
-    # Symbol name of the sut
-    __sut_name: str
-    # System file path to the sut file
-    __sut_file_path: str
 
-    def __init__(self, test_name=None, test_file_path=None, sut_name=None, sut_file_path=None, lib_names=None):
+    def __init__(self, test_name=None, test_file_path=None):
         """
         A symbol representing a test case from TDD-DSL used for CMake file generation.
 
@@ -1127,8 +1123,17 @@ class TestCaseSymbol(ScopedSymbol):
         super().__init__(test_name)
         self.__test_name = test_name
         self.__test_file_path = test_file_path
-        self.__sut_name = sut_name
-        self.__sut_file_path = sut_file_path
+
+    def add_include(self, symbol: ModuleSymbol) -> None:
+        super().add_include(symbol)
+
+    @property
+    def include_files(self) -> List[str]:
+        include_names: List[str] = []
+        for include in self._include_scopes:
+            include_names.append(include.file)
+
+        return include_names
 
     @property
     def test_name(self) -> str:

@@ -69,7 +69,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             test_case_symbol: TestCaseSymbol = test_case[1]
 
             # Add name file mapping
-            suts[test_case_name] = test_case_symbol.include_names
+            suts[test_case_name] = test_case_symbol.include_files
 
             # Add test directory
             test_file = os.path.split(test_case_symbol.test_file_path)

@@ -262,7 +262,7 @@ def get_fundamental_type(type: str = "") -> Type | FundamentalType:
     for key in FundamentalType.__dict__.keys():
         if key == type.lower() + "_type":
             return getattr(FundamentalType, key)
-    return Type(name=type.lower())
+    return Type(name=type.lower(), base_types=None, kind=None, reference=None)
 
 
 class Symbol:

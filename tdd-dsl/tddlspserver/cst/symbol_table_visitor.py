@@ -16,7 +16,7 @@ from ..fxca.util.fxtran_utils import filter_xml, get_files, write_decorate_src_x
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
 from ..symboltable.symbol_table import FunctionSymbol, ModuleSymbol, ParameterSymbol, RoutineSymbol, ScopedSymbol, SymbolTable, SymbolTableOptions, \
-    TestCaseSymbol, VariableSymbol, P, T
+    TestCaseSymbol, VariableSymbol, P, T, get_fundamental_type
 
 
 class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
@@ -57,7 +57,8 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     # Visit a parse tree produced by TestSuiteParser#varDeclaration.
     def visitVarDeclaration(self, ctx: TestSuiteParser.VarDeclarationContext):
         name = ctx.name.text
-        var_type = self.visit(ctx.type_)
+        # Map variable type to symboltable type
+        var_type = get_fundamental_type(self.visit(ctx.type_))
         keys = []
         for key in ctx.keys:
             keys.append(key.keyword.text)
@@ -164,7 +165,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
             xml_elements = filter_xml(os.path.join(path, filename), True, module_symbols)
 
             # Add scopes
-            for scope_type, scope_name, scope_args, return_id, parent_scopes in xml_elements[1]:
+            for scope_type, scope_name, scope_args, return_type, parent_scopes in xml_elements[1]:
                 scope_sym: ScopedSymbol
 
                 # Top level symbols are omitted as they are only filtered modules in the current test case.
@@ -178,19 +179,24 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
 
                     match scope_type:
                         case "module":
+                            # Insert module with current scope name
                             self._symbol_table.add_new_symbol_of_type(ModuleSymbol, scope_sym, scope_name)
                         case "subroutine":
                             current_scope = self._scope
                             self._scope = scope_sym
+                            # Insert Subroutine symbol with current scope name
                             self.with_scope(ctx, False, RoutineSymbol, lambda: list(map(lambda arg: self.addRoutineParams(arg), scope_args)), scope_name)
                             self._scope = current_scope
                         case "function":
                             current_scope = self._scope
+                            # Map type to symboltable
+                            return_type = get_fundamental_type(return_type)
                             self._scope = scope_sym
+                            # Insert Function symbol with scope name, parameters and return type
                             self.with_scope(
                                 ctx, False, FunctionSymbol, lambda: list(
                                     map(lambda arg: self.addRoutineParams(arg), scope_args)
-                                ), scope_name, return_id
+                                ), scope_name, return_type
                             )
                             self._scope = current_scope
                         case _:
@@ -206,7 +212,10 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
                 for scope in variableScope:
                     scope_sym = scope_sym.resolve_sync(scope)
 
-                # TODO add value, convert type
+                # Map type to symboltable
+                variable_type = get_fundamental_type(variable_type)
+
+                # TODO add value
                 # Add the variable to the symboltable
                 self._symbol_table.add_new_symbol_of_type(VariableSymbol, scope_sym, variable_name, None, variable_type)
         try:

@@ -525,11 +525,12 @@ class ScopedSymbol(Symbol):
     """
     # All child symbols in definition order.
     __child_symbols: List[Symbol]
+    # List of scope symbols extending this symbol
+    __include_scopes: List[ScopedSymbol]
 
     def __init__(self, name: str = ""):
         super().__init__(name)
         self.__child_symbols = []
-        # List of used libraries
         self.__include_scopes: Optional[List[ScopedSymbol]] = []
 
     def direct_scopes(self) -> Coroutine[List[ScopedSymbol]]:
@@ -558,6 +559,14 @@ class ScopedSymbol(Symbol):
 
     def add_include(self, symbol: ScopedSymbol) -> None:
         self.__include_scopes.append(symbol)
+
+    @property
+    def include_names(self) -> List[str]:
+        include_names: List[str] = []
+        for include in self.__include_scopes:
+            include_names.append(include.name)
+
+        return include_names
 
     def add_symbol(self, symbol: Symbol) -> None:
         """
@@ -1105,8 +1114,6 @@ class TestCaseSymbol(ScopedSymbol):
     __sut_name: str
     # System file path to the sut file
     __sut_file_path: str
-    # List of used libraries
-    __lib_names: Dict[str, str]
 
     def __init__(self, test_name=None, test_file_path=None, sut_name=None, sut_file_path=None, lib_names=None):
         """
@@ -1121,24 +1128,6 @@ class TestCaseSymbol(ScopedSymbol):
         self.__test_name = test_name
         self.__test_file_path = test_file_path
         self.__sut_name = sut_name
-        self.__sut_file_path = sut_file_path
-
-        self.__lib_names = lib_names
-
-    @property
-    def sut_name(self) -> str:
-        return self.__sut_name
-
-    @sut_name.setter
-    def sut_name(self, sut_name: str):
-        self.__sut_name = sut_name
-
-    @property
-    def sut_file_path(self) -> str:
-        return self.__sut_file_path
-
-    @sut_file_path.setter
-    def sut_file_path(self, sut_file_path: str):
         self.__sut_file_path = sut_file_path
 
     @property
@@ -1156,14 +1145,6 @@ class TestCaseSymbol(ScopedSymbol):
     @test_file_path.setter
     def test_file_path(self, test_file_path: str):
         self.__test_file_path = test_file_path
-
-    @property
-    def lib_names(self) -> Dict[str, str]:
-        return self.__lib_names
-
-    @lib_names.setter
-    def lib_names(self, lib_names: Dict[str, str]):
-        self.__lib_names = lib_names
 
 
 class ModuleSymbol(ScopedSymbol):

@@ -10,7 +10,7 @@ __author__ = "sgu"
 import asyncio
 from dataclasses import dataclass
 from enum import Enum
-from typing import Coroutine, Dict, List, Optional, ParamSpec, Set, TypeVar
+from typing import Coroutine, List, Optional, ParamSpec, Set, TypeVar
 
 # antlr4
 from antlr4.tree.Tree import ParseTree
@@ -152,9 +152,9 @@ class Type:
 
     # The super type of this type or empty if this is a fundamental type.
     # Also used as the target type for type aliases.
-    base_types: List[Type]
-    kind: TypeKind
-    reference: ReferenceKind
+    base_types: Optional[List[Type]]
+    kind: Optional[TypeKind]
+    reference: Optional[ReferenceKind]
 
 
 @dataclass
@@ -234,7 +234,11 @@ class FundamentalType(Type):
 
     @classproperty
     def integer_type(self) -> FundamentalType:
-        return FundamentalType(name="int", type_kind=TypeKind.Integer)
+        return FundamentalType(name="integer", type_kind=TypeKind.Integer)
+
+    @classproperty
+    def real_type(self) -> FundamentalType:
+        return FundamentalType(name="real", type_kind=TypeKind.Float)
 
     @classproperty
     def float_type(self) -> FundamentalType:
@@ -247,6 +251,18 @@ class FundamentalType(Type):
     @classproperty
     def bool_type(self) -> FundamentalType:
         return FundamentalType(name="bool", type_kind=TypeKind.Boolean)
+
+
+def get_fundamental_type(type: str = "") -> Type | FundamentalType:
+    """
+    Return FundamentalType of type or, if non-existent, new Type of type
+    :param type: type name to return
+    :return: FundamentalType of type or, if non-existent, new Type of type
+    """
+    for key in FundamentalType.__dict__.keys():
+        if key == type.lower() + "_type":
+            return getattr(FundamentalType, key)
+    return Type(name=type.lower())
 
 
 class Symbol:

@@ -578,7 +578,6 @@ class ScopedSymbol(Symbol):
                     if len(name) == 0:
                         name = "<anonymous>"
 
-                    print('stop')
                     raise DuplicateSymbolError({"message": "Attempt to add duplicate symbol \"%s\"" % name})
 
         self.children().append(symbol)
@@ -771,7 +770,6 @@ class ScopedSymbol(Symbol):
                 if isinstance(include_scope, ScopedSymbol):
                     result.extend(include_scope.get_symbols_of_type_and_name_sync(t, name, local_only))
 
-
         return result
 
     def get_symbols_of_type_sync(self, t: type, local_only: bool = True) -> List[T]:
@@ -796,7 +794,6 @@ class ScopedSymbol(Symbol):
             for include_scope in self.__include_scopes:
                 if isinstance(include_scope, ScopedSymbol):
                     result.extend(include_scope.get_symbols_of_type_sync(t, local_only))
-
 
         return result
 
@@ -1207,7 +1204,12 @@ class VariableSymbol(UnitSymbol):
 class PathSymbol(VariableSymbol):
     pass
 
+
 class ParameterSymbol(VariableSymbol):
+    pass
+
+
+class ReturnSymbol(VariableSymbol):
     pass
 
 
@@ -1215,11 +1217,15 @@ class RoutineSymbol(ScopedSymbol):
     """
     A standalone function/procedure/rule.
     """
-    return_type: Optional[Type]  # Can be null if result is void.
+    __return_type: Optional[Type]  # Can be null if result is void.
 
-    def __init__(self, name: str, returnType: Type = None):
+    def __init__(self, name: str, return_type: Type = None):
         super().__init__(name)
-        self.return_type = returnType
+        self.__return_type = return_type
+
+    @property
+    def return_type(self) -> Type | None:
+        return self.__return_type
 
     def get_variables(self, local_only=True) -> Coroutine[List[T]]:
         return self.get_symbols_of_type(VariableSymbol, local_only)
@@ -1230,6 +1236,7 @@ class RoutineSymbol(ScopedSymbol):
 
 class FunctionSymbol(RoutineSymbol):
     pass
+
 
 @dataclass
 class SymbolTableInfo:

@@ -11,12 +11,12 @@ from typing import TypeVar, Generic, Dict, Optional, Callable, Any
 from antlr4.tree.Tree import ParseTree
 
 # user relative imports
-from ..symbolTable.SymbolTable import (ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol,
+from symbolTable.SymbolTable import (ScopedSymbol, SymbolTable, P, T, VariableSymbol, RoutineSymbol,
                                        SymbolTableOptions, UnitSymbol, FundamentalUnit, FundamentalType, UnitPrefix,
-                                       UnitKind,ReferenceKind
+                                       UnitKind,ReferenceKind, AggregatedUnit, CompartmentSymbol
                                        )
-from ..gen.python.BgcDsl.BgcDslParser import BgcDslParser
-from ..gen.python.BgcDsl.BgcDslVisitor import BgcDslVisitor
+from gen.python.BgcDsl.BgcDslParser import BgcDslParser
+from gen.python.BgcDsl.BgcDslVisitor import BgcDslVisitor
 
 
 def _stringToPrefix(input: str):
@@ -77,7 +77,7 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
         # TODO
         # save type
         # save unit as node
-        unit =self.visit(ctx.unit)
+#        unit =self.visit(ctx.unit)
         self._symbolTable.addNewSymbolOfType( VariableSymbol,
                                               self._scope,
                                               ctx.name.text,
@@ -92,7 +92,7 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
         # save type
         # save unit, expression as node
 
-        unit = ctx.unit()
+ #       unit = ctx.unit()
         unit_node = self.visit(ctx.unit())
         self._symbolTable.addNewSymbolOfType( VariableSymbol,
                                               self._scope,
@@ -119,7 +119,7 @@ class SymbolTableVisitor( BgcDslVisitor, Generic[T] ):
 
     def visitCompartment(self, ctx:BgcDslParser.CompartmentContext):
 
-        self._symbolTable.addNewSymbolOfType( VariableSymbol, self._scope, ctx.name.text, value=ctx )
+        self._symbolTable.addNewSymbolOfType(CompartmentSymbol, self._scope, ctx.name.text, value=ctx )
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by BgcDslParser#connection.

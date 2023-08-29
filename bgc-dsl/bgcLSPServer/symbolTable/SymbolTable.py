@@ -229,7 +229,7 @@ class FundamentalUnit( Unit ):
 
 class AggregatedUnit(Unit):
     def __init__(self, name: str, units, exponent = 1):
-        super().__init__(name=name, baseTypes=[], kind=UnitKind.Unknown, reference=ReferenceKind.Irrelevant, prefox=UnitPrefix.Nop, exponent=exponent)
+        super().__init__(name=name, baseTypes=[], kind=UnitKind.Unknown, reference=ReferenceKind.Irrelevant, prefix=UnitPrefix.NoP, exponent=exponent)
         self.units = units
 
 class FundamentalType( Type ):
@@ -893,6 +893,13 @@ class LiteralSymbol( UnitSymbol ):
 
 
 class ParameterSymbol( VariableSymbol ):
+    pass
+
+class CompartmentSymbol(VariableSymbol):
+    def __init__(self, name: str, value = None, attached_unit: Unit = None, attached_type: Type = None):
+        super().__init__( name,value,attached_unit, attached_type )
+
+class SubstanceSymbol (VariableSymbol):
     pass
 
 

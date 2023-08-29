@@ -1,0 +1,80 @@
+model cnp_recom
+substances
+	float N : mmol
+	float C : mmol
+	float P : mmol
+	float Chl : mmol
+
+parameters
+	float Q_r_C_N : mmol C (mmol N)^-1 = 5.5   //
+	float Q_r_N_P :  mmol N (mmol P)^-1 = 16.0  //
+
+diagnostics
+	float T_K : K = 0
+	float I : W m^-2
+
+
+compartment Nutrients {
+	states
+		DIN = 0
+		DIP = 0
+		DIC = 0
+		_TA = 0
+
+	parameters
+
+		float rho_C :: = 0
+		float rho_N :: = 0
+		float rho_P :: = 0
+
+    diagnostics
+         string species  ::
+         int fT  ::
+         int fTam ::
+         float Q10 ::
+         float ggem ::
+         float sticky ::
+         float QN ::
+         float QP ::
+         float Tref ::
+         float Vmax ::
+         float lambda ::
+         float ADIM ::
+         float zeta ::
+
+    update N=0
+    }
+
+compartment Het {
+	states
+		C = 0
+		N = 0
+		P = 0
+
+	parameters
+		float rho_F :: = 0
+		float rho_Na :: = 0
+		float rho_Pa :: = 0
+
+    diagnostics
+         string species_a ::
+         int fT_a  ::
+         int fTam_a ::
+         float Q10_a ::
+         float ggem_a ::
+         float sticky_a ::
+         float QN_a ::
+         float QP_a  ::
+         float Tref_a  ::
+         float Vmax_a  ::
+         float lambda_a  ::
+         float ADIM_a  ::
+         float zeta_a  ::
+
+
+	update N = 0
+
+}
+
+
+

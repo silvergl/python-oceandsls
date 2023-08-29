@@ -4,5 +4,5 @@ SUBROUTINE {{module_name}}_read (grp, env, lun)
     TYPE(local), TARGET, INTENT(IN) :: env
     INTEGER, INTENT(IN) :: lun
 
-    {%include 'read_namelist'%}
+    {%include 'read_namelist.txt'%}
 

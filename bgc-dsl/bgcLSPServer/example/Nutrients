@@ -1,0 +1,45 @@
+TYPE, EXTENDS(fungroup), PUBLIC :: 
+    
+
+  ::{ %include 'parameter_declaration'%}
+
+  ::{ %include 'parameter_declaration'%}
+
+  ::{ %include 'parameter_declaration'%}
+
+
+
+CONTAINS
+    PROCEDURE :: flux => _flux
+    PROCEDURE :: read => _read
+    PROCEDURE :: set => _set 
+
+CONTAINS
+
+SUBROUTINE _read (grp, env, lun)    
+    IMPLICIT NONE
+    CLASS(), TARGET, INTENT(INOUT) :: grp
+    TYPE(local), TARGET, INTENT(IN) :: env
+    INTEGER, INTENT(IN) :: lun
+
+    DO
+    
+    READ (lun, NML=bac, END=100, IOMSG=msg, ERR=900)
+    IF (TRIM(species).EQ.TRIM(grp%name)) EXIT
+END DO
+
+
+
+SUBROUTINE _flux (grp, grps, env)   
+    IMPLICIT NONE
+    CLASS(), TARGET, INTENT(INOUT) :: grp
+    TYPE(state), DIMENSION(:), INTENT(IN) :: grps
+    TYPE(local), TARGET, INTENT(INOUT) :: env
+
+SUBROUTINE _flux (grp, grps, env, box, times)
+    IMPLICIT NONE
+    CLASS(), INTENT(INOUT) :: grp
+    TYPE(state), DIMENSION(:), INTENT(IN) :: grps
+    TYPE(local), INTENT(INOUT) :: env
+    TYPE(layer), INTENT(INOUT) :: box(0:)
+    TYPE(timing), INTENT(IN) :: times

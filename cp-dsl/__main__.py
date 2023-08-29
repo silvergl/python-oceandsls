@@ -5,7 +5,6 @@ import os
 #relative imports
 from .confLSPServer.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
 from .confLSPServer.gen.python.Configuration.ConfigurationParser import ConfigurationParser
-from .confLSPServer.symbolTable.SymbolTable import VariableSymbol
 from .confLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
 from .confLSPServer.utils.calc import DeclarationCalculator, ConfigurationCalculator
 from .confLSPServer.fileWriter.CodeGenerator import UvicCodeGenerator, mitGcmCodeGenerator

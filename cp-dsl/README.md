@@ -1,6 +1,7 @@
 # cp-dsl for biogeochemical models
 
 ## Install
+required python packages: (antlr4), antlr4-python3-runtime, pygls, jinja2, lsprotocol
 ### Check python packages (optional)
 - update package manager tools
   - `python -m pip install --upgrade pip setuptools wheel`

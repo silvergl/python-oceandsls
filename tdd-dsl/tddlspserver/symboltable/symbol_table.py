@@ -37,15 +37,15 @@ class MemberVisibility(Enum):
     Library = 6
 
 
-class Modifier(Enum):
-    Static = 0
-    Final = 1
-    Sealed = 2
-    Abstract = 3
-    Deprecated = 4
-    Virtual = 5
-    Const = 6
-    Overwritten = 7
+# class Modifier(Enum):
+#     Static = 0
+#     Final = 1
+#     Sealed = 2
+#     Abstract = 3
+#     Deprecated = 4
+#     Virtual = 5
+#     Const = 6
+#     Overwritten = 7
 
 
 class TypeKind(Enum):
@@ -67,14 +67,14 @@ class TypeKind(Enum):
     Alias = 12
 
 
-class ReferenceKind(Enum):
-    Irrelevant = 0
-    # Default for most languages for dynamically allocated memory ("Type*" in C++).
-    Pointer = 1
-    # "Type&" in C++
-    Reference = 2
-    # "Type" as such and default for all value types.
-    Instance = 3
+# class ReferenceKind(Enum):
+#     Irrelevant = 0
+#     # Default for most languages for dynamically allocated memory ("Type*" in C++).
+#     Pointer = 1
+#     # "Type&" in C++
+#     Reference = 2
+#     # "Type" as such and default for all value types.
+#     Instance = 3
 
 
 class UnitKind(Enum):
@@ -140,7 +140,7 @@ class Unit:
     base_types: List[Unit]
     prefix: UnitPrefix
     kind: UnitKind
-    reference: ReferenceKind
+    # reference: ReferenceKind
 
 
 @dataclass
@@ -154,7 +154,7 @@ class Type:
     # Also used as the target type for type aliases.
     base_types: Optional[List[Type]]
     kind: Optional[TypeKind]
-    reference: Optional[ReferenceKind]
+    # reference: Optional[ReferenceKind]
 
 
 @dataclass
@@ -172,9 +172,10 @@ class FundamentalUnit(Unit):
     """
     A single class for all fundamental units which are mostly SI units. They are distinguished via the kind field.
     """
-
-    def __init__(self, name: str, base_types=[], unit_prefix=UnitPrefix.NoP, unit_kind=UnitKind.Unknown, reference_kind=ReferenceKind.Irrelevant):
-        super().__init__(name=name, base_types=base_types, kind=unit_kind, reference=reference_kind, prefix=unit_prefix)
+    #, reference_kind=ReferenceKind.Irrelevant
+    def __init__(self, name: str, base_types=[], unit_prefix=UnitPrefix.NoP, unit_kind=UnitKind.Unknown):
+        #, reference=reference_kind
+        super().__init__(name=name, base_types=base_types, kind=unit_kind, prefix=unit_prefix)
 
     @classproperty
     def second_unit(self) -> FundamentalUnit:
@@ -228,9 +229,10 @@ class FundamentalType(Type):
     """
     A single class for all fundamental types. They are distinguished via the kind field.
     """
-
-    def __init__(self, name: str, base_types=[], type_kind=TypeKind.Unknown, reference_kind=ReferenceKind.Irrelevant):
-        super().__init__(name=name, base_types=base_types, kind=type_kind, reference=reference_kind)
+    # , reference_kind=ReferenceKind.Irrelevant
+    def __init__(self, name: str, base_types=[], type_kind=TypeKind.Unknown):
+        #, reference=reference_kind
+        super().__init__(name=name, base_types=base_types, kind=type_kind)
 
     @classproperty
     def integer_type(self) -> FundamentalType:
@@ -262,7 +264,8 @@ def get_fundamental_type(type: str = "") -> Type | FundamentalType:
     for key in FundamentalType.__dict__.keys():
         if key == type.lower() + "_type":
             return getattr(FundamentalType, key)
-    return Type(name=type.lower(), base_types=None, kind=None, reference=None)
+    # , reference=None
+    return Type(name=type.lower(), base_types=None, kind=None)
 
 
 class Symbol:
@@ -499,24 +502,24 @@ class UnitSymbol(TypedSymbol):
         self.attached_unit = attached_unit
 
 
-class TypeAlias(Symbol, Type):
-    """
-    An alias for another type.
-    """
-    __target_type: Type
-
-    def __init__(self, name: str, target: Type):
-        super().__init__(name)
-        self.__target_type = target
-
-    def base_types(self) -> List[Type]:
-        return [self.__target_type]
-
-    def kind(self) -> TypeKind:
-        return TypeKind.Alias
-
-    def reference(self) -> ReferenceKind:
-        return ReferenceKind.Irrelevant
+# class TypeAlias(Symbol, Type):
+#     """
+#     An alias for another type.
+#     """
+#     __target_type: Type
+#
+#     def __init__(self, name: str, target: Type):
+#         super().__init__(name)
+#         self.__target_type = target
+#
+#     def base_types(self) -> List[Type]:
+#         return [self.__target_type]
+#
+#     def kind(self) -> TypeKind:
+#         return TypeKind.Alias
+#
+#     def reference(self) -> ReferenceKind:
+#         return ReferenceKind.Irrelevant
 
 
 class ScopedSymbol(Symbol):
@@ -851,9 +854,9 @@ class ScopedSymbol(Symbol):
             if isinstance(child, t):
                 result.append(child)
 
-            if isinstance(child, NamespaceSymbol) and child not in callers:
-                child_symbols: List[T] = await child.get_all_symbols(t, True, callers + [self])
-                result.extend(child_symbols)
+            # if isinstance(child, NamespaceSymbol) and child not in callers:
+            #     child_symbols: List[T] = await child.get_all_symbols(t, True, callers + [self])
+            #     result.extend(child_symbols)
 
         # TODO sgu fixed bug: no recursive call
         if not local_only:
@@ -889,9 +892,9 @@ class ScopedSymbol(Symbol):
             if isinstance(child, t):
                 result.append(child)
 
-            if isinstance(child, NamespaceSymbol) and child not in callers:
-                child_symbols: List[T] = child.get_all_symbols_sync(t, True, callers + [self])
-                result.extend(child_symbols)
+            # if isinstance(child, NamespaceSymbol) and child not in callers:
+            #     child_symbols: List[T] = child.get_all_symbols_sync(t, True, callers + [self])
+            #     result.extend(child_symbols)
 
         # TODO sgu fixed bug: no recursive call
         if not local_only:
@@ -1093,13 +1096,8 @@ class ScopedSymbol(Symbol):
         return self.parent().next_of(self)
 
 
-class NamespaceSymbol(ScopedSymbol):
-    pass
-
-
-class BlockSymbol(ScopedSymbol):
-    pass
-
+# class NamespaceSymbol(ScopedSymbol):
+#     pass
 
 class TestCaseSymbol(ScopedSymbol):
     """
@@ -1272,58 +1270,58 @@ class SymbolTable(ScopedSymbol):
 
         return result
 
-    async def add_new_namespace_from_path(
-        self, parent: Optional[ScopedSymbol], path: str, delimiter="."
-    ) -> NamespaceSymbol:
-        """
-        Asynchronously adds a new namespace to the symbol table or the given parent. The path parameter specifies a
-        single namespace name or a chain of namespaces (which can be e.g. "outer.intermittent.inner.final"). If any of
-        the parent namespaces is missing they are created implicitly. The final part must not exist however or you'll
-        get a duplicate symbol error.
-
-        :param parent: The parent to add the namespace to.
-        :param path: The namespace path.
-        :param delimiter: The delimiter used in the path.
-        :return: The new symbol.
-        """
-        parts = path.split(delimiter)
-        i = 0
-        current_parent = self if parent is None else parent
-        while i < len(parts) - 1:
-            namespace: NamespaceSymbol = await current_parent.resolve(parts[i], True)
-            if namespace is None:
-                namespace = self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[i])
-
-            current_parent = namespace
-            i += 1
-
-        return self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[len(parts) - 1])
-
-    def add_new_namespace_from_path_sync(self, parent: Optional[ScopedSymbol], path: str, delimiter=".") -> NamespaceSymbol:
-        """
-        Synchronously adds a new namespace to the symbol table or the given parent. The path parameter specifies a
-        single namespace name or a chain of namespaces (which can be e.g. "outer.intermittent.inner.final"). If any of
-        the parent namespaces is missing they are created implicitly. The final part must not exist however or you'll
-        get a duplicate symbol error.
-
-        :param parent: The parent to add the namespace to.
-        :param path: The namespace path.
-        :param delimiter: The delimiter used in the path.
-        :return: The new symbol.
-        """
-        parts = path.split(delimiter)
-        i = 0
-        current_parent = self if parent is None else parent
-
-        while i < len(parts) - 1:
-            namespace: NamespaceSymbol = current_parent.resolve_sync(parts[i], True)
-            if namespace is None:
-                namespace = self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[i])
-
-            current_parent = namespace
-            i += 1
-
-        return self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[len(parts) - 1])
+    # async def add_new_namespace_from_path(
+    #     self, parent: Optional[ScopedSymbol], path: str, delimiter="."
+    # ) -> NamespaceSymbol:
+    #     """
+    #     Asynchronously adds a new namespace to the symbol table or the given parent. The path parameter specifies a
+    #     single namespace name or a chain of namespaces (which can be e.g. "outer.intermittent.inner.final"). If any of
+    #     the parent namespaces is missing they are created implicitly. The final part must not exist however or you'll
+    #     get a duplicate symbol error.
+    #
+    #     :param parent: The parent to add the namespace to.
+    #     :param path: The namespace path.
+    #     :param delimiter: The delimiter used in the path.
+    #     :return: The new symbol.
+    #     """
+    #     parts = path.split(delimiter)
+    #     i = 0
+    #     current_parent = self if parent is None else parent
+    #     while i < len(parts) - 1:
+    #         namespace: NamespaceSymbol = await current_parent.resolve(parts[i], True)
+    #         if namespace is None:
+    #             namespace = self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[i])
+    #
+    #         current_parent = namespace
+    #         i += 1
+    #
+    #     return self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[len(parts) - 1])
+    #
+    # def add_new_namespace_from_path_sync(self, parent: Optional[ScopedSymbol], path: str, delimiter=".") -> NamespaceSymbol:
+    #     """
+    #     Synchronously adds a new namespace to the symbol table or the given parent. The path parameter specifies a
+    #     single namespace name or a chain of namespaces (which can be e.g. "outer.intermittent.inner.final"). If any of
+    #     the parent namespaces is missing they are created implicitly. The final part must not exist however or you'll
+    #     get a duplicate symbol error.
+    #
+    #     :param parent: The parent to add the namespace to.
+    #     :param path: The namespace path.
+    #     :param delimiter: The delimiter used in the path.
+    #     :return: The new symbol.
+    #     """
+    #     parts = path.split(delimiter)
+    #     i = 0
+    #     current_parent = self if parent is None else parent
+    #
+    #     while i < len(parts) - 1:
+    #         namespace: NamespaceSymbol = current_parent.resolve_sync(parts[i], True)
+    #         if namespace is None:
+    #             namespace = self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[i])
+    #
+    #         current_parent = namespace
+    #         i += 1
+    #
+    #     return self.add_new_symbol_of_type(NamespaceSymbol, current_parent, parts[len(parts) - 1])
 
     async def get_all_symbols(self, t: type, local_only: bool = False, callers: List[T] = []) -> List[T]:
         """

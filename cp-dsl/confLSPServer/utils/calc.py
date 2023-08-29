@@ -12,11 +12,13 @@ from ..gen.python.Declaration.DeclarationParser import DeclarationParser
 from ..symbolTable.SymbolTable import ArraySymbol, SymbolTable
 
 class DeclarationCalculator():
+    '''A calculator for default values of parameter'''
     def __init__(self, symbolTable : SymbolTable) -> None:
         self._symbolTable = symbolTable
         self._scope = symbolTable
 
     def calcVariable(self, variableSymbol : VariableSymbol):
+        '''calculates a variable or a array and writes its value'''
         # check if the context is a Array or a simple Value
         ctx = variableSymbol.context
         if variableSymbol.is_array:
@@ -37,6 +39,7 @@ class DeclarationCalculator():
                 print("WARNING: no default value defined for Variable", variableSymbol.name)
 
     def calcArithmeticExpressionArray(self, varctx : DeclarationParser.ParamAssignStatContext, ctx : DeclarationParser.ArithmeticExpressionContext, arraySymbol : ArraySymbol):
+        '''calculates a array in decl language'''
         #tupleList representation: list[2:4,5] = [range(2,4), range(5)]
         #wanted: list[2,4:8] = [[(4,1),(5,2),(6,3),(7,4),(8,5)],[(4,1),(5,2),(6,3),(7,4),(8,5)],[(4,1),(5,2),(6,3),(7,4),(8,5)]]
         def convertToTupleList(rangeList : list, calcList, vector : list, depht : int) -> None:
@@ -88,6 +91,7 @@ class DeclarationCalculator():
         
 
     def calcArithmeticExpression(self, ctx: DeclarationParser.ArithmeticExpressionContext, variableSymbol : VariableSymbol):
+        '''calculates a normal arithmetic expression for parameter'''
         if ctx.getChildCount() == 1:
             # must be a multiplication Expression
             return self.calcMultiplicationExpression(ctx.multiplicationExpression(), variableSymbol)
@@ -107,6 +111,7 @@ class DeclarationCalculator():
             return operator(leftValue, rightValue)
         
     def calcMultiplicationExpression(self, ctx : DeclarationParser.MultiplicationExpressionContext, variableSymbol : VariableSymbol):
+        '''calculates a multiplication expression'''
         if ctx.getChildCount() == 1:
             return self.calcValueExpression(ctx.valueExpression(), variableSymbol)
         else:
@@ -130,6 +135,7 @@ class DeclarationCalculator():
             return operator(leftValue, rightValue)
         
     def calcValueExpression(self, ctx : DeclarationParser.ValueExpressionContext, variableSymbol : VariableSymbol):
+        '''calculates a value expression'''
         if ctx.parenthesisExpression():
             return self.calcParenthesisExpression(ctx.parenthesisExpression(), variableSymbol)
         if ctx.namedElementReference():
@@ -142,9 +148,11 @@ class DeclarationCalculator():
         return None
 
     def calcParenthesisExpression(self, ctx : DeclarationParser.ParenthesisExpressionContext, variableSymbol : VariableSymbol):
+        '''calculates a parenthesis expression (expression = arithmetic expression)'''
         return self.calcArithmeticExpression(ctx.expression, variableSymbol)
 
     def calcNamedElementReference(self, ctx : DeclarationParser.NamedElementReferenceContext, variableSymbol : VariableSymbol):
+        '''resolves a named element reference (Enums, Parameter, etc.) also can handle wrong parser choice to handle true or false'''
         #what is attribute? element is maybe a group
         elementAttribute = ctx.attribute.text if ctx.attribute else None
         if ctx.element.text == "true" or ctx.element.text == "false":
@@ -184,15 +192,18 @@ class DeclarationCalculator():
         print("Named Element", ctx.element.text, "could not be resolved")
 
     def calcArrayExpression(self, ctx : DeclarationParser.ArrayExpressionContext, variableSymbol : VariableSymbol):
+        '''calculates a array expression'''
         valueList = []
         for i in ctx.elements:
             valueList.append(self.calcArithmeticExpression(i, variableSymbol))
         return valueList
     
     def calcLiteralExpression(self, ctx : DeclarationParser.LiteralExpressionContext):
+        '''calculates a literal expression'''
         return self.calcLiteral(ctx.value)
     
     def calcLiteral(self, ctx : DeclarationParser.LiteralContext):
+        '''calculates a literal (string, long, double, boolean)'''
         if ctx.stringValue():
             return ctx.stringValue().value.text.strip('"')
         if ctx.longValue():
@@ -205,6 +216,7 @@ class DeclarationCalculator():
             return True
     
     def calculate(self) -> SymbolTable:
+        '''writes the calculated values in the value parameter of every paremeter found in symbol_table'''
         def recursionHelper(elem):
             if isinstance(elem, VariableSymbol):
                 self.calcVariable(elem)
@@ -222,11 +234,13 @@ class DeclarationCalculator():
 
 
 class ConfigurationCalculator(DeclarationCalculator):
+    '''A calculator for configurated values of parameter'''
     def __init__(self, symbolTable : SymbolTable, configurationList : list):
         super().__init__(symbolTable)
         self.configurationList = configurationList
 
     def calculate(self) -> SymbolTable:
+        '''writes the calculated values in value parameter of every (in order) configurated parameter'''
         for elem, index in self.configurationList:
             if isinstance(elem, ScopedSymbol):
                 self._scope = elem
@@ -236,6 +250,7 @@ class ConfigurationCalculator(DeclarationCalculator):
         return self._symbolTable
 
     def calcVariable(self, variableSymbol : VariableSymbol, index : int):
+        '''calculates a parameter or an array'''
         ctx = variableSymbol.configuration[index]
         # check if the context is a Array or a simple Value
         if variableSymbol.is_array:
@@ -247,6 +262,7 @@ class ConfigurationCalculator(DeclarationCalculator):
             variableSymbol.is_tree = False
 
     def calcArithmeticExpressionArray(self, varctx : ConfigurationParser.ParameterAssignmentContext, ctx : ConfigurationParser.ArithmeticExpressionContext, arraySymbol: ArraySymbol):
+        '''calculates a array configuration'''
         #tupleList representation: list[2:4,5] = [range(2,4), range(5)]
         #wanted: list[2,4:8] = [[(4,1),(5,2),(6,3),(7,4),(8,5)],[(4,1),(5,2),(6,3),(7,4),(8,5)],[(4,1),(5,2),(6,3),(7,4),(8,5)]]
         def convertToTupleList(rangeList : list, calcList, vector : list, depht : int) -> list:

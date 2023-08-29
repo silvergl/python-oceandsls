@@ -859,7 +859,15 @@ class ScopedSymbol( Symbol ):
 
 
 class VariableSymbol( Symbol ):
-    
+    """a class for parameter of cp-dsl
+
+    Args:
+        Symbol (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
     def __init__(self, name: str, description: str = "", value = None, unitSpecification : UnitSpecification = None, type = None):
         super().__init__(name)
         self.description = description
@@ -878,11 +886,17 @@ class VariableSymbol( Symbol ):
         return self.val
 
 class EnumSymbol(Symbol):
+    '''
+    a class for enums of cp-dsl language
+    '''
     def __init__(self, name: str = "", enums = None):
         super().__init__(name)
         self.enums = enums
 
 class RangeSymbol(Symbol):
+    '''
+    a class for ranges in cp-dsl
+    '''
     def __init__(self, name, type, minimum, maximum):
         super().__init__(name)
         self.type = type
@@ -915,8 +929,8 @@ class ArraySymbol(VariableSymbol):
     def add(self, vector, val) -> None:
         """
         adds a value in the array
-        vector: the index of the value
-        val: the value to save in the array
+        :vector: the index of the value
+        :val: the value to save in the array
         """
         #n Dimension Support
         if len(vector) >= 2:
@@ -947,7 +961,8 @@ class ArraySymbol(VariableSymbol):
     def get(self, index) -> T:
         """
         get a value out of the list, None if not available
-        index: the index of the value to return
+        :index: the index of the value to return
+        :return: the value on given index
         """
         try:
             if isinstance(index, list):
@@ -959,7 +974,8 @@ class ArraySymbol(VariableSymbol):
     def getVector(self, vector) -> T:
         """
         get a value out of the list recursive given by a vector
-        vector: the vector
+        :vector: the vector
+        :return: the value on the vector
         """
         if len(vector) >= 2:
             currArray = self
@@ -978,7 +994,8 @@ class ArraySymbol(VariableSymbol):
     def remove(self, index) -> T:
         """
         removes and returns the value places at index
-        index: the index of the value to remove
+        :index: the index of the value to remove
+        :return: the value removed
         """
         i = self.vectors.index(index)
         self.vectors.pop(i)
@@ -987,7 +1004,7 @@ class ArraySymbol(VariableSymbol):
     def removeVal(self, val) -> None:
         """
         removes a given value from the array (first elem found)
-        val: the value to remove
+        :val: the value to remove
         """
         i = self.arrVal.index(val)
         self.vectors.pop(i)
@@ -996,6 +1013,8 @@ class ArraySymbol(VariableSymbol):
     def toArray(self, recursive = True) -> list:
         """
         converts the array in a pyton list
+        :recursive: convert also arrays in arrays
+        :return: the generated python list
         """
         returnVal = []
         for i in range(len(self)):
@@ -1015,6 +1034,8 @@ class ArraySymbol(VariableSymbol):
     def toNormalizedArray(self, recursive = True) -> list:
         """
         converts the array in a pyton list without nones
+        :recursive: convert also arrays in arrays
+        :return: the generated python list
         """
         returnVal = []
         for i in range(len(self)):
@@ -1030,6 +1051,9 @@ class ArraySymbol(VariableSymbol):
         return returnVal        
 
     def clear(self) -> None:
+        '''
+        removes all values from the array
+        '''
         self.vectors = []
         self.arrVal = []
 

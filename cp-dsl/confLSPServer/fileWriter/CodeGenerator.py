@@ -3,24 +3,53 @@ import os
 
 from confLSPServer.symbolTable.SymbolTable import SymbolTable
 
+__author__ = 'stu222808'
+
 #Relative imports
 from ..symbolTable.SymbolTable import SymbolTable, GroupSymbol, VariableSymbol, FeatureSymbol, EnumSymbol
 
 class StandartCodeGenerator():
-    def __init__(self, symbolTable : SymbolTable, outputPath : str) -> None:
+    """
+    a simple code generator representing a simple structrue and helpful functions
+    """
+    def __init__(self, symbolTable : SymbolTable, outputPath : str, templatePath = "") -> None:
         self._symbolTable : SymbolTable = symbolTable
         self.outputPath = outputPath
+        if templatePath == "":
+            self.templateLoader = j.PackageLoader(str(self.__module__), "<your_path>")
+            self.templateEnv = j.Environment(loader=self.templateLoader)
+        
+    def writeFile(self, content : str, filename : str):
+        """method to write content to a file inside the output folder
+
+        Args:
+            content (str): string to write into the file
+            filename (str): filename specified
+        """
+        path = os.path.join(self.outputPath, filename)
+        f = open(path, "w")
+        f.write(content)
+        f.close()
     
     def generate(self) -> None:
+        """generate method that uses jinja templates to write files into output path
+        """
         print("GIVE THE GENERATOR A TEMPLATE AND DATA TO WORK WITH")
 
 class UvicCodeGenerator(StandartCodeGenerator):
+    """code generator for uvic
+
+    Args:
+        StandartCodeGenerator (_type_): _description_
+    """
     def __init__(self, symbolTable : SymbolTable, outputPath : str) -> None:
         super().__init__(symbolTable, outputPath)
         self.templateLoader = j.PackageLoader(str(self.__module__), "jinja-templates/uvic")
         self.templateEnv = j.Environment(loader=self.templateLoader)
 
     def generate(self) -> None:
+        """generates uvic files
+        """
         #control in template
         templatecontr = self.templateEnv.get_template("control.in.template")
         controlPath = os.path.join(self.outputPath, "control.in")
@@ -52,25 +81,41 @@ class UvicCodeGenerator(StandartCodeGenerator):
         mk.close()
     
 class mitGcmCodeGenerator(StandartCodeGenerator):
+    """a generator for mitgcm
+
+    Args:
+        StandartCodeGenerator (_type_): _description_
+    """
     def __init__(self, symbolTable: SymbolTable, outputPath: str) -> None:
         super().__init__(symbolTable, outputPath)
         self.templateLoader = j.PackageLoader(str(self.__module__), "jinja-templates/mitgcm")
         self.templateEnv = j.Environment(loader=self.templateLoader)
 
-    def writeFile(self, content : str, filename : str):
-        path = os.path.join(self.outputPath, filename)
-        f = open(path, "w")
-        f.write(content)
-        f.close()
-
     def isConfigurated(self, elem : FeatureSymbol) -> bool:
+        """function to lookup if any parameter in elem was configurated
+
+        Args:
+            elem (FeatureSymbol): _description_
+
+        Returns:
+            bool: if one parameter was configurated
+        """
         groupSymbol = elem.getNestedSymbolsOfTypeSync(GroupSymbol)
         for param in groupSymbol:
             if len(param.configuration) > 0:
                 return True
         return False
     
-    def firstNotNoneElem(self, elem, type):
+    def firstNotNoneElem(self, elem, type) -> int:
+        """function for jinja template to avoid ',' behind last element
+
+        Args:
+            elem (_type_): the element to search inside for
+            type (_type_): the type to search for
+
+        Returns:
+            int: returns the index of last element
+        """
         index = 0
         for param in elem.getNestedSymbolsOfTypeSync(type):
             if param.value == None:
@@ -79,6 +124,8 @@ class mitGcmCodeGenerator(StandartCodeGenerator):
                 return index
 
     def generate(self) -> None:
+        """generates files for mitgcm
+        """
         #need groups, feature list
         groupList = {}
         featureList = {}
@@ -88,6 +135,11 @@ class mitGcmCodeGenerator(StandartCodeGenerator):
         featureTemplate = self.templateEnv.get_template("data.feature.template")
 
         def checkFeature(elem):
+            """a function to check if the givben feature is activated -> write the mitgcm file
+
+            Args:
+                elem (GroupSymbol, FeatureSymbol): a feature from mitgcm
+            """
             try:
                 if elem.is_activated:
                     if elem.name == "diagnostics":

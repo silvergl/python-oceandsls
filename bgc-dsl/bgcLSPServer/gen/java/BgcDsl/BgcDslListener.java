@@ -1,4 +1,4 @@
-// Generated from BgcDsl.g4 by ANTLR 4.12.0
+// Generated from BgcDsl.g4 by ANTLR 4.13.0
 package BgcDsl;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -137,6 +137,16 @@ public interface BgcDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAlternativeCalculation(BgcDslParser.AlternativeCalculationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link BgcDslParser#caseCalculation}.
+	 * @param ctx the parse tree
+	 */
+	void enterCaseCalculation(BgcDslParser.CaseCalculationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BgcDslParser#caseCalculation}.
+	 * @param ctx the parse tree
+	 */
+	void exitCaseCalculation(BgcDslParser.CaseCalculationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link BgcDslParser#unit}.
 	 * @param ctx the parse tree

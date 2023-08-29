@@ -2,6 +2,8 @@
 SUBROUTINE test_fT_ME()
  use cfo_example
  use funit
+ use additional_use_0
+ use additional_use_1
 
  INTEGER, PARAMETER :: dp=KIND(0D0) 
 

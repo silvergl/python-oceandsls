@@ -1,4 +1,4 @@
-// Generated from BgcDsl.g4 by ANTLR 4.12.0
+// Generated from BgcDsl.g4 by ANTLR 4.13.0
 package BgcDsl;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -103,6 +103,13 @@ public class BgcDslBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitAlternativeCalculation(BgcDslParser.AlternativeCalculationContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitCaseCalculation(BgcDslParser.CaseCalculationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

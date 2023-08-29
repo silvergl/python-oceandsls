@@ -1,0 +1,6 @@
+<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="additional_use_0.f90">
+<module-stmt>MODULE <module-N><N n="ADDITIONAL_USE_0"><n>additional_use_0</n></N></module-N></module-stmt>
+  <implicit-none-stmt>IMPLICIT NONE</implicit-none-stmt>
+
+<end-module-stmt>END MODULE <module-N><N n="ADDITIONAL_USE_0"><n>additional_use_0</n></N></module-N></end-module-stmt>
+</file></object>

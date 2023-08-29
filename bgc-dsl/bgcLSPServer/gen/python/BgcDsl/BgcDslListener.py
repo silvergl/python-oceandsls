@@ -1,6 +1,6 @@
-# Generated from BgcDsl.g4 by ANTLR 4.12.0
+# Generated from BgcDsl.g4 by ANTLR 4.13.0
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .BgcDslParser import BgcDslParser
 else:
     from BgcDslParser import BgcDslParser
@@ -122,6 +122,15 @@ class BgcDslListener(ParseTreeListener):
 
     # Exit a parse tree produced by BgcDslParser#alternativeCalculation.
     def exitAlternativeCalculation(self, ctx:BgcDslParser.AlternativeCalculationContext):
+        pass
+
+
+    # Enter a parse tree produced by BgcDslParser#caseCalculation.
+    def enterCaseCalculation(self, ctx:BgcDslParser.CaseCalculationContext):
+        pass
+
+    # Exit a parse tree produced by BgcDslParser#caseCalculation.
+    def exitCaseCalculation(self, ctx:BgcDslParser.CaseCalculationContext):
         pass
 
 

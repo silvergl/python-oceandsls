@@ -137,7 +137,7 @@ release_CP: $(CPGRAMMAR).tar.gz
 TDDPKGTARGETS = TestSuite
 
 # Release version used by release targets
-TDDPACKAGE = tdd-dsl/tddLSPServer
+TDDPACKAGE = tdd-dsl/tddlspserver
 TDDVER = $(strip $(shell cat version))
 TDDPYTDDVERDIR = $(TDDPACKAGE)-$(TDDVER)
 TDDPYBUILDDIR = $(TDDPACKAGE)/../build/$(TDDPYTDDVERDIR)

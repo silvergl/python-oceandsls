@@ -15,8 +15,8 @@ class StandartCodeGenerator():
     def __init__(self, symbolTable : SymbolTable, outputPath : str, templatePath = "") -> None:
         self._symbolTable : SymbolTable = symbolTable
         self.outputPath = outputPath
-        if templatePath == "":
-            self.templateLoader = j.PackageLoader(str(self.__module__), "<your_path>")
+        if not templatePath == "":
+            self.templateLoader = j.PackageLoader(str(self.__module__), templatePath)
             self.templateEnv = j.Environment(loader=self.templateLoader)
         
     def writeFile(self, content : str, filename : str):

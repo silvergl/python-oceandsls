@@ -232,6 +232,9 @@ def write_file(file_path: str = "", content: str | Dict = "", file_attr: tuple[f
         if show_debug_output and logger.isEnabledFor(logging.DEBUG):
             logger.debug(f"... create {path}")
 
+    # Get File extension for merge functions
+    extension: str = os.path.splitext(file_path)[1]
+
     # TODO hc
     # Create file if it doesn't exist else merge with existing file
     if os.path.exists(file_path):
@@ -249,7 +252,6 @@ def write_file(file_path: str = "", content: str | Dict = "", file_attr: tuple[f
             logger.debug(f"...try merge {file_path}")
 
         # Merge current content with original file content based on file extension
-        extension: str = os.path.splitext(file_path)[1]
         match extension:
             case ".f90":
                 # Insert operation at the module end
@@ -264,8 +266,22 @@ def write_file(file_path: str = "", content: str | Dict = "", file_attr: tuple[f
                 pass
 
     else:
-        # Set emtpy original content
-        content_org = ""
+        #
+        # Save content of new file for later merge
+        match extension:
+            case ".f90":
+                # Keep new content for later insert merge
+                content_org = content
+            case ".pf":
+                # Set emtpy original content for later difflib merge of file
+                content_org = ""
+            case ".txt":
+                # Keep new content for later insert merge
+                content_org = content
+            case _:
+                # TODO error
+                pass
+
 
     # Write rendered and optional merged content to file
     with open(file_path, mode="w", encoding="utf-8") as f:

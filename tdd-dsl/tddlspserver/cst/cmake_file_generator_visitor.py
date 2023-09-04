@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 # user relative imports
 from ..filewriter.file_writer import write_file
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
-from ..symboltable.symbol_table import SymbolTable
+from ..symboltable.symbol_table import SymbolTable, TestCaseSymbol
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
 from ..utils.suggest_variables import get_scope
 
@@ -64,13 +64,15 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         test_dirs = []
         for case in ctx.cases:
             test_case = self.visit(case)
-            sut = self.visit(case)
+
+            test_case_name: str = test_case[0]
+            test_case_symbol: TestCaseSymbol = test_case[1]
 
             # Add name file mapping
-            suts[test_case[0]] = list(test_case[1].lib_names.values())
+            suts[test_case_name] = test_case_symbol.include_files
 
             # Add test directory
-            test_file = os.path.split(test_case[1].test_file_path)
+            test_file = os.path.split(test_case_symbol.test_file_path)
             rel_test_dir = os.path.relpath(test_file[0], self.work_path)
             rel_test_dir = rel_test_dir if rel_test_dir != "." else None
 
@@ -141,7 +143,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.visit(ctx.srcpath)
 
         # Resolve test case symbol
-        test_case_symbol = get_scope(ctx, self.symbol_table)
+        test_case_symbol: TestCaseSymbol = get_scope(ctx, self.symbol_table)
 
         # Get system file paths
         test_file = os.path.split(test_case_symbol.test_file_path)

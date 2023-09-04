@@ -4,7 +4,7 @@ __author__ = "sgu"
 
 import os
 # util imports
-from typing import Any, Callable, Generic, List
+from typing import Callable, Generic
 
 # antlr4
 from antlr4.tree.Tree import ParseTree
@@ -13,7 +13,7 @@ from antlr4.tree.Tree import ParseTree
 from ..fxca.util.fxtran_utils import get_subdirectories_gen
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
-from ..symboltable.symbol_table import SymbolTable, BlockSymbol, PathSymbol, SymbolTableOptions, P, T
+from ..symboltable.symbol_table import SymbolTable, PathSymbol, SymbolTableOptions, P, T, TestCaseSymbol
 
 
 class SystemFileVisitor(TestSuiteVisitor, Generic[T]):
@@ -35,7 +35,7 @@ class SystemFileVisitor(TestSuiteVisitor, Generic[T]):
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
-        return self.with_scope(ctx, BlockSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        return self.with_scope(ctx, TestCaseSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
 
     # Return subdirectories under working path or user entered path
     def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):

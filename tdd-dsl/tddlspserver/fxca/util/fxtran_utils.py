@@ -117,18 +117,19 @@ def filter_xml(
             # Update return name of first functions without result statement
             scope_name = element.find(".//fx:n", ns).text
 
-            # Dereference returnType for functions
-            if is_filtered_scope and element.tag.endswith("function-stmt") and pub_element.is_public(scope_name):
+            # Dereference returnType for public functions
+            current_scope = ".".join(scope_stack)
+            if is_filtered_scope and element.tag.endswith("function-stmt") and pub_element.is_public(current_scope):
 
                 # Get the current scope from the scope stack
-                current_scope = ".".join(scope_stack)
+
                 # Get return name
-                result_id = scope_stack_var.get(current_scope).get("-1")
+                result_type = scope_stack_var.get(current_scope).get("-1")
                 # Get return type
-                result_type = last_variable_type if result_id == -1 else scope_stack_var.get(current_scope).get(result_id, "None")
-                # Set return type for corresponding scope
+                result_type = last_variable_type if result_type == -1 else result_type
+                # Set return type for current scope if current scope is returned
                 for scope in reversed(scopes):
-                    if scope_stack[-1] == scope[1] and scope[3] == result_id:
+                    if".".join([scope[4],scope[1]])== current_scope:
                         scope[3] = result_type
                         break
 
@@ -151,18 +152,18 @@ def filter_xml(
                 #     module_names.append(scope_name)
 
                 # TODO hc module
-                # Check if top level scope is in filtered scope or if filtered scope is empty
+                # Check if top level scope is in filtered scope
                 if not scope_stack and scope_name in module_names:
                     is_filtered_scope = True
                     module: ModuleSymbol = next(filter(lambda module: module.name == scope_name, modules))
 
-                    # get filename of original file
+                    # Get filename of original file
                     module.file = base_name
 
                     base_module = module
 
-            # Update scope stack
-            scope_stack.append(scope_name)
+            # Set result_id for dereference in all stacks
+            result_id = None
 
             # Check scope is filtered and is in filtered scope
             if is_filtered_scope:
@@ -175,7 +176,6 @@ def filter_xml(
                 current_scope = ".".join(scope_stack)
 
                 # Extract resultId for functions
-                result_id = None
                 if element.tag.endswith("function-stmt"):
                     result_element = element.find(".//fx:result-spec", ns)
                     if result_element:
@@ -185,11 +185,15 @@ def filter_xml(
 
                 # Add type, name and arguments to returning scopes
                 # Check public availability
-                if pub_element.is_public(scope_name):
+                scope_id = ".".join([current_scope,scope_name])
+                if pub_element.is_public(scope_id) and scope_name not in module_names:
                     scopes.append([stmt_name, scope_name, argument_names, result_id, current_scope])
 
-                # save result_id for dereference
-                scope_stack_var[".".join(scope_stack)] = {"-1": result_id} if result_id else {}
+            # Update scope stack
+            scope_stack.append(scope_name)
+
+            # Update scope stack variables for dereference in all stacks
+            scope_stack_var[".".join(scope_stack)] = {"-1": result_id} if result_id else {}
 
         # Store assignment statements for optional return values of functions
         elif element.tag.endswith("a-stmt"):
@@ -206,9 +210,11 @@ def filter_xml(
 
         # Store public available ids
         elif element.tag.endswith("public-stmt"):
+            current_scope = ".".join(scope_stack)
             pub_ids = list(map((lambda itm: itm.text), element.findall(".//fx:n", ns)))
             for item in pub_ids:
-                pub_element.pub_elements[item] = pub_element.pub_elements.get(item, [])
+                item_id = ".".join([current_scope,item])
+                pub_element.pub_elements[item_id] = pub_element.pub_elements.get(item_id, [])
 
         # Store private available ids
         elif element.tag.endswith("private-stmt"):
@@ -219,7 +225,8 @@ def filter_xml(
                 pub_element.default_private = True
             else:
                 for item in pr_ids:
-                    pub_element.pr_elements[item] = pub_element.pr_elements.get(item, [])
+                    item_id = ".".join([current_scope,item])
+                    pub_element.pr_elements[item_id] = pub_element.pr_elements.get(item_id, [])
 
         # Extract variables, public only, if needed
         elif element.tag.endswith("contains-stmt"):
@@ -266,10 +273,13 @@ def filter_xml(
                     variable_name = en_decl.find(".//fx:n", ns).text
 
                     # Add element to public object if Public attribute is found or extend attributes if element is already public
-                    pub_element_entry = pub_element.pub_elements.get(item, attributes)
+                    # TODO debug rm
+                    # pub_element_entry = pub_element.pub_elements.get(item, attributes)
+                    variable_id = ".".join([current_scope,variable_name])
+                    pub_element_entry = pub_element.pub_elements.get(".".join(variable_id))
                     # TODO hc Public
                     if pub_element_entry or "PUBLIC" in attributes:
-                        pub_element.pub_elements[variable_name] = pub_element_entry
+                        pub_element.pub_elements[variable_id] = pub_element_entry
 
                     # Save name for return type of functions
                     variable = (variable_name, variable_type, current_scope)
@@ -277,8 +287,12 @@ def filter_xml(
                     # Add variable with type to current scope
                     scope_stack_var.get(current_scope)[variable_name] = variable_type
 
-                    # Check public availability
-                    if pub_element.is_public(variable_name):
+                    # Update return type of current scope
+                    if scope_stack_var.get(current_scope).get("-1") == variable_name:
+                        scope_stack_var.get(current_scope)["-1"] = variable_type
+
+                    # Check public availability or variable is return variable of current scope
+                    if pub_element.is_public(variable_id):
                         # Save the variable names with their respective types and scopes
                         variables.append(variable)
 

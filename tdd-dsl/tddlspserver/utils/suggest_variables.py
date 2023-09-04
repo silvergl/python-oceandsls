@@ -67,7 +67,7 @@ def get_scope(context: ParserRuleContext, symbolTable: SymbolTable):
 
 
 def get_all_symbols_of_type(scope: ScopedSymbol, symbol_type: type):
-    symbols: List[Symbol] = run_async(scope.get_symbols_of_type, symbol_type, True)
+    symbols: List[Symbol] = run_async(scope.get_symbols_of_type, symbol_type, False)
     parent = scope.parent()
     while parent is not None and not isinstance(parent, ScopedSymbol):
         parent = parent.parent()
@@ -83,7 +83,7 @@ def suggest_symbols(symbol_table: SymbolTable, position: TokenPosition, symbol_t
     if isinstance(scope, ScopedSymbol):  # Local scope
         symbols = get_all_symbols_of_type(scope, symbol_type)
     else:  # Global scope
-        symbols = run_async(symbol_table.get_symbols_of_type, symbol_type)
+        symbols = run_async(symbol_table.get_symbols_of_type, symbol_type, False)
 
     # TODO deprecated if not in preferred rule
     # variable = position.context

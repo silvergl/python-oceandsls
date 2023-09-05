@@ -1,4 +1,4 @@
-// Generated from Declaration.g4 by ANTLR 4.12.0
+// Generated from Declaration.g4 by ANTLR 4.13.0
 package Declaration;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -135,17 +135,19 @@ public interface DeclarationVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBasicUnit(DeclarationParser.BasicUnitContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link DeclarationParser#sIUnit}.
+	 * Visit a parse tree produced by the {@code siunit}
+	 * labeled alternative in {@link DeclarationParser#sIUnit}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSIUnit(DeclarationParser.SIUnitContext ctx);
+	T visitSiunit(DeclarationParser.SiunitContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link DeclarationParser#customUnit}.
+	 * Visit a parse tree produced by the {@code customunit}
+	 * labeled alternative in {@link DeclarationParser#customUnit}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCustomUnit(DeclarationParser.CustomUnitContext ctx);
+	T visitCustomunit(DeclarationParser.CustomunitContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link DeclarationParser#composedUnit}.
 	 * @param ctx the parse tree

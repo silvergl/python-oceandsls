@@ -38,11 +38,11 @@ $(EXPGRAMMAR).tar.gz: $(EXPOBJDIR)/python/$(EXPPACKAGE)
 	cp $(EXPOBJDIR)/python/$(EXPPACKAGE)/* $(EXPPYBUILDDIR)
 	cp README.md $(EXPPYBUILDDIR)/README.md
 	cp LICENSE $(EXPPYBUILDDIR)
-	cd $(TDDPYBUILDDIR); tar -czf $@ $(EXPPYEXPVERDIR); cd ..
+	cd $(EXPPYBUILDDIR); tar -czf $@ $(EXPPYEXPVERDIR); cd ..
 
 release_EXP: $(EXPGRAMMAR).tar.gz
 	mkdir -p release
-	mv $(TDDPYBUILDDIR)/$(EXPGRAMMAR).tar.gz release/$(EXPGRAMMAR)-$(EXPVER).tar.gz
+	mv $(EXPPYBUILDDIR)/$(EXPGRAMMAR).tar.gz release/$(EXPGRAMMAR)-$(EXPVER).tar.gz
 
 #########################################################
 #                    BGC DSL
@@ -81,17 +81,17 @@ $(BGCGRAMMAR).tar.gz: $(BGCOBJDIR)/python/$(BGCPACKAGE)
 	cp $(BGCOBJDIR)/python/$(BGCPACKAGE)/* $(BGCPYBUILDDIR)
 	cp README.md $(BGCPYBUILDDIR)/README.md
 	cp LICENSE $(BGCPYBUILDDIR)
-	cd $(TDDPYBUILDDIR); tar -czf $@ $(BGCPYBGCVERDIR); cd ..
+	cd $(BGCPYBUILDDIR); tar -czf $@ $(BGCPYBGCVERDIR); cd ..
 
 release_BGC: $(BGCGRAMMAR).tar.gz
 	mkdir -p release
-	mv $(TDDPYBUILDDIR)/$(BGCGRAMMAR).tar.gz release/$(BGCGRAMMAR)-$(BGCVER).tar.gz
+	mv $(BGCPYBUILDDIR)/$(BGCGRAMMAR).tar.gz release/$(BGCGRAMMAR)-$(BGCVER).tar.gz
 
 #########################################################
 #                    CP DSL
 #########################################################
 
-CPPKGTARGETS = Terminals Expression Configuration Declaration
+CPPKGTARGETS = Terminals Expression Configuration
 
 # Release version used by release targets
 CPPACKAGE = cp-dsl/confLSPServer
@@ -124,11 +124,54 @@ $(CPGRAMMAR).tar.gz: $(CPOBJDIR)/python/$(CPPACKAGE)
 	cp $(CPOBJDIR)/python/$(CPPACKAGE)/* $(CPPYBUILDDIR)
 	cp README.md $(CPPYBUILDDIR)/README.md
 	cp LICENSE $(CPPYBUILDDIR)
-	cd $(TDDPYBUILDDIR); tar -czf $@ $(CPPYCPVERDIR); cd ..
+	cd $(CPPYBUILDDIR); tar -czf $@ $(CPPYCPVERDIR); cd ..
 
 release_CP: $(CPGRAMMAR).tar.gz
 	mkdir -p release
-	mv $(TDDPYBUILDDIR)/$(CPGRAMMAR).tar.gz release/$(CPGRAMMAR)-$(CPVER).tar.gz
+	mv $(CPPYBUILDDIR)/$(CPGRAMMAR).tar.gz release/$(CPGRAMMAR)-$(CPVER).tar.gz
+
+#########################################################
+#                    DCL DSL
+#########################################################
+
+DCLPKGTARGETS = Declaration
+
+# Release version used by release targets
+DCLPACKAGE = cp-dsl/dclLSPServer
+DCLVER = $(strip $(shell cat version))
+DCLPYCPVERDIR = $(DCLPACKAGE)-$(DCLVER)
+DCLPYBUILDDIR = $(DCLPACKAGE)/../build/$(DCLPYCPVERDIR)
+DCLOBJDIR = $(DCLPACKAGE)/gen
+DCLSRCDIR = $(DCLPACKAGE)/grammars
+DCLGRAMMAR = $(DCLPACKAGE).g4
+
+all_DCL: clean $(DCLOBJDIR)/python/$(DCLPACKAGE) $(DCLOBJDIR)/java/$(DCLPACKAGE)
+	javac $(DCLOBJDIR)/java/$(DCLPACKAGE)/*.java
+
+all_pkg_DCL: $(DCLPKGTARGETS)
+
+$(DCLPKGTARGETS): %: $(DCLSRCDIR)/%.g4
+	rm -rf $(DCLOBJDIR)/python/$@ $(DCLOBJDIR)/java/$@
+	cd $(<D); $(antlr4) $(<F) -o ../../../$(DCLOBJDIR)/python/$@ -visitor -package $@ -Dlanguage=Python3
+	cd $(<D); $(antlr4) $(<F) -o ../../../$(DCLOBJDIR)/java/$@ -visitor -package $@ 
+	javac $(DCLOBJDIR)/java/$@/*.java
+
+$(DCLOBJDIR)/python/$(DCLPACKAGE): $(DCLSRCDIR)/$(DCLGRAMMAR)
+	cd $(<D); $(antlr4) $(<F) -o ../../../$(DCLOBJDIR)/python/$(DCLPACKAGE) -visitor -package $(DCLPACKAGE) -Dlanguage=Python3
+
+$(DCLOBJDIR)/java/$(DCLPACKAGE): $(DCLSRCDIR)/$(DCLGRAMMAR)
+	cd $(<D); $(antlr4) $(<F) -o ../../../$(DCLOBJDIR)/java/$(DCLPACKAGE) -visitor -package $(DCLPACKAGE)
+
+$(DCLGRAMMAR).tar.gz: $(DCLOBJDIR)/python/$(DCLPACKAGE)
+	mkdir -p $(DCLPYBUILDDIR)
+	cp $(DCLOBJDIR)/python/$(DCLPACKAGE)/* $(DCLPYBUILDDIR)
+	cp README.md $(DCLPYBUILDDIR)/README.md
+	cp LICENSE $(DCLPYBUILDDIR)
+	cd $(DCLPYBUILDDIR); tar -czf $@ $(DCLPYCPVERDIR); cd ..
+
+release_DCL: $(DCLGRAMMAR).tar.gz
+	mkdir -p release
+	mv $(DCLPYBUILDDIR)/$(DCLGRAMMAR).tar.gz release/$(DCLGRAMMAR)-$(DCLVER).tar.gz
 
 #########################################################
 #                    TDD DSL

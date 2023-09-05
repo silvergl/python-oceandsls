@@ -1,4 +1,4 @@
-// Generated from Declaration.g4 by ANTLR 4.12.0
+// Generated from Declaration.g4 by ANTLR 4.13.0
 package Declaration;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class DeclarationParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.13.0", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -372,11 +372,6 @@ public class DeclarationParser extends Parser {
 			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitParamGroupAssignStat(this);
 			else return visitor.visitChildren(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitParameterGroupDeclaration(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ParameterGroupDeclarationContext parameterGroupDeclaration() throws RecognitionException {
@@ -469,11 +464,6 @@ public class DeclarationParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitParamAssignStat(this);
-			else return visitor.visitChildren(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitParameterDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -586,11 +576,6 @@ public class DeclarationParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitFeatureAssignStat(this);
-			else return visitor.visitChildren(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitFeatureDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -748,11 +733,6 @@ public class DeclarationParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitFeatureGroupAssignStat(this);
-			else return visitor.visitChildren(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitFeatureGroupDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1753,6 +1733,18 @@ public class DeclarationParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class SIUnitContext extends ParserRuleContext {
+		public SIUnitContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_sIUnit; }
+	 
+		public SIUnitContext() { }
+		public void copyFrom(SIUnitContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class SiunitContext extends SIUnitContext {
 		public EPrefixContext prefix;
 		public ESIUnitTypeContext type;
 		public ESIUnitTypeContext eSIUnitType() {
@@ -1761,21 +1753,18 @@ public class DeclarationParser extends Parser {
 		public EPrefixContext ePrefix() {
 			return getRuleContext(EPrefixContext.class,0);
 		}
-		public SIUnitContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_sIUnit; }
+		public SiunitContext(SIUnitContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterSIUnit(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterSiunit(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitSIUnit(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitSiunit(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitSIUnit(this);
+			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitSiunit(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1785,6 +1774,7 @@ public class DeclarationParser extends Parser {
 		enterRule(_localctx, 40, RULE_sIUnit);
 		int _la;
 		try {
+			_localctx = new SiunitContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(263);
@@ -1793,12 +1783,12 @@ public class DeclarationParser extends Parser {
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 140737421246464L) != 0)) {
 				{
 				setState(262);
-				((SIUnitContext)_localctx).prefix = ePrefix();
+				((SiunitContext)_localctx).prefix = ePrefix();
 				}
 			}
 
 			setState(265);
-			((SIUnitContext)_localctx).type = eSIUnitType();
+			((SiunitContext)_localctx).type = eSIUnitType();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1814,23 +1804,32 @@ public class DeclarationParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class CustomUnitContext extends ParserRuleContext {
-		public Token name;
-		public TerminalNode STRING() { return getToken(DeclarationParser.STRING, 0); }
 		public CustomUnitContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_customUnit; }
+	 
+		public CustomUnitContext() { }
+		public void copyFrom(CustomUnitContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class CustomunitContext extends CustomUnitContext {
+		public Token name;
+		public TerminalNode STRING() { return getToken(DeclarationParser.STRING, 0); }
+		public CustomunitContext(CustomUnitContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterCustomUnit(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).enterCustomunit(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitCustomUnit(this);
+			if ( listener instanceof DeclarationListener ) ((DeclarationListener)listener).exitCustomunit(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitCustomUnit(this);
+			if ( visitor instanceof DeclarationVisitor ) return ((DeclarationVisitor<? extends T>)visitor).visitCustomunit(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1839,10 +1838,11 @@ public class DeclarationParser extends Parser {
 		CustomUnitContext _localctx = new CustomUnitContext(_ctx, getState());
 		enterRule(_localctx, 42, RULE_customUnit);
 		try {
+			_localctx = new CustomunitContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(267);
-			((CustomUnitContext)_localctx).name = match(STRING);
+			((CustomunitContext)_localctx).name = match(STRING);
 			}
 		}
 		catch (RecognitionException re) {

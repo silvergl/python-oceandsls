@@ -34,8 +34,8 @@
     - alternative use `virtualenv`, see optional python packages
 - activate virtual environment `.venv`
     - `source .venv/bin/activate`
-- install `antlr4-python3-runtime`, `Jinja2`, `mock`, `pygls`, `pytest`, `pylint` and `autopep8` package into virtual environment `.venv`
-    - `python -m pip install antlr4-python3-runtime Jinja2 mock pygls pytest pylint autopep8`
+- install `antlr4-python3-runtime`, `Jinja2`, `pygls`, `pytest`, `pylint` and `autopep8` package into virtual environment `.venv`
+    - `python -m pip install antlr4-python3-runtime Jinja2 pygls pytest pylint autopep8`
 
 ## Optional: update npm and node
 

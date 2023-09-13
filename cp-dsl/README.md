@@ -1,26 +1,41 @@
 # cp-dsl for biogeochemical models
 
-## Install
+## Prerequisites
+
+You need `python3` installed and, in case your python installation is managed by the distribution installer, you
+need a virtual environment.
+
+You also need `npm` installed
+
+In Ubuntu you can install `virtualenv` with
+- `sudo apt install python3-virtualenv`
+
+Alternatively, you can install it via pip
+- `python -m pip install virtualenv`
+
+## Installation
+
+You can either install additional python packages in your system using pip or use a virtual evnironment to
+ensure the system installation is not modified.
+
+### Create virtual environment
+
+- Open a terminal and ensure you are in the home folder `cd`
+- Run `virtualenv local` local is then the name of your virtual environment
+- Activate virtual environment
+  `source local/bin/activate`
+  This will change your command line prompt to `(local) username@hostname:~$`
+
+### Install required packages
+
 required python packages: (antlr4), antlr4-python3-runtime, pygls, jinja2, lsprotocol
+- Type `pip install antlr4-python3-runtime pygls mock jinja2 lsprotocol`
+
 ### Check python packages (optional)
 - update package manager tools
-  - `python -m pip install --upgrade pip setuptools wheel`
-- check if python package `virtualenv` is installed if Python < 3.3 is used else a subset of it has been integrated into the standard library under `venv`
-  - `python -m pip show virtualenv`
-  - if not install package `virtualenv` into global system environment
-    - `python -m pip install virtualenv`
+  - `pip install --upgrade pip setuptools wheel`
 
-#### Install Server Dependencies
-- generate virtual environment in directory `.venv` using the standard library `venv`
-  - `python -m venv .venv`
-  - alternative use `virtualenv`, see optional python packages
-- activate virtual environment `.venv`
-  - `source .venv/bin/activate`
-- install `antlr4-python3-runtime`, `Jinja2`, `mock`, `pygls` and `pytest` package into virtual environment `.venv`
-  - `python -m pip install antlr4-python3-runtime Jinja2 mock pygls pytest`
-
-
-### Update npm and node (optional)
+### Update npm and node
 - check `npm` version
   - `npm --version`
 - install latest `npm` version globally (`-g` or `--global`)

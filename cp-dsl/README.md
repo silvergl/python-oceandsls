@@ -39,8 +39,11 @@ required python packages: (antlr4), antlr4-python3-runtime, pygls, jinja2, lspro
 - check `npm` version
   - `npm --version`
 - install latest `npm` version globally (`-g` or `--global`)
-  - `sudo npm install -g npm@latest`
-- install latest `node` version
+  - Replace $VERSION with the actual version of your npm
+  - `sudo npm install -g npm@$VERSION`
+- Install and setup node version
+  - `sudo npm cache clean -f`
+  - `sudo npm install -g n`
   - `sudo n latest`
 - Install the dependencies to the global mode (`-g` or `--global`)
   - `sudo npm update -g`
@@ -53,7 +56,8 @@ required python packages: (antlr4), antlr4-python3-runtime, pygls, jinja2, lspro
 
 ## Run Example using VSCode
 
-- Open `python-oceandsls/cp-dsl/confLSPServer` or `python-oceandsls/cp-dsl/declLSPServer` in VSCode
+- Open `python-oceandsls/cp-dsl/confLSPServer` or `python-oceandsls/cp-dsl/dclLSPServer` in VSCode
+  - Type for decl `code python-oceandsls/cp-dsl/dclLSPServer`
 - Trust author files in `python-oceandsls/cp-dsl`
 - Goto Run and Debug
   - `Ctrl/Cmd+Shift+D`

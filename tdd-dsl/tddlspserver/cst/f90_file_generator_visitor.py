@@ -203,7 +203,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             # Add unit parameter if unit exists
             arg_names += ["unit"] if unit is not None else []
             # ReturnType
-            return_type = value_list[2].name
+            return_type = value_list[2].name if value_list[2] is not None else None
 
             # TODO subroutine
             # Fortran implementation
@@ -301,7 +301,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
         # determine type of expression
         # https://web.chem.ox.ac.uk/fortran/arithmetic.html
-        match (left_type.lower() if left_type else None, right_type.lower() if right_type else None):
+        match (left_type, right_type):
             case [FundamentalType.real_type, _]:
                 # if any of the operands are real then result of the operation will be real
                 expr_type: str = FundamentalType.real_type

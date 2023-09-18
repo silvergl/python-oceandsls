@@ -197,7 +197,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.files[abs_path] = write_file(abs_path, content, file_attr, insert)
 
         # Return system under test details
-        sut: Tuple = (sut_name, test_case_symbol)
+        sut: Tuple = (sut_name, test_case_symbol, self.overwrite)
 
         return sut
 

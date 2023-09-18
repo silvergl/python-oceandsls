@@ -104,6 +104,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         if module_symbols:
 
             # Check test flags. E.g. overwrite flag
+            self.overwrite = False
             if ctx.test_flags:
                 self.visit(ctx.test_flags)
 

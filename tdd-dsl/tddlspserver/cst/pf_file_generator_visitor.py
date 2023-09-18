@@ -86,6 +86,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         content = template.render(name=name, scope=scope, vars_=vars_, assertions=assertions)
 
         # Check test flags. E.g. overwrite flag
+        self.overwrite = False
         if ctx.test_flags:
             self.visit(ctx.test_flags)
 

@@ -41,11 +41,11 @@ class DiagnosticListener(ErrorListener):
                 range=Range(
                     start=Position(
                         line=line - 1,
-                        character=column - 1
+                        character=column
                     ),
                     end=Position(
                         line=line - 1,
-                        character=column
+                        character=column + 1
                     )
                 ),
                 message=msg

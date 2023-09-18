@@ -1,4 +1,4 @@
-'''fxtran wrapper using XPath Expression to parse Fortran source code into xml(http://fxtran.net/#syntax)'''
+"""fxtran wrapper using XPath Expression to parse Fortran source code into xml(http://fxtran.net/#syntax)"""
 
 __author__ = "sgu"
 
@@ -74,12 +74,12 @@ def read_decorate_src_xml(xml_filepath: str = "", xml_filename: str = ""):
     # TODO rm
     # manual method - can modify xml
     #
-    # fin = open( fxtran_filepath, 'r' )
+    # fin = open( fxtran_filepath, "r" )
     # input_lines = fin.read( )
     # fin.close( )
     #
     # # Remove xmlns attribute (xml namespace) as we only use fxtran syntax
-    # xml_string = re.sub( ' xmlns="[^"]+"', '', input_lines, count = 1 )
+    # xml_string = re.sub( " xmlns="[^\"]+\"", "", input_lines, count = 1 )
     #
     # root_manual = ET.fromstring( xml_string )
 
@@ -152,7 +152,7 @@ for path, xml_filename in xml_files:
         match item.tag:
             case "file":
                 # file path
-                # '/home/sgu/IdeaProjects/antlr4-python/src/fxtran/fortrantut.f90'
+                # "/home/sgu/IdeaProjects/antlr4-python/src/fxtran/fortrantut.f90"
                 print(item.attrib["name"])
             case "program-stmt":
                 for subitem in item:

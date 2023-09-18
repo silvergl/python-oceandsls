@@ -43,7 +43,7 @@ class Mood(Enum):
     def merge(self, direction):
         match self:
             case self.FUNKY:
-                # return 'merge FUNKY: {0}'.format(self.name)
+                # return "merge FUNKY: {0}".format(self.name)
                 match direction:
                     case self.FUNKY:
                         return "merge FUNKY FUNKY: {0}".format(self.name)
@@ -52,7 +52,7 @@ class Mood(Enum):
                         return "merge FUNKY HAPPY: {0}".format(self.name)
 
             case self.HAPPY:
-                # return 'merge HAPPY: {0}'.format(self.name)
+                # return "merge HAPPY: {0}".format(self.name)
                 match direction:
                     case self.FUNKY:
                         return "merge HAPPY FUNKY: {0}".format(self.name)

@@ -12,15 +12,15 @@ def merge_fortran_operation(fortran_file, function_code, function_name: str = ""
         content = f.read()
 
     # Define the patterns to match the "contains" statement and the function/subroutine
-    # contains_pattern = r'^\s*contains\s*$'
-    # functionPattern = r'(^\s*(?:subroutine|function)\s+' + functionName + r'\s*\(.*?\))'
+    # contains_pattern = r"^\s*contains\s*$"
+    # functionPattern = r"(^\s*(?:subroutine|function)\s+" + functionName + r"\s*\(.*?\))"
 
     public_pattern = r"\n(( *)public(?: *\:\:.*)?\n)+"
     private_pattern = r"\n(( *)private(?: *\:\:.*)?\n)+"
     implicit_pattern = r"\n( *)implicit none *\n"
 
     contains_pattern = r"\n( *)contains *\n"
-    # functionEndPattern = r'(\n *end +(?:subroutine|function) +' + functionFindName + ' *\n)'
+    # functionEndPattern = r"(\n *end +(?:subroutine|function) +" + functionFindName + " *\n)"
     module_start_pattern = r"(\n( *)module +" + module_name + " *\n?)"
     module_end_pattern = r"(\n( *)end +module +" + module_name + " *\n?)"
 
@@ -49,7 +49,7 @@ def merge_fortran_operation(fortran_file, function_code, function_name: str = ""
         line_insertion = match_module_start.regs[-1]
     else:
         # If neither "contains" nor the function/subroutine is found, raise an error
-        raise ValueError(f'Private/Public, Module or "Implicit" statement not found. File: {fortran_file}, Module: {module_name}')
+        raise ValueError(f"Private/Public, Module or \"Implicit\" statement not found. File: {fortran_file}, Module: {module_name}")
 
     # Insert function  at the determined position
     content = content[:insert_position] + content[line_insertion[0]:line_insertion[1]] + f"PUBLIC :: {function_name}" + "\n" + content[insert_position:]

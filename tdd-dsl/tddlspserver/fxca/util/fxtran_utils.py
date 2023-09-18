@@ -1,4 +1,4 @@
-'''utils for the Fxtran parser'''
+"""Utils for the Fxtran parser"""
 
 __author__ = "sgu"
 
@@ -243,8 +243,8 @@ def filter_xml(
 
                 # TODO deprecated?
                 # Check if variable is not an output
-                # intentSpec = element.find( './/fx:intent-spec', ns )
-                # if intentSpec is None or intentSpec.text != 'out':
+                # intentSpec = element.find( ".//fx:intent-spec", ns )
+                # if intentSpec is None or intentSpec.text != "out":
 
                 # Get the current scope from the scope stack
                 current_scope = ".".join(scope_stack)
@@ -260,7 +260,7 @@ def filter_xml(
                     else:
                         # Derived type name
                         derived_element: str = element.find(".//fx:derived-T-spec", ns)
-                        # TODO hc default ''
+                        # TODO hc default ""
                         derived_type: str = derived_element.text if derived_element else ""
                         variable_type = "".join([derived_type, t_spec_element[0].find(".//fx:n", ns).text, ")"])
                 else:
@@ -305,12 +305,12 @@ def filter_xml(
 
 
 def get_files(path: str = "", pattern: str = "*.[fF]90"):
-    '''
+    """
     return files from directory and subdirectories matching a pattern
     :param path: path to directory
     :param pattern: pattern of files to return
     :return: pattern matching files in directory and subdirectories
-    '''
+    """
     files = []
     for root, dir_names, file_names in os.walk(path):
         for file_name in fnmatch.filter(file_names, pattern):
@@ -321,7 +321,7 @@ def get_files(path: str = "", pattern: str = "*.[fF]90"):
 
 def get_subdirectories(path: str = "", recursive: bool = False, follow_symlinks: bool = False):
     """
-    Returns subdirectory names not starting with '.' under given path.
+    Returns subdirectory names not starting with "." under given path.
 
     :param path: root path
     :param recursive: return subdirectories recursively
@@ -337,7 +337,7 @@ def get_subdirectories(path: str = "", recursive: bool = False, follow_symlinks:
 
 def get_subdirectories_gen(path: str = "", recursive: bool = False, follow_symlinks: bool = False):
     """
-    Yield subdirectory names not starting with '.' under given path. Does not follow symlinks.
+    Yield subdirectory names not starting with "." under given path. Does not follow symlinks.
 
     :param path: root path
     :param recursive: yield subdirectories recursively
@@ -353,14 +353,14 @@ def get_subdirectories_gen(path: str = "", recursive: bool = False, follow_symli
 
 # TODO hc
 def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path: str = "/home/sgu/IdeaProjects/fxtran/bin/fxtran"):
-    '''
+    """
     run Fxtran decorating source code with XML tags
 
     :param src_dir: input source code path
     :param out_dir: output xml path
     :param fxtran_path: fxtran binary path
     :return:
-    '''
+    """
     # TODO hc
     # Define the fxtran command
     fxtran_cmd_ops = " ".join(
@@ -387,7 +387,7 @@ def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path:
 
         # TODO deprecated
         # set file ending to xml
-        # outFilename = filename.rsplit( '.', 1 )[ 0 ] + ".xml"
+        # outFilename = filename.rsplit( ".", 1 )[ 0 ] + ".xml"
 
         # Build output path for xml file
         out_file_path = os.path.join(rel_out_dir, filename + ".xml")
@@ -399,7 +399,7 @@ def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path:
             subprocess.check_output(fxtran_cmd, shell=True, stderr=subprocess.STDOUT, cwd=filepath)
         except subprocess.CalledProcessError as e:
             # TODO continue
-            # raise RuntimeError( f"command '{e.cmd}' return with error (code {e.returncode}): {e.output}" )
+            # raise RuntimeError( f"command "{e.cmd}" return with error (code {e.returncode}): {e.output}" )
             pass
         except PermissionError as e:
             # TODO continue without parsing
@@ -407,14 +407,14 @@ def write_decorate_src_xml(src_dir: str = "", out_dir: str = "foo", fxtran_path:
 
 
 def read_decorate_src_xml(xml_filepath: str = "", xml_filename: str = ""):
-    '''
+    """
     read an XML-File and return the root element of the parse tree
 
     TODO deprecated
     :param xml_filepath: path to xml file
     :param xml_filename: xml file name
     :return: root element of parse tree
-    '''
+    """
 
     # parse the XML-File directly into an Element, which is the root element of the parsed tree
     # https://docs.python.org/library/xml.etree.elementtree.html#parsing-xml

@@ -272,7 +272,7 @@ def calculate_metrics(xml_path: str = None):
         elif element.tag.endswith(tuple(branch_elements)):
             current_scope.branches.append(element)
 
-            # TODO depr included in assignment statements  # # Extract optional return statements  # branch_assignments = element.findall(path='.//fx:a-stmt', namespaces=ns)  # current_scope.extend_result(branch_assignments)
+            # TODO depr included in assignment statements  # # Extract optional return statements  # branch_assignments = element.findall(path=".//fx:a-stmt", namespaces=ns)  # current_scope.extend_result(branch_assignments)
 
         # Extract declaration statements
         elif element.tag.endswith(tuple(declaration_elements)):

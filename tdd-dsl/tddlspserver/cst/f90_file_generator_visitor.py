@@ -1,4 +1,4 @@
-'''File generator visitor module.'''
+"""File generator visitor module."""
 
 __author__ = "sgu"
 
@@ -36,14 +36,14 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         self, template_path: str = "tdd-dsl/tddlspserver/filewriter/jinjatemplates/f90", files: Dict[str, Tuple[float, str, str]] = {},
         symbol_table: SymbolTable = None, work_path: str = "tdd-dsl/output", file_suffix: str = "f90"
     ):
-        '''
+        """
         Fortran 90 source code file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
         Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
 
         :param template_path: absolute filepath for jinja templates
         :param work_path: relative path to generate test suite
-        '''
+        """
         super().__init__()
         self.overwrite = False
         self.files: dict[str, Tuple[float, str, str]] = files

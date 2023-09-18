@@ -19,13 +19,13 @@ show_debug_output: bool = True
 
 
 def difflib_merge(file_content0: str, file_content1: str) -> str:
-    '''
+    """
     Merge two file-contents based on difflib.
 
     :param file_content0: Content of first file
     :param file_content1: Content of second file
     :return: 3-way merge of comparing the first file and second file
-    '''
+    """
     merged_content = "\n".join(
         lines[2:] for lines in difflib.Differ().compare(
             file_content0.split("\n"), file_content1.split("\n")

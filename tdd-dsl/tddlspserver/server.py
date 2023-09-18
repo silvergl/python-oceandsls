@@ -152,7 +152,7 @@ def lookup_symbol(uri, name):
     logger.info("uri: %s\n", uri, "name: %s\n", name)
 
 
-@tdd_server.feature(TEXT_DOCUMENT_COMPLETION, CompletionOptions(trigger_characters=[',']))
+@tdd_server.feature(TEXT_DOCUMENT_COMPLETION, CompletionOptions(trigger_characters=[","]))
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
@@ -234,13 +234,23 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         completion_list.items.append(
             CompletionItem(
                 label=IntervalSet.elementName(
-                    IntervalSet, tdd_server.parser.literalNames, tdd_server.parser.symbolicNames, key
+                    IntervalSet, stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'"), tdd_server.parser.symbolicNames, key
                 )
             )
         )
 
     # return completion candidates labels
     return completion_list
+
+
+def stripTerminals(elements: List[str] = None, terminal: str = "\'") -> List[str]:
+    """
+     Strip string terminals from list elements.
+
+    :param elements: List of elements
+    :return: List of striped elements
+    """
+    return [e.strip(terminal) for e in elements]
 
 
 @tdd_server.feature(TEXT_DOCUMENT_DID_CHANGE)
@@ -290,7 +300,8 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
 
     # Generate CMake files
     cmake_file_generator_visitor: CMakeFileGeneratorVisitor = CMakeFileGeneratorVisitor(
-        work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+        work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table
+    )
     # update CMake files and save generated files
     tdd_server.files = cmake_file_generator_visitor.visit(parse_tree)
 
@@ -311,7 +322,7 @@ def semantic_tokens(ls: TDDLSPServer, params: SemanticTokensParams):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
     for details on how semantic tokens are encoded."""
 
-    TOKENS = re.compile('".*"(?=:)')
+    TOKENS = re.compile("\".*\"(?=:)")
 
     uri = params.text_document.uri
     doc = ls.workspace.get_document(uri)

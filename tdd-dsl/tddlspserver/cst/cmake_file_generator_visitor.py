@@ -36,6 +36,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         """
         super().__init__()
 
+        self.overwrite = False
         self.files: dict[str, Tuple[float, str, str]] = files
 
         self.symbol_table = symbol_table
@@ -84,8 +85,12 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # # Set CMake file path to project folder
         abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
 
+        # Check test flags. E.g. overwrite flag
+        if ctx.test_flags:
+            self.visit(ctx.test_flags)
+
         # Check if file exists and need to be merged
-        if os.path.exists(abs_path):
+        if os.path.exists(abs_path) and not self.overwrite:
             # Generate parts to be merged into
             insert = True
 
@@ -205,3 +210,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Update source directory
         # If the given path is an absolute path, then self._testPath is ignored and the joining is only the given path
         self.work_path = os.path.join(self.cwd, user_path)
+
+    # Visit a parse tree produced by TestSuiteParser#overwritePF.
+    def visitOverwriteCMake(self, ctx:TestSuiteParser.OverwritePFContext):
+        self.overwrite = True

@@ -45,6 +45,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         :param work_path: relative path to generate test suite
         '''
         super().__init__()
+        self.overwrite = False
         self.files: dict[str, Tuple[float, str, str]] = files
         self.template_path = template_path
         self.work_path = work_path
@@ -101,7 +102,12 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
         # Write content to module if module is set
         if module_symbols:
-            if module_symbols[0].file:
+
+            # Check test flags. E.g. overwrite flag
+            if ctx.test_flags:
+                self.visit(ctx.test_flags)
+
+            if module_symbols[0].file and not self.overwrite:
                 # Module exists
 
                 insert = True
@@ -396,3 +402,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
     def visitRefExpr(self, ctx: TestSuiteParser.RefExprContext):
         # Return reference type
         return self.visit(ctx.value)
+
+    # Visit a parse tree produced by TestSuiteParser#overwritePF.
+    def visitOverwriteF90(self, ctx:TestSuiteParser.OverwritePFContext):
+        self.overwrite = True

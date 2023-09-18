@@ -23,6 +23,33 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTest_case(TestSuiteParser.Test_caseContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TestSuiteParser#test_flag}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTest_flag(TestSuiteParser.Test_flagContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code overwritePF}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOverwritePF(TestSuiteParser.OverwritePFContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code overwriteCMake}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOverwriteCMake(TestSuiteParser.OverwriteCMakeContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code overwriteF90}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOverwriteF90(TestSuiteParser.OverwriteF90Context ctx);
+	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#src_path}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

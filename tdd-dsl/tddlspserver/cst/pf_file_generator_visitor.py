@@ -45,6 +45,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         """
         super().__init__()
 
+        self.overwrite = False
         self.files: dict[str, Tuple[float, str, str]] = files
 
         self.symbol_table = symbol_table
@@ -84,10 +85,14 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
             assertions.append(self.visit(assertion))
         content = template.render(name=name, scope=scope, vars_=vars_, assertions=assertions)
 
+        # Check test flags. E.g. overwrite flag
+        if ctx.test_flags:
+            self.visit(ctx.test_flags)
+
         # Write pf file
         abs_path: str = os.path.join(os.getcwd(), self.test_path, self.test_folder, f"{name}.{self.file_suffix}")
         file_attr = self.files.get(abs_path)
-        self.files[abs_path] = write_file(abs_path, content, file_attr, False)
+        self.files[abs_path] = write_file(abs_path, content, file_attr, insert= not self.overwrite)
 
         # Update test case symbol
         test_case_symbol = get_scope(ctx, self.symbol_table)
@@ -349,6 +354,10 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
                 return template.render(msg=msg)
             case _:
                 return template.render(msg=msg, tol=tol)
+
+    # Visit a parse tree produced by TestSuiteParser#overwritePF.
+    def visitOverwritePF(self, ctx:TestSuiteParser.OverwritePFContext):
+        self.overwrite = True
 
     def writefile(self, path=None, filename=None):
         path = os.path.join(os.getcwd(), path, filename)

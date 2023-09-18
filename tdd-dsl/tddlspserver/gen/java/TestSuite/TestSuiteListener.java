@@ -28,6 +28,52 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitTest_case(TestSuiteParser.Test_caseContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TestSuiteParser#test_flag}.
+	 * @param ctx the parse tree
+	 */
+	void enterTest_flag(TestSuiteParser.Test_flagContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TestSuiteParser#test_flag}.
+	 * @param ctx the parse tree
+	 */
+	void exitTest_flag(TestSuiteParser.Test_flagContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code overwritePF}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 */
+	void enterOverwritePF(TestSuiteParser.OverwritePFContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code overwritePF}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 */
+	void exitOverwritePF(TestSuiteParser.OverwritePFContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code overwriteCMake}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 */
+	void enterOverwriteCMake(TestSuiteParser.OverwriteCMakeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code overwriteCMake}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 */
+	void exitOverwriteCMake(TestSuiteParser.OverwriteCMakeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code overwriteF90}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 */
+	void enterOverwriteF90(TestSuiteParser.OverwriteF90Context ctx);
+	/**
+	 * Exit a parse tree produced by the {@code overwriteF90}
+	 * labeled alternative in {@link TestSuiteParser#overwrite_flag}.
+	 * @param ctx the parse tree
+	 */
+	void exitOverwriteF90(TestSuiteParser.OverwriteF90Context ctx);
+	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#src_path}.
 	 * @param ctx the parse tree
 	 */

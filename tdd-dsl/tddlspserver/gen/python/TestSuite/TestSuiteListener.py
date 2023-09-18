@@ -26,6 +26,42 @@ class TestSuiteListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TestSuiteParser#test_flag.
+    def enterTest_flag(self, ctx:TestSuiteParser.Test_flagContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#test_flag.
+    def exitTest_flag(self, ctx:TestSuiteParser.Test_flagContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#overwritePF.
+    def enterOverwritePF(self, ctx:TestSuiteParser.OverwritePFContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#overwritePF.
+    def exitOverwritePF(self, ctx:TestSuiteParser.OverwritePFContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#overwriteCMake.
+    def enterOverwriteCMake(self, ctx:TestSuiteParser.OverwriteCMakeContext):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#overwriteCMake.
+    def exitOverwriteCMake(self, ctx:TestSuiteParser.OverwriteCMakeContext):
+        pass
+
+
+    # Enter a parse tree produced by TestSuiteParser#overwriteF90.
+    def enterOverwriteF90(self, ctx:TestSuiteParser.OverwriteF90Context):
+        pass
+
+    # Exit a parse tree produced by TestSuiteParser#overwriteF90.
+    def exitOverwriteF90(self, ctx:TestSuiteParser.OverwriteF90Context):
+        pass
+
+
     # Enter a parse tree produced by TestSuiteParser#src_path.
     def enterSrc_path(self, ctx:TestSuiteParser.Src_pathContext):
         pass

@@ -258,7 +258,7 @@ def write_file(file_path: str = "", content: str | Dict = "", file_attr: tuple[f
                 content = fortran_merge(content, content_org) if insert else content
             case ".pf":
                 # Difflib merge of file
-                content = difflib_merge(content, content_org)
+                content = difflib_merge(content, content_org) if insert else content
             case ".txt":
                 content = cmake_merge(content, content_org) if insert else content
             case _:

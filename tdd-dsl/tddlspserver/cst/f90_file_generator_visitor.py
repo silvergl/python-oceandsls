@@ -81,7 +81,8 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
         module_symbols = self.visit(ctx.modules)
 
-        # Get test case template parameters
+        # Get operations defined in variables
+        self.visit(ctx.vars_)
 
         # Get operations defined in assertions
         for assertion in ctx.assertions:
@@ -211,6 +212,10 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             # Update operation list
             self.ops[key] = value_list
 
+    # Visit a parse tree produced by TestSuiteParser#test_var.
+    def visitTest_var(self, ctx:TestSuiteParser.Test_varContext):
+        return self.visit(ctx.value)
+
     # Visit a parse tree produced by TestSuiteParser#test_parameter.
     def visitTest_parameter(self, ctx: TestSuiteParser.Test_parameterContext):
         # TODO rm declaration from grammar?
@@ -254,6 +259,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
     def visitFunRef(self, ctx: TestSuiteParser.FunRefContext):
         # Get routine id
         name: str = ctx.ID().getText()
+
         # Get routine arguments
         args: List[str] = []
         for arg in ctx.args:
@@ -269,9 +275,14 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             # Operation is new, return_type is unknown
             return_type: Optional[Type] = None
 
-        # Add operation to list of ops
-        self.ops[name] = self.ops.get(name, [args, None, return_type])
-        self.last_op_id = name
+        if not name.isupper():
+            # Add operation to list of ops
+            self.ops[name] = self.ops.get(name, [args, None, return_type])
+            self.last_op_id = name
+        else:
+            # TODO doc
+            # uppercase written operations are ignored as general fortran operations
+            self.last_op_id = None
 
         # Return operation return_type
         return return_type

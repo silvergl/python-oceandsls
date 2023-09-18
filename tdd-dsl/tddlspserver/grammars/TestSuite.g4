@@ -34,7 +34,7 @@ test_suite              : 'suite' name=ID ':' NEWLINE
 /** test case*/
 test_case               : 'test' name=ID ':' NEWLINE
                           'srcpath' ':' srcpath=src_path
-                          scope=test_scope
+                          modules=use_modules
                           vars=test_vars
                           assertions+=test_assertion
                           (NEWLINE assertions+=test_assertion)*
@@ -56,11 +56,6 @@ test_var                : decl=varDeclaration ('=' value=expr)? comment=optional
 
 /** declaration of variables used in test cases  */
 varDeclaration          : name=ID ':' type=paramType (',' keys+=f90StdKey (',' keys+=f90StdKey)*)?
-                        ;
-
-/** scope of test case*/
-test_scope              : 'scope' ':' NEWLINE
-                          modules=use_modules
                         ;
 
 /** modules used in the test; ends on newline*/

@@ -68,16 +68,6 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitVarDeclaration(TestSuiteParser.VarDeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TestSuiteParser#test_scope}.
-	 * @param ctx the parse tree
-	 */
-	void enterTest_scope(TestSuiteParser.Test_scopeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link TestSuiteParser#test_scope}.
-	 * @param ctx the parse tree
-	 */
-	void exitTest_scope(TestSuiteParser.Test_scopeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#use_modules}.
 	 * @param ctx the parse tree
 	 */

@@ -76,7 +76,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         template = self.environment.get_template(self.file_templates[ctx.getRuleIndex()])
         # Render template
         name = ctx.name.text
-        scope = self.visit(ctx.scope)
+        scope = self.visit(ctx.modules)
         vars_ = self.visit(ctx.vars_)
         self.test_path = self.visit(ctx.src_path())
         assertions = []
@@ -104,11 +104,6 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         # TODO document
         # If the given path is an absolute path, then self.testPath is ignored and the joining is only the given path
         return os.path.join(self.test_path, ctx.path.text.strip("\'"))
-
-    # Visit a parse tree produced by TestSuiteParser#test_scope.
-    def visitTest_scope(self, ctx: TestSuiteParser.Test_scopeContext):
-        # get explicitly only used modules. Path to modules is only for src analysis
-        return self.visit(ctx.use_modules())
 
     # Get rendered list of used modules
     def visitUse_modules(self, ctx: TestSuiteParser.Use_modulesContext):

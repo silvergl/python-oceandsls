@@ -60,13 +60,6 @@ public class TestSuiteBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTest_scope(TestSuiteParser.Test_scopeContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitUse_modules(TestSuiteParser.Use_modulesContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

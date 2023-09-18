@@ -89,18 +89,6 @@ public class TestSuiteBaseListener implements TestSuiteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTest_scope(TestSuiteParser.Test_scopeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTest_scope(TestSuiteParser.Test_scopeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterUse_modules(TestSuiteParser.Use_modulesContext ctx) { }
 	/**
 	 * {@inheritDoc}

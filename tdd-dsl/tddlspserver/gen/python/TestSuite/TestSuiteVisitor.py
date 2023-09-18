@@ -39,11 +39,6 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#test_scope.
-    def visitTest_scope(self, ctx:TestSuiteParser.Test_scopeContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by TestSuiteParser#use_modules.
     def visitUse_modules(self, ctx:TestSuiteParser.Use_modulesContext):
         return self.visitChildren(ctx)

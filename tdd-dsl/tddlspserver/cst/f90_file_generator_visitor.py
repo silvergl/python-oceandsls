@@ -79,7 +79,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         # Load Jinja2 template
         template = self.environment.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        module_symbols = self.visit(ctx.scope)
+        module_symbols = self.visit(ctx.modules)
 
         # Get test case template parameters
 

@@ -47,12 +47,6 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarDeclaration(TestSuiteParser.VarDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#test_scope}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTest_scope(TestSuiteParser.Test_scopeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#use_modules}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

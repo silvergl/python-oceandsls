@@ -127,10 +127,42 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         # TODO type ENUM
         return self.visitChildren(ctx)
 
+    # Visit a parse tree produced by TestSuiteParser#enumType.
+    def visitEnumType(self, ctx: TestSuiteParser.EnumTypeContext):
+        enums: List[str] = []
+        for enum in ctx.values:
+            enums.append(self.visit(enum))
+        return "(" + ", ".join(enums) + ")"
+
+    # Visit a parse tree produced by TestSuiteParser#enum.
+    def visitEnum(self, ctx: TestSuiteParser.EnumContext):
+        name: str = self.visit(ctx.name)
+        if ctx.value:
+            value = ctx.value.text
+            return name + "=" + value
+        else:
+            return name
+
     # Visit a parse tree produced by TestSuiteParser#array.
     def visitArray(self, ctx: TestSuiteParser.ArrayContext):
-        # TODO type ARRAY
         return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by TestSuiteParser#arrayType.
+    def visitArrayType(self, ctx: TestSuiteParser.ArrayTypeContext):
+        # TODO test
+        ar_type: str = self.visit(ctx.type_)
+        dims: List[str] = []
+        for dim in ctx.dimensions:
+            dims.append(self.visit(dim))
+        return ar_type + "[" + ", ".join(dims) + "]"
+
+    # Visit a parse tree produced by TestSuiteParser#sizeDim.
+    def visitSizeDim(self, ctx: TestSuiteParser.SizeDimContext):
+        return ctx.size
+
+    # Visit a parse tree produced by TestSuiteParser#rangeDim.
+    def visitRangeDim(self, ctx: TestSuiteParser.RangeDimContext):
+        return ctx.lowerBound + ":" + ctx.upperBound
 
     # Save the source path to scan for existing variables
     def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):

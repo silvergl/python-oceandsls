@@ -32,15 +32,15 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
     # TODO hc
     def __init__(
         self, template_path: str = "tdd-dsl/tddlspserver/filewriter/jinjatemplates/pf", files: Dict[str, Tuple[float, str, str]] = {},
-        symbol_table: SymbolTable = None, test_work_path: str = "tdd-dsl/output", test_folder: str = "tests", file_suffix: str = "pf"
-    ):
+        symbol_table: SymbolTable = None, work_path: str = "tdd-dsl/output", test_folder: str = "tests", file_suffix: str = "pf", rel_file_path= None):
         """
         pfUnit test file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
         Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
 
+        :param rel_file_path: rel path to source file
         :param template_path: absolute filepath for jinja templates
-        :param test_work_path: relative path to generate test suite
+        :param work_path: path to generate test suite
         :param test_folder: relative path under :testWorkPath: to save pfUnit tests
         """
         super().__init__()
@@ -51,13 +51,14 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         self.symbol_table = symbol_table
 
         self.template_path = template_path
-        self.test_path = test_work_path
+        self.test_path = work_path
+        self.rel_file_path = rel_file_path
         # TODO add test directory option
         self.test_folder = test_folder
         self.file_suffix = file_suffix
 
         # Load Jinja2 templates
-        self.environment = Environment(loader=FileSystemLoader(template_path))
+        self.environment = Environment(loader=FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=False)
 
         # variable flags
         self.found_ref = False
@@ -317,16 +318,23 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         input_ = self.visit(ctx.input_)
         output = self.visit(ctx.output)
         pub_attributes = self.visit(ctx.attr)
-        comment = ctx.comment.text.rstrip("\n") if ctx.comment is not None else None
-        match (pub_attributes, comment):
-            case [None, None]:
-                return template.render(directive=directive, input_=input_, output=output)
-            case [None, _]:
-                return template.render(directive=directive, input_=input_, output=output, comment=comment)
-            case [_, None]:
-                return template.render(directive=directive, input_=input_, output=output, pub_attributes=pub_attributes)
-            case _:
-                return template.render(directive=directive, input_=input_, output=output, pub_attributes=pub_attributes, comment=comment)
+        # Remove leading whitespaces and hashtags as well as trailing linebreaks
+        comment = ctx.comment.text.rstrip("\n").lstrip("# ") if ctx.comment is not None else None
+
+        # Extract assertion line start/end
+        start_stop : str
+        if ctx.start is not None and ctx.stop is not None:
+            start:str = "".join([str(ctx.start.line), ":" ,str(ctx.start.column)])
+            stop: str = "".join([str(ctx.stop.line), ":" ,str(ctx.stop.column)])
+            start_stop = "-".join([start, stop])
+        else:
+            start_stop = None
+
+        tag_source: str = ", ".join([self.rel_file_path, start_stop]) if self.rel_file_path is not None and start_stop is not None else None
+        tag: str = "auto-generated, src: "+ tag_source if tag_source is not None else "auto-generated, src: unknown"
+
+        # Render template
+        return template.render(directive=directive, input_=input_, output=output, pub_attributes=pub_attributes, comment=comment, tag = tag)
 
     # Visit a parse tree produced by TestSuiteParser#test_directive.
     def visitTest_directive(self, ctx: TestSuiteParser.Test_directiveContext):

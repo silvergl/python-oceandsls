@@ -34,21 +34,23 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
     # TODO hc
     def __init__(
         self, template_path: str = "tdd-dsl/tddlspserver/filewriter/jinjatemplates/f90", files: Dict[str, Tuple[float, str, str]] = {},
-        symbol_table: SymbolTable = None, work_path: str = "tdd-dsl/output", file_suffix: str = "f90"
-    ):
+        symbol_table: SymbolTable = None, work_path: str = "tdd-dsl/output", file_suffix: str = "f90", rel_file_path= None
+        ):
         """
         Fortran 90 source code file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
         Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
 
+        :param rel_file_path: rel path to source file
         :param template_path: absolute filepath for jinja templates
-        :param work_path: relative path to generate test suite
+        :param work_path: path to generate test suite
         """
         super().__init__()
         self.overwrite = False
         self.files: dict[str, Tuple[float, str, str]] = files
         self.template_path = template_path
         self.work_path = work_path
+        self.rel_file_path = rel_file_path
         self.cwd = work_path
         self.file_suffix = file_suffix
         # Load Jinja2 templates
@@ -175,11 +177,23 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         # Load operation template
         template = self.environment.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        # extract comment
+        # Extract comment
         # TODO remove comment
-        comment = ctx.comment.text.rstrip("\n").lstrip("#") if ctx.comment is not None else None
+        # comment = ctx.comment.text.rstrip("\n").lstrip("#") if ctx.comment is not None else None
 
-        # extract id and optional arguments
+        # Extract assertion line start/end
+        start_stop : str
+        if ctx.start is not None and ctx.stop is not None:
+            start:str = "".join([str(ctx.start.line), ":" ,str(ctx.start.column)])
+            stop: str = "".join([str(ctx.stop.line), ":" ,str(ctx.stop.column)])
+            start_stop = "-".join([start, stop])
+        else:
+            start_stop = None
+
+        tag_source: str = ", ".join([self.rel_file_path, start_stop]) if self.rel_file_path is not None and start_stop is not None else None
+        tag: str = "auto-generated, src: "+ tag_source if tag_source is not None else "auto-generated, src: unknown"
+
+        # Extract id and optional arguments
         self.visit(ctx.input_)
 
         # Update return type of last new operation if no function expression was in between
@@ -215,7 +229,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
             # TODO subroutine
             # Fortran implementation
-            value_list.append(template.render(comment=comment, name=name, argNames=arg_names, unit=unit, argsDecl=args_decl, returnType=return_type))
+            value_list.append(template.render(tag=tag, name=name, argNames=arg_names, unit=unit, argsDecl=args_decl, returnType=return_type))
             # Update operation list
             self.ops[key] = value_list
 

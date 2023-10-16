@@ -273,6 +273,8 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     textURI = params.text_document.uri
     text_doc: Document = tdd_server.workspace.get_document(textURI)
     source: str = text_doc.source
+    file_path: str = os.path.abspath(text_doc.path)
+    rel_file_path: str = os.path.relpath(file_path, os.getcwd())
     input_stream: InputStream = InputStream(source)
 
     # reset the lexer/parser
@@ -289,12 +291,12 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     symbol_table = symbol_table_visitor.visit(parse_tree)
 
     # Generate pf files
-    pf_file_generator_visitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor(test_work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    pf_file_generator_visitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table, rel_file_path = rel_file_path)
     # write pf files and save generated files
     tdd_server.files = pf_file_generator_visitor.visit(parse_tree)
 
     # Generate F90 files
-    f90_file_generator_visitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    f90_file_generator_visitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table, rel_file_path = rel_file_path)
     # update fortran file and save generated files
     tdd_server.files = f90_file_generator_visitor.visit(parse_tree)
 

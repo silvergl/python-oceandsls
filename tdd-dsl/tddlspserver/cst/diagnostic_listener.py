@@ -41,11 +41,11 @@ class DiagnosticListener(ErrorListener):
                 range=Range(
                     start=Position(
                         line=line - 1,
-                        character=column - 1
+                        character=column
                     ),
                     end=Position(
                         line=line - 1,
-                        character=column
+                        character=column + 1
                     )
                 ),
                 message=msg
@@ -55,5 +55,5 @@ class DiagnosticListener(ErrorListener):
         if self.show_debug_output and self.logger.isEnabledFor(logging.DEBUG):
             self.logger.debug("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg))
         # dev alternatives
-        # print('ERROR: when parsing line %d column %d: %s\n' % (line, column, msg), file=sys.stderr)
+        # print("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg), file=sys.stderr)
         # raise Exception("ERROR: when parsing line %d column %d: %s\n" % (line, column, msg))

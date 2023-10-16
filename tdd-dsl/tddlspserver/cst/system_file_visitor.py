@@ -53,7 +53,7 @@ class SystemFileVisitor(TestSuiteVisitor, Generic[T]):
         self._test_path: str = os.path.join(self._test_path, user_path)
 
         # TODO document
-        # get direct subdirectories without following symlinks or directories starting with '.'
+        # get direct subdirectories without following symlinks or directories starting with "."
         sub_directories = get_subdirectories_gen(self._test_path, False, False)
 
         # Add subdirectories under current scope to symboltable

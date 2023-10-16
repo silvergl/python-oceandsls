@@ -1,6 +1,6 @@
 """computeTokenIndex module."""
 
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # utils
 import logging
@@ -63,8 +63,8 @@ def position_of_token(
     start = token.column
     stop = token.column + len(text)
     logger.info(
-        'token.line: %s == caretPosition.line: %s = %s, start: %s <= caretPosition.column: %s <= stop: %s = %s, '
-        'token.column: %s , len(text): %s, text: %s, index: %s', token.line, caret_position.line, token.line == caret_position.line, start,
+        "token.line: %s == caretPosition.line: %s = %s, start: %s <= caretPosition.column: %s <= stop: %s = %s, "
+        "token.column: %s , len(text): %s, text: %s, index: %s", token.line, caret_position.line, token.line == caret_position.line, start,
         caret_position.column, stop, start <= caret_position.column <= stop, token.column, len(text), text, token.tokenIndex
     )
     if token.line == caret_position.line and start <= caret_position.column <= stop:
@@ -76,13 +76,13 @@ def position_of_token(
         # result: TokenPosition = tokenPosition(index, parseTree, text)
         parser_rule_context: ParserRuleContext = parse_tree
         # TODO check for error nodes
-        text = text[0: caret_position.column - start] if not isinstance(parse_tree, ErrorNodeImpl) else ''
+        text = text[0: caret_position.column - start] if not isinstance(parse_tree, ErrorNodeImpl) else ""
         result: TokenPosition = TokenPosition(index, parser_rule_context, text)
 
-        logger.info('positionOfToken return result = %s', result)
+        logger.info("positionOfToken return result = %s", result)
         return result
     else:
-        logger.info('positionOfToken return None')
+        logger.info("positionOfToken return None")
         return None
 
 
@@ -91,7 +91,7 @@ def compute_token_position_of_terminal(
 ):
     token: Token = terminal_node.symbol
     text: str = terminal_node.getText()
-    logger.info('computeTokenPositionOfTerminal')
+    logger.info("computeTokenPositionOfTerminal")
     return position_of_token(token, text, caret_position, identifier_token_types, terminal_node)
 
 
@@ -99,52 +99,52 @@ def compute_token_position_of_child_node(
     parser_rule_context: ParserRuleContext, tokens: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[int]
 ):
     logger.info(
-        'start: %s > caret: %s = %s, stop: %s < caret: %s = %s', parser_rule_context.start.line, caret_position.line,
+        "start: %s > caret: %s = %s, stop: %s < caret: %s = %s", parser_rule_context.start.line, caret_position.line,
         parser_rule_context.start.line > caret_position.line, parser_rule_context.stop.line, caret_position.line,
         parser_rule_context.stop.line < caret_position.line
     )
     logger.info(
-        'parserRuleContext.start is not None = %s, parserRuleContext.stop is not None = %s', parser_rule_context.start is not None,
+        "parserRuleContext.start is not None = %s, parserRuleContext.stop is not None = %s", parser_rule_context.start is not None,
         parser_rule_context.stop is not None
     )
     if (
         (parser_rule_context.start is not None and parser_rule_context.start.line > caret_position.line) or
         (parser_rule_context.stop is not None and parser_rule_context.stop.line < caret_position.line)
     ):
-        logger.info('return None\n')
+        logger.info("return None\n")
         return None
     i = 0
-    logger.info('parserRuleContext.getChildCount() = %s', parser_rule_context.getChildCount())
+    logger.info("parserRuleContext.getChildCount() = %s", parser_rule_context.getChildCount())
     while i < parser_rule_context.getChildCount():
         position = compute_token_position(parser_rule_context.getChild(i), tokens, caret_position, identifier_token_types)
-        logger.info('Child computeTokenPosition = %s', position)
+        logger.info("Child computeTokenPosition = %s", position)
         if position is not None:
-            logger.info('return position = %s\n', position)
+            logger.info("return position = %s\n", position)
             return position
         i += 1
     logger.info(
-        'parserRuleContext.start is not None = %s, parserRuleContext.stop is not None = %s', parser_rule_context.start is not None,
+        "parserRuleContext.start is not None = %s, parserRuleContext.stop is not None = %s", parser_rule_context.start is not None,
         parser_rule_context.stop is not None
     )
     if parser_rule_context.start is not None and parser_rule_context.stop is not None:
         logger.info(
-            'parserRuleContext.start.tokenIndex: %s <= parserRuleContext.stop.tokenIndex: %s = %s', parser_rule_context.start.tokenIndex,
+            "parserRuleContext.start.tokenIndex: %s <= parserRuleContext.stop.tokenIndex: %s = %s", parser_rule_context.start.tokenIndex,
             parser_rule_context.stop.tokenIndex, parser_rule_context.start.tokenIndex <= parser_rule_context.stop.tokenIndex
         )
         i = parser_rule_context.start.tokenIndex
         logger.info(
-            'while parserRuleContext start.tokenIndex: %s, stop.tokenIndex: %s', parser_rule_context.start.tokenIndex, parser_rule_context.stop.tokenIndex
+            "while parserRuleContext start.tokenIndex: %s, stop.tokenIndex: %s", parser_rule_context.start.tokenIndex, parser_rule_context.stop.tokenIndex
         )
         while i <= parser_rule_context.stop.tokenIndex:
             pos = position_of_token(
                 tokens.tokens[i], tokens.tokens[i].text, caret_position, identifier_token_types, parser_rule_context
             )
-            logger.info('positionOfToken = %s', pos)
+            logger.info("positionOfToken = %s", pos)
             if pos:
-                logger.info('return position = %s\n', pos)
+                logger.info("return position = %s\n", pos)
                 return pos
             i += 1
-    logger.info('final return None\n')
+    logger.info("final return None\n")
     return None
 
 

@@ -8,8 +8,6 @@ MODULE cfo_example
 
   PRIVATE
   PUBLIC :: fT_ME, zxrex, nprey
-  PUBLIC :: foo
-  PUBLIC :: foo
 
   INTEGER, PARAMETER :: dp=KIND(0D0)
   INTEGER :: nprey=4
@@ -141,20 +139,5 @@ CONTAINS
   !---------------------------------------------
   !---------------------------------------------
 
-  ! auto-generated, src: tdd-dsl/input/test_fT_ME.tdd, 21:4-29:8
-  FUNCTION foo (arg0, unit) RESULT (out)
-    IMPLICIT NONE
-    real, INTENT(IN)  :: arg0
-    real(dp), INTENT(OUT) :: out
-
-    character(len = *),optional :: unit
-    if(present(unit))then
-        if ( unit /= K ) then
-          print *, "foo: Expected K as input unit but got ", unit
-        endif
-    endif
-
-    out = ! <<Add return expression here>>
-  END FUNCTION foo
 
 END MODULE cfo_example

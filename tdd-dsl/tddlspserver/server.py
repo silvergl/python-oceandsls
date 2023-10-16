@@ -152,7 +152,7 @@ def lookup_symbol(uri, name):
     logger.info("uri: %s\n", uri, "name: %s\n", name)
 
 
-@tdd_server.feature(TEXT_DOCUMENT_COMPLETION, CompletionOptions(trigger_characters=[',']))
+@tdd_server.feature(TEXT_DOCUMENT_COMPLETION, CompletionOptions(trigger_characters=[","]))
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
@@ -234,13 +234,23 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         completion_list.items.append(
             CompletionItem(
                 label=IntervalSet.elementName(
-                    IntervalSet, tdd_server.parser.literalNames, tdd_server.parser.symbolicNames, key
+                    IntervalSet, stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'"), tdd_server.parser.symbolicNames, key
                 )
             )
         )
 
     # return completion candidates labels
     return completion_list
+
+
+def stripTerminals(elements: List[str] = None, terminal: str = "\'") -> List[str]:
+    """
+     Strip string terminals from list elements.
+
+    :param elements: List of elements
+    :return: List of striped elements
+    """
+    return [e.strip(terminal) for e in elements]
 
 
 @tdd_server.feature(TEXT_DOCUMENT_DID_CHANGE)
@@ -263,6 +273,8 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     textURI = params.text_document.uri
     text_doc: Document = tdd_server.workspace.get_document(textURI)
     source: str = text_doc.source
+    file_path: str = os.path.abspath(text_doc.path)
+    rel_file_path: str = os.path.relpath(file_path, os.getcwd())
     input_stream: InputStream = InputStream(source)
 
     # reset the lexer/parser
@@ -279,18 +291,19 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     symbol_table = symbol_table_visitor.visit(parse_tree)
 
     # Generate pf files
-    pf_file_generator_visitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor(test_work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    pf_file_generator_visitor: PFFileGeneratorVisitor = PFFileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table, rel_file_path = rel_file_path)
     # write pf files and save generated files
     tdd_server.files = pf_file_generator_visitor.visit(parse_tree)
 
     # Generate F90 files
-    f90_file_generator_visitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+    f90_file_generator_visitor: F90FileGeneratorVisitor = F90FileGeneratorVisitor(work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table, rel_file_path = rel_file_path)
     # update fortran file and save generated files
     tdd_server.files = f90_file_generator_visitor.visit(parse_tree)
 
     # Generate CMake files
     cmake_file_generator_visitor: CMakeFileGeneratorVisitor = CMakeFileGeneratorVisitor(
-        work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table)
+        work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table
+    )
     # update CMake files and save generated files
     tdd_server.files = cmake_file_generator_visitor.visit(parse_tree)
 
@@ -311,7 +324,7 @@ def semantic_tokens(ls: TDDLSPServer, params: SemanticTokensParams):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
     for details on how semantic tokens are encoded."""
 
-    TOKENS = re.compile('".*"(?=:)')
+    TOKENS = re.compile("\".*\"(?=:)")
 
     uri = params.text_document.uri
     doc = ls.workspace.get_document(uri)

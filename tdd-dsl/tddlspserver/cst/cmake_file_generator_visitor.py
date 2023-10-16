@@ -36,6 +36,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         """
         super().__init__()
 
+        self.overwrite = False
         self.files: dict[str, Tuple[float, str, str]] = files
 
         self.symbol_table = symbol_table
@@ -62,6 +63,8 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         sut_names = []
         sut: Tuple = ()
         test_dirs = []
+        # Initialize test suite overwrite flag as default
+        overwrite = self.overwrite
         for case in ctx.cases:
             test_case = self.visit(case)
 
@@ -78,6 +81,9 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
 
             test_dirs.append(rel_test_dir)
 
+            # Update test suite overwrite flag
+            overwrite : bool = test_case[2] or overwrite
+
         # Load Jinja2 template
         template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
@@ -85,7 +91,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
 
         # Check if file exists and need to be merged
-        if os.path.exists(abs_path):
+        if os.path.exists(abs_path) and not overwrite:
             # Generate parts to be merged into
             insert = True
 
@@ -166,8 +172,13 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
             "RENDER_TEMPLATE": ""
         }
 
+        # Check test flags. E.g. overwrite flag
+        self.overwrite = False
+        if ctx.test_flags:
+            self.visit(ctx.test_flags)
+
         # Check if file exists and need to be merged
-        if os.path.exists(abs_path):
+        if os.path.exists(abs_path) and not self.overwrite:
             # Generate parts to be merged into
             insert = True
 
@@ -192,7 +203,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.files[abs_path] = write_file(abs_path, content, file_attr, insert)
 
         # Return system under test details
-        sut: Tuple = (sut_name, test_case_symbol)
+        sut: Tuple = (sut_name, test_case_symbol, self.overwrite)
 
         return sut
 
@@ -205,3 +216,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         # Update source directory
         # If the given path is an absolute path, then self._testPath is ignored and the joining is only the given path
         self.work_path = os.path.join(self.cwd, user_path)
+
+    # Visit a parse tree produced by TestSuiteParser#overwritePF.
+    def visitOverwriteCMake(self, ctx:TestSuiteParser.OverwritePFContext):
+        self.overwrite = True

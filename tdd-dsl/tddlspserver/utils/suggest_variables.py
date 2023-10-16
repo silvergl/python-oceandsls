@@ -2,7 +2,7 @@
 
 from .compute_token_index import TokenPosition
 from ..symboltable.symbol_table import FunctionSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, SymbolTable, Symbol, ScopedSymbol, VariableSymbol
-__author__ = 'sgu'
+__author__ = "sgu"
 
 # utils
 import asyncio
@@ -19,7 +19,7 @@ from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 Top_levelContext = TestSuiteParser.Test_suiteContext
 del TestSuiteParser
 
-P = ParamSpec('P')
+P = ParamSpec("P")
 
 
 class RunThread(threading.Thread):
@@ -37,7 +37,7 @@ class RunThread(threading.Thread):
 def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
     try:
         loop = asyncio.get_running_loop()
-    except RuntimeError:  # 'RuntimeError: There is no current event loop...'
+    except RuntimeError:  # RuntimeError: There is no current event loop...
         loop = None
     if loop and loop.is_running():
         thread = RunThread(func, *args, **kwargs)
@@ -45,11 +45,11 @@ def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
         thread.join()
         return thread.result
 
-        # print('Async event loop already running. Adding coroutine to the event loop.')
+        # print("Async event loop already running. Adding coroutine to the event loop.")
         # tsk = loop.create_task(symbolTable.symbolWithContext( context ))
         # ^-- https://docs.python.org/3/library/asyncio-task.html#task-object
         # Optionally, a callback function can be executed when the coroutine completes
-        # tsk.add_done_callback( lambda t: print(f'Task done with result={t.result()}  << return val of main()'))
+        # tsk.add_done_callback( lambda t: print(f"Task done with result={t.result()}  << return val of main()"))
     else:
         return asyncio.run(func(*args, **kwargs))
 
@@ -90,7 +90,7 @@ def suggest_symbols(symbol_table: SymbolTable, position: TokenPosition, symbol_t
     # while not isinstance( variable, Top_levelContext ) and variable.parentCtx is not None:
     #     variable = variable.parentCtx
     #
-    # return filterSymbols( position.text if variable is not None else '', symbols, symbolType )
+    # return filterSymbols( position.text if variable is not None else "", symbols, symbolType )
     return filter_symbols(position.text, symbols, symbol_type)
 
 

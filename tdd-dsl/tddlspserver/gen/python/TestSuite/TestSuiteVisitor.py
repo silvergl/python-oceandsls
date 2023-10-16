@@ -19,6 +19,26 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TestSuiteParser#test_flag.
+    def visitTest_flag(self, ctx:TestSuiteParser.Test_flagContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#overwritePF.
+    def visitOverwritePF(self, ctx:TestSuiteParser.OverwritePFContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#overwriteCMake.
+    def visitOverwriteCMake(self, ctx:TestSuiteParser.OverwriteCMakeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TestSuiteParser#overwriteF90.
+    def visitOverwriteF90(self, ctx:TestSuiteParser.OverwriteF90Context):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TestSuiteParser#src_path.
     def visitSrc_path(self, ctx:TestSuiteParser.Src_pathContext):
         return self.visitChildren(ctx)
@@ -36,11 +56,6 @@ class TestSuiteVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TestSuiteParser#varDeclaration.
     def visitVarDeclaration(self, ctx:TestSuiteParser.VarDeclarationContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TestSuiteParser#test_scope.
-    def visitTest_scope(self, ctx:TestSuiteParser.Test_scopeContext):
         return self.visitChildren(ctx)
 
 

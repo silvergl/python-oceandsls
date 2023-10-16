@@ -19,13 +19,13 @@ show_debug_output: bool = True
 
 
 def difflib_merge(file_content0: str, file_content1: str) -> str:
-    '''
+    """
     Merge two file-contents based on difflib.
 
     :param file_content0: Content of first file
     :param file_content1: Content of second file
     :return: 3-way merge of comparing the first file and second file
-    '''
+    """
     merged_content = "\n".join(
         lines[2:] for lines in difflib.Differ().compare(
             file_content0.split("\n"), file_content1.split("\n")
@@ -258,7 +258,7 @@ def write_file(file_path: str = "", content: str | Dict = "", file_attr: tuple[f
                 content = fortran_merge(content, content_org) if insert else content
             case ".pf":
                 # Difflib merge of file
-                content = difflib_merge(content, content_org)
+                content = difflib_merge(content, content_org) if insert else content
             case ".txt":
                 content = cmake_merge(content, content_org) if insert else content
             case _:

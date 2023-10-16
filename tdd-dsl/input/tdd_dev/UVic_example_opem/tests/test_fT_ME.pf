@@ -10,8 +10,10 @@ SUBROUTINE test_fT_ME()
  real ( dp ) :: xIntercept = 283D0 / 19D0
  real ( dp ) :: yIntercept = - ( 283D0 / 520D0 )
 
- ! # asserts x-Intercept
+ ! auto-generated, src: tdd-dsl/input/test_fT_ME.tdd, 13:4-21:8
+ ! asserts x-Intercept
  @assertEqual( 0D0, fT_ME ( xIntercept ), message='fails x-Intercept at 14.89D0', tolerance=1D-12)
- ! # asserts y-Intercept
+ ! auto-generated, src: tdd-dsl/input/test_fT_ME.tdd, 22:4-30:8
+ ! asserts y-Intercept
  @assertEqual( yIntercept, fT_ME ( 0D0 ), message='fails y-Intercept at -54.42D-2', tolerance=1D-12)
 END SUBROUTINE test_fT_ME

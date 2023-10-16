@@ -220,10 +220,13 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 arg_name = f"arg{idx}"
                 arg_names.append(arg_name)
                 args_decl.append(f"{arg_type.name}, INTENT(IN)  :: {arg_name}")
-            # Unit
+
+            # TODO Unit pfUnit error 'There is no specific subroutine for the generic'
+            # unit = None
             unit = value_list[1]
             # Add unit parameter if unit exists
             arg_names += ["unit"] if unit is not None else []
+
             # ReturnType
             return_type = value_list[2].name if value_list[2] is not None else None
 

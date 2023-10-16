@@ -1203,9 +1203,14 @@ class RoutineSymbol(ScopedSymbol):
     """
     __return_type: Optional[Type]  # Can be null if result is void.
 
-    def __init__(self, name: str, return_type: Type = None):
+    def __init__(self, name: str, return_type: Type = None, is_generated: bool = False):
         super().__init__(name)
         self.__return_type = return_type
+        self.__is_generated = is_generated
+
+    @property
+    def is_generated(self) -> bool:
+        return self.__is_generated
 
     @property
     def return_type(self) -> Type | None:

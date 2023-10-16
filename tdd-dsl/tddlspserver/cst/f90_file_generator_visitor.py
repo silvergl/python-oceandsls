@@ -96,9 +96,17 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         ops_impl: List[str] = []
         for key, value_list in self.ops.items():
             scope = get_scope(ctx, self.symbol_table)
-            routine_symbol = scope.get_symbols_of_type_and_name_sync(RoutineSymbol, key, False)
-            # If operations does not exist, add to newly generated ops
-            if not routine_symbol:
+            routine_symbols = scope.get_symbols_of_type_and_name_sync(RoutineSymbol, key, False)
+
+            # Check if operation was added before
+            add_ops: bool = False
+            for routine_symbol in routine_symbols:
+                if routine_symbol.is_generated:
+                    add_ops = True
+                    break
+
+            # If operations does not exist or was added before, add to newly generated ops
+            if not routine_symbols or add_ops:
                 ops_names.append(key)
                 ops_impl.append(value_list[3])
 

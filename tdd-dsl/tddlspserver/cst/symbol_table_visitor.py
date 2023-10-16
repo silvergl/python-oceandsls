@@ -197,7 +197,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
             xml_elements = filter_xml(os.path.join(path, filename), True, module_symbols)
 
             # Add scopes
-            for scope_type, scope_name, scope_args, return_type, parent_scopes in xml_elements[1]:
+            for scope_type, scope_name, scope_args, return_type, parent_scopes, is_generated in xml_elements[1]:
                 scope_sym: ScopedSymbol
 
                 # Top level symbols are omitted as they are only filtered modules in the current test case.
@@ -228,7 +228,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
                             self.with_scope(
                                 ctx, False, FunctionSymbol, lambda: list(
                                     map(lambda arg: self.addRoutineParams(arg), scope_args)
-                                ), scope_name, return_type
+                                ), scope_name, return_type, is_generated
                             )
                             self._scope = current_scope
                         case _:

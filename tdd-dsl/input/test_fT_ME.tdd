@@ -1,5 +1,6 @@
 suite test_suite :
 test test_fT_ME :
+    overwrite pf , cmake 
     srcpath : 'tdd-dsl/input/tdd_dev/UVic_example_opem'
     modules :
         cfo_example

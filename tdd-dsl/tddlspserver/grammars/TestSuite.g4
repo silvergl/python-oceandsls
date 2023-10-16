@@ -33,7 +33,7 @@ test_suite              : 'suite' name=ID ':' NEWLINE
 
 /** test case*/
 test_case               : 'test' name=ID ':' NEWLINE
-                          test_flags=test_flag*
+                          (test_flags=test_flag)?
                           'srcpath' ':' srcpath=src_path
                           modules=use_modules
                           vars=test_vars
@@ -41,7 +41,7 @@ test_case               : 'test' name=ID ':' NEWLINE
                           (NEWLINE assertions+=test_assertion)*
                         ;
 
-test_flag               : 'overwrite' overwrite_flag NEWLINE
+test_flag               : 'overwrite' overwrite_flag (',' overwrite_flag)* NEWLINE
                         ;
 
 overwrite_flag          : 'pf'                                               # overwritePF

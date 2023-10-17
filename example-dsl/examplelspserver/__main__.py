@@ -18,6 +18,8 @@
 ############################################################################
 import argparse
 import logging
+import \
+    os
 
 from .server import example_server
 
@@ -50,6 +52,23 @@ def add_arguments(parser):
         "--port", type=int, default=2087,
         help="Bind to this port"
     )
+    parser.add_argument(
+            "-f", "--file", dest="file", type=file_path, default="some_file",
+            help="Path to file"
+    )
+
+
+def file_path(path: str):
+    """
+    Check for valid file path.
+
+    :param path: readable file path
+    :return: valid path
+    """
+    if os.path.isfile(path):
+        return path
+    else:
+        raise argparse.ArgumentTypeError(f"readable path:'{path}' is not a valid path")
 
 
 def main():

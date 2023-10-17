@@ -18,6 +18,8 @@
 ############################################################################
 import argparse
 import logging
+import os
+import subprocess
 
 from .server import tdd_server
 
@@ -28,7 +30,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def add_arguments(parser):
-    parser.description = "tdd-dsl server"
+    parser.prog = "TDD-Language-Server"
+    parser.description = "A program for a language server based on the test driven development ocean-dsl"
+    parser.epilog = "TDD-DSL Language Server"
 
     parser.add_argument(
         "--tcp", action="store_true",
@@ -46,18 +50,47 @@ def add_arguments(parser):
         "--port", type=int, default=2087,
         help="Bind to this port"
     )
+    parser.add_argument(
+        "-f", "--fxtran", dest="fxtran", type=fxtran_executable, default="fxtran",
+        help="Path to fxtran"
+    )
 
+
+def fxtran_executable(path: str):
+    """
+    Check for valid fxtran path.
+
+    :param path: readable path to fxtran executable
+    :return: valid path
+    """
+    # Add help argument to succeed.
+    path = " ".join( [path, "-help"] )
+
+    try:
+        # Call 'fxtran -help' via subprocess
+        subprocess.check_output(path, shell=True, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        raise argparse.ArgumentTypeError(f"Did not found fxtran. command '{e.cmd}' return with error (code {e.returncode}): {e.output}. Provide valid path via -f path_to_fxtran or add fxtran to system PATH.")
+
+    return path
 
 def main():
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     args = parser.parse_args()
 
+    if args.fxtran:
+        # Add fxtran path
+        tdd_server.fxtran_path = args.fxtran
+
     if args.tcp:
+        # Start server via tcp
         tdd_server.start_tcp(args.host, args.port)
     elif args.ws:
+        # Start server via WebSocket
         tdd_server.start_ws(args.host, args.port)
     else:
+        # Start server via IO
         tdd_server.start_io()
 
 

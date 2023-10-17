@@ -69,6 +69,7 @@ COUNT_DOWN_SLEEP_IN_SECONDS = 1
 
 
 class TDDLSPServer(LanguageServer):
+    CMD_SET_FXTRAN = 'setFxtran'
     CMD_PROGRESS = "progress"
     CMD_REGISTER_COMPLETIONS = "registerCompletions"
     CMD_UNREGISTER_COMPLETIONS = "unregisterCompletions"
@@ -77,29 +78,31 @@ class TDDLSPServer(LanguageServer):
 
     def __init__(self, *args):
         super().__init__(*args)
-        # set ErrorListener
+        # Set error listener
         self.error_listener: DiagnosticListener = DiagnosticListener()
-        # set empty input stream
+        # Set empty input stream
         input_stream: InputStream = InputStream(str())
 
-        # set lexer
+        # Set lexer
         self.lexer: TestSuiteLexer = TestSuiteLexer(input_stream)
-        # set ErrorListener for diagnostics
+        # Set error listener for diagnostics
         self.lexer.removeErrorListeners()
         self.lexer.addErrorListener(self.error_listener)
 
-        # set token stream pipe between lexer and parser
+        # Set token stream pipe between lexer and parser
         self.token_stream: CommonTokenStream = CommonTokenStream(self.lexer)
 
-        # set parser
+        # Set parser
         self.parser: TestSuiteParser = TestSuiteParser(self.token_stream)
-        # set ErrorListener for diagnostics
+        # Set error listener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener(self.error_listener)
 
-        # attributes of generated files
+        # Attributes of generated files
         self.files: dict[str, Tuple[float, str, str]] = {}
 
+        # Fxtran system file path
+        self.fxtran_path = "fxtran"
 
 tdd_server = TDDLSPServer("pygls-odsl-tdd-prototype", "v0.1")
 
@@ -203,14 +206,14 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
         if any(rule in candidates.rules for rule in [TestSuiteParser.RULE_reference]):
 
-            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("completions", os.getcwd())
+            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("completions", os.getcwd(), tdd_server.fxtran_path)
             symbol_table = symbol_table_visitor.visit(parse_tree)
             # FunctionSymbol is derived from RoutineSymbol
             symbol_types.extend([VariableSymbol, RoutineSymbol])
 
         elif any(rule in candidates.rules for rule in [TestSuiteParser.RULE_test_module]):
 
-            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("completions", os.getcwd())
+            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("completions", os.getcwd(), tdd_server.fxtran_path)
             symbol_table = symbol_table_visitor.visit(parse_tree)
             symbol_types.append(ModuleSymbol)
 
@@ -287,7 +290,7 @@ def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     parse_tree: top_level_context = tdd_server.parser.test_suite()
 
     # get symboltable for f90 generator
-    symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("variables", os.getcwd())
+    symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("variables", os.getcwd(), tdd_server.fxtran_path)
     symbol_table = symbol_table_visitor.visit(parse_tree)
 
     # Generate pf files
@@ -377,6 +380,13 @@ async def register_completions(ls: TDDLSPServer, *args):
     else:
         ls.show_message("Error happened during completions registration.", MessageType.Error)
 
+@tdd_server.command(TDDLSPServer.CMD_SET_FXTRAN)
+async def set_fxtran_non_blocking(ls, *args):
+    """Set fxtran path and showing message asynchronously.
+    """
+    for i in range(COUNT_DOWN_START_IN_SECONDS):
+        ls.show_message(f'Set fxtran path to... {COUNT_DOWN_START_IN_SECONDS - i}')
+        await asyncio.sleep(COUNT_DOWN_SLEEP_IN_SECONDS)
 
 @tdd_server.command(TDDLSPServer.CMD_UNREGISTER_COMPLETIONS)
 async def unregister_completions(ls: TDDLSPServer, *args):

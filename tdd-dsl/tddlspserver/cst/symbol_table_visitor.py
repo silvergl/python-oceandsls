@@ -23,8 +23,9 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     _symbol_table: SymbolTable
     _test_path: str
 
-    def __init__(self, name: str = "", test_work_path: str = "tdd-dsl/output"):
+    def __init__(self, name: str = "", test_work_path: str = "tdd-dsl/output", fxtran_path: str="fxtran"):
         super().__init__()
+        self.fxtran_path = fxtran_path
         self._symbol_table = SymbolTable(name, SymbolTableOptions(False))
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
@@ -184,9 +185,8 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
 
         # TODO hc
         xml_path = os.path.join(self._test_path, "tmp")
-        # TODO hc
         # Write XML files
-        write_decorate_src_xml(self._test_path, xml_path, "/home/sgu/IdeaProjects/fxtran/bin/fxtran")  # /home/sgu/Documents/fxtran/bin/fxtran
+        write_decorate_src_xml(self._test_path, xml_path, fxtran_path = self.fxtran_path)
 
         # TODO hc, specify modules
         # Get Fortran files

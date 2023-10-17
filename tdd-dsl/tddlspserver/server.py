@@ -21,7 +21,6 @@
 import asyncio
 import logging
 import re
-import sys
 import uuid
 import os.path
 # debug import
@@ -64,17 +63,11 @@ from .utils.suggest_variables import suggest_symbols
 #     sys.path.append(os.path.join( sys.path[0], "example-dsl", "lspExampleServer") )
 # pprint( f"sys.path {sys.path}" )
 
-COUNT_DOWN_START_IN_SECONDS = 10
-COUNT_DOWN_SLEEP_IN_SECONDS = 1
-
-
 class TDDLSPServer(LanguageServer):
-    CMD_SET_FXTRAN = 'setFxtran'
-    CMD_PROGRESS = "progress"
     CMD_REGISTER_COMPLETIONS = "registerCompletions"
     CMD_UNREGISTER_COMPLETIONS = "unregisterCompletions"
 
-    CONFIGURATION_SECTION = "ODslExampleServer"
+    CONFIGURATION_SECTION = "ODsl-TDD-DSL-Server"
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -104,7 +97,7 @@ class TDDLSPServer(LanguageServer):
         # Fxtran system file path
         self.fxtran_path = "fxtran"
 
-tdd_server = TDDLSPServer("pygls-odsl-tdd-prototype", "v0.1")
+tdd_server = TDDLSPServer("pygls-odsl-tdd-prototype", "v0.8")
 
 logger = logging.getLogger(__name__)
 
@@ -349,29 +342,12 @@ def semantic_tokens(ls: TDDLSPServer, params: SemanticTokensParams):
 
     return SemanticTokens(data=data)
 
-
-@tdd_server.command(TDDLSPServer.CMD_PROGRESS)
-async def progress(ls: TDDLSPServer, *args):
-    """Create and start the progress on the client."""
-    token = "token"
-    # Create
-    await ls.progress.create_async(token)
-    # Begin
-    ls.progress.begin(token, WorkDoneProgressBegin(title="Indexing", percentage=0))
-    # Report
-    for i in range(1, 10):
-        ls.progress.report(token, WorkDoneProgressReport(message=f"{i * 10}%", percentage=i * 10), )
-        await asyncio.sleep(2)
-    # End
-    ls.progress.end(token, WorkDoneProgressEnd(message="Finished"))
-
-
 @tdd_server.command(TDDLSPServer.CMD_REGISTER_COMPLETIONS)
 async def register_completions(ls: TDDLSPServer, *args):
     """Register completions method on the client."""
     params = RegistrationParams(
         registrations=[Registration(
-            id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION, register_options={"triggerCharacters": "[\":\"]"}
+            id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION, register_options={"triggerCharacters": ","}
         )]
     )
     response = await ls.register_capability_async(params)
@@ -379,14 +355,6 @@ async def register_completions(ls: TDDLSPServer, *args):
         ls.show_message("Successfully registered completions method")
     else:
         ls.show_message("Error happened during completions registration.", MessageType.Error)
-
-@tdd_server.command(TDDLSPServer.CMD_SET_FXTRAN)
-async def set_fxtran_non_blocking(ls, *args):
-    """Set fxtran path and showing message asynchronously.
-    """
-    for i in range(COUNT_DOWN_START_IN_SECONDS):
-        ls.show_message(f'Set fxtran path to... {COUNT_DOWN_START_IN_SECONDS - i}')
-        await asyncio.sleep(COUNT_DOWN_SLEEP_IN_SECONDS)
 
 @tdd_server.command(TDDLSPServer.CMD_UNREGISTER_COMPLETIONS)
 async def unregister_completions(ls: TDDLSPServer, *args):

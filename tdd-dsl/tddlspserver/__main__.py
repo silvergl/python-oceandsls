@@ -64,11 +64,11 @@ def fxtran_executable(path: str):
     :return: valid path
     """
     # Add help argument to succeed.
-    path = " ".join( [path, "-help"] )
+    cmd: str = " ".join( [path, "-help"] )
 
     try:
         # Call 'fxtran -help' via subprocess
-        subprocess.check_output(path, shell=True, stderr=subprocess.STDOUT)
+        subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         raise argparse.ArgumentTypeError(f"Did not found fxtran. command '{e.cmd}' return with error (code {e.returncode}): {e.output}. Provide valid path via -f path_to_fxtran or add fxtran to system PATH.")
 

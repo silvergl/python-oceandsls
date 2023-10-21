@@ -180,3 +180,5 @@ tdd-dsl/input/tdd_dev/UVic_example_opem/tmp/
 tdd-dsl/input/tdd_dev/UVic_example_opem_manual/build/
 tdd-dsl/input/tdd_dev/UVic_example_opem/build/
 tdd-dsl/tddlspserver/other/
+# Example-DSL tmp files
+example-dsl/examplelspserver/other/

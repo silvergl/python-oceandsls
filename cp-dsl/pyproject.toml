@@ -23,7 +23,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
-    "Topic :: Software Development :: DSL",
+    "Topic :: Software Development",
 ]
 
 license = {text = "Apache License (2.0)"}

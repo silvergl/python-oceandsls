@@ -2,6 +2,9 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+exclude = ["input","client","node_modules"]
+
 [project]
 name = "Example-Language"
 version = "0.40.0"

@@ -1,10 +1,22 @@
-"""Port of antlr-c3 typescript library to python"""
+"""Port of antlr-c3 (https://github.com/mike-lischke/antlr4-c3) typescript library to python"""
 
 from __future__ import annotations
 
 __author__ = 'sgu'
 
-# TODO license
+#  Copyright (c) 2023.  OceanDSL (https://oceandsl.uni-kiel.de)
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
 
 #
 #  The c3 engine is able to provide code completion candidates useful for
@@ -12,17 +24,12 @@ __author__ = 'sgu'
 #  language/grammar used for the generation.
 #
 
-# TODO configure module
-# package: com.vmware.antlr4c3
-
 # utils
 import logging
 from dataclasses import dataclass, field
 from typing import Dict, Set, List
 
 # antlr imports
-# TODO check range structure
-#  https://stackoverflow.com/q/57356723/
 from antlr4.IntervalSet import IntervalSet
 from antlr4.Parser import Parser
 from antlr4.Token import Token
@@ -341,8 +348,6 @@ class CodeCompletionCore:
 
         pipeline: List[ ATNState ] = [ transition.target ]
 
-        # TODO check pipeline not empty via
-        #  while pipeline:
         while len( pipeline ) > 0:
 
             state: ATNState = pipeline.pop( )
@@ -379,8 +384,6 @@ class CodeCompletionCore:
         Collects possible tokens which could be matched following the given ATN state. This is essentially the same
         algorithm as used in the LL1Analyzer class, but here we consider predicates also and use no parser rule context.
         """
-        # TODO check lambda function
-        #  stateStack.find((x) => x === s)
         if s in stateStack:
             return
 
@@ -399,8 +402,6 @@ class CodeCompletionCore:
         for transition in s.transitions:
             if transition.serializationType == Transition.RULE:
                 ruleTransition: RuleTransition = transition
-                # TODO check semantic eg skip the current iteration
-                #  if ruleStack.index(ruleTransition.target.ruleIndex) != -1:
                 if ruleTransition.target.ruleIndex in ruleStack:
                     continue
 
@@ -465,7 +466,6 @@ class CodeCompletionCore:
         #  3) We get this lookup for free with any 2nd or further visit of the same rule, which often happens
         #     in non-trivial grammars, especially with (recursive) expressions and of course when invoking code
         #     completion multiple times.
-        # TODO check class attribute CodeCompletionCore.followSetsByATN vs self.followSetsByATN
         setsPerState: FollowSetsPerState = self.followSetsByATN.get( self.parser.__class__.__name__ )
         if setsPerState is None:
             setsPerState = {}
@@ -664,34 +664,6 @@ class CodeCompletionCore:
 
         return result
 
-    # TODO switch case
-    def switchCase( self, serializationType: int ):
-        return {
-                Transition.RULE      : lambda: self.callRULE( ),
-                Transition.PREDICATE : lambda: self.callPREDICATE( ),
-                Transition.PRECEDENCE: lambda: self.callPRECEDENCE( ),
-                Transition.WILDCARD  : lambda: self.callWILDCARD( )
-        }.get(
-            serializationType,
-            lambda: self.callDEFAULT( )
-            )  # callDEFAULT will be returned default if serializationType is not found
-        # (https://docs.python.org/3/library/stdtypes.html#dict.get)
-
-    def callRULE( self ):
-        pass
-
-    def callPREDICATE( self ):
-        pass
-
-    def callPRECEDENCE( self ):
-        pass
-
-    def callWILDCARD( self ):
-        pass
-
-    def callDEFAULT( self ):
-        pass
-
     def generateBaseDescription( self, state: ATNState ) -> str:
         stateValue: str = "Invalid" if (state.stateNumber == ATNState.INVALID_STATE_NUMBER) else str(
                 state.stateNumber
@@ -704,9 +676,6 @@ class CodeCompletionCore:
         """
         self, currentIndent, state, baseDescription, tokenIndex
         """
-        # TODO check log level
-        #  FINER level
-        #  logger.isLoggable(Level.FINER)
 
         indent: List[ str ] = [ "  " ] * indentation
         output_list: List[ str ] = indent.copy( )
@@ -752,9 +721,6 @@ class CodeCompletionCore:
             )
 
     def printRuleState( self, stack: RuleWithStartTokenList ):
-        # TODO check log level
-        #  FINER level
-        #  logger.isLoggable(Level.FINER)
 
         if len( stack ) == 0:
             logger.debug( "<empty stack>" )

@@ -150,7 +150,8 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
     # set input stream of characters for lexer
-    text_doc: Document = tdd_server.workspace.get_document(params.text_document.uri)
+    #text_doc: Document = tdd_server.workspace.get_document(params.text_document.uri)
+    text_doc: Document = tdd_server.workspace.get_text_document(params.text_document.uri)
     source: str = text_doc.source
     input_stream: InputStream = InputStream(source)
 
@@ -163,6 +164,9 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # launches parser by invoking top-level rule
     top_level_context = TestSuiteParser.Test_suiteContext
     parse_tree: top_level_context = tdd_server.parser.test_suite()
+
+    while not tdd_server.token_stream.fetchedEOF:
+        #asyncio
 
     # get token index under caret position
     # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1

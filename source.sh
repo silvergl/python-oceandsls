@@ -41,6 +41,7 @@ if [ -f /usr/local/lib/antlr-4.13.0-complete.jar ] && [ -f /usr/local/lib/antlrw
     psrun() {
       pushd .  > /dev/null
       grammarName="${1}"
+      srcDir="${2}"
       pkgName="${grammarName}"
       startRuleName="${3}"
       testDataFile=`readlink -f $4`
@@ -53,6 +54,7 @@ if [ -f /usr/local/lib/antlr-4.13.0-complete.jar ] && [ -f /usr/local/lib/antlrw
     tokenrun() {
       pushd .  > /dev/null
       grammarName="${1}"
+      srcDir="${2}"
       pkgName="${grammarName}"
       startRuleName="${3}"
       testDataFile=`readlink -f $4`
@@ -65,6 +67,7 @@ if [ -f /usr/local/lib/antlr-4.13.0-complete.jar ] && [ -f /usr/local/lib/antlrw
     treerun() {
       pushd .  > /dev/null
       grammarName="${1}"
+      srcDir="${2}"
       pkgName="${grammarName}"
       startRuleName="${3}"
       testDataFile=`readlink -f $4`
@@ -77,6 +80,7 @@ if [ -f /usr/local/lib/antlr-4.13.0-complete.jar ] && [ -f /usr/local/lib/antlrw
     tracerun() {
       pushd .  > /dev/null
       grammarName="${1}"
+      srcDir="${2}"
       pkgName="${grammarName}"
       startRuleName="${3}"
       testDataFile=`readlink -f $4`

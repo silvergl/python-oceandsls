@@ -76,7 +76,7 @@ def position_of_token(
 ):
     start = token.column
     stop = token.column + len(text)
-    if token.line == caret_position.line and start <= caret_position.column <= stop:
+    if token.line == caret_position.line and start <= caret_position.column <= stop and 0 <= token.tokenIndex :
         index = token.tokenIndex
         if token.type in identifier_token_types:
             index -= 1
@@ -109,21 +109,21 @@ def compute_token_position_of_child_node(
         (parser_rule_context.stop is not None and parser_rule_context.stop.line < caret_position.line)
     ):
         return None
+    if parser_rule_context.start is not None and parser_rule_context.stop is not None:
+        i = parser_rule_context.start.tokenIndex
+        while i <= parser_rule_context.stop.tokenIndex:
+            pos = position_of_token(
+                    tokens.tokens[i], tokens.tokens[i].text, caret_position, identifier_token_types, parser_rule_context
+            )
+            if pos:
+                return pos
+            i += 1
     i = 0
     while i < parser_rule_context.getChildCount():
         position = compute_token_position(parser_rule_context.getChild(i), tokens, caret_position, identifier_token_types)
         if position is not None:
             return position
         i += 1
-    if parser_rule_context.start is not None and parser_rule_context.stop is not None:
-        i = parser_rule_context.start.tokenIndex
-        while i <= parser_rule_context.stop.tokenIndex:
-            pos = position_of_token(
-                tokens.tokens[i], tokens.tokens[i].text, caret_position, identifier_token_types, parser_rule_context
-            )
-            if pos:
-                return pos
-            i += 1
     return None
 
 

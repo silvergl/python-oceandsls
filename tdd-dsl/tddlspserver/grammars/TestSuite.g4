@@ -41,7 +41,7 @@ test_case               : 'test' name=ID ':' NEWLINE
                           (NEWLINE assertions+=test_assertion)*
                         ;
 
-test_flag               : 'overwrite' overwrite_flag (',' overwrite_flag)* NEWLINE
+test_flag               : 'overwrite' ':' overwrite_flag (',' overwrite_flag)* NEWLINE
                         ;
 
 overwrite_flag          : 'pf'                                               # overwritePF
@@ -77,11 +77,10 @@ test_module             : name=ID NEWLINE
                         ;
 
 /** test assertion; ends on newline */
-test_assertion          : 'assert' directive=test_directive '(' NEWLINE
+test_assertion          : 'assert' directive=test_directive ':' NEWLINE
                           'in' ':' NEWLINE input=test_parameter     /** ends on newline */
                           'out' ':' NEWLINE output=test_parameter   /** ends on newline */
                           attr=pubAttributes (comment=COMMENT)?     /** ends on newline */
-                          ')'
                         ;
 
 /** arguments of pfUnit prepparser rules start with lowercase letters */

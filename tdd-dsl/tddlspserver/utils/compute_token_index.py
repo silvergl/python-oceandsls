@@ -82,8 +82,6 @@ def position_of_token(
             if token.type in identifier_token_types:
                 index -= 1
 
-            # TODO check to choose complete token text or substring
-            # result: TokenPosition = tokenPosition(index, parseTree, text)
             text = text[ 0: caret_position.column - start ] if not isinstance( parser_rule_context, ErrorNodeImpl ) else ""
             result: TokenPosition = TokenPosition( index, parser_rule_context, text )
 
@@ -103,17 +101,6 @@ def compute_token_position_of_terminal(
 def compute_token_position_of_child_node(
         parser_rule_context: ParserRuleContext, tokens: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[ int ]
 ):
-    # Return None if no token exists or caret is outside of token lines
-    # start_line: Optional[int] = None
-    # end_line: Optional[int] = None
-    # if tokens and tokens.tokens:
-    #     first_token: CommonToken = tokens.tokens[0]
-    #     last_token: CommonToken = tokens.tokens[-1]
-    #     start_line = first_token.line
-    #     end_line = last_token.line
-    # if (start_line and start_line > caret_position.line) or (end_line and end_line < caret_position.line):
-    #     return None
-
     # Return None if no context exists or caret is outside of context
     start_line: Optional[ int ] = None
     end_line: Optional[ int ] = None

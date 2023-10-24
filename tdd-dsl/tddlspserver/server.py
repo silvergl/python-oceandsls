@@ -20,6 +20,7 @@ import logging
 import re
 import uuid
 import os.path
+from builtins import range
 # debug import
 from pprint import pprint
 from typing import List, Optional, Tuple
@@ -30,7 +31,7 @@ from antlr4.IntervalSet import IntervalSet
 # pygls
 from lsprotocol.types import (
     CompletionItem, CompletionList, CompletionOptions, CompletionParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams,
-    DidOpenTextDocumentParams, DidSaveTextDocumentParams, MessageType, Registration, RegistrationParams, SemanticTokens, SemanticTokensLegend,
+    DidOpenTextDocumentParams, DidSaveTextDocumentParams, MessageType, Position, Range, Registration, RegistrationParams, SemanticTokens, SemanticTokensLegend,
     SemanticTokensParams, TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE, TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_DID_SAVE,
     TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, Unregistration, UnregistrationParams, WorkDoneProgressBegin, WorkDoneProgressEnd, WorkDoneProgressReport
 )
@@ -125,10 +126,17 @@ def _validate_format(ls: TDDLSPServer, source: str):
     ls.parser.setInputStream(ls.token_stream)
 
     try:
-        # launch parser by invoking top-level rule
-        ls.parser.test_suite()
+        # Launch parser by invoking top-level rule
+        top_level_context = TestSuiteParser.Test_suiteContext
+        parse_tree: Optional[top_level_context] = ls.parser.test_suite()
+
+        if not tdd_server.token_stream.fetchedEOF:
+            end: Position = Position(parse_tree.stop.line,parse_tree.stop.column)
+            eof_range: Range = Range(start = end, end = end)
+            eof_msg = Diagnostic(message = "Parser stopped before end of file.", range = eof_range)
+            ls.error_listener.diagnostics.append(eof_msg)
+
     except OSError as err:
-        # TODO add exception
         msg = err.filename.msg
 
         ls.error_listener.diagnostics.append(msg)
@@ -149,48 +157,52 @@ def lookup_symbol(uri, name):
 def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
-    # set input stream of characters for lexer
-    #text_doc: Document = tdd_server.workspace.get_document(params.text_document.uri)
+    # Set input stream of characters for lexer
     text_doc: Document = tdd_server.workspace.get_text_document(params.text_document.uri)
     source: str = text_doc.source
     input_stream: InputStream = InputStream(source)
 
-    # reset the lexer/parser
+    # Reset the lexer/parser
     tdd_server.error_listener.reset()
     tdd_server.lexer.inputStream = input_stream
     tdd_server.token_stream = CommonTokenStream(tdd_server.lexer)
-    tdd_server.parser.setInputStream(tdd_server.token_stream)
+    tdd_server.parser.setTokenStream(tdd_server.token_stream)
 
-    # launches parser by invoking top-level rule
+    # Launches parser by invoking top-level rule
     top_level_context = TestSuiteParser.Test_suiteContext
-    parse_tree: top_level_context = tdd_server.parser.test_suite()
+    parse_tree: Optional[top_level_context] = None
 
+    token_index: Optional[TokenPosition] = None
+
+    # Parse until fetched
     while not tdd_server.token_stream.fetchedEOF:
-        #asyncio
+        parse_tree = tdd_server.parser.test_suite()
 
-    # get token index under caret position
-    # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
-    token_index: TokenPosition = compute_token_position(
-        parse_tree, tdd_server.token_stream, CaretPosition(
-            params.position.line + 1, params.position.character
-        )
-    )
+        # Get token index under caret position
+        # params.position.line + 1 as lsp line counts from 0 and antlr4 line counts from 1
+        if token_index is None:
+            token_index = compute_token_position(
+                parse_tree, tdd_server.token_stream, CaretPosition(
+                    params.position.line + 1, params.position.character
+                )
+            )
 
-    # set emtpy return list
+
+    # Init emtpy return list
     completion_list: CompletionList = CompletionList(is_incomplete=False, items=[])
 
-    # return if no index could be determined
+    # Return if no index could be determined
     if token_index is None:
-        # TODO add exception
+        # TODO add warning
         return completion_list
 
-    # launch c3 core with parser
+    # Launch c3 core with parser
     core: CodeCompletionCore = CodeCompletionCore(tdd_server.parser)
 
     core.ignoredTokens = {Token.EPSILON}
     core.preferredRules = {TestSuiteParser.RULE_reference, TestSuiteParser.RULE_src_path, TestSuiteParser.RULE_test_module}
 
-    # get completion candidates
+    # Get completion candidates
     candidates: CandidatesCollection = core.collectCandidates(token_index.index)
 
     # Resolve candidates for preferred rules
@@ -226,7 +238,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
     # TODO modules, type check, asserts, functions, subroutines
 
-    # add tokens to completion candidates
+    # Add tokens to completion candidates
     for key, valueList in candidates.tokens.items():
         completion_list.items.append(
             CompletionItem(
@@ -236,7 +248,7 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
             )
         )
 
-    # return completion candidates labels
+    # Return completion candidates labels
     return completion_list
 
 

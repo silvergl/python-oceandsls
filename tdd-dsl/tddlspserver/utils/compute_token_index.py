@@ -18,16 +18,17 @@ __author__ = "sgu"
 
 # utils
 import logging
+
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
 # antlr4
 from antlr4 import BufferedTokenStream, TerminalNode, Token
 from antlr4.ParserRuleContext import ParserRuleContext
-from antlr4.tree.Tree import ErrorNodeImpl, ParseTree
+from antlr4.tree.Tree import ErrorNodeImpl, ParseTree, TerminalNodeImpl
 
 # debug
-logger = logging.getLogger(__name__)
+logger = logging.getLogger( __name__ )
 logger.disabled = True
 
 
@@ -44,94 +45,107 @@ class TokenPosition:
     text: str
 
 
-def compute_token_index_of_terminal_node(terminal_node: TerminalNode, caret_position: CaretPosition) -> Optional[Any]:
-    start = terminal_node.symbol.column
-    stop = terminal_node.symbol.column + len(terminal_node.getText())
-    if terminal_node.symbol.line == caret_position.line and start <= caret_position.column <= stop:
-        return terminal_node.symbol.tokenIndex
-    else:
-        return None
+def compute_token_index_of_terminal_node( terminal_node: TerminalNode, caret_position: CaretPosition ) -> Optional[ Any ]:
+    if isinstance(terminal_node, TerminalNodeImpl):
+        start = terminal_node.symbol.column
+        stop = terminal_node.symbol.column + len( terminal_node.getText( ) )
+        if terminal_node.symbol.line == caret_position.line and start <= caret_position.column <= stop:
+            return terminal_node.symbol.tokenIndex
+    return None
 
 
-def compute_token_index_of_child_node(parser_rule_context: ParserRuleContext, caret_position: CaretPosition) -> Optional[int]:
+def compute_token_index_of_child_node( parser_rule_context: ParserRuleContext, caret_position: CaretPosition ) -> Optional[ int ]:
     i = 0
-    while i < parser_rule_context.getChildCount():
-        index = compute_token_index(parser_rule_context.getChild(i), caret_position)
+    while i < parser_rule_context.getChildCount( ):
+        index = compute_token_index( parser_rule_context.getChild( i ), caret_position )
         if index is not None:
             return index
         i += 1
     return None
 
 
-def compute_token_index(parse_tree: ParseTree, caret_position: CaretPosition) -> int:
-    if isinstance(parse_tree, TerminalNode):
-        return compute_token_index_of_terminal_node(parse_tree, caret_position)
+def compute_token_index( parser_rule_context: ParserRuleContext, caret_position: CaretPosition ) -> int:
+    if isinstance( parser_rule_context, TerminalNode ):
+        return compute_token_index_of_terminal_node( parser_rule_context, caret_position )
     else:
-        parser_rule_context: ParserRuleContext = parse_tree
-        return compute_token_index_of_child_node(parser_rule_context, caret_position)
+        return compute_token_index_of_child_node( parser_rule_context, caret_position )
 
 
 def position_of_token(
-    token: Token, text: str, caret_position: CaretPosition, identifier_token_types: List[int], parse_tree: ParseTree
+        token: Token, text: str, caret_position: CaretPosition, identifier_token_types: List[ int ], parser_rule_context: ParserRuleContext | TerminalNode
 ):
-    start = token.column
-    stop = token.column + len(text)
-    if token.line == caret_position.line and start <= caret_position.column <= stop and 0 <= token.tokenIndex :
-        index = token.tokenIndex
-        if token.type in identifier_token_types:
-            index -= 1
+    if token :
+        start = token.column
+        stop = token.column + len( text )
+        if token.line == caret_position.line and start <= caret_position.column <= stop and 0 <= token.tokenIndex:
+            index = token.tokenIndex
+            if token.type in identifier_token_types:
+                index -= 1
 
-        # TODO check to choose complete token text or substring
-        # result: TokenPosition = tokenPosition(index, parseTree, text)
-        parser_rule_context: ParserRuleContext = parse_tree
-        # TODO check for error nodes
-        text = text[0: caret_position.column - start] if not isinstance(parse_tree, ErrorNodeImpl) else ""
-        result: TokenPosition = TokenPosition(index, parser_rule_context, text)
+            # TODO check to choose complete token text or substring
+            # result: TokenPosition = tokenPosition(index, parseTree, text)
+            text = text[ 0: caret_position.column - start ] if not isinstance( parser_rule_context, ErrorNodeImpl ) else ""
+            result: TokenPosition = TokenPosition( index, parser_rule_context, text )
 
-        return result
-    else:
-        return None
+            return result
+
+    return None
 
 
 def compute_token_position_of_terminal(
-    terminal_node: TerminalNode, token_stream: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[int]
+        terminal_node: TerminalNode, token_stream: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[ int ]
 ):
-    token: Token = terminal_node.symbol
-    text: str = terminal_node.getText()
-    return position_of_token(token, text, caret_position, identifier_token_types, terminal_node)
+    token: Token = terminal_node.symbol if isinstance(terminal_node, TerminalNodeImpl) else None
+    text: str = terminal_node.getText( ) if isinstance(terminal_node, TerminalNodeImpl) else None
+    return position_of_token( token, text, caret_position, identifier_token_types, terminal_node )
 
 
 def compute_token_position_of_child_node(
-    parser_rule_context: ParserRuleContext, tokens: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[int]
+        parser_rule_context: ParserRuleContext, tokens: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[ int ]
 ):
-    if (
-        (parser_rule_context.start is not None and parser_rule_context.start.line > caret_position.line) or
-        (parser_rule_context.stop is not None and parser_rule_context.stop.line < caret_position.line)
-    ):
+    # Return None if no token exists or caret is outside of token lines
+    # start_line: Optional[int] = None
+    # end_line: Optional[int] = None
+    # if tokens and tokens.tokens:
+    #     first_token: CommonToken = tokens.tokens[0]
+    #     last_token: CommonToken = tokens.tokens[-1]
+    #     start_line = first_token.line
+    #     end_line = last_token.line
+    # if (start_line and start_line > caret_position.line) or (end_line and end_line < caret_position.line):
+    #     return None
+
+    # Return None if no context exists or caret is outside of context
+    start_line: Optional[ int ] = None
+    end_line: Optional[ int ] = None
+    if parser_rule_context and parser_rule_context.start and parser_rule_context.stop:
+        start_line = parser_rule_context.start.line
+        end_line = parser_rule_context.stop.line
+    if (start_line and start_line > caret_position.line) or (end_line and end_line < caret_position.line):
         return None
-    if parser_rule_context.start is not None and parser_rule_context.stop is not None:
-        i = parser_rule_context.start.tokenIndex
-        while i <= parser_rule_context.stop.tokenIndex:
-            pos = position_of_token(
-                    tokens.tokens[i], tokens.tokens[i].text, caret_position, identifier_token_types, parser_rule_context
-            )
-            if pos:
-                return pos
-            i += 1
-    i = 0
-    while i < parser_rule_context.getChildCount():
-        position = compute_token_position(parser_rule_context.getChild(i), tokens, caret_position, identifier_token_types)
-        if position is not None:
-            return position
-        i += 1
+
+    # Check elements in range of context
+    for i in range( parser_rule_context.start.tokenIndex, parser_rule_context.stop.tokenIndex ):
+        pos = position_of_token(
+                tokens.tokens[ i ], tokens.tokens[ i ].text, caret_position, identifier_token_types, parser_rule_context
+        )
+        if pos:
+            return pos
+
+    # Check nested elements
+    for i in range( 0, parser_rule_context.getChildCount( ) ):
+        pos = compute_token_position( parser_rule_context.getChild( i ), tokens, caret_position, identifier_token_types )
+        if pos:
+            return pos
+
     return None
 
 
 def compute_token_position(
-    parse_tree: ParseTree, tokens: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[int] = []
-) -> Optional[TokenPosition]:
-    if isinstance(parse_tree, TerminalNode):
-        return compute_token_position_of_terminal(parse_tree, tokens, caret_position, identifier_token_types)
+        parser_rule_context: ParserRuleContext, tokens: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types = None
+) -> Optional[ TokenPosition ]:
+    if identifier_token_types is None:
+        identifier_token_types = [ ]
+    if isinstance( parser_rule_context, TerminalNode ):
+        return compute_token_position_of_terminal( parser_rule_context, tokens, caret_position, identifier_token_types )
     else:
-        parser_rule_context: ParserRuleContext = parse_tree
-        return compute_token_position_of_child_node(parser_rule_context, tokens, caret_position, identifier_token_types)
+        return compute_token_position_of_child_node( parser_rule_context, tokens, caret_position, identifier_token_types )

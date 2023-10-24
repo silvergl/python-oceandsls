@@ -19,14 +19,14 @@ __author__ = "sgu"
 from enum import Enum
 
 
-class EDirection(Enum):
+class EDirection( Enum ):
     """ FortranVariable directions """
     READ = 1
     WRITE = 2
     BOTH = 3
     NONE = 4
 
-    def merge(self, direction):
+    def merge( self, direction ):
         match self:
             case self.NONE:
                 return direction

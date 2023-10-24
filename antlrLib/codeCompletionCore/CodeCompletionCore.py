@@ -200,6 +200,7 @@ class CodeCompletionCore:
         self.showDebugOutput = False
         self.debugOutputWithTransitions = False
         self.showRuleStack = False
+
         self.translateRulesTopDown = True
 
         self.tokenStartIndex = 0
@@ -222,7 +223,7 @@ class CodeCompletionCore:
         self.statesProcessed = 0
         self.precedenceStack = [ ]
 
-        self.tokenStartIndex = context.start.tokenIndex if context is not None else 0
+        self.tokenStartIndex = context.start.tokenIndex if context else 0
         tokenStream: TokenStream = self.parser.getInputStream( )
 
         self.tokens = [ ]
@@ -242,7 +243,7 @@ class CodeCompletionCore:
                 break
 
         callStack: RuleWithStartTokenList = [ ]
-        startRule: int = context.ruleIndex if context is not None else 0
+        startRule: int = context.getRuleIndex() if context else 0
         self.processRule( self.atn.ruleToStartState[ startRule ], 0, callStack, 0, 0 )
 
         if self.showResult and logger.isEnabledFor( logging.DEBUG ):
@@ -292,19 +293,15 @@ class CodeCompletionCore:
         if self.translateRulesTopDown:
             #  Loop over the rule stack from lowest to highest rule level. This will prioritize a lower preferred rule
             #  if it is a child of a higher one that is also a preferred rule.
-            i = len( ruleWithStartTokenList ) - 1
-            while i >= 0:
+            for i in reversed(range(0,len( ruleWithStartTokenList ))):
                 if self.translateToRuleIndex( i, ruleWithStartTokenList ):
                     return True
-                i -= 1
         else:
             #  Loop over the rule stack from highest to lowest rule level. This will prioritize a higher preferred rule
             #  if it contains a lower one that is also a preferred rule.
-            i = 0
-            while i < len( ruleWithStartTokenList ):
+            for i in range(0,len( ruleWithStartTokenList )):
                 if self.translateToRuleIndex( i, ruleWithStartTokenList ):
                     return True
-                i += 1
 
         return False
 

@@ -27,21 +27,21 @@ import Keyword, Typing, Reference, PhysicalUnits, CommonLexerRules;
 
 /** test_suite ; top-level rule; begin parsing here */
 test_suite              : 'suite' name=ID ':' NEWLINE
-                          cases+=test_case
-                          (NEWLINE cases+=test_case+)*
+                          cases+=test_case              /** ends on newline */
+                          (cases+=test_case)*           /** ends on newline */
                         ;
 
-/** test case*/
+/** test case ends on newline */
 test_case               : 'test' name=ID ':' NEWLINE
-                          (test_flags=test_flag)?
-                          'srcpath' ':' srcpath=src_path
-                          modules=use_modules
-                          vars=test_vars
-                          assertions+=test_assertion
-                          (NEWLINE assertions+=test_assertion)*
+                          (test_flags=test_flag)?               /** ends on newline */
+                          'srcpath' ':' srcpath=src_path        /** ends on newline */
+                          modules=use_modules                   /** ends on newline */
+                          vars=test_vars                        /** ends on newline */
+                          assertions+=test_assertion            /** ends on newline */
+                          (assertions+=test_assertion)+         /** ends on newline */
                         ;
 
-test_flag               : 'overwrite' overwrite_flag (',' overwrite_flag)* NEWLINE
+test_flag               : 'overwrite' ':' overwrite_flag (',' overwrite_flag)* NEWLINE
                         ;
 
 overwrite_flag          : 'pf'                                               # overwritePF
@@ -50,7 +50,7 @@ overwrite_flag          : 'pf'                                               # o
                         ;
 
 // TODO use special literal for filepath eg FILEPATH : [-.a-zA-Z0-9:/\\]+ ;
-/** Placeholder for code completion of system path to source code files*/
+/** Placeholder for code completion of system path to source code files; ends on newline */
 src_path                : path=STRING NEWLINE
                         ;
 
@@ -77,17 +77,16 @@ test_module             : name=ID NEWLINE
                         ;
 
 /** test assertion; ends on newline */
-test_assertion          : 'assert' directive=test_directive '(' NEWLINE
+test_assertion          : 'assert' directive=test_directive ':' NEWLINE
                           'in' ':' NEWLINE input=test_parameter     /** ends on newline */
                           'out' ':' NEWLINE output=test_parameter   /** ends on newline */
                           attr=pubAttributes (comment=COMMENT)?     /** ends on newline */
-                          ')'
                         ;
 
 /** arguments of pfUnit prepparser rules start with lowercase letters */
 pubAttributes           : ('tolerance' ':' tol=expr NEWLINE)?
                           ('failmessage' ':' msg=STRING NEWLINE)?
-                          ('whitespace' '=' ign='IGNORE_DIFFERENCES')?       /** option for assertEqual */
+                          ('whitespace' '=' ign='IGNORE_DIFFERENCES' NEWLINE)?       /** option for assertEqual */
                         ;
 
 /** IO parameter; ends on newline */

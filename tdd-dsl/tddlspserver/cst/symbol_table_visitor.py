@@ -214,40 +214,43 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
             for scope_type, scope_name, scope_args, return_type, parent_scopes, is_generated in xml_elements[1]:
                 scope_sym: ScopedSymbol
 
-                # Top level symbols are omitted as they are only filtered modules in the current test case.
                 # Get scope from symboltable, add the scope if it does not exist
                 if parent_scopes:
+                    # Top level symbols are omitted as only filtered modules are in the current test case
                     # Resolve scope
                     parent_scopes: List[str] = parent_scopes.split(".")
                     scope_sym = self._scope
                     for scope in parent_scopes:
                         scope_sym = scope_sym.resolve_sync(scope)
+                else:
+                    # Add unknown top level symbols for content assist without include
+                    scope_sym = self._scope.parent()
 
-                    match scope_type:
-                        case "module":
-                            # Insert module with current scope name
-                            self._symbol_table.add_new_symbol_of_type(ModuleSymbol, scope_sym, scope_name)
-                        case "subroutine":
-                            current_scope = self._scope
-                            self._scope = scope_sym
-                            # Insert Subroutine symbol with current scope name
-                            self.with_scope(ctx, False, RoutineSymbol, lambda: list(map(lambda arg: self.addRoutineParams(arg), scope_args)), scope_name)
-                            self._scope = current_scope
-                        case "function":
-                            current_scope = self._scope
-                            # Map type to symboltable
-                            return_type = get_fundamental_type(return_type)
-                            self._scope = scope_sym
-                            # Insert Function symbol with scope name, parameters and return type
-                            self.with_scope(
-                                ctx, False, FunctionSymbol, lambda: list(
-                                    map(lambda arg: self.addRoutineParams(arg), scope_args)
-                                ), scope_name, return_type, is_generated
-                            )
-                            self._scope = current_scope
-                        case _:
-                            # TODO Types?
-                            continue
+                match scope_type:
+                    case "module":
+                        # Insert module with current scope name
+                        self._symbol_table.add_new_symbol_of_type(ModuleSymbol, scope_sym, scope_name)
+                    case "subroutine":
+                        current_scope = self._scope
+                        self._scope = scope_sym
+                        # Insert Subroutine symbol with current scope name
+                        self.with_scope(ctx, False, RoutineSymbol, lambda: list(map(lambda arg: self.addRoutineParams(arg), scope_args)), scope_name)
+                        self._scope = current_scope
+                    case "function":
+                        current_scope = self._scope
+                        # Map type to symboltable
+                        return_type = get_fundamental_type(return_type)
+                        self._scope = scope_sym
+                        # Insert Function symbol with scope name, parameters and return type
+                        self.with_scope(
+                            ctx, False, FunctionSymbol, lambda: list(
+                                map(lambda arg: self.addRoutineParams(arg), scope_args)
+                            ), scope_name, return_type, is_generated
+                        )
+                        self._scope = current_scope
+                    case _:
+                        # TODO Types?
+                        continue
 
             # Add variables
             for variable_name, variable_type, variableScope in xml_elements[0]:

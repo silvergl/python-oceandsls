@@ -300,13 +300,13 @@ class Symbol:
 
     visibility: MemberVisibility = MemberVisibility.Unknown
 
-    __the_parent: Optional[Symbol] = None
+    __the_parent: Optional[ScopedSymbol] = None
 
     def __init__(self, name: str = ""):
         self.name = name
         self.context = None
 
-    def parent(self) -> Optional[Symbol]:
+    def parent(self) -> Optional[ScopedSymbol]:
         return self.__the_parent
 
     def first_sibling(self) -> Symbol:

@@ -162,29 +162,26 @@ def filter_xml(
             # Extract scope name
             scope_name = name_element.find(".//fx:n", ns).text
 
+            new_top_level_module: bool = False
             if stmt_name == "module":
+                # Add top level modules to content assist
+                if not scope_stack:
+                    new_top_level_module: bool = True
+                    # Set top level modules in filtered scope as base module
+                    if scope_name in module_names:
+                        is_filtered_scope = True
+                        module: ModuleSymbol = next(filter(lambda module: module.name == scope_name, modules))
 
-                # TODO depr rm
-                # # set top level module as scope if filtered scope is empty
-                # if not module_names:
-                #     module_names.append(scope_name)
+                        # Get filename of original file
+                        module.file = base_name
 
-                # TODO hc module
-                # Check if top level scope is in filtered scope
-                if not scope_stack and scope_name in module_names:
-                    is_filtered_scope = True
-                    module: ModuleSymbol = next(filter(lambda module: module.name == scope_name, modules))
-
-                    # Get filename of original file
-                    module.file = base_name
-
-                    base_module = module
+                        base_module = module
 
             # Set result_id for dereference in all stacks
             result_id = None
 
             # Check scope is filtered and is in filtered scope
-            if is_filtered_scope:
+            if is_filtered_scope or new_top_level_module:
                 # Extract arguments
                 argument_names = []
                 for itm in element.findall(".//fx:arg-N", ns):

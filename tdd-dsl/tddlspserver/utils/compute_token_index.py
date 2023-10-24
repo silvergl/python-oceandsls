@@ -46,7 +46,7 @@ class TokenPosition:
 
 
 def compute_token_index_of_terminal_node( terminal_node: TerminalNode, caret_position: CaretPosition ) -> Optional[ Any ]:
-    if isinstance(terminal_node, TerminalNodeImpl):
+    if isinstance( terminal_node, TerminalNodeImpl ):
         start = terminal_node.symbol.column
         stop = terminal_node.symbol.column + len( terminal_node.getText( ) )
         if terminal_node.symbol.line == caret_position.line and start <= caret_position.column <= stop:
@@ -74,7 +74,7 @@ def compute_token_index( parser_rule_context: ParserRuleContext, caret_position:
 def position_of_token(
         token: Token, text: str, caret_position: CaretPosition, identifier_token_types: List[ int ], parser_rule_context: ParserRuleContext | TerminalNode
 ):
-    if token :
+    if token:
         start = token.column
         stop = token.column + len( text )
         if token.line == caret_position.line and start <= caret_position.column <= stop and 0 <= token.tokenIndex:
@@ -95,8 +95,8 @@ def position_of_token(
 def compute_token_position_of_terminal(
         terminal_node: TerminalNode, token_stream: BufferedTokenStream, caret_position: CaretPosition, identifier_token_types: List[ int ]
 ):
-    token: Token = terminal_node.symbol if isinstance(terminal_node, TerminalNodeImpl) else None
-    text: str = terminal_node.getText( ) if isinstance(terminal_node, TerminalNodeImpl) else None
+    token: Token = terminal_node.symbol if isinstance( terminal_node, TerminalNodeImpl ) else None
+    text: str = terminal_node.getText( ) if isinstance( terminal_node, TerminalNodeImpl ) else None
     return position_of_token( token, text, caret_position, identifier_token_types, terminal_node )
 
 

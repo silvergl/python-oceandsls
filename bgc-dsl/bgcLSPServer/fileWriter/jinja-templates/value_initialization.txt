@@ -1,1 +1,1 @@
-quantity({{param.name}}, {{param.unit}})
+quantity({{param.name.text}}, {{param.unit.text}})

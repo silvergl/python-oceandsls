@@ -8,8 +8,8 @@ END DO
 
 {% for param in namelist %}
     {% if param.type == 'bool' %}
-       {{param.name}} = .FALSE
+       {{param.name.text}} = .FALSE
     {% else %}
-    grp%{{param}} = {{param}}
+    grp%{{param.name.text}} = {{param.name.text}}
     {% endif %}
 {% endfor %}

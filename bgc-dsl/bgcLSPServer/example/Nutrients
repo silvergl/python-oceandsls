@@ -24,11 +24,11 @@ SUBROUTINE _read (grp, env, lun)
 
     DO
     
-        quantity([@80,346:350='rho_C',<43>,26:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568ca56d50>>)
+        quantity(rho_C, )
     
-        quantity([@85,367:371='rho_N',<43>,27:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568ca571b0>>)
+        quantity(rho_N, )
     
-        quantity([@90,388:392='rho_P',<43>,28:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568ca57610>>)
+        quantity(rho_P, )
     
     READ (lun, NML=bac, END=100, IOMSG=msg, ERR=900)
     IF (TRIM(species).EQ.TRIM(grp%name)) EXIT
@@ -36,15 +36,15 @@ END DO
 
 
     
-    grp%[136 94] = [136 94]
+    grp%rho_C = rho_C
     
 
     
-    grp%[136 94] = [136 94]
+    grp%rho_N = rho_N
     
 
     
-    grp%[136 94] = [136 94]
+    grp%rho_P = rho_P
     
 
 

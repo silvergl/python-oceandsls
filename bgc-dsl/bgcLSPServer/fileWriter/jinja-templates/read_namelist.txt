@@ -7,7 +7,7 @@ DO
 END DO
 
 {% for param in namelist %}
-    {% if param.type is bool%}
+    {% if param.type == 'bool' %}
        {{param.name}} = .FALSE
     {% else %}
     grp%{{param}} = {{param}}

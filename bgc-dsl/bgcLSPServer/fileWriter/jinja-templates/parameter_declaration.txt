@@ -1,1 +1,1 @@
-{{param.name.text}} {%if param.expression %} = {{parameter.expression}} {{% endif %}} &,
+{{param.name.text}} {% if param.expression is defined %} = {{param.expression}} {% endif %}

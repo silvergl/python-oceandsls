@@ -1,5 +1,5 @@
 TYPE, EXTENDS(fungroup), PUBLIC :: {{class_name}}
-    {%include 'parameter_list.txt'%}
+    {% include 'parameter_list.txt' %}
 
 
 CONTAINS
@@ -9,6 +9,6 @@ CONTAINS
 
 CONTAINS
 
-{%include 'read_start.txt'%}
-{%include 'set_start.txt'%}
-{%include 'flux_start.txt'%}
+{% include 'read_start.txt' %}
+{% include 'set_start.txt' %}
+{% include 'flux_start.txt' %}

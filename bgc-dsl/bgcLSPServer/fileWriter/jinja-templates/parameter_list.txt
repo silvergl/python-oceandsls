@@ -1,4 +1,4 @@
 
 {% for param in parameters %}
- {{type}} ::{ %include 'parameter_declaration'%}
+ {{type}} ::{% include 'parameter_declaration.txt' %}
 {%endfor%}

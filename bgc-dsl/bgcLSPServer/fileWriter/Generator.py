@@ -27,18 +27,21 @@ class BgcCodeGenerator():
                 print(c.name)
             else:
                 print("ff")
-        symbols = list(filter(lambda x : type(x) is CompartmentSymbol is CompartmentSymbol,self._symbolTable.children()))
+        symbols = list(filter(lambda x :type(x) is CompartmentSymbol,self._symbolTable.children()))
         print(symbols)
 #    filter( lambda x : x is CompartmentSymbol, self._symbolTable.children())) # Get Compartments
      #   print(symbols)
         for e in symbols:
             mainTemplate = self.templateEnv.get_template('fun_group.txt')  # Entry Template
             classname = e.name #
+            print(f'classname:{classname}')
             parameters = e.value.constants
+            print(f'parmas:{parameters}')
             module = e.name
+            print(f'module:{module}')
             fungroup_path = os.path.join(self.outputPath, f'{module}')
             control = open(fungroup_path, "w")
-            control.write(mainTemplate.render(classname = classname, parameters = parameters, modulname = module))
+            control.write(mainTemplate.render(class_name = classname, parameters = parameters, modulname = module, namelist = parameters))
             control.close()
 
 

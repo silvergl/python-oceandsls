@@ -1,44 +1,62 @@
-TYPE, EXTENDS(fungroup), PUBLIC :: 
+TYPE, EXTENDS(fungroup), PUBLIC :: Nutrients
     
 
-  ::{ %include 'parameter_declaration'%}
+  ::rho_C  = [108 136 94] 
 
-  ::{ %include 'parameter_declaration'%}
+  ::rho_N  = [108 136 94] 
 
-  ::{ %include 'parameter_declaration'%}
+  ::rho_P  = [108 136 94] 
 
 
 
 CONTAINS
-    PROCEDURE :: flux => _flux
-    PROCEDURE :: read => _read
-    PROCEDURE :: set => _set 
+    PROCEDURE :: flux => Nutrients_flux
+    PROCEDURE :: read => Nutrients_read
+    PROCEDURE :: set => Nutrients_set 
 
 CONTAINS
 
 SUBROUTINE _read (grp, env, lun)    
     IMPLICIT NONE
-    CLASS(), TARGET, INTENT(INOUT) :: grp
+    CLASS(Nutrients), TARGET, INTENT(INOUT) :: grp
     TYPE(local), TARGET, INTENT(IN) :: env
     INTEGER, INTENT(IN) :: lun
 
     DO
+    
+        quantity([@80,346:350='rho_C',<43>,26:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568ca56d50>>)
+    
+        quantity([@85,367:371='rho_N',<43>,27:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568ca571b0>>)
+    
+        quantity([@90,388:392='rho_P',<43>,28:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568ca57610>>)
     
     READ (lun, NML=bac, END=100, IOMSG=msg, ERR=900)
     IF (TRIM(species).EQ.TRIM(grp%name)) EXIT
 END DO
 
 
+    
+    grp%[136 94] = [136 94]
+    
+
+    
+    grp%[136 94] = [136 94]
+    
+
+    
+    grp%[136 94] = [136 94]
+    
+
 
 SUBROUTINE _flux (grp, grps, env)   
     IMPLICIT NONE
-    CLASS(), TARGET, INTENT(INOUT) :: grp
+    CLASS(Nutrients), TARGET, INTENT(INOUT) :: grp
     TYPE(state), DIMENSION(:), INTENT(IN) :: grps
     TYPE(local), TARGET, INTENT(INOUT) :: env
 
 SUBROUTINE _flux (grp, grps, env, box, times)
     IMPLICIT NONE
-    CLASS(), INTENT(INOUT) :: grp
+    CLASS(Nutrients), INTENT(INOUT) :: grp
     TYPE(state), DIMENSION(:), INTENT(IN) :: grps
     TYPE(local), INTENT(INOUT) :: env
     TYPE(layer), INTENT(INOUT) :: box(0:)

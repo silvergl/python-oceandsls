@@ -1,44 +1,62 @@
-TYPE, EXTENDS(fungroup), PUBLIC :: 
+TYPE, EXTENDS(fungroup), PUBLIC :: Het
     
 
-  ::{ %include 'parameter_declaration'%}
+  ::rho_F  = [108 136 94] 
 
-  ::{ %include 'parameter_declaration'%}
+  ::rho_Na  = [108 136 94] 
 
-  ::{ %include 'parameter_declaration'%}
+  ::rho_Pa  = [108 136 94] 
 
 
 
 CONTAINS
-    PROCEDURE :: flux => _flux
-    PROCEDURE :: read => _read
-    PROCEDURE :: set => _set 
+    PROCEDURE :: flux => Het_flux
+    PROCEDURE :: read => Het_read
+    PROCEDURE :: set => Het_set 
 
 CONTAINS
 
 SUBROUTINE _read (grp, env, lun)    
     IMPLICIT NONE
-    CLASS(), TARGET, INTENT(INOUT) :: grp
+    CLASS(Het), TARGET, INTENT(INOUT) :: grp
     TYPE(local), TARGET, INTENT(IN) :: env
     INTEGER, INTENT(IN) :: lun
 
     DO
+    
+        quantity([@154,810:814='rho_F',<43>,55:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568c871a80>>)
+    
+        quantity([@159,831:836='rho_Na',<43>,56:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568c871ee0>>)
+    
+        quantity([@164,853:858='rho_Pa',<43>,57:8], <bound method BgcDslParser.ParameterDeclarationContext.unit of <gen.python.BgcDsl.BgcDslParser.BgcDslParser.ParameterDeclarationContext object at 0x7f568c872340>>)
     
     READ (lun, NML=bac, END=100, IOMSG=msg, ERR=900)
     IF (TRIM(species).EQ.TRIM(grp%name)) EXIT
 END DO
 
 
+    
+    grp%[136 94] = [136 94]
+    
+
+    
+    grp%[136 94] = [136 94]
+    
+
+    
+    grp%[136 94] = [136 94]
+    
+
 
 SUBROUTINE _flux (grp, grps, env)   
     IMPLICIT NONE
-    CLASS(), TARGET, INTENT(INOUT) :: grp
+    CLASS(Het), TARGET, INTENT(INOUT) :: grp
     TYPE(state), DIMENSION(:), INTENT(IN) :: grps
     TYPE(local), TARGET, INTENT(INOUT) :: env
 
 SUBROUTINE _flux (grp, grps, env, box, times)
     IMPLICIT NONE
-    CLASS(), INTENT(INOUT) :: grp
+    CLASS(Het), INTENT(INOUT) :: grp
     TYPE(state), DIMENSION(:), INTENT(IN) :: grps
     TYPE(local), INTENT(INOUT) :: env
     TYPE(layer), INTENT(INOUT) :: box(0:)

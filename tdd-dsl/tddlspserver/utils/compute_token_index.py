@@ -123,18 +123,17 @@ def compute_token_position_of_child_node(
         if start_line > caret_position.line or end_line < caret_position.line:
             return None
 
+        # Check nested elements
+        for i in range( 0, parser_rule_context.getChildCount( ) ):
+            pos = compute_token_position( parser_rule_context.getChild( i ), tokens, caret_position, identifier_token_types )
+            if pos:
+                return pos
 
         # Check elements in range of context
         for i in range( start_Index, stop_Index ):
             pos = position_of_token(
                     tokens.tokens[ i ], tokens.tokens[ i ].text, caret_position, identifier_token_types, parser_rule_context
             )
-            if pos:
-                return pos
-
-        # Check nested elements
-        for i in range( 0, parser_rule_context.getChildCount( ) ):
-            pos = compute_token_position( parser_rule_context.getChild( i ), tokens, caret_position, identifier_token_types )
             if pos:
                 return pos
 

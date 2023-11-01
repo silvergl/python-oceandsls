@@ -104,25 +104,39 @@ def compute_token_position_of_child_node(
     # Return None if no context exists or caret is outside of context
     start_line: Optional[ int ] = None
     end_line: Optional[ int ] = None
-    if parser_rule_context and parser_rule_context.start and parser_rule_context.stop:
+    start_Index: Optional[ int ] = None
+    stop_Index: Optional[ int ] = None
+    if parser_rule_context and parser_rule_context.start:
         start_line = parser_rule_context.start.line
-        end_line = parser_rule_context.stop.line
-    if (start_line and start_line > caret_position.line) or (end_line and end_line < caret_position.line):
-        return None
+        start_Index = parser_rule_context.start.tokenIndex
 
-    # Check elements in range of context
-    for i in range( parser_rule_context.start.tokenIndex, parser_rule_context.stop.tokenIndex ):
-        pos = position_of_token(
-                tokens.tokens[ i ], tokens.tokens[ i ].text, caret_position, identifier_token_types, parser_rule_context
-        )
-        if pos:
-            return pos
+        # Check tokens after parser error
+        stop_Index = len(tokens.tokens)
+        if parser_rule_context.stop :
+            if parser_rule_context.stop.line != stop_Index:
+                end_line = parser_rule_context.stop.line + 1
+            else :
+                end_line = parser_rule_context.stop.line
+        else:
+            end_line = start_line
 
-    # Check nested elements
-    for i in range( 0, parser_rule_context.getChildCount( ) ):
-        pos = compute_token_position( parser_rule_context.getChild( i ), tokens, caret_position, identifier_token_types )
-        if pos:
-            return pos
+        if start_line > caret_position.line or end_line < caret_position.line:
+            return None
+
+
+        # Check elements in range of context
+        for i in range( start_Index, stop_Index ):
+            pos = position_of_token(
+                    tokens.tokens[ i ], tokens.tokens[ i ].text, caret_position, identifier_token_types, parser_rule_context
+            )
+            if pos:
+                return pos
+
+        # Check nested elements
+        for i in range( 0, parser_rule_context.getChildCount( ) ):
+            pos = compute_token_position( parser_rule_context.getChild( i ), tokens, caret_position, identifier_token_types )
+            if pos:
+                return pos
 
     return None
 

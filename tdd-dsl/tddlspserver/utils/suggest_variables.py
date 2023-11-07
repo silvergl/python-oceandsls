@@ -15,7 +15,7 @@
 #  limitations under the License.
 
 from .compute_token_index import TokenPosition
-from ..symboltable.symbol_table import FunctionSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, SymbolTable, Symbol, ScopedSymbol, VariableSymbol
+from ..symboltable.symbol_table import FunctionSymbol, MetricSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 
 __author__ = "sgu"
 
@@ -92,27 +92,40 @@ def get_all_symbols_of_type( scope: ScopedSymbol, symbol_type: type ):
 
 
 def suggest_symbols( symbol_table: SymbolTable, position: TokenPosition, symbol_type: Type = VariableSymbol ) -> List[ str ]:
-    context = position.context
-    scope = get_scope( context, symbol_table )
-    symbols: List[ Symbol ]
-    if isinstance( scope, ScopedSymbol ):  # Local scope
-        symbols = get_all_symbols_of_type( scope, symbol_type )
-    else:  # Global scope
-        symbols = run_async( symbol_table.get_symbols_of_type, symbol_type, False )
+    if position:
+        context = position.context
+        scope = get_scope( context, symbol_table )
+        symbols: List[ Symbol ]
+        if isinstance( scope, ScopedSymbol ):  # Local scope
+            symbols = get_all_symbols_of_type( scope, symbol_type )
+        else:  # Global scope
+            symbols = run_async( symbol_table.get_symbols_of_type, symbol_type, False )
 
-    # TODO deprecated if not in preferred rule
-    # variable = position.context
-    # while not isinstance( variable, Top_levelContext ) and variable.parentCtx is not None:
-    #     variable = variable.parentCtx
-    #
-    # return filterSymbols( position.text if variable is not None else "", symbols, symbolType )
-    return filter_symbols( position.text, symbols, symbol_type )
+        text: str = position.text
+
+        # TODO deprecated if not in preferred rule
+        # variable = position.context
+        # while not isinstance( variable, Top_levelContext ) and variable.parentCtx is not None:
+        #     variable = variable.parentCtx
+        #
+        # return filterSymbols( position.text if variable is not None else "", symbols, symbolType )
+    else:
+        symbols = run_async( symbol_table.get_nested_symbols_of_type, symbol_type )
+        text = ""
+    return filter_symbols( text, symbols, symbol_type )
 
 
 def filter_symbols( text: str, symbols: List[ Symbol ], symbol_type: Type = VariableSymbol ) -> List[ str ]:
     match symbol_type:
         case symbol_type if issubclass( symbol_type, PathSymbol ):
             candidates = list( map( lambda s: s.value, symbols ) )
+            # Add os separator if missing at path end
+            # if not text.endswith(os.sep):
+            #     candidates = list( map( lambda c: f"{os.sep}{c}" , candidates ) )
+
+            return candidates
+        case symbol_type if issubclass( symbol_type, MetricSymbol ):
+            candidates = list( map( lambda s: s.value.Effort, symbols ) )
             # Add os separator if missing at path end
             # if not text.endswith(os.sep):
             #     candidates = list( map( lambda c: f"{os.sep}{c}" , candidates ) )

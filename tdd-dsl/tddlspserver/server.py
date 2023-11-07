@@ -42,6 +42,7 @@ from pygls.workspace import Document
 # TODO fail relative import beyond top-level package
 # from ...antlrLib.CodeCompletionCore.CodeCompletionCore import CodeCompletionCore, CandidatesCollection
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
+from .cst.calculate_complexity_visitor import CalculateComplexityVisitor
 # user relative imports
 from .cst.cmake_file_generator_visitor import CMakeFileGeneratorVisitor
 from .cst.f90_file_generator_visitor import F90FileGeneratorVisitor
@@ -51,7 +52,7 @@ from .cst.system_file_visitor import SystemFileVisitor
 from .cst.symbol_table_visitor import SymbolTableVisitor
 from .gen.python.TestSuite.TestSuiteLexer import TestSuiteLexer
 from .gen.python.TestSuite.TestSuiteParser import TestSuiteParser
-from .symboltable.symbol_table import FunctionSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, Symbol, SymbolTable, VariableSymbol
+from .symboltable.symbol_table import FunctionSymbol, MetricSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, Symbol, SymbolTable, VariableSymbol
 from .utils.compute_token_index import CaretPosition, TokenPosition, compute_token_position
 from .utils.suggest_variables import suggest_symbols
 
@@ -65,6 +66,7 @@ from .utils.suggest_variables import suggest_symbols
 class TDDLSPServer( LanguageServer ):
     CMD_REGISTER_COMPLETIONS = "registerCompletions"
     CMD_UNREGISTER_COMPLETIONS = "unregisterCompletions"
+    CMD_CALCULATE_COMPLEXITY_BLOCKING = "calculateComplexity"
 
     CONFIGURATION_SECTION = "ODsl-TDD-DSL-Server"
 
@@ -324,6 +326,31 @@ def did_save( server: TDDLSPServer, params: DidSaveTextDocumentParams ):
 async def did_open( ls, params: DidOpenTextDocumentParams ):
     """Text document did open notification."""
     ls.show_message( "Text Document Did Open" )
+
+    # set input stream of characters for lexer
+    textURI = params.text_document.uri
+    text_doc: Document = tdd_server.workspace.get_document( textURI )
+    source: str = text_doc.source
+    file_path: str = os.path.abspath( text_doc.path )
+    rel_file_path: str = os.path.relpath( file_path, os.getcwd( ) )
+    input_stream: InputStream = InputStream( source )
+
+    # reset the lexer/parser
+    tdd_server.error_listener.reset( )
+    tdd_server.lexer.inputStream = input_stream
+    tdd_server.token_stream = CommonTokenStream( tdd_server.lexer )
+    tdd_server.parser.setInputStream( tdd_server.token_stream )
+
+    top_level_context = TestSuiteParser.Test_suiteContext
+    parse_tree: top_level_context = tdd_server.parser.test_suite( )
+
+    calculate_complexity_visitor: CalculateComplexityVisitor = CalculateComplexityVisitor( name = "paths", test_work_path =  os.getcwd( ), fxtran_path = tdd_server.fxtran_path)
+    metric_table = calculate_complexity_visitor.visit( parse_tree )
+
+    suggest_symbols( metric_table, None, MetricSymbol )
+
+    print(metric_table)
+
     _validate( ls, params )
 
 
@@ -356,6 +383,13 @@ def semantic_tokens( ls: TDDLSPServer, params: SemanticTokensParams ):
 
     return SemanticTokens( data = data )
 
+@tdd_server.command(TDDLSPServer.CMD_CALCULATE_COMPLEXITY_BLOCKING)
+def calculate_complexity(ls, *args):
+    """Starts counting down and showing message synchronously.
+    It will `block` the main thread, which can be tested by trying to show
+    completion items.
+    """
+    ls.show_message(f"calculate_complexity... ")
 
 @tdd_server.command( TDDLSPServer.CMD_REGISTER_COMPLETIONS )
 async def register_completions( ls: TDDLSPServer, *args ):

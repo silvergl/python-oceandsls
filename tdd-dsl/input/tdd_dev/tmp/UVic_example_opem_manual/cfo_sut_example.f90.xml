@@ -1,0 +1,60 @@
+<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="cfo_sut_example.f90"><C>! minimal example from uvic-model/2.9/updates/uvic-updates-opem/f90/cfo.f90</C>
+<module-stmt><c>MODULE</c> <module-N><N n="CFO_EXAMPLE"><n>cfo_example</n></N></module-N></module-stmt>  
+  <implicit-none-stmt><c>IMPLICIT</c> <c>NONE</c></implicit-none-stmt>
+
+  <private-stmt><c>PRIVATE</c></private-stmt>
+  <private-stmt><c>PRIVATE</c> <c>::</c> <EN-LT><EN><N n="ZXREX"><n>zxrex</n></N></EN></EN-LT></private-stmt>
+  <public-stmt><c>PUBLIC</c> <c>::</c> <EN-LT><EN><N n="FT_ME"><n>ft_ME</n></N></EN></EN-LT></public-stmt>
+  <public-stmt><c>PUBLIC</c> <c>::</c> <EN-LT><EN><N n="NPREY"><n>nprey</n></N></EN></EN-LT></public-stmt>
+
+  <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>INTEGER</c></T-N></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>PARAMETER</c></attribute-N></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="DP"><n>dp</n></N></EN-N><c>=</c><init-E><named-E><N n="KIND"><n>KIND</n></N><R-LT><parens-R><c>(</c><element-LT><element><literal-E><l>0D0</l></literal-E></element></element-LT><c>)</c></parens-R></R-LT></named-E></init-E></EN-decl></EN-decl-LT></T-decl-stmt>
+  <C>! INTEGER :: nprey=4</C>
+  <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="NPREY"><n>nprey</n></N></EN-N><c>=</c> <init-E><op-E><op n="-"><o>-</o></op> <parens-E><c>(</c> <op-E><literal-E><l>283D0</l></literal-E> <op n="/"><o>/</o></op> <literal-E><l>520D0</l></literal-E></op-E> <c>)</c></parens-E></op-E></init-E></EN-decl></EN-decl-LT></T-decl-stmt>
+  <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>PARAMETER</c></attribute-N></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="CFDS"><n>cfds</n></N></EN-N><c>=</c><init-E><literal-E><l>86.4D3</l></literal-E></init-E></EN-decl></EN-decl-LT></T-decl-stmt>
+
+  <include>INCLUDE '<filename>stdunits.h</filename>'</include>
+<file name="stdunits.h"><C>!====================== include file &quot;stdunits.h&quot; ======================</C>
+
+<C>!     stdin  = unit number for standard input.</C>
+<C>!     stdout = unit number for standard output.</C>
+<C>!     stderr = unit number for standard error.</C>
+
+      <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_> <EN-decl-LT><EN-decl><EN-N><N n="STDIN"><n>stdin</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="STDOUT"><n>stdout</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="STDERR"><n>stderr</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+      <parameter-stmt><c>parameter</c> <c>(</c><EN-decl-LT><EN-decl><EN-N><N n="STDIN"><n>stdin</n></N></EN-N> <c>=</c> <init-E><literal-E><l>5</l></literal-E></init-E></EN-decl><c>,</c> <EN-decl><EN-N><N n="STDOUT"><n>stdout</n></N></EN-N> <c>=</c> <init-E><literal-E><l>6</l></literal-E></init-E></EN-decl><c>,</c> <EN-decl><EN-N><N n="STDERR"><n>stderr</n></N></EN-N> <c>=</c> <init-E><literal-E><l>6</l></literal-E></init-E></EN-decl></EN-decl-LT><c>)</c></parameter-stmt>
+</file>
+  <T-stmt><c>TYPE,</c> <attribute><attribute-N><c>PUBLIC</c></attribute-N></attribute> <c>::</c> <T-N><N n="OCF"><n>ocf</n></N></T-N></T-stmt>
+     <component-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="NGR"><n>ngr</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>  <C>! relative growth rate</C>
+          <EN-decl><EN-N><N n="CA"><n>ca</n></N></EN-N><c>=</c><init-E><literal-E><l>0.1D0</l></literal-E></init-E></EN-decl><c>,</c><cnt>&amp;</cnt>    <C>! cost of assimilation coefficients</C>
+          <EN-decl><EN-N><N n="CF"><n>cf</n></N></EN-N><c>=</c><init-E><literal-E><l>0.1D0</l></literal-E></init-E></EN-decl><c>,</c><cnt>&amp;</cnt>    <C>! cost of foraging coefficients</C>
+          <EN-decl><EN-N><N n="AF"><n>Af</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>          <C>! foraging activity</C>
+          <EN-decl><EN-N><N n="IC"><n>IC</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>          <C>! C ingestion</C>
+          <EN-decl><EN-N><N n="E"><n>E</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>           <C>! assimilation efficiency</C>
+          <EN-decl><EN-N><N n="POC"><n>POC</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>         <C>! zooplankton biomass concentration</C>
+          <EN-decl><EN-N><N n="RC"><n>RC</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>          <C>! respiration</C>
+          <EN-decl><EN-N><N n="XC"><n>XC</n></N></EN-N></EN-decl></EN-decl-LT></component-decl-stmt>            <C>! C excretion</C>
+  <end-T-stmt><c>END</c> <c>TYPE</c> <T-N><N n="OCF"><n>ocf</n></N></T-N></end-T-stmt>
+  <T-decl-stmt><_T-spec_><derived-T-spec><c>TYPE(</c><T-N><N n="OCF"><n>ocf</n></N></T-N><c>)</c></derived-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>DIMENSION</c></attribute-N><array-spec><c>(</c><shape-spec-LT><shape-spec><c>:</c></shape-spec></shape-spec-LT><c>)</c></array-spec></attribute><c>,</c> <attribute><attribute-N><c>ALLOCATABLE</c></attribute-N></attribute><c>,</c> <attribute><attribute-N><c>PUBLIC</c></attribute-N></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="ZOO"><n>zoo</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+
+<contains-stmt><c>CONTAINS</c></contains-stmt>
+
+  <C>! excrete (respire) extra C in food</C>
+  <subroutine-stmt><c>SUBROUTINE</c> <subroutine-N><N n="ZXREX"><n>zxrex</n></N></subroutine-N> <c>(</c><dummy-arg-LT><arg-N><N n="ZOO"><n>zoo</n></N></arg-N><c>,</c> <arg-N><N n="RM"><n>Rm</n></N></arg-N><c>,</c> <arg-N><N n="FQ"><n>fQ</n></N></arg-N></dummy-arg-LT><c>)</c></subroutine-stmt>
+    <implicit-none-stmt><c>IMPLICIT</c> <c>NONE</c></implicit-none-stmt>
+    <T-decl-stmt><_T-spec_><derived-T-spec><c>CLASS(</c><T-N><N n="OCF"><n>ocf</n></N></T-N><c>)</c></derived-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>INTENT</c></attribute-N><c>(</c><intent-spec><c>INOUT</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="ZOO"><n>zoo</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>INTENT</c></attribute-N><c>(</c><intent-spec><c>IN</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="RM"><n>Rm</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="FQ"><n>fQ</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="EI"><n>EI</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <a-stmt><E-1><named-E><N n="EI"><n>EI</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>E</ct></component-R></R-LT></named-E><op n="*"><o>*</o></op><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>IC</ct></component-R></R-LT></named-E></op-E></E-2></a-stmt>
+    <a-stmt><E-1><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>ngr</ct></component-R></R-LT></named-E></E-1> <a><c>=</c></a> <E-2><op-E><parens-E><c>(</c><op-E><op-E><named-E><N n="EI"><n>EI</n></N></named-E><op n="*"><o>*</o></op><parens-E><c>(</c><op-E><literal-E><l>1D0</l></literal-E> <op n="-"><o>-</o></op> <named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>ca</ct></component-R></R-LT></named-E></op-E><c>)</c></parens-E></op-E> <op n="-"><o>-</o></op> <op-E><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>poc</ct></component-R></R-LT></named-E><op n="*"><o>*</o></op><parens-E><c>(</c><op-E><op-E><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>cf</ct></component-R></R-LT></named-E><op n="*"><o>*</o></op><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>Af</ct></component-R></R-LT></named-E></op-E> <op n="+"><o>+</o></op> <named-E><N n="RM"><n>Rm</n></N></named-E></op-E><c>)</c></parens-E></op-E></op-E><c>)</c></parens-E><op n="*"><o>*</o></op><named-E><N n="FQ"><n>fQ</n></N></named-E></op-E></E-2></a-stmt>
+    <a-stmt><E-1><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>RC</ct></component-R></R-LT></named-E></E-1>  <a><c>=</c></a> <E-2><op-E><named-E><N n="EI"><n>EI</n></N></named-E> <op n="-"><o>-</o></op> <named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>ngr</ct></component-R></R-LT></named-E></op-E></E-2></a-stmt>        <C>! respiration</C>
+    <a-stmt><E-1><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>XC</ct></component-R></R-LT></named-E></E-1> <a><c>=</c></a> <E-2><op-E><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>IC</ct></component-R></R-LT></named-E><op n="*"><o>*</o></op><parens-E><c>(</c><op-E><literal-E><l>1D0</l></literal-E> <op n="-"><o>-</o></op> <named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>E</ct></component-R></R-LT></named-E></op-E><c>)</c></parens-E></op-E></E-2></a-stmt> <C>! egestion</C>
+  <end-subroutine-stmt><c>END</c> <c>SUBROUTINE</c> <subroutine-N><N n="ZXREX"><n>zxrex</n></N></subroutine-N></end-subroutine-stmt>
+
+  <C>! temperature function for Mytilus edulis from Jenny's simulations</C>
+  <function-stmt><c>FUNCTION</c> <function-N><N n="FT_ME"><n>fT_ME</n></N></function-N> <c>(</c><dummy-arg-LT><arg-N><N n="TEMPERATURE"><n>temperature</n></N></arg-N></dummy-arg-LT><c>)</c> <result-spec><c>RESULT</c> <c>(</c><N n="FT"><n>fT</n></N><c>)</c></result-spec></function-stmt>
+    <implicit-none-stmt><c>IMPLICIT</c> <c>NONE</c></implicit-none-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>INTENT</c></attribute-N><c>(</c><intent-spec><c>IN</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="TEMPERATURE"><n>temperature</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="FT"><n>fT</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <a-stmt><E-1><named-E><N n="FT"><n>fT</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><parens-E><c>(</c><op-E><literal-E><l>1D0</l></literal-E> <op n="+"><o>+</o></op> <op-E><parens-E><c>(</c><op-E><named-E><N n="TEMPERATURE"><n>temperature</n></N></named-E> <op n="-"><o>-</o></op> <literal-E><l>15D0</l></literal-E></op-E><c>)</c></parens-E><op n="*"><o>*</o></op><literal-E><l>9.5D0</l></literal-E></op-E></op-E><c>)</c></parens-E><op n="/"><o>/</o></op><literal-E><l>260D0</l></literal-E></op-E></E-2></a-stmt>
+  <end-function-stmt><c>END</c> <c>FUNCTION</c> <function-N><N n="FT_ME"><n>fT_ME</n></N></function-N></end-function-stmt>
+<end-module-stmt><c>END</c> <c>MODULE</c> <module-N><N n="CFO_EXAMPLE"><n>cfo_example</n></N></module-N></end-module-stmt>
+</file></object>

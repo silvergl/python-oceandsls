@@ -386,7 +386,7 @@ def write_decorate_src_xml( src_dir: str = "", out_dir: str = "foo", fxtran_path
     # Define the fxtran command
     fxtran_cmd_ops = " ".join(
             [ fxtran_path,  # "-line-length 200",
-              "-no-cpp", "-name-attr",  # "-strip-comments","-code-tag",
+              "-no-cpp", "-name-attr","-code-tag",  # "-strip-comments",
               # "-no-include",
               # "-construct-tag",
               "-o" ]
@@ -398,7 +398,7 @@ def write_decorate_src_xml( src_dir: str = "", out_dir: str = "foo", fxtran_path
     for filepath, filename in fortran_files:
 
         try:
-            # create output directory relativ to source directory if it doesn't exist
+            # create output directory relative to source directory if it doesn't exist
             # TODO cm subdirectories
             rel_path = os.path.relpath( filepath, src_dir )
             rel_out_dir = os.path.join( out_dir, rel_path ) if rel_path != "." else out_dir

@@ -1204,6 +1204,8 @@ class VariableSymbol( UnitSymbol ):
 class PathSymbol( VariableSymbol ):
     pass
 
+class MetricSymbol( VariableSymbol ):
+    pass
 
 class ParameterSymbol( VariableSymbol ):
     pass

@@ -1,0 +1,151 @@
+<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="cfo_example.f90"><C>! minimal example from uvic-model/2.9/updates/uvic-updates-opem/f90/cfo.f90</C>
+<module-stmt><c>MODULE</c> <module-N><N n="CFO_EXAMPLE"><n>cfo_example</n></N></module-N></module-stmt>  
+  <implicit-none-stmt><c>IMPLICIT</c> <c>NONE</c></implicit-none-stmt>
+
+  <C>!---------------------------------------------</C>
+  <C>!------------- UVIC EXAMPLE ------------------</C>
+  <C>!---------------------------------------------</C>
+
+  <private-stmt><c>PRIVATE</c></private-stmt>
+  <public-stmt><c>PUBLIC</c> <c>::</c> <EN-LT><EN><N n="FT_ME"><n>fT_ME</n></N></EN><c>,</c> <EN><N n="ZXREX"><n>zxrex</n></N></EN><c>,</c> <EN><N n="NPREY"><n>nprey</n></N></EN></EN-LT></public-stmt>
+
+  <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>INTEGER</c></T-N></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>PARAMETER</c></attribute-N></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="DP"><n>dp</n></N></EN-N><c>=</c><init-E><named-E><N n="KIND"><n>KIND</n></N><R-LT><parens-R><c>(</c><element-LT><element><literal-E><l>0D0</l></literal-E></element></element-LT><c>)</c></parens-R></R-LT></named-E></init-E></EN-decl></EN-decl-LT></T-decl-stmt>
+  <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>INTEGER</c></T-N></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="NPREY"><n>nprey</n></N></EN-N><c>=</c><init-E><literal-E><l>4</l></literal-E></init-E></EN-decl></EN-decl-LT></T-decl-stmt>
+  <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>PARAMETER</c></attribute-N></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="CFDS"><n>cfds</n></N></EN-N><c>=</c><init-E><literal-E><l>86.4D3</l></literal-E></init-E></EN-decl></EN-decl-LT></T-decl-stmt>
+
+  <include>INCLUDE '<filename>stdunits.h</filename>'</include>
+<file name="stdunits.h"><C>!====================== include file &quot;stdunits.h&quot; ======================</C>
+
+<C>!     stdin  = unit number for standard input.</C>
+<C>!     stdout = unit number for standard output.</C>
+<C>!     stderr = unit number for standard error.</C>
+
+      <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_> <EN-decl-LT><EN-decl><EN-N><N n="STDIN"><n>stdin</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="STDOUT"><n>stdout</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="STDERR"><n>stderr</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+      <parameter-stmt><c>parameter</c> <c>(</c><EN-decl-LT><EN-decl><EN-N><N n="STDIN"><n>stdin</n></N></EN-N> <c>=</c> <init-E><literal-E><l>5</l></literal-E></init-E></EN-decl><c>,</c> <EN-decl><EN-N><N n="STDOUT"><n>stdout</n></N></EN-N> <c>=</c> <init-E><literal-E><l>6</l></literal-E></init-E></EN-decl><c>,</c> <EN-decl><EN-N><N n="STDERR"><n>stderr</n></N></EN-N> <c>=</c> <init-E><literal-E><l>6</l></literal-E></init-E></EN-decl></EN-decl-LT><c>)</c></parameter-stmt>
+</file>
+  <T-stmt><c>TYPE,</c> <attribute><attribute-N><c>PUBLIC</c></attribute-N></attribute> <c>::</c> <T-N><N n="OCF"><n>ocf</n></N></T-N></T-stmt>
+     <component-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="NGR"><n>ngr</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>  <C>! relative growth rate</C>
+          <EN-decl><EN-N><N n="CA"><n>ca</n></N></EN-N><c>=</c><init-E><literal-E><l>0.1D0</l></literal-E></init-E></EN-decl><c>,</c><cnt>&amp;</cnt>    <C>! cost of assimilation coefficients</C>
+          <EN-decl><EN-N><N n="CF"><n>cf</n></N></EN-N><c>=</c><init-E><literal-E><l>0.1D0</l></literal-E></init-E></EN-decl><c>,</c><cnt>&amp;</cnt>    <C>! cost of foraging coefficients</C>
+          <EN-decl><EN-N><N n="AF"><n>Af</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>          <C>! foraging activity</C>
+          <EN-decl><EN-N><N n="IC"><n>IC</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>          <C>! C ingestion</C>
+          <EN-decl><EN-N><N n="E"><n>E</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>           <C>! assimilation efficiency</C>
+          <EN-decl><EN-N><N n="POC"><n>POC</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>         <C>! zooplankton biomass concentration</C>
+          <EN-decl><EN-N><N n="RC"><n>RC</n></N></EN-N></EN-decl><c>,</c><cnt>&amp;</cnt>          <C>! respiration</C>
+          <EN-decl><EN-N><N n="XC"><n>XC</n></N></EN-N></EN-decl></EN-decl-LT></component-decl-stmt>            <C>! C excretion</C>
+  <end-T-stmt><c>END</c> <c>TYPE</c> <T-N><N n="OCF"><n>ocf</n></N></T-N></end-T-stmt>
+  <T-decl-stmt><_T-spec_><derived-T-spec><c>TYPE(</c><T-N><N n="OCF"><n>ocf</n></N></T-N><c>)</c></derived-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>DIMENSION</c></attribute-N><array-spec><c>(</c><shape-spec-LT><shape-spec><c>:</c></shape-spec></shape-spec-LT><c>)</c></array-spec></attribute><c>,</c> <attribute><attribute-N><c>ALLOCATABLE</c></attribute-N></attribute><c>,</c> <attribute><attribute-N><c>PUBLIC</c></attribute-N></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="ZOO"><n>zoo</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+
+  <C>!---------------------------------------------</C>
+  <C>!---------- FORTRAN EXAMPLE ------------------</C>
+  <C>!---------------------------------------------</C>
+
+  <public-stmt><c>PUBLIC</c> <c>::</c> <EN-LT><EN><N n="GET_SUM0"><n>get_sum0</n></N></EN><c>,</c> <EN><N n="GET_SUM1"><n>get_sum1</n></N></EN></EN-LT></public-stmt>
+  <private-stmt><c>PRIVATE</c> <c>::</c> <EN-LT><EN><N n="GET_SUM2"><n>get_sum2</n></N></EN></EN-LT></private-stmt>
+
+  <C>! Set the super type as abstract</C>
+  <T-stmt><c>type,</c> <attribute><attribute-N><c>abstract</c></attribute-N></attribute> <c>::</c> <T-N><N n="SHAPE_M"><n>shape_m</n></N></T-N></T-stmt>
+ 
+    <C>! Sub-types receive these variables</C>
+    <component-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>real</c></T-N></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="X"><n>x</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="Y"><n>y</n></N></EN-N></EN-decl></EN-decl-LT></component-decl-stmt>
+ 
+  <contains-stmt><c>contains</c></contains-stmt>
+
+    <C>! This procedure marked as deferred</C>
+    <C>! will be defined in sub-types</C>
+    <component-decl-stmt><_T-spec_><procedure-T-spec><c>procedure(</c><procedure-N><N n="SHAPE_AREA"><n>shape_area</n></N></procedure-N><c>)</c></procedure-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>deferred</c></attribute-N></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="GET_AREA"><n>get_area</n></N></EN-N></EN-decl></EN-decl-LT></component-decl-stmt>
+  <end-T-stmt><c>end</c> <c>type</c> <T-N><N n="SHAPE_M"><n>shape_m</n></N></T-N></end-T-stmt>
+ 
+  <C>! Define that we want to return the defined</C>
+  <C>! area for each shape sub-class</C>
+  <interface-stmt><c>interface</c></interface-stmt>
+    <function-stmt><c>function</c> <function-N><N n="SHAPE_AREA"><n>shape_area</n></N></function-N><c>(</c><dummy-arg-LT><arg-N><N n="THIS"><n>this</n></N></arg-N></dummy-arg-LT><c>)</c> <result-spec><c>result(</c><N n="AREA"><n>area</n></N><c>)</c></result-spec></function-stmt>
+      <import-stmt><c>import</c> <c>::</c> <import-N-LT><N n="SHAPE_M"><n>shape_m</n></N></import-N-LT></import-stmt>
+      <T-decl-stmt><_T-spec_><derived-T-spec><c>class(</c><T-N><N n="SHAPE_M"><n>shape_m</n></N></T-N><c>)</c></derived-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="THIS"><n>this</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+      <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>real</c></T-N></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="AREA"><n>area</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <end-function-stmt><c>end</c> <c>function</c> <function-N><N n="SHAPE_AREA"><n>shape_area</n></N></function-N></end-function-stmt>
+  <end-interface-stmt><c>end</c> <c>interface</c></end-interface-stmt>
+
+  <C>!---------------------------------------------</C>
+  <C>!---------------------------------------------</C>
+  <C>!---------------------------------------------</C>
+
+<contains-stmt><c>CONTAINS</c></contains-stmt>
+
+  <C>!---------------------------------------------</C>
+  <C>!------------- UVIC EXAMPLE ------------------</C>
+  <C>!---------------------------------------------</C>
+
+  <C>! excrete (respire) extra C in food</C>
+  <subroutine-stmt><c>SUBROUTINE</c> <subroutine-N><N n="ZXREX"><n>zxrex</n></N></subroutine-N> <c>(</c><dummy-arg-LT><arg-N><N n="ZOO"><n>zoo</n></N></arg-N><c>,</c> <arg-N><N n="RM"><n>Rm</n></N></arg-N><c>,</c> <arg-N><N n="FQ"><n>fQ</n></N></arg-N></dummy-arg-LT><c>)</c></subroutine-stmt>
+    <implicit-none-stmt><c>IMPLICIT</c> <c>NONE</c></implicit-none-stmt>
+    <T-decl-stmt><_T-spec_><derived-T-spec><c>CLASS(</c><T-N><N n="OCF"><n>ocf</n></N></T-N><c>)</c></derived-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>INTENT</c></attribute-N><c>(</c><intent-spec><c>INOUT</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="ZOO"><n>zoo</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>INTENT</c></attribute-N><c>(</c><intent-spec><c>IN</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="RM"><n>Rm</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="FQ"><n>fQ</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="EI"><n>EI</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <a-stmt><E-1><named-E><N n="EI"><n>EI</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>E</ct></component-R></R-LT></named-E><op n="*"><o>*</o></op><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>IC</ct></component-R></R-LT></named-E></op-E></E-2></a-stmt>
+    <a-stmt><E-1><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>ngr</ct></component-R></R-LT></named-E></E-1> <a><c>=</c></a> <E-2><op-E><parens-E><c>(</c><op-E><op-E><named-E><N n="EI"><n>EI</n></N></named-E><op n="*"><o>*</o></op><parens-E><c>(</c><op-E><literal-E><l>1D0</l></literal-E> <op n="-"><o>-</o></op> <named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>ca</ct></component-R></R-LT></named-E></op-E><c>)</c></parens-E></op-E> <op n="-"><o>-</o></op> <op-E><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>poc</ct></component-R></R-LT></named-E><op n="*"><o>*</o></op><parens-E><c>(</c><op-E><op-E><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>cf</ct></component-R></R-LT></named-E><op n="*"><o>*</o></op><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>Af</ct></component-R></R-LT></named-E></op-E> <op n="+"><o>+</o></op> <named-E><N n="RM"><n>Rm</n></N></named-E></op-E><c>)</c></parens-E></op-E></op-E><c>)</c></parens-E><op n="*"><o>*</o></op><named-E><N n="FQ"><n>fQ</n></N></named-E></op-E></E-2></a-stmt>
+    <a-stmt><E-1><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>RC</ct></component-R></R-LT></named-E></E-1>  <a><c>=</c></a> <E-2><op-E><named-E><N n="EI"><n>EI</n></N></named-E> <op n="-"><o>-</o></op> <named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>ngr</ct></component-R></R-LT></named-E></op-E></E-2></a-stmt>        <C>! respiration</C>
+    <a-stmt><E-1><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>XC</ct></component-R></R-LT></named-E></E-1> <a><c>=</c></a> <E-2><op-E><named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>IC</ct></component-R></R-LT></named-E><op n="*"><o>*</o></op><parens-E><c>(</c><op-E><literal-E><l>1D0</l></literal-E> <op n="-"><o>-</o></op> <named-E><N n="ZOO"><n>zoo</n></N><R-LT><component-R><c>%</c><ct>E</ct></component-R></R-LT></named-E></op-E><c>)</c></parens-E></op-E></E-2></a-stmt> <C>! egestion</C>
+  <end-subroutine-stmt><c>END</c> <c>SUBROUTINE</c> <subroutine-N><N n="ZXREX"><n>zxrex</n></N></subroutine-N></end-subroutine-stmt>
+
+  <C>! temperature function for Mytilus edulis from Jenny's simulations</C>
+  <function-stmt><c>FUNCTION</c> <function-N><N n="FT_ME"><n>fT_ME</n></N></function-N> <c>(</c><dummy-arg-LT><arg-N><N n="TEMPERATURE"><n>temperature</n></N></arg-N></dummy-arg-LT><c>)</c> <result-spec><c>RESULT</c> <c>(</c><N n="FT"><n>fT</n></N><c>)</c></result-spec></function-stmt>
+    <implicit-none-stmt><c>IMPLICIT</c> <c>NONE</c></implicit-none-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>INTENT</c></attribute-N><c>(</c><intent-spec><c>IN</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="TEMPERATURE"><n>temperature</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>REAL</c></T-N><K-selector><c>(</c><K-spec><named-E><N n="DP"><n>dp</n></N></named-E></K-spec><c>)</c></K-selector></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="FT"><n>fT</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <a-stmt><E-1><named-E><N n="FT"><n>fT</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><parens-E><c>(</c><op-E><literal-E><l>1D0</l></literal-E> <op n="+"><o>+</o></op> <op-E><parens-E><c>(</c><op-E><named-E><N n="TEMPERATURE"><n>temperature</n></N></named-E> <op n="-"><o>-</o></op> <literal-E><l>15D0</l></literal-E></op-E><c>)</c></parens-E><op n="*"><o>*</o></op><literal-E><l>9.5D0</l></literal-E></op-E></op-E><c>)</c></parens-E><op n="/"><o>/</o></op><literal-E><l>260D0</l></literal-E></op-E></E-2></a-stmt>
+  <end-function-stmt><c>END</c> <c>FUNCTION</c> <function-N><N n="FT_ME"><n>fT_ME</n></N></function-N></end-function-stmt>
+  
+  <C>!---------------------------------------------</C>
+  <C>!---------- FORTRAN EXAMPLE ------------------</C>
+  <C>!---------------------------------------------</C>
+
+  <C>! Return type, function, name, arguments</C>
+  <function-stmt><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec> <c>function</c> <function-N><N n="GET_SUM0"><n>get_sum0</n></N></function-N><c>(</c><dummy-arg-LT><arg-N><N n="N1"><n>n1</n></N></arg-N><c>,</c> <arg-N><N n="N2"><n>n2</n></N></arg-N></dummy-arg-LT><c>)</c></function-stmt>
+    <implicit-none-stmt><c>implicit</c> <c>none</c></implicit-none-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="N1"><n>n1</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="N2"><n>n2</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="SUM"><n>sum</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+
+    <C>! The last value defined is returned</C>
+    <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><named-E><N n="GET_SUM1"><n>get_sum1</n></N><R-LT><parens-R><c>(</c><element-LT><element><named-E><N n="N1"><n>n1</n></N></named-E></element><c>,</c> <element><named-E><N n="N2"><n>n2</n></N></named-E></element></element-LT><c>)</c></parens-R></R-LT></named-E></E-2></a-stmt>
+  <end-function-stmt><c>end</c> <c>function</c> <function-N><N n="GET_SUM0"><n>get_sum0</n></N></function-N></end-function-stmt>
+
+  <C>! Define variable to be returned</C>
+  <function-stmt><c>function</c> <function-N><N n="GET_SUM1"><n>get_sum1</n></N></function-N><c>(</c><dummy-arg-LT><arg-N><N n="N1"><n>n1</n></N></arg-N><c>,</c> <arg-N><N n="N2"><n>n2</n></N></arg-N></dummy-arg-LT><c>)</c> <result-spec><c>result(</c><N n="SUM"><n>sum</n></N><c>)</c></result-spec></function-stmt>
+    <implicit-none-stmt><c>implicit</c> <c>none</c></implicit-none-stmt>
+
+    <C>! Don't allow variable values to change</C>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>intent</c></attribute-N><c>(</c><intent-spec><c>in</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="N1"><n>n1</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="N2"><n>n2</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="SUM"><n>sum</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><named-E><N n="GET_SUM2"><n>get_sum2</n></N><R-LT><parens-R><c>(</c><element-LT><element><named-E><N n="N1"><n>n1</n></N></named-E></element><c>,</c> <element><named-E><N n="N2"><n>n2</n></N></named-E></element></element-LT><c>)</c></parens-R></R-LT></named-E></E-2></a-stmt>
+  <end-function-stmt><c>end</c> <c>function</c> <function-N><N n="GET_SUM1"><n>get_sum1</n></N></function-N></end-function-stmt>
+
+  <C>! Block functions from changing input</C>
+  <C>! variables with pure</C>
+  <function-stmt><prefix><c>pure</c></prefix> <c>function</c> <function-N><N n="GET_SUM2"><n>get_sum2</n></N></function-N><c>(</c><dummy-arg-LT><arg-N><N n="N1"><n>n1</n></N></arg-N><c>,</c> <arg-N><N n="N2"><n>n2</n></N></arg-N></dummy-arg-LT><c>)</c> <result-spec><c>result(</c><N n="SUM"><n>sum</n></N><c>)</c></result-spec></function-stmt>
+    <implicit-none-stmt><c>implicit</c> <c>none</c></implicit-none-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>intent</c></attribute-N><c>(</c><intent-spec><c>in</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="N1"><n>n1</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+
+    <C>! Arguments don't need to have a value passed</C>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>intent</c></attribute-N><c>(</c><intent-spec><c>in</c></intent-spec><c>)</c></attribute><c>,</c> <attribute><attribute-N><c>optional</c></attribute-N></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="N2"><n>n2</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="SUM"><n>sum</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+
+    <if-then-stmt><c>if(</c><condition-E><named-E><N n="PRESENT"><n>present</n></N><R-LT><parens-R><c>(</c><element-LT><element><named-E><N n="N2"><n>n2</n></N></named-E></element></element-LT><c>)</c></parens-R></R-LT></named-E></condition-E><c>)</c> <c>then</c></if-then-stmt>
+      <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><named-E><N n="N1"><n>n1</n></N></named-E> <op n="+"><o>+</o></op> <named-E><N n="N2"><n>n2</n></N></named-E></op-E></E-2></a-stmt>
+    <else-stmt><c>else</c></else-stmt>
+      <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><parens-E><c>(</c><op-E><named-E><N n="N1"><n>n1</n></N></named-E> <op n="+"><o>+</o></op> <literal-E><l>1</l></literal-E></op-E><c>)</c></parens-E> <op n="*"><o>*</o></op> <literal-E><l>2</l></literal-E></op-E></E-2></a-stmt>
+    <end-if-stmt><c>end</c> <c>if</c></end-if-stmt>
+  <end-function-stmt><c>end</c> <c>function</c> <function-N><N n="GET_SUM2"><n>get_sum2</n></N></function-N></end-function-stmt>
+  
+  <subroutine-stmt><c>subroutine</c> <subroutine-N><N n="PLUS_TWO"><n>plus_two</n></N></subroutine-N><c>(</c><dummy-arg-LT><arg-N><N n="N"><n>n</n></N></arg-N><c>,</c> <arg-N><N n="PLUS1"><n>plus1</n></N></arg-N><c>,</c> <arg-N><N n="PLUS2"><n>plus2</n></N></arg-N></dummy-arg-LT><c>)</c></subroutine-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>intent</c></attribute-N><c>(</c><intent-spec><c>in</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="N"><n>n</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
+    <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_><c>,</c> <attribute><attribute-N><c>intent</c></attribute-N><c>(</c><intent-spec><c>out</c></intent-spec><c>)</c></attribute> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="PLUS1"><n>plus1</n></N></EN-N></EN-decl><c>,</c> <EN-decl><EN-N><N n="PLUS2"><n>plus2</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt> <C>! Output</C>
+    <a-stmt><E-1><named-E><N n="PLUS1"><n>plus1</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><parens-E><c>(</c><op-E><named-E><N n="N"><n>n</n></N></named-E> <op n="+"><o>+</o></op> <literal-E><l>1</l></literal-E></op-E><c>)</c></parens-E> <op n="*"><o>*</o></op> <parens-E><c>(</c><op-E><literal-E><l>1</l></literal-E> <op n="+"><o>+</o></op> <literal-E><l>0</l></literal-E></op-E><c>)</c></parens-E></op-E></E-2></a-stmt>
+    <a-stmt><E-1><named-E><N n="PLUS2"><n>plus2</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><named-E><N n="N"><n>n</n></N></named-E> <op n="+"><o>+</o></op> <literal-E><l>2</l></literal-E></op-E></E-2></a-stmt>
+  <end-subroutine-stmt><c>end</c> <c>subroutine</c> <subroutine-N><N n="PLUS_TWO"><n>plus_two</n></N></subroutine-N></end-subroutine-stmt>
+
+  <C>!---------------------------------------------</C>
+  <C>!---------------------------------------------</C>
+  <C>!---------------------------------------------</C>
+
+<end-module-stmt><c>END</c> <c>MODULE</c> <module-N><N n="CFO_EXAMPLE"><n>cfo_example</n></N></module-N></end-module-stmt>
+</file></object>

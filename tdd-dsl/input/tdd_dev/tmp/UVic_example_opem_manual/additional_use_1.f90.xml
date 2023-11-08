@@ -1,6 +1,0 @@
-<?xml version="1.0"?><object xmlns="http://fxtran.net/#syntax" source-form="FREE" source-width="132" openmp="0" openacc="0"><file name="additional_use_1.f90"><C>! example additional lib for cfo_example</C>
-<module-stmt><c>MODULE</c> <module-N><N n="ADDITIONAL_USE_1"><n>additional_use_1</n></N></module-N></module-stmt>
-  <implicit-none-stmt><c>IMPLICIT</c> <c>NONE</c></implicit-none-stmt>
-
-<end-module-stmt><c>END</c> <c>MODULE</c> <module-N><N n="ADDITIONAL_USE_1"><n>additional_use_1</n></N></module-N></end-module-stmt>
-</file></object>

@@ -119,16 +119,10 @@ def filter_symbols( text: str, symbols: List[ Symbol ], symbol_type: Type = Vari
     match symbol_type:
         case symbol_type if issubclass( symbol_type, PathSymbol ):
             candidates = list( map( lambda s: s.value, symbols ) )
-            # Add os separator if missing at path end
-            # if not text.endswith(os.sep):
-            #     candidates = list( map( lambda c: f"{os.sep}{c}" , candidates ) )
 
             return candidates
         case symbol_type if issubclass( symbol_type, MetricSymbol ):
             candidates = list( map( lambda s: s.value.Effort, symbols ) )
-            # Add os separator if missing at path end
-            # if not text.endswith(os.sep):
-            #     candidates = list( map( lambda c: f"{os.sep}{c}" , candidates ) )
 
             return candidates
         case symbol_type if any( map( lambda sType: issubclass( symbol_type, sType ), [ VariableSymbol, ModuleSymbol, RoutineSymbol ] ) ):

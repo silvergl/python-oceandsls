@@ -34,30 +34,30 @@ from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 Top_levelContext = TestSuiteParser.Test_suiteContext
 del TestSuiteParser
 
-P = ParamSpec( "P" )
+P = ParamSpec("P")
 
 
-class RunThread( threading.Thread ):
-    def __init__( self, func, *args: P.args or None, **kwargs: P.kwargs or None ):
+class RunThread(threading.Thread):
+    def __init__(self, func, *args: P.args or None, **kwargs: P.kwargs or None):
         self.func = func
         self.args = args
         self.kwargs = kwargs
         self.result = None
-        super( ).__init__( )
+        super().__init__()
 
-    def run( self ):
-        self.result = asyncio.run( self.func( *self.args, **self.kwargs ) )
+    def run(self):
+        self.result = asyncio.run(self.func(*self.args, **self.kwargs))
 
 
-def run_async( func, *args: P.args or None, **kwargs: P.kwargs or None ):
+def run_async(func, *args: P.args or None, **kwargs: P.kwargs or None):
     try:
-        loop = asyncio.get_running_loop( )
+        loop = asyncio.get_running_loop()
     except RuntimeError:  # RuntimeError: There is no current event loop...
         loop = None
-    if loop and loop.is_running( ):
-        thread = RunThread( func, *args, **kwargs )
-        thread.start( )
-        thread.join( )
+    if loop and loop.is_running():
+        thread = RunThread(func, *args, **kwargs)
+        thread.start()
+        thread.join()
         return thread.result
 
         # print("Async event loop already running. Adding coroutine to the event loop.")
@@ -66,28 +66,28 @@ def run_async( func, *args: P.args or None, **kwargs: P.kwargs or None ):
         # Optionally, a callback function can be executed when the coroutine completes
         # tsk.add_done_callback( lambda t: print(f"Task done with result={t.result()}  << return val of main()"))
     else:
-        return asyncio.run( func( *args, **kwargs ) )
+        return asyncio.run(func(*args, **kwargs))
 
 
-def get_scope( context: ParserRuleContext, symbolTable: SymbolTable ):
+def get_scope(context: ParserRuleContext, symbolTable: SymbolTable):
     if context is None:
         return None
 
-    scope = run_async( symbolTable.symbol_with_context, context )
+    scope = run_async(symbolTable.symbol_with_context, context)
 
     if scope is not None:
         return scope
     else:
-        return get_scope( context.parentCtx, symbolTable )
+        return get_scope(context.parentCtx, symbolTable)
 
 
-def get_all_symbols_of_type( scope: ScopedSymbol, symbol_type: type ):
-    symbols: List[ Symbol ] = run_async( scope.get_symbols_of_type, symbol_type, False )
-    parent = scope.parent( )
-    while parent is not None and not isinstance( parent, ScopedSymbol ):
-        parent = parent.parent( )
+def get_all_symbols_of_type(scope: ScopedSymbol, symbol_type: type):
+    symbols: List[Symbol] = run_async(scope.get_symbols_of_type, symbol_type, False)
+    parent = scope.parent()
+    while parent is not None and not isinstance(parent, ScopedSymbol):
+        parent = parent.parent()
     if parent is not None:
-        symbols.extend( get_all_symbols_of_type( parent, symbol_type ) )
+        symbols.extend(get_all_symbols_of_type(parent, symbol_type))
     return symbols
 
 
@@ -115,7 +115,7 @@ def suggest_symbols(symbol_table: SymbolTable, position: TokenPosition, symbol_t
     return filter_symbols(text, symbols, symbol_type)
 
 
-def filter_symbols( text: str, symbols: List[ Symbol ], symbol_type: Type = VariableSymbol ) -> List[ str ]:
+def filter_symbols(text: str, symbols: List[Symbol], symbol_type: Type = VariableSymbol) -> List[str]:
     match symbol_type:
         case symbol_type if issubclass(symbol_type, PathSymbol):
             candidates = list(map(lambda s: s.value, symbols))
@@ -138,4 +138,4 @@ def filter_symbols( text: str, symbols: List[ Symbol ], symbol_type: Type = Vari
                 return list(filter(lambda c: c.lower().startswith(text), candidates))
 
         case _:
-            return [ ]
+            return []

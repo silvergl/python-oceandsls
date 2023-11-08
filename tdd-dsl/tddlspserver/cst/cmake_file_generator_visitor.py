@@ -31,7 +31,7 @@ from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
 from ..utils.suggest_variables import get_scope
 
 
-class CMakeFileGeneratorVisitor( TestSuiteVisitor ):
+class CMakeFileGeneratorVisitor(TestSuiteVisitor):
     symbol_table: SymbolTable
     work_path: str
     cwd: str
@@ -48,17 +48,17 @@ class CMakeFileGeneratorVisitor( TestSuiteVisitor ):
         :param symbol_table: Symbol table to resolve symbols of tdd-dsl server
         :param work_path: system path to generate test suite
         """
-        super( ).__init__( )
+        super().__init__()
 
         self.overwrite = False
-        self.files: dict[ str, Tuple[ float, str, str ] ] = files
+        self.files: dict[str, Tuple[float, str, str]] = files
 
         self.symbol_table = symbol_table
 
         self.template_path = template_path
 
         # Load Jinja2 templates
-        self.template_env = Environment( loader = FileSystemLoader( template_path ), trim_blocks = True, lstrip_blocks = True, keep_trailing_newline = False )
+        self.template_env = Environment(loader=FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=False)
 
         self.work_path = work_path
         self.cwd = work_path
@@ -67,69 +67,69 @@ class CMakeFileGeneratorVisitor( TestSuiteVisitor ):
         # Get template file names from grammar
         i: int = 0
         for rule in TestSuiteParser.ruleNames:
-            self.file_templates[ i ] = f"{rule}_template.txt"
+            self.file_templates[i] = f"{rule}_template.txt"
             i += 1
 
     # Visit a parse tree produced by TestSuiteParser#test_suite.
-    def visitTest_suite( self, ctx: TestSuiteParser.Test_suiteContext ):
+    def visitTest_suite(self, ctx: TestSuiteParser.Test_suiteContext):
 
         suts = {}
-        sut_names = [ ]
+        sut_names = []
         sut: Tuple = ()
-        test_dirs = [ ]
+        test_dirs = []
         # Initialize test suite overwrite flag as default
         overwrite = self.overwrite
         for case in ctx.cases:
-            test_case = self.visit( case )
+            test_case = self.visit(case)
 
-            test_case_name: str = test_case[ 0 ]
-            test_case_symbol: TestCaseSymbol = test_case[ 1 ]
+            test_case_name: str = test_case[0]
+            test_case_symbol: TestCaseSymbol = test_case[1]
 
             # Add name file mapping
-            suts[ test_case_name ] = test_case_symbol.include_files
+            suts[test_case_name] = test_case_symbol.include_files
 
             # Add test directory
-            test_file = os.path.split( test_case_symbol.test_file_path )
-            rel_test_dir = os.path.relpath( test_file[ 0 ], self.work_path )
+            test_file = os.path.split(test_case_symbol.test_file_path)
+            rel_test_dir = os.path.relpath(test_file[0], self.work_path)
             rel_test_dir = rel_test_dir if rel_test_dir != "." else None
 
-            test_dirs.append( rel_test_dir )
+            test_dirs.append(rel_test_dir)
 
             # Update test suite overwrite flag
             overwrite: bool = test_case[2] or overwrite
 
         # Load Jinja2 template
-        template = self.template_env.get_template( self.file_templates[ ctx.getRuleIndex( ) ] )
+        template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
         # # Set CMake file path to project folder
-        abs_path: str = os.path.join( self.work_path, "CMakeLists.txt" )
+        abs_path: str = os.path.join(self.work_path, "CMakeLists.txt")
 
         # Check if file exists and need to be merged
-        if os.path.exists( abs_path ) and not overwrite:
+        if os.path.exists(abs_path) and not overwrite:
             # Generate parts to be merged into
             insert = True
 
             # Update sut with CMake statements
-            for sut_name, sut_files in suts.items( ):
+            for sut_name, sut_files in suts.items():
 
                 # Set template variables
                 template_vars = {
-                        "SUTNAME"        : sut_name,
-                        "SUTFILENAMES"   : sut_files,
-                        "RENDER_TEMPLATE": "add_library"
+                    "SUTNAME": sut_name,
+                    "SUTFILENAMES": sut_files,
+                    "RENDER_TEMPLATE": "add_library"
                 }
 
                 # Render add_library statement
-                library_statement = template.render( template_vars )
+                library_statement = template.render(template_vars)
 
                 # Update template render switch
-                template_vars[ "RENDER_TEMPLATE" ] = "target_include"
+                template_vars["RENDER_TEMPLATE"] = "target_include"
 
                 # Render target_include statement
-                target_include_statement = template.render( template_vars )
+                target_include_statement = template.render(template_vars)
 
                 # Update sut mapping
-                suts[ sut_name ] = [ library_statement, target_include_statement ]
+                suts[sut_name] = [library_statement, target_include_statement]
 
             # Forward statements to file writer
             content = suts
@@ -140,67 +140,67 @@ class CMakeFileGeneratorVisitor( TestSuiteVisitor ):
 
             # Set template variables
             template_vars = {
-                    "PROJECTNAME"    : ctx.name.text,
-                    "SUTS"           : suts,
-                    "TESTFOLDERS"    : test_dirs,
-                    "RENDER_TEMPLATE": "new"
+                "PROJECTNAME": ctx.name.text,
+                "SUTS": suts,
+                "TESTFOLDERS": test_dirs,
+                "RENDER_TEMPLATE": "new"
             }
 
             # Render template
-            content = template.render( template_vars )
+            content = template.render(template_vars)
 
         # Write the rendered content to files
-        file_attr = self.files.get( abs_path )
-        self.files[ abs_path ] = write_file( abs_path, content, file_attr, insert )
+        file_attr = self.files.get(abs_path)
+        self.files[abs_path] = write_file(abs_path, content, file_attr, insert)
 
         return self.files
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
-    def visitTest_case( self, ctx: TestSuiteParser.Test_caseContext ):
+    def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
 
         # Update project path
         # TODO mv to suite
-        self.visit( ctx.srcpath )
+        self.visit(ctx.srcpath)
 
         # Resolve test case symbol
-        test_case_symbol: TestCaseSymbol = get_scope( ctx, self.symbol_table )
+        test_case_symbol: TestCaseSymbol = get_scope(ctx, self.symbol_table)
 
         # Get system file paths
-        test_file = os.path.split( test_case_symbol.test_file_path )
+        test_file = os.path.split(test_case_symbol.test_file_path)
 
         # Set sut name according to test name
         sut_name = f"{test_case_symbol.test_name}_sut"
 
         # Load Jinja2 template
-        template = self.template_env.get_template( self.file_templates[ ctx.getRuleIndex( ) ] )
+        template = self.template_env.get_template(self.file_templates[ctx.getRuleIndex()])
 
         # Set CMake file path to test folder
-        abs_path: str = os.path.join( test_file[ 0 ], "CMakeLists.txt" )
+        abs_path: str = os.path.join(test_file[0], "CMakeLists.txt")
 
         # Set template variables
         template_vars = {
-                "SUTNAME"        : sut_name,
-                "TESTNAME"       : test_case_symbol.test_name,
-                "TESTFILENAME"   : test_file[ 1 ],
-                "RENDER_TEMPLATE": ""
+            "SUTNAME": sut_name,
+            "TESTNAME": test_case_symbol.test_name,
+            "TESTFILENAME": test_file[1],
+            "RENDER_TEMPLATE": ""
         }
 
         # Check test flags. E.g. overwrite flag
         self.overwrite = False
         if ctx.test_flags:
-            self.visit( ctx.test_flags )
+            self.visit(ctx.test_flags)
 
         # Check if file exists and need to be merged
-        if os.path.exists( abs_path ) and not self.overwrite:
+        if os.path.exists(abs_path) and not self.overwrite:
             # Generate parts to be merged into
             insert = True
 
             # Render pfunit template
-            template_vars[ "RENDER_TEMPLATE" ] = "add_pfunit"
-            content = template.render( template_vars )
+            template_vars["RENDER_TEMPLATE"] = "add_pfunit"
+            content = template.render(template_vars)
 
             # Forward test name with test statement to file writer
-            tests = {test_case_symbol.test_name: [ content ]}
+            tests = {test_case_symbol.test_name: [content]}
             content = tests
 
         else:
@@ -208,12 +208,12 @@ class CMakeFileGeneratorVisitor( TestSuiteVisitor ):
             insert = False
 
             # Render new template
-            template_vars[ "RENDER_TEMPLATE" ] = "new"
-            content = template.render( template_vars )
+            template_vars["RENDER_TEMPLATE"] = "new"
+            content = template.render(template_vars)
 
         # Write the rendered content to files
-        file_attr = self.files.get( abs_path )
-        self.files[ abs_path ] = write_file( abs_path, content, file_attr, insert )
+        file_attr = self.files.get(abs_path)
+        self.files[abs_path] = write_file(abs_path, content, file_attr, insert)
 
         # Return system under test details
         sut: Tuple = (sut_name, test_case_symbol, self.overwrite)
@@ -221,14 +221,14 @@ class CMakeFileGeneratorVisitor( TestSuiteVisitor ):
         return sut
 
     # Save the source path to scan for existing variables
-    def visitSrc_path( self, ctx: TestSuiteParser.Src_pathContext ):
+    def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):
         # Strip string terminals
-        user_path: str = ctx.path.text.strip( "\'" )
+        user_path: str = ctx.path.text.strip("\'")
 
         # TODO document
         # Update source directory
         # If the given path is an absolute path, then self._testPath is ignored and the joining is only the given path
-        self.work_path = os.path.join( self.cwd, user_path )
+        self.work_path = os.path.join(self.cwd, user_path)
 
     # Visit a parse tree produced by TestSuiteParser#overwritePF.
     def visitOverwriteCMake(self, ctx: TestSuiteParser.OverwritePFContext):

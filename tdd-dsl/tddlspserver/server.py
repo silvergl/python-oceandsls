@@ -51,7 +51,7 @@ from .utils.compute_token_index import CaretPosition, TokenPosition, compute_tok
 from .utils.suggest_variables import suggest_symbols
 
 
-class TDDLSPServer( LanguageServer ):
+class TDDLSPServer(LanguageServer):
     CMD_REGISTER_COMPLETIONS = "registerCompletions"
     CMD_UNREGISTER_COMPLETIONS = "unregisterCompletions"
     CMD_RECOMMEND_SUT_BLOCKING = "recommendSUT"
@@ -64,27 +64,27 @@ class TDDLSPServer( LanguageServer ):
     def __init__(self, *args):
         super().__init__(*args)
         # Set error listener
-        self.error_listener: DiagnosticListener = DiagnosticListener( )
+        self.error_listener: DiagnosticListener = DiagnosticListener()
         # Set empty input stream
-        input_stream: InputStream = InputStream( str( ) )
+        input_stream: InputStream = InputStream(str())
 
         # Set lexer
-        self.lexer: TestSuiteLexer = TestSuiteLexer( input_stream )
+        self.lexer: TestSuiteLexer = TestSuiteLexer(input_stream)
         # Set error listener for diagnostics
-        self.lexer.removeErrorListeners( )
-        self.lexer.addErrorListener( self.error_listener )
+        self.lexer.removeErrorListeners()
+        self.lexer.addErrorListener(self.error_listener)
 
         # Set token stream pipe between lexer and parser
-        self.token_stream: CommonTokenStream = CommonTokenStream( self.lexer )
+        self.token_stream: CommonTokenStream = CommonTokenStream(self.lexer)
 
         # Set parser
-        self.parser: TestSuiteParser = TestSuiteParser( self.token_stream )
+        self.parser: TestSuiteParser = TestSuiteParser(self.token_stream)
         # Set error listener for diagnostics
-        self.parser.removeErrorListeners( )
-        self.parser.addErrorListener( self.error_listener )
+        self.parser.removeErrorListeners()
+        self.parser.addErrorListener(self.error_listener)
 
         # Attributes of generated files
-        self.files: dict[ str, Tuple[ float, str, str ] ] = {}
+        self.files: dict[str, Tuple[float, str, str]] = {}
 
         # Set Metric sort
         self.sort_metric = "Halstead Complexity"
@@ -93,9 +93,9 @@ class TDDLSPServer( LanguageServer ):
         self.fxtran_path = "fxtran"
 
 
-tdd_server = TDDLSPServer( "pygls-odsl-tdd-prototype", "v0.8" )
+tdd_server = TDDLSPServer("pygls-odsl-tdd-prototype", "v0.8")
 
-logger = logging.getLogger( __name__ )
+logger = logging.getLogger(__name__)
 
 
 def _validate(params):
@@ -141,22 +141,22 @@ def _validate_format(server: TDDLSPServer, source: str):
     return server.error_listener.diagnostics
 
 
-def get_symbol_name_at_position( uri, position ):
-    logger.info( "uri: %s\n", uri, "position: %s\n", position )
+def get_symbol_name_at_position(uri, position):
+    logger.info("uri: %s\n", uri, "position: %s\n", position)
 
 
-def lookup_symbol( uri, name ):
-    logger.info( "uri: %s\n", uri, "name: %s\n", name )
+def lookup_symbol(uri, name):
+    logger.info("uri: %s\n", uri, "name: %s\n", name)
 
 
-@tdd_server.feature( TEXT_DOCUMENT_COMPLETION, CompletionOptions( trigger_characters = [ "," ] ) )
-def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList:
+@tdd_server.feature(TEXT_DOCUMENT_COMPLETION, CompletionOptions(trigger_characters=[","]))
+def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     """Returns completion items."""
 
     # Set input stream of characters for lexer
     text_doc: Document = tdd_server.workspace.get_text_document(params.text_document.uri)
     source: str = text_doc.source
-    input_stream: InputStream = InputStream( source )
+    input_stream: InputStream = InputStream(source)
 
     # Reset the lexer/parser
     tdd_server.error_listener.reset()
@@ -201,60 +201,60 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
     candidates: CandidatesCollection = core.collectCandidates(token_index.index)
 
     # Resolve candidates for preferred rules
-    if len( candidates.rules ) != 0:
+    if len(candidates.rules) != 0:
 
-        symbol_types: List[ Symbol ] = [ ]
+        symbol_types: List[Symbol] = []
 
-        if any( rule in candidates.rules for rule in [ TestSuiteParser.RULE_reference ] ):
+        if any(rule in candidates.rules for rule in [TestSuiteParser.RULE_reference]):
 
-            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor( "completions", os.getcwd( ), tdd_server.fxtran_path )
-            symbol_table = symbol_table_visitor.visit( parse_tree )
+            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("completions", os.getcwd(), tdd_server.fxtran_path)
+            symbol_table = symbol_table_visitor.visit(parse_tree)
             # FunctionSymbol is derived from RoutineSymbol
-            symbol_types.extend( [ VariableSymbol, RoutineSymbol ] )
+            symbol_types.extend([VariableSymbol, RoutineSymbol])
 
-        elif any( rule in candidates.rules for rule in [ TestSuiteParser.RULE_test_module ] ):
+        elif any(rule in candidates.rules for rule in [TestSuiteParser.RULE_test_module]):
 
-            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor( "completions", os.getcwd( ), tdd_server.fxtran_path )
-            symbol_table = symbol_table_visitor.visit( parse_tree )
-            symbol_types.append( ModuleSymbol )
+            symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor("completions", os.getcwd(), tdd_server.fxtran_path)
+            symbol_table = symbol_table_visitor.visit(parse_tree)
+            symbol_types.append(ModuleSymbol)
 
-        elif any( rule in candidates.rules for rule in [ TestSuiteParser.RULE_src_path ] ):
+        elif any(rule in candidates.rules for rule in [TestSuiteParser.RULE_src_path]):
 
-            symbol_table_visitor: SystemFileVisitor = SystemFileVisitor( "paths", os.getcwd( ) )
-            symbol_table = symbol_table_visitor.visit( parse_tree )
-            symbol_types.append( PathSymbol )
+            symbol_table_visitor: SystemFileVisitor = SystemFileVisitor("paths", os.getcwd())
+            symbol_table = symbol_table_visitor.visit(parse_tree)
+            symbol_types.append(PathSymbol)
 
-        symbols: List[ str ] = [ ]
+        symbols: List[str] = []
         for symbol_type in symbol_types:
             symbols.extend(suggest_symbols(symbol_table=symbol_table, position=token_index, symbol_type=symbol_type))
 
         for symbol in symbols:
-            completion_list.items.append( CompletionItem( label = symbol ) )
+            completion_list.items.append(CompletionItem(label=symbol))
 
     # TODO modules, type check, asserts, functions, subroutines
 
     # Add tokens to completion candidates
     for key, valueList in candidates.tokens.items():
         completion_list.items.append(
-                CompletionItem(
-                        label = IntervalSet.elementName(
-                                IntervalSet, stripTerminals( elements = tdd_server.parser.literalNames, terminal = "\'" ), tdd_server.parser.symbolicNames, key
-                        )
+            CompletionItem(
+                label=IntervalSet.elementName(
+                    IntervalSet, stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'"), tdd_server.parser.symbolicNames, key
                 )
+            )
         )
 
     # Return completion candidates labels
     return completion_list
 
 
-def stripTerminals( elements: List[ str ] = None, terminal: str = "\'" ) -> List[ str ]:
+def stripTerminals(elements: List[str] = None, terminal: str = "\'") -> List[str]:
     """
      Strip string terminals from list elements.
 
     :param elements: List of elements
     :return: List of striped elements
     """
-    return [ e.strip( terminal ) for e in elements ]
+    return [e.strip(terminal) for e in elements]
 
 
 @tdd_server.feature(TEXT_DOCUMENT_DID_CHANGE)
@@ -264,14 +264,14 @@ def did_change(server: TDDLSPServer, params: DidChangeTextDocumentParams):
     _validate(params)
 
 
-@tdd_server.feature( TEXT_DOCUMENT_DID_CLOSE )
-def did_close( server: TDDLSPServer, params: DidCloseTextDocumentParams ):
+@tdd_server.feature(TEXT_DOCUMENT_DID_CLOSE)
+def did_close(server: TDDLSPServer, params: DidCloseTextDocumentParams):
     """Text document did close notification."""
-    server.show_message( "Text Document Did Close" )
+    server.show_message("Text Document Did Close")
 
 
-@tdd_server.feature( TEXT_DOCUMENT_DID_SAVE )
-def did_save( server: TDDLSPServer, params: DidSaveTextDocumentParams ):
+@tdd_server.feature(TEXT_DOCUMENT_DID_SAVE)
+def did_save(server: TDDLSPServer, params: DidSaveTextDocumentParams):
     """Text document did save notification."""
 
     # Get Path
@@ -299,12 +299,12 @@ def did_save( server: TDDLSPServer, params: DidSaveTextDocumentParams ):
 
     # Generate CMake files
     cmake_file_generator_visitor: CMakeFileGeneratorVisitor = CMakeFileGeneratorVisitor(
-            work_path = os.getcwd( ), files = tdd_server.files, symbol_table = symbol_table
+        work_path=os.getcwd(), files=tdd_server.files, symbol_table=symbol_table
     )
     # update CMake files and save generated files
     tdd_server.files = cmake_file_generator_visitor.visit(server.parseTree)
 
-    server.show_message( "Text Document Did Save" )
+    server.show_message("Text Document Did Save")
 
 
 @tdd_server.feature(TEXT_DOCUMENT_DID_OPEN)
@@ -333,13 +333,13 @@ def parse_document(params) -> TestSuiteParser.Test_suiteContext:
 
 
 @tdd_server.feature(
-        TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, SemanticTokensLegend( token_types = [ "operator" ], token_modifiers = [ ] )
+    TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, SemanticTokensLegend(token_types=["operator"], token_modifiers=[])
 )
 def semantic_tokens(server: TDDLSPServer, params: SemanticTokensParams):
     """See https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
     for details on how semantic tokens are encoded."""
 
-    TOKENS = re.compile( "\".*\"(?=:)" )
+    TOKENS = re.compile("\".*\"(?=:)")
 
     uri = params.text_document.uri
     doc = server.workspace.get_document(uri)
@@ -347,19 +347,19 @@ def semantic_tokens(server: TDDLSPServer, params: SemanticTokensParams):
     last_line = 0
     last_start = 0
 
-    data = [ ]
+    data = []
 
-    for lineno, line in enumerate( doc.lines ):
+    for lineno, line in enumerate(doc.lines):
         last_start = 0
 
-        for match in TOKENS.finditer( line ):
-            start, end = match.span( )
-            data += [ (lineno - last_line), (start - last_start), (end - start), 0, 0 ]
+        for match in TOKENS.finditer(line):
+            start, end = match.span()
+            data += [(lineno - last_line), (start - last_start), (end - start), 0, 0]
 
             last_line = lineno
             last_start = start
 
-    return SemanticTokens( data = data )
+    return SemanticTokens(data=data)
 
 
 @tdd_server.command(TDDLSPServer.CMD_RECOMMEND_SUT_BLOCKING)
@@ -382,9 +382,9 @@ def recommend_SUT(server: TDDLSPServer, *args):
 async def register_completions(server: TDDLSPServer, *args):
     """Register completions method on the client."""
     params = RegistrationParams(
-            registrations = [ Registration(
-                    id = str( uuid.uuid4( ) ), method = TEXT_DOCUMENT_COMPLETION, register_options = {"triggerCharacters": ","}
-            ) ]
+        registrations=[Registration(
+            id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION, register_options={"triggerCharacters": ","}
+        )]
     )
     response = await server.register_capability_async(params)
     if response is None:
@@ -397,7 +397,7 @@ async def register_completions(server: TDDLSPServer, *args):
 async def unregister_completions(server: TDDLSPServer, *args):
     """Unregister completions method on the client."""
     params = UnregistrationParams(
-            unregisterations = [ Unregistration( id = str( uuid.uuid4( ) ), method = TEXT_DOCUMENT_COMPLETION ) ]
+        unregisterations=[Unregistration(id=str(uuid.uuid4()), method=TEXT_DOCUMENT_COMPLETION)]
     )
     response = await server.unregister_capability_async(params)
     if response is None:

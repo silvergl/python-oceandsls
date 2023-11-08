@@ -187,9 +187,7 @@ class FundamentalUnit(Unit):
     A single class for all fundamental units which are mostly SI units. They are distinguished via the kind field.
     """
 
-    # , reference_kind=ReferenceKind.Irrelevant
     def __init__(self, name: str, base_types=[], unit_prefix=UnitPrefix.NoP, unit_kind=UnitKind.Unknown):
-        # , reference=reference_kind
         super().__init__(name=name, base_types=base_types, kind=unit_kind, prefix=unit_prefix)
 
     @classproperty

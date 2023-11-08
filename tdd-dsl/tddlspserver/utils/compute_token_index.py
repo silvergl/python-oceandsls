@@ -25,7 +25,7 @@ from typing import Any, List, Optional
 # antlr4
 from antlr4 import BufferedTokenStream, TerminalNode, Token
 from antlr4.ParserRuleContext import ParserRuleContext
-from antlr4.tree.Tree import ErrorNodeImpl, ParseTree, TerminalNodeImpl
+from antlr4.tree.Tree import ErrorNodeImpl, TerminalNodeImpl
 
 # debug
 logger = logging.getLogger(__name__)

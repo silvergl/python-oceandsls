@@ -43,6 +43,10 @@
       {
         "command": "unregisterCompletions",
         "title": "Unregister completions"
+      },
+      {
+        "command": "recommendSUT",
+        "title": "Recommend SuT"
       }
     ],
     "configuration": {

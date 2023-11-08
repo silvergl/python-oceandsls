@@ -36,8 +36,9 @@ class CalculateComplexityVisitor( TestSuiteVisitor, Generic[ T ] ):
     _symbol_table: SymbolTable
     _test_path: str
 
-    def __init__( self, name: str = "", test_work_path: str = "tdd-dsl/output",fxtran_path: str = "fxtran"):
+    def __init__( self, name: str = "", test_work_path: str = "tdd-dsl/output", fxtran_path: str = "fxtran", sort_metric = None ):
         super( ).__init__( )
+        self.sort_metric = sort_metric
         self.fxtran_path = fxtran_path
         self._symbol_table = SymbolTable( name, SymbolTableOptions( False ) )
         self._scope = None
@@ -70,16 +71,19 @@ class CalculateComplexityVisitor( TestSuiteVisitor, Generic[ T ] ):
         # Write XML files
         write_decorate_src_xml( self._test_path, xml_path, fxtran_path = self.fxtran_path )
 
-        # TODO hc, specify modules
         # Get Fortran files
         xml_files = get_files( xml_path, "*.[fF]90.xml" )
 
         for path, filename in xml_files:
-            # TODO add key for variables
+            src_filename: str = filename.rsplit( ".", 1 )[ 0 ]
             rel_path = os.path.relpath( path, xml_path )
-            src_path: str = os.path.join(self._test_path, rel_path, filename)
-            src_path = os.path.join(src_path, filename)
-            scope_elements = calculate_metrics( os.path.join( path, filename ), src_path )
+            if rel_path != ".":
+                # Relative path exists
+                src_path: str = os.path.join(self._test_path, rel_path, src_filename)
+            else:
+                # Relative path is current dir and omitted
+                src_path: str = os.path.join(self._test_path, src_filename)
+            scope_elements = calculate_metrics( xml_path = os.path.join( path, filename ), src = src_path, sort_metric = self.sort_metric )
 
             for scope_name, scope in scope_elements.items( ):
                 if scope.is_testable:

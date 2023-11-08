@@ -121,15 +121,21 @@ def filter_symbols( text: str, symbols: List[ Symbol ], symbol_type: Type = Vari
             candidates = list( map( lambda s: s.value, symbols ) )
 
             return candidates
+
         case symbol_type if issubclass( symbol_type, MetricSymbol ):
-            candidates = list( map( lambda s: s.value.Effort, symbols ) )
+            scopes: List = list( map( lambda s: s.value, symbols ) )
+            # TODO recommendation order: False - low first, high last; True - high first, low last
+            scopes.sort( reverse = False )
+            candidates: List[ str ] = list( map( lambda scope: str( scope ), scopes ) )
 
             return candidates
+
         case symbol_type if any( map( lambda sType: issubclass( symbol_type, sType ), [ VariableSymbol, ModuleSymbol, RoutineSymbol ] ) ):
             candidates = list( map( lambda s: s.name, symbols ) )
             if len( text.strip( ) ) == 0:
                 return candidates
             else:
                 return list( filter( lambda c: c.lower( ).startswith( text ), candidates ) )
+
         case _:
             return [ ]

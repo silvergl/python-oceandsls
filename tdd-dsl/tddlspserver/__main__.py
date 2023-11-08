@@ -53,6 +53,11 @@ def add_arguments( parser ):
             help = "Path to fxtran"
     )
 
+    parser.add_argument(
+            "-m", "--metric", dest = "metric", default = "Halstead Complexity",
+            help = "Metric to sort SuT recommendations, e.g. Halstead Complexity"
+    )
+
 
 def fxtran_executable( path: str ):
     """
@@ -81,6 +86,10 @@ def main( ):
     if args.fxtran:
         # Add fxtran path
         tdd_server.fxtran_path = args.fxtran
+
+    if args.metric:
+        # Add sort metric
+        tdd_server.sort_metric = args.metric
 
     if args.tcp:
         # Start server via tcp

@@ -50,10 +50,11 @@ from .symboltable.symbol_table import MetricSymbol, ModuleSymbol, PathSymbol, Ro
 from .utils.compute_token_index import CaretPosition, TokenPosition, compute_token_position
 from .utils.suggest_variables import suggest_symbols
 
+
 class TDDLSPServer( LanguageServer ):
     CMD_REGISTER_COMPLETIONS = "registerCompletions"
     CMD_UNREGISTER_COMPLETIONS = "unregisterCompletions"
-    CMD_CALCULATE_COMPLEXITY_BLOCKING = "calculateComplexity"
+    CMD_RECOMMEND_SUT_BLOCKING = "recommendSUT"
 
     CONFIGURATION_SECTION = "ODsl-TDD-DSL-Server"
 
@@ -85,7 +86,8 @@ class TDDLSPServer( LanguageServer ):
         # Attributes of generated files
         self.files: dict[ str, Tuple[ float, str, str ] ] = {}
 
-
+        # Set Metric sort
+        self.sort_metric = "Halstead Complexity"
 
         # Fxtran system file path
         self.fxtran_path = "fxtran"
@@ -224,7 +226,7 @@ def completions( params: Optional[ CompletionParams ] = None ) -> CompletionList
 
         symbols: List[ str ] = [ ]
         for symbol_type in symbol_types:
-            symbols.extend( suggest_symbols( symbol_table, token_index, symbol_type ) )
+            symbols.extend( suggest_symbols( symbol_table = symbol_table, position = token_index, symbol_type = symbol_type ) )
 
         for symbol in symbols:
             completion_list.items.append( CompletionItem( label = symbol ) )
@@ -254,10 +256,11 @@ def stripTerminals( elements: List[ str ] = None, terminal: str = "\'" ) -> List
     """
     return [ e.strip( terminal ) for e in elements ]
 
+
 @tdd_server.feature( TEXT_DOCUMENT_DID_CHANGE )
 def did_change( server: TDDLSPServer, params: DidChangeTextDocumentParams ):
     """Text document did change notification."""
-    server.parseTree = parse_document(params)
+    server.parseTree = parse_document( params )
     _validate( params )
 
 
@@ -276,7 +279,7 @@ def did_save( server: TDDLSPServer, params: DidSaveTextDocumentParams ):
     file_path: str = os.path.abspath( text_doc.path )
     rel_file_path: str = os.path.relpath( file_path, os.getcwd( ) )
 
-    server.parseTree = parse_document(params)
+    server.parseTree = parse_document( params )
 
     # Get symboltable for f90 generator
     symbol_table_visitor: SymbolTableVisitor = SymbolTableVisitor( "variables", os.getcwd( ), tdd_server.fxtran_path )
@@ -301,20 +304,15 @@ def did_save( server: TDDLSPServer, params: DidSaveTextDocumentParams ):
 
     server.show_message( "Text Document Did Save" )
 
+
 @tdd_server.feature( TEXT_DOCUMENT_DID_OPEN )
 async def did_open( server: TDDLSPServer, params: DidOpenTextDocumentParams ):
     """Text document did open notification."""
     server.show_message( "Text Document Did Open" )
-    server.parseTree = parse_document(params)
-
-    calculate_complexity_visitor: CalculateComplexityVisitor = CalculateComplexityVisitor( name = "paths", test_work_path =  os.getcwd( ), fxtran_path = tdd_server.fxtran_path)
-    metric_table = calculate_complexity_visitor.visit( server.parseTree )
-
-    suggest_symbols( metric_table, None, MetricSymbol )
-
-    print(metric_table)
+    server.parseTree = parse_document( params )
 
     _validate( params )
+
 
 def parse_document( params ) -> TestSuiteParser.Test_suiteContext:
     # Set input stream of characters for lexer
@@ -330,6 +328,7 @@ def parse_document( params ) -> TestSuiteParser.Test_suiteContext:
 
     # Return launched parser by invoking top-level rule
     return tdd_server.parser.test_suite( )
+
 
 @tdd_server.feature(
         TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL, SemanticTokensLegend( token_types = [ "operator" ], token_modifiers = [ ] )
@@ -360,20 +359,21 @@ def semantic_tokens( server: TDDLSPServer, params: SemanticTokensParams ):
 
     return SemanticTokens( data = data )
 
-@tdd_server.command(TDDLSPServer.CMD_CALCULATE_COMPLEXITY_BLOCKING)
-def calculate_complexity(server: TDDLSPServer, *args):
-    """Starts counting down and showing message synchronously.
-    It will `block` the main thread, which can be tested by trying to show
-    completion items.
-    """
-    server.show_message(f"calculate_complexity... ")
 
-    calculate_complexity_visitor: CalculateComplexityVisitor = CalculateComplexityVisitor( name = "paths", test_work_path =  os.getcwd( ), fxtran_path = tdd_server.fxtran_path)
-    metric_table = calculate_complexity_visitor.visit( server.parseTree )
+@tdd_server.command( TDDLSPServer.CMD_RECOMMEND_SUT_BLOCKING )
+def recommend_SUT( server: TDDLSPServer, *args ):
+    """Calculates the complexity of the SuTs in the path and returns test recommendations."""
 
-    suggest_symbols( metric_table, None, MetricSymbol )
+    calculate_complexity_visitor: CalculateComplexityVisitor = CalculateComplexityVisitor( name = "paths", test_work_path = os.getcwd( ), fxtran_path = tdd_server.fxtran_path, sort_metric = tdd_server.sort_metric )
+    symbol_table = calculate_complexity_visitor.visit( server.parseTree )
 
-    print(metric_table)
+    metric_list: List[ str ] = suggest_symbols( symbol_table, position = None, symbol_type = MetricSymbol )
+
+    for metric in metric_list:
+        server.show_message( metric )
+
+    server.show_message( f"Recommend SuT by {tdd_server.sort_metric}..." )
+
 
 @tdd_server.command( TDDLSPServer.CMD_REGISTER_COMPLETIONS )
 async def register_completions( server: TDDLSPServer, *args ):

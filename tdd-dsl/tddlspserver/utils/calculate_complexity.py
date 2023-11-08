@@ -47,6 +47,9 @@ class Scope:
     name: str = field( default = "" )
     type: str = field( default = "" )
     src: str = field( default = "" )
+    sort_metric: str = field( default = "" )
+
+    debug: bool = field( default = False )
 
     routine_types: Set = field( default_factory = lambda: {"function-stmt", "subroutine-stmt"} )
     module_types: Set = field( default_factory = lambda: {"module-stmt"} )
@@ -89,9 +92,6 @@ class Scope:
         for sub_scope in self.sub_scopes:
             s_operators: Dict[ str, int ] = sub_scope.operators
 
-
-
-
             for key, value in s_operators.items( ):
                 operators[ key ] = operators.get( key, 0 ) + value
         return operators
@@ -104,11 +104,11 @@ class Scope:
             s_operands: Dict[ str, int ] = sub_scope.operands
 
             decl_elements = sub_scope.declarations
-            decl_names: List[ str] = []
+            decl_names: List[ str ] = [ ]
             for decl_element in decl_elements:
                 name_element = decl_element.find( f"{search_global}{name_tag}", ns )
                 if name_element is not None:
-                    decl_names.append(name_element.text.lower())
+                    decl_names.append( name_element.text.lower( ) )
 
             for key, value in s_operands.items( ):
                 if key in decl_names:
@@ -173,8 +173,8 @@ class Scope:
         n1: int = self.n_operators
         n2: int = self.n_operands
 
-        operator_lenght : int = n1 * log2( n1 ) if n1 > 0 else 0
-        operands_lenght : int = n2 * log2( n2 ) if n2 > 0 else 0
+        operator_lenght: int = n1 * log2( n1 ) if n1 > 0 else 0
+        operands_lenght: int = n2 * log2( n2 ) if n2 > 0 else 0
 
         return operator_lenght + operands_lenght
 
@@ -339,6 +339,10 @@ class Scope:
     def is_module( self ) -> bool:
         return self.type in self.module_types
 
+    @property
+    def get_sort_metric( self ) -> str:
+        return self.sort_metric
+
     ###############################
     # Utils
     ###############################
@@ -371,53 +375,132 @@ class Scope:
 
     def __str__( self ):
         """ toString method """
-        return (f"Scope: {self.name}\n"
-                f"Source: {self.src}\n"
-                f"Cyclomatic Complexity: {self.cyclomatic_complexity}\n"
-                f"Depth of Nesting: {self.depth_of_nesting}\n"
-                f"Lines of Code (LOC): {self.loc}\n"
-                f"Number of Parameters: {self.n_arguments}\n"
-                f"Number of Conditionals: {self.n_conditionals}\n"
-                f"Number of Loops: {self.n_loops}\n"
-                f"Number of Branches: {self.n_branches}\n"
-                f"Number of Variables: {self.n_declarations}\n"
-                f"Number of Return Statements: {self.n_results} \n"
-                f"Number of Calls to External Functions/Procedures: {self.n_external_calls} \n"
-                f"Number of Decision Points: {self.n_decision_points}\n"
-                f"Halstead Complexity Measures:\n"
-                f"Number of distinct Operators η1: {self.n_operators}\n"
-                f"Number of distinct Operands η2: {self.n_operands}\n"
-                f"Number of total Operators N1: {self.sum_operators}\n"
-                f"Number of total Operands N2: {self.sum_operands}\n"
-                f"Vocabulary (η1 + η2): {self.vocabulary}\n"
-                f"Program Length (N1 + N2): {self.program_length}\n"
-                f"Calculated Length: {self.calculated_length}\n"
-                f"Volume: {self.volume}\n"
-                f"Difficulty: {self.difficulty}\n"
-                f"Effort: {self.effort}\n"
-                f"Time required to program: {self.time_required_to_program}\n"
-                f"Number of delivered bugs: {self.n_bugs}\n"
-                # f"Distinct Operators: {self.operators}\n"
-                # f"Distinct Operands: {self.operands}\n"
-                )
+
+        if not self.debug:
+            return (f"Scope: {self.name}\n"
+                    f"Source: {self.src}\n"
+                    )
+        else:
+            return (f"Scope: {self.name}\n"
+                    f"Source: {self.src}\n"
+                    f"Cyclomatic Complexity: {self.cyclomatic_complexity}\n"
+                    f"Depth of Nesting: {self.depth_of_nesting}\n"
+                    f"Lines of Code (LOC): {self.loc}\n"
+                    f"Number of Parameters: {self.n_arguments}\n"
+                    f"Number of Conditionals: {self.n_conditionals}\n"
+                    f"Number of Loops: {self.n_loops}\n"
+                    f"Number of Branches: {self.n_branches}\n"
+                    f"Number of Variables: {self.n_declarations}\n"
+                    f"Number of Return Statements: {self.n_results}\n"
+                    f"Number of Calls to External Functions/Procedures: {self.n_external_calls}\n"
+                    f"Number of Decision Points: {self.n_decision_points}\n"
+                    f"Halstead Complexity Measures:\n"
+                    f"Number of distinct Operators η1: {self.n_operators}\n"
+                    f"Number of distinct Operands η2: {self.n_operands}\n"
+                    f"Number of total Operators N1: {self.sum_operators}\n"
+                    f"Number of total Operands N2: {self.sum_operands}\n"
+                    f"Vocabulary (η1 + η2): {self.vocabulary}\n"
+                    f"Program Length (N1 + N2): {self.program_length}\n"
+                    f"Calculated Length: {self.calculated_length}\n"
+                    f"Volume: {self.volume}\n"
+                    f"Difficulty: {self.difficulty}\n"
+                    f"Effort: {self.effort}\n"
+                    f"Time required to program: {self.time_required_to_program}\n"
+                    f"Number of delivered bugs: {self.n_bugs}\n"
+                    # f"Distinct Operators: {self.operators}\n"
+                    # f"Distinct Operands: {self.operands}\n"
+                    )
+
+    ###############################
+    # Sort utils
+    ###############################
+
+    def __lt__( self, obj ):
+        return self.sort_index < obj.sort_index
+
+    def __eq__( self, obj ):
+        return self.sort_index == obj.sort_index
+
+    @property
+    def sort_index( self ):
+        match self.get_sort_metric:
+            case "Cyclomatic Complexity":
+                return self.cyclomatic_complexity
+            case "Halstead Complexity":
+                return self.difficulty
+            case "Depth of Nesting":
+                return self.depth_of_nesting
+            case "Lines of Code (LOC)":
+                return self.loc
+            case "LOC":
+                return self.loc
+            case "Number of Parameters":
+                return self.n_arguments
+            case "Number of Conditionals":
+                return self.n_conditionals
+            case "Number of Loops":
+                return self.n_loops
+            case "Number of Branches":
+                return self.n_branches
+            case "Number of Variables":
+                return self.n_declarations
+            case "Number of Return Statements":
+                return self.n_results
+            case "Number of Calls":
+                return self.n_external_calls
+            case "Number of Decision Points":
+                return self.n_decision_points
+            case "Number of distinct Operators":
+                return self.n_operators
+            case "η1":
+                return self.n_operators
+            case "Number of distinct Operands":
+                return self.n_operands
+            case "η2":
+                return self.n_operands
+            case "Number of total Operators":
+                return self.sum_operators
+            case "N1":
+                return self.sum_operators
+            case "Number of total Operands":
+                return self.sum_operands
+            case "N2":
+                return self.sum_operands
+            case "Vocabulary":
+                return self.vocabulary
+            case "Program Length":
+                return self.program_length
+            case "Calculated Length":
+                return self.calculated_length
+            case "Volume":
+                return self.volume
+            case "Difficulty":
+                return self.difficulty
+            case "Effort":
+                return self.effort
+            case "Time required to program":
+                return self.time_required_to_program
+            case "Number of delivered bugs":
+                return self.n_bugs
 
 
 # Set the namespace as Fxtran for XPath expressions
 ns = {"fx": "http://fxtran.net/#syntax"}
 
 # Filters
-name_tag : str = "n"
+name_tag: str = "n"
 literal_tag: str = "l"
-code_tag : str = "c"
+code_tag: str = "c"
 external_paren_tag = "parens-R"
-parameter_tag :str = "arg-N"
-result_tag : str = "result-spec"
-name_element_tag : str = "named-E"
+parameter_tag: str = "arg-N"
+result_tag: str = "result-spec"
+name_element_tag: str = "named-E"
 operand_tags: Set = {name_tag, literal_tag}
 operator_tags: Set = {code_tag}
 
-search_global : str = ".//fx:"
-search_local : str = "./fx:"
+search_global: str = ".//fx:"
+search_local: str = "./fx:"
+
 
 def is_external_call( a_stmt_element: ET.Element ):
     # check if an element contains a routine call
@@ -440,7 +523,7 @@ def add_operators_to( scope: Scope, element: ET.Element ):
                 scope.add_operator( operator.text.strip( ) )
 
 
-def calculate_metrics( xml_path: str = None, src : str = None ):
+def calculate_metrics( xml_path: str = None, src: str = None, sort_metric = None ) -> dict[ str, Scope ]:
     """
     Calculate cyclomatic complexity and halstead complexity measures from fxtran formatted xml file for Fortran code
     :param xml_path:
@@ -519,7 +602,7 @@ def calculate_metrics( xml_path: str = None, src : str = None ):
                 scope_results.extend( list( map( lambda element: element.text, result_element.findall( f"{search_global}{name_tag}", namespaces = ns ) ) ) )
 
             # Build new scope
-            new_scope = Scope( name = scope_name, type = scope_type, arguments = scope_arguments, scope_result_names = scope_results, src = src )
+            new_scope = Scope( name = scope_name, type = scope_type, arguments = scope_arguments, scope_result_names = scope_results, src = src, sort_metric = sort_metric )
 
             # Add scope to parent
             if current_scope:
@@ -579,9 +662,5 @@ def calculate_metrics( xml_path: str = None, src : str = None ):
             # Extract other statements
             elif element.tag.endswith( tuple( other_stmt_elements ) ):
                 current_scope.other_stmt.append( element )
-
-    # TODO debug output
-    # for scope_name, scope in scopes.items( ):
-    #     print( scope )
 
     return scopes

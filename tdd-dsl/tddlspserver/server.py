@@ -93,8 +93,6 @@ class TDDLSPServer( LanguageServer ):
         self.fxtran_path = "fxtran"
 
 
-tdd_server = TDDLSPServer("pygls-odsl-tdd-prototype", "v0.8")
-
 tdd_server = TDDLSPServer( "pygls-odsl-tdd-prototype", "v0.8" )
 
 logger = logging.getLogger( __name__ )

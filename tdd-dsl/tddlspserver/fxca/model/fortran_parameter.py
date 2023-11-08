@@ -24,42 +24,42 @@ class FortranParameter:
 
     @final
     @property
-    def name(self) -> str:
+    def name( self ) -> str:
         return self._name
 
     @property
-    def type(self) -> str:
+    def type( self ) -> str:
         return self._type
 
     @type.setter
-    def type(self, type_):
+    def type( self, type_ ):
         self._type = type_
 
     @property
-    def direction(self) -> EDirection:
+    def direction( self ) -> EDirection:
         return self._direction
 
     @direction.setter
-    def direction(self, direction):
+    def direction( self, direction ):
         self._direction = direction
 
     @property
-    def parent(self) -> object:
+    def parent( self ) -> object:
         return self._parent
 
     @parent.setter
-    def parent(self, parent):
+    def parent( self, parent ):
         self._parent = parent
 
     @property
-    def position(self) -> int:
+    def position( self ) -> int:
         return self._position
 
     @position.setter
-    def position(self, position):
+    def position( self, position ):
         self._position = position
 
-    def __init__(self, name, position):
+    def __init__( self, name, position ):
         self._direction = EDirection.NONE
         self._name = name
         self._position = position
@@ -67,7 +67,7 @@ class FortranParameter:
         self._parent = None
         self._type = None
 
-    def add_direction(self, value):
+    def add_direction( self, value ):
         match self._direction:
             case EDirection.NONE:
                 self._direction = value

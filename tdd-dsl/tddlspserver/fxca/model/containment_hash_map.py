@@ -17,13 +17,13 @@ __author__ = "sgu"
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-class ContainmentHashMap(dict):
+class ContainmentHashMap( dict ):
     """ HashMap containing variables """
 
-    def __init__(self, parent, mapping=None, *my_args, **kwargs):
+    def __init__( self, parent, mapping = None, *my_args, **kwargs ):
         self.parent = parent
-        super().__init__(mapping)
+        super( ).__init__( mapping )
 
-    def __setitem__(self, key, value):
-        value.set_parent(self.parent)
-        super().__setitem__(key, value)
+    def __setitem__( self, key, value ):
+        value.set_parent( self.parent )
+        super( ).__setitem__( key, value )

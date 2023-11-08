@@ -28,7 +28,7 @@ from antlr4.ParserRuleContext import ParserRuleContext
 from antlr4.tree.Tree import ErrorNodeImpl, TerminalNodeImpl
 
 # debug
-logger = logging.getLogger(__name__)
+logger = logging.getLogger( __name__ )
 logger.disabled = True
 
 
@@ -54,10 +54,10 @@ def compute_token_index_of_terminal_node(terminal_node: TerminalNode, caret_posi
     return None
 
 
-def compute_token_index_of_child_node(parser_rule_context: ParserRuleContext, caret_position: CaretPosition) -> Optional[int]:
+def compute_token_index_of_child_node( parser_rule_context: ParserRuleContext, caret_position: CaretPosition ) -> Optional[ int ]:
     i = 0
-    while i < parser_rule_context.getChildCount():
-        index = compute_token_index(parser_rule_context.getChild(i), caret_position)
+    while i < parser_rule_context.getChildCount( ):
+        index = compute_token_index( parser_rule_context.getChild( i ), caret_position )
         if index is not None:
             return index
         i += 1

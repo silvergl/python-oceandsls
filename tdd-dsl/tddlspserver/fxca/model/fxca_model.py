@@ -27,8 +27,8 @@ class FortranSubroutine:
     # TODO use dependencies?
 
     name: str
-    arguments: List[str]
-    variables: List[str]
+    arguments: List[ str ]
+    variables: List[ str ]
 
 
 class FortranFunction:
@@ -39,9 +39,9 @@ class FortranFunction:
     # TODO intern variables?
 
     name: str
-    arguments: List[str]
+    arguments: List[ str ]
     result: str
-    variables: List[str]
+    variables: List[ str ]
 
 
 class FortranProgram:
@@ -50,5 +50,5 @@ class FortranProgram:
     """
 
     name: str
-    variables: List[str]
-    dependencies: List[str]
+    variables: List[ str ]
+    dependencies: List[ str ]

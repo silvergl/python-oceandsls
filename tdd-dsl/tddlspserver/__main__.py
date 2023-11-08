@@ -24,42 +24,42 @@ from .server import tdd_server
 # TODO Set up logging /usr/lib/python3.10/asyncio/log.py
 #  /usr/lib/python3.10/asyncio/selector_events.py
 # logging.basicConfig( filename = "tddDSL_pygls.log", level = logging.DEBUG, filemode = "w" )
-logging.basicConfig( level = logging.DEBUG )
+logging.basicConfig(level=logging.DEBUG)
 
 
-def add_arguments( parser ):
+def add_arguments(parser):
     parser.prog = "TDD-Language-Server"
     parser.description = "A program for a language server based on the test driven development ocean-dsl"
     parser.epilog = "TDD-DSL Language Server"
 
     parser.add_argument(
-            "--tcp", action = "store_true",
-            help = "Use TCP server"
+        "--tcp", action="store_true",
+        help="Use TCP server"
     )
     parser.add_argument(
-            "--ws", action = "store_true",
-            help = "Use WebSocket server"
+        "--ws", action="store_true",
+        help="Use WebSocket server"
     )
     parser.add_argument(
-            "--host", default = "127.0.0.1",
-            help = "Bind to this address"
+        "--host", default="127.0.0.1",
+        help="Bind to this address"
     )
     parser.add_argument(
-            "--port", type = int, default = 2087,
-            help = "Bind to this port"
+        "--port", type=int, default=2087,
+        help="Bind to this port"
     )
     parser.add_argument(
-            "-f", "--fxtran", dest = "fxtran", type = fxtran_executable, default = "fxtran",
-            help = "Path to fxtran"
+        "-f", "--fxtran", dest="fxtran", type=fxtran_executable, default="fxtran",
+        help="Path to fxtran"
     )
 
     parser.add_argument(
-            "-m", "--metric", dest = "metric", default = "Halstead Complexity",
-            help = "Metric to sort SuT recommendations, e.g. Halstead Complexity"
+        "-m", "--metric", dest="metric", default="Halstead Complexity",
+        help="Metric to sort SuT recommendations, e.g. Halstead Complexity"
     )
 
 
-def fxtran_executable( path: str ):
+def fxtran_executable(path: str):
     """
     Check for valid fxtran path.
 
@@ -67,21 +67,22 @@ def fxtran_executable( path: str ):
     :return: valid path
     """
     # Add help argument to succeed.
-    cmd: str = " ".join( [ path, "-help" ] )
+    cmd: str = " ".join([path, "-help"])
 
     try:
         # Call 'fxtran -help' via subprocess
-        subprocess.check_output( cmd, shell = True, stderr = subprocess.STDOUT )
+        subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        raise argparse.ArgumentTypeError( f"Did not found fxtran. command '{e.cmd}' return with error (code {e.returncode}): {e.output}. Provide valid path via -f path_to_fxtran or add fxtran to system PATH." )
+        raise argparse.ArgumentTypeError(
+            f"Did not found fxtran. command '{e.cmd}' return with error (code {e.returncode}): {e.output}. Provide valid path via -f path_to_fxtran or add fxtran to system PATH.")
 
     return path
 
 
-def main( ):
-    parser = argparse.ArgumentParser( )
-    add_arguments( parser )
-    args = parser.parse_args( )
+def main():
+    parser = argparse.ArgumentParser()
+    add_arguments(parser)
+    args = parser.parse_args()
 
     if args.fxtran:
         # Add fxtran path
@@ -93,14 +94,14 @@ def main( ):
 
     if args.tcp:
         # Start server via tcp
-        tdd_server.start_tcp( args.host, args.port )
+        tdd_server.start_tcp(args.host, args.port)
     elif args.ws:
         # Start server via WebSocket
-        tdd_server.start_ws( args.host, args.port )
+        tdd_server.start_ws(args.host, args.port)
     else:
         # Start server via IO
-        tdd_server.start_io( )
+        tdd_server.start_io()
 
 
 if __name__ == "__main__":
-    main( )
+    main()

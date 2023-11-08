@@ -23,38 +23,38 @@ class FortranVariable:
     """ source for class FortranVariable """
 
     @property
-    def name( self ) -> str:
+    def name(self) -> str:
         return self._name
 
     @property
-    def type( self ) -> str:
+    def type(self) -> str:
         return self._type
 
     @type.setter
-    def type( self, type_ ):
+    def type(self, type_):
         self._type = type_
 
     @property
-    def direction( self ) -> EDirection:
+    def direction(self) -> EDirection:
         return self._direction
 
     @direction.setter
-    def direction( self, direction ):
+    def direction(self, direction):
         self._direction = direction
 
     @property
-    def parent( self ) -> object:
+    def parent(self) -> object:
         return self._parent
 
     @parent.setter
-    def parent( self, parent ):
+    def parent(self, parent):
         self._parent = parent
 
     # @property
     # def sources (self) -> Set[IDataflowEndpoint]:
     #     return self._sources
 
-    def __init__( self, name ):
+    def __init__(self, name):
         # self._sources = set ()
         self._direction = EDirection.NONE
         self._name = name
@@ -62,7 +62,7 @@ class FortranVariable:
         self._parent = None
         self._type = None
 
-    def add_direction( self, value ):
+    def add_direction(self, value):
         match self._direction:
             case EDirection.NONE:
                 self.direction = value

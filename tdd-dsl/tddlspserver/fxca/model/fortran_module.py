@@ -34,22 +34,22 @@ class FortranModule:
 
     @final
     @property
-    def used_modules( self ) -> Set:
+    def used_modules(self) -> Set:
         return self._used_modules
 
     @final
     @property
-    def operations( self ) -> ContainmentHashMap[ str, FortranOperation ]:
+    def operations(self) -> ContainmentHashMap[str, FortranOperation]:
         return self._operations
 
     @final
     @property
-    def module_name( self ) -> str:
+    def module_name(self) -> str:
         return self._module_name
 
     @final
     @property
-    def named_module( self ) -> bool:
+    def named_module(self) -> bool:
         return self._named_module
 
     # TODO add Document if needed
@@ -60,40 +60,40 @@ class FortranModule:
 
     @final
     @property
-    def file_name( self ) -> str:
+    def file_name(self) -> str:
         return self._file_name
 
     @final
     @property
-    def common_blocks( self ) -> ContainmentHashMap[ str, CommonBlock ]:
+    def common_blocks(self) -> ContainmentHashMap[str, CommonBlock]:
         return self._common_blocks
 
     @final
     @property
-    def variables( self ) -> ContainmentHashMap[ str, FortranVariable ]:
+    def variables(self) -> ContainmentHashMap[str, FortranVariable]:
         return self._variables
 
     @property
-    def parent( self ) -> object:
+    def parent(self) -> object:
         return self._parent
 
     @parent.setter
-    def parent( self, parent ):
+    def parent(self, parent):
         self._parent = parent
 
-    def __init__( self, module_name, file_name, named_module, document ):
+    def __init__(self, module_name, file_name, named_module, document):
         self._module_name = module_name
         self._named_module = named_module
         self._file_name = file_name
         # self._document = document
 
-        self._used_modules = set( )
-        self._operations = ContainmentHashMap( self )
-        self._common_blocks = ContainmentHashMap( self )
-        self._variables = ContainmentHashMap( self )
+        self._used_modules = set()
+        self._operations = ContainmentHashMap(self)
+        self._common_blocks = ContainmentHashMap(self)
+        self._variables = ContainmentHashMap(self)
 
-        self._parent = object( )
+        self._parent = object()
 
-    def __str__( self ):
+    def __str__(self):
         """ toString method """
         return self.file_name + ":" + self.module_name

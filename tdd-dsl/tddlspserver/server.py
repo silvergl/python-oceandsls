@@ -248,6 +248,9 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         if label:
             completion_list.items.append( CompletionItem( label=label ) )
 
+    if not completion_list.items:
+        # VSCode empty list workaround
+        completion_list.items.append( CompletionItem( label="" ) )
     # Return completion candidates labels
     return completion_list
 

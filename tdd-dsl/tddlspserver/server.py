@@ -234,14 +234,19 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # TODO modules, type check, asserts, functions, subroutines
 
     # Add tokens to completion candidates
+    # Strip ' from terminals
+    stripped_literal_names:list = stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'")
+    symbolic_names:list = tdd_server.parser.symbolicNames
     for key, valueList in candidates.tokens.items():
-        completion_list.items.append(
-            CompletionItem(
-                label=IntervalSet.elementName(
-                    IntervalSet, stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'"), tdd_server.parser.symbolicNames, key
-                )
-            )
-        )
+        label = IntervalSet.elementName( IntervalSet, stripped_literal_names, symbolic_names, key )
+        # Replace newline with os.newline token
+        if label == "NEWLINE":
+            label = os.linesep
+        # Remove symbolic names or unknown tokens from completions
+        if label == "<UNKNOWN>" or label in symbolic_names:
+            label = None
+        if label:
+            completion_list.items.append( CompletionItem( label=label ) )
 
     # Return completion candidates labels
     return completion_list

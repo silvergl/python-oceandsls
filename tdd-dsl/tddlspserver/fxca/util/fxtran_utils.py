@@ -280,10 +280,15 @@ def filter_xml(
                         variable_type = t_spec_element[0].text
                     else:
                         # Derived type name
-                        derived_element: str = element.find(".//fx:derived-T-spec", ns)
-                        # TODO hc default ""
+                        derived_element: ET.Element = element.find(".//fx:derived-T-spec", ns)
                         derived_type: str = derived_element.text if derived_element else ""
-                        variable_type = "".join([derived_type, t_spec_element[0].find(".//fx:n", ns).text, ")"])
+                        type_name_element: ET.Element = t_spec_element[0 ].find( ".//fx:n", ns )
+                        if type_name_element:
+                            variable_type = "".join([derived_type, type_name_element.text, ")"])
+                        else:
+                            # TODO check no type value
+                            # No type found
+                            variable_type = ""
                 else:
                     # TODO check no type value
                     # No type found

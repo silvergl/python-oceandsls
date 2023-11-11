@@ -87,7 +87,7 @@ class TDDLSPServer(LanguageServer):
         self.files: dict[str, Tuple[float, str, str]] = {}
 
         # Set Metric sort
-        self.sort_metric = "Halstead Complexity"
+        self.sort_metric = "Testability Factor"
 
         # Fxtran system file path
         self.fxtran_path = "fxtran"
@@ -235,10 +235,10 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
 
     # Add tokens to completion candidates
     # Strip ' from terminals
-    stripped_literal_names:list = stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'")
-    symbolic_names:list = tdd_server.parser.symbolicNames
+    stripped_literal_names: list = stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'")
+    symbolic_names: list = tdd_server.parser.symbolicNames
     for key, valueList in candidates.tokens.items():
-        label = IntervalSet.elementName( IntervalSet, stripped_literal_names, symbolic_names, key )
+        label = IntervalSet.elementName(IntervalSet, stripped_literal_names, symbolic_names, key)
         # Replace newline with os.newline token
         if label == "NEWLINE":
             label = os.linesep
@@ -246,11 +246,11 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
         if label == "<UNKNOWN>" or label in symbolic_names:
             label = None
         if label:
-            completion_list.items.append( CompletionItem( label=label ) )
+            completion_list.items.append(CompletionItem(label=label))
 
     if not completion_list.items:
         # VSCode empty list workaround
-        completion_list.items.append( CompletionItem( label="" ) )
+        completion_list.items.append(CompletionItem(label=""))
     # Return completion candidates labels
     return completion_list
 

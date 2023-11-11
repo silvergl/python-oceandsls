@@ -874,7 +874,7 @@ class ScopedSymbol(Symbol):
 
             # recursively call children scopes, except for scopes that called us
             if isinstance(child, ScopedSymbol) and child not in callers:
-                localList: List[T] = await child.get_all_symbols(t , True, callers + [self])
+                localList: List[T] = await child.get_all_symbols(t, True, callers + [self])
                 result.extend(localList)
 
         # recursively call parent scopes, except for scopes that called us
@@ -918,7 +918,7 @@ class ScopedSymbol(Symbol):
 
             # recursively call children scopes, except for scopes that called us
             if isinstance(child, ScopedSymbol) and child not in callers:
-                result.extend(child.get_all_symbols_sync(t , True, callers + [self]))
+                result.extend(child.get_all_symbols_sync(t, True, callers + [self]))
 
         # recursively call parent scopes, except for scopes that called us
         # TODO sgu fixed bug: no recursive call

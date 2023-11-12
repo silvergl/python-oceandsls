@@ -60,6 +60,11 @@ class TDDLSPServer(LanguageServer):
 
     top_level_context = TestSuiteParser.Test_suiteContext
     parseTree: top_level_context
+    # Recommendation metric
+    sort_metric : str
+
+    # Debug flag
+    debug = False
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -86,11 +91,11 @@ class TDDLSPServer(LanguageServer):
         # Attributes of generated files
         self.files: dict[str, Tuple[float, str, str]] = {}
 
-        # Set Metric sort
-        self.sort_metric = "Testability Factor"
-
         # Fxtran system file path
         self.fxtran_path = "fxtran"
+
+        # Number of SuT to return
+        self.show_n_metrics = 2
 
 
 tdd_server = TDDLSPServer("pygls-odsl-tdd-prototype", "v0.8")
@@ -380,10 +385,17 @@ def recommend_SUT(server: TDDLSPServer, *args):
 
     metric_list: List[str] = suggest_symbols(symbol_table, position=None, symbol_type=MetricSymbol)
 
-    for metric in metric_list:
+    for metric in metric_list[:tdd_server.show_n_metrics]:
         server.show_message(metric)
 
+    if tdd_server.debug:
+        debug_file_write(os.path.join(os.getcwd(),tdd_server.sort_metric) , "\n".join(metric_list))
+
     server.show_message(f"Recommend SuT by {tdd_server.sort_metric}...")
+
+def debug_file_write( file_path : str = None, content : str = None ):
+    with open(file_path, mode="w", encoding="utf-8") as f:
+        f.write(content)
 
 
 @tdd_server.command(TDDLSPServer.CMD_REGISTER_COMPLETIONS)

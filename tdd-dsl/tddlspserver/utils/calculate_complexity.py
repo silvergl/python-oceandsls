@@ -518,7 +518,7 @@ class Scope:
         """ toString method """
 
         if not self.debug:
-            return (f"Scope: {self.name}\n"
+            return (f"ID: {self.name}\n"
                     f"Source: {self.src}\n"
                     )
         else:
@@ -573,11 +573,9 @@ class Scope:
         match self.get_sort_metric:
             case "Cyclomatic Complexity":
                 return self.cyclomatic_complexity
-            case "Halstead Complexity":
-                return self.difficulty
             case "Depth of Nesting":
                 return self.depth_of_nesting
-            case "Lines of Code (LOC)":
+            case "Lines of Code":
                 return self.loc
             case "LOC":
                 return self.loc

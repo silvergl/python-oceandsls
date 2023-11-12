@@ -49,7 +49,7 @@ class Scope:
     src: str = field(default="")
     sort_metric: str = field(default="")
 
-    debug: bool = field(default=False)
+    debug: bool = field(default=True)
 
     routine_types: Set = field(default_factory=lambda: {"function-stmt", "subroutine-stmt"})
     module_types: Set = field(default_factory=lambda: {"module-stmt"})
@@ -300,13 +300,13 @@ class Scope:
     def cyclomatic_complexity(self) -> int | None:
         """
         Cyclomatic complexity (CC) function for structures with only one entry point and one exit point.
-        Number of predicate variables involved plus decision points ("if" statements and loops) plus one
+        Number of predicate variables involved in decision points ("if" statements and loops) plus one
         :return: CC
         """
         # Check structure
         if self.is_routine or self.is_module:
             # Simple structure
-            return self.n_conditionals + self.n_loops + self.n_branches + 1
+            return self.n_conditionals + 1
         else:
             # Unsupported structure
             return None
@@ -356,7 +356,7 @@ class Scope:
     ###############################
 
     def set_weighted_metrics(self):
-        self.__weighted_metrics["CC"] = (self.cyclomatic_complexity, self.high_coefficient)
+        self.__weighted_metrics["CC"] = (self.cyclomatic_complexity, self.high_coefficient) # incl conditionals
         self.__weighted_metrics["LOC"] = (self.loc, self.mid_coefficient)
         self.__weighted_metrics["DEPTH"] = (self.depth_of_nesting, self.high_coefficient)
         self.__weighted_metrics["NP"] = (self.n_arguments, self.mid_coefficient)
@@ -445,13 +445,18 @@ class Scope:
         """TF = 1/(1 + a CC + b LOC + c  Branches + d Loops + e Variables + f Calls + g Bugs)"""
         if self.__testability_factor is None:
 
-            factors = ["CC", "LOC", "NB", "NL", "NV", "NC","B"]
-            factorWSM: float = 0
-            for factor in factors:
+            numeratorFactors = ["B"]
+            numeratorWSM: float = 0
+            for factor in numeratorFactors:
                 metric: tuple = self.weighted_metrics[factor]
-                factorWSM += metric[0] * metric[1]
+                numeratorWSM += metric[0] * metric[1]
+            denominatorFactors = ["CC", "LOC", "NB", "NL", "NV", "NC"]
+            denominatorWSM:float = 0
+            for factor in denominatorFactors:
+                metric: tuple = self.weighted_metrics[factor]
+                denominatorWSM += metric[0] * metric[1]
 
-            self.__testability_factor = 1 / (1 + factorWSM)
+            self.__testability_factor = 1 * numeratorWSM / (1 + denominatorWSM)
 
         return self.__testability_factor
 
@@ -647,6 +652,7 @@ external_paren_tag = "parens-R"
 parameter_tag: str = "arg-N"
 result_tag: str = "result-spec"
 name_element_tag: str = "named-E"
+operand_element_tag: str = "op-E"
 operand_tags: Set = {name_tag, literal_tag}
 operator_tags: Set = {code_tag}
 
@@ -686,7 +692,7 @@ def calculate_metrics(xml_path: str = None, src: str = None, sort_metric=None) -
     root = tree.getroot()
 
     # Filters
-    conditionals_elements: Set = {"condition-E"}
+    conditional_elements: Set = {"condition-E", "test-E", "do-V" }
     loop_elements: Set = {"do-stmt"}
     branch_elements: Set = {"if-then-stmt", "else-stmt"}
     branch_end_elements: Set = {"end-if-stmt"}
@@ -774,8 +780,19 @@ def calculate_metrics(xml_path: str = None, src: str = None, sort_metric=None) -
                 add_operators_to(current_scope, element)
 
             # Extract conditional statements
-            if element.tag.endswith(tuple(conditionals_elements)):
-                current_scope.conditionals.append(element)
+            if element.tag.endswith(tuple(conditional_elements)):
+
+                # Check if operand elements exist
+                operand_elements : List[ET.Element] = element.findall(path=f"{search_global}{operand_element_tag}", namespaces=ns)
+                if operand_elements:
+                    # Add only leaf operand elements
+                    for operand_element in operand_elements:
+                        sub_operand_elements : List[ET.Element] = operand_element.findall(path=f"{search_global}{operand_element_tag}", namespaces=ns)
+                        if not sub_operand_elements:
+                            current_scope.conditionals.append(operand_element)
+                else:
+                    # Add one element if no operand is found
+                    current_scope.conditionals.append(element)
 
             # Extract loop statements
             elif element.tag.endswith(tuple(loop_elements)):

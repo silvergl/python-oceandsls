@@ -150,8 +150,18 @@
     <T-decl-stmt><_T-spec_><intrinsic-T-spec><T-N><c>integer</c></T-N></intrinsic-T-spec></_T-spec_> <c>::</c> <EN-decl-LT><EN-decl><EN-N><N n="I"><n>i</n></N></EN-N></EN-decl></EN-decl-LT></T-decl-stmt>
 
     <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><literal-E><l>0</l></literal-E></E-2></a-stmt>
+
+    <do-stmt><c>do</c></do-stmt>
+      <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><named-E><N n="SUM"><n>sum</n></N></named-E> <op n="+"><o>+</o></op> <literal-E><l>1</l></literal-E></op-E></E-2></a-stmt>
+      <if-stmt><c>if(</c> <condition-E><op-E><op-E><literal-E><l>4</l></literal-E> <op n="&lt;"><o>&lt;</o></op> <named-E><N n="SUM"><n>sum</n></N></named-E></op-E> <op n=".AND."><o>.AND.</o></op> <op-E><named-E><N n="START"><n>start</n></N></named-E> <op n="&lt;"><o>&lt;</o></op> <named-E><N n="END"><n>end</n></N></named-E></op-E></op-E></condition-E><c>)</c> <action-stmt><exit-stmt><c>exit</c></exit-stmt></action-stmt></if-stmt>
+    <end-do-stmt><c>end</c> <c>do</c></end-do-stmt> 
+
+    <do-stmt><c>do</c> <c>while(</c> <test-E><op-E><op-E><named-E><N n="SUM"><n>sum</n></N></named-E> <op n="&lt;"><o>&lt;</o></op> <literal-E><l>10</l></literal-E></op-E> <op n=".AND."><o>.AND.</o></op> <op-E><named-E><N n="START"><n>start</n></N></named-E> <op n="&lt;"><o>&lt;</o></op> <named-E><N n="END"><n>end</n></N></named-E></op-E></op-E></test-E><c>)</c></do-stmt>
+      <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><op-E><named-E><N n="SUM"><n>sum</n></N></named-E> <op n="+"><o>+</o></op> <literal-E><l>1</l></literal-E></op-E></E-2></a-stmt>
+    <end-do-stmt><c>end</c> <c>do</c></end-do-stmt>
+
     <do-stmt><c>do</c> <do-V><named-E><N n="I"><n>i</n></N></named-E></do-V> <c>=</c> <lower-bound><named-E><N n="START"><n>start</n></N></named-E></lower-bound><c>,</c> <upper-bound><named-E><N n="END"><n>end</n></N></named-E></upper-bound><c>,</c> <step><named-E><N n="STEP"><n>step</n></N></named-E></step></do-stmt>
-      <if-then-stmt><c>if</c> <c>(</c><condition-E><op-E><op-E><named-E><N n="I"><n>i</n></N></named-E> <op n="+"><o>+</o></op> <named-E><N n="STEP"><n>step</n></N></named-E></op-E> <op n="&lt;"><o>&lt;</o></op> <op-E><named-E><N n="END"><n>end</n></N></named-E> <op n="-"><o>-</o></op> <named-E><N n="START"><n>start</n></N></named-E></op-E></op-E></condition-E><c>)</c> <c>then</c></if-then-stmt>
+      <if-then-stmt><c>if</c> <c>(</c><condition-E><op-E><literal-E><l>30</l></literal-E> <op n="&lt;"><o>&lt;</o></op> <named-E><N n="SUM"><n>sum</n></N></named-E></op-E></condition-E><c>)</c> <c>then</c></if-then-stmt>
         <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><literal-E><l>0</l></literal-E></E-2></a-stmt>
       <else-stmt><c>else</c></else-stmt>
         <a-stmt><E-1><named-E><N n="SUM"><n>sum</n></N></named-E></E-1> <a><c>=</c></a> <E-2><named-E><N n="GET_SUM2"><n>get_sum2</n></N><R-LT><parens-R><c>(</c><element-LT><element><named-E><N n="SUM"><n>sum</n></N></named-E></element><c>,</c> <element><literal-E><l>1</l></literal-E></element></element-LT><c>)</c></parens-R></R-LT></named-E></E-2></a-stmt>

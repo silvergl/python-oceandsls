@@ -142,8 +142,18 @@ CONTAINS
     integer :: i
 
     sum = 0
+
+    do
+      sum = sum + 1
+      if( 4 < sum .AND. start < end) exit
+    end do 
+
+    do while( sum < 10 .AND. start < end)
+      sum = sum + 1
+    end do
+
     do i = start, end, step
-      if (i + step < end - start) then
+      if (30 < sum) then
         sum = 0
       else
         sum = get_sum2(sum, 1)

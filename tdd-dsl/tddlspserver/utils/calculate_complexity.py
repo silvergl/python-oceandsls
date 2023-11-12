@@ -299,8 +299,8 @@ class Scope:
     @property
     def cyclomatic_complexity(self) -> int | None:
         """
-        Cyclomatic complexity function for structures with only one entry point and one exit point.
-        Number of predicate variables involved plus decision points ("if" statements and loops) plus one : CC
+        Cyclomatic complexity (CC) function for structures with only one entry point and one exit point.
+        Number of predicate variables involved plus decision points ("if" statements and loops) plus one
         :return: CC
         """
         # Check structure
@@ -356,27 +356,27 @@ class Scope:
     ###############################
 
     def set_weighted_metrics(self):
-        self.__weighted_metrics['CC'] = (self.cyclomatic_complexity, self.high_coefficient)
-        self.__weighted_metrics['LOC'] = (self.loc, self.mid_coefficient)
-        self.__weighted_metrics['DEPTH'] = (self.depth_of_nesting, self.high_coefficient)
-        self.__weighted_metrics['NP'] = (self.n_arguments, self.mid_coefficient)
-        self.__weighted_metrics['NL'] = (self.n_loops, self.mid_coefficient)
-        self.__weighted_metrics['NB'] = (self.n_branches, self.mid_coefficient)
-        self.__weighted_metrics['NV'] = (self.n_declarations, self.mid_coefficient)
-        self.__weighted_metrics['NR'] = (self.n_results, self.mid_coefficient)
-        self.__weighted_metrics['NC'] = (self.n_external_calls, self.mid_coefficient)
-        self.__weighted_metrics['NY1'] = (self.n_operators, self.low_coefficient)
-        self.__weighted_metrics['NY2'] = (self.n_operands, self.low_coefficient)
-        self.__weighted_metrics['N1'] = (self.sum_operators, self.low_coefficient)
-        self.__weighted_metrics['N2'] = (self.sum_operands, self.low_coefficient)
-        self.__weighted_metrics['NY'] = (self.vocabulary, self.low_coefficient)
-        self.__weighted_metrics['N'] = (self.program_length, self.low_coefficient)
-        self.__weighted_metrics['NHAT'] = (self.calculated_length, self.no_coefficient)
-        self.__weighted_metrics['V'] = (self.volume, self.no_coefficient)
-        self.__weighted_metrics['D'] = (self.difficulty, self.no_coefficient)
-        self.__weighted_metrics['E'] = (self.effort, self.no_coefficient)
-        self.__weighted_metrics['T'] = (self.time_required_to_program, self.no_coefficient)
-        self.__weighted_metrics['B'] = (self.n_bugs, self.high_coefficient)
+        self.__weighted_metrics["CC"] = (self.cyclomatic_complexity, self.high_coefficient)
+        self.__weighted_metrics["LOC"] = (self.loc, self.mid_coefficient)
+        self.__weighted_metrics["DEPTH"] = (self.depth_of_nesting, self.high_coefficient)
+        self.__weighted_metrics["NP"] = (self.n_arguments, self.mid_coefficient)
+        self.__weighted_metrics["NL"] = (self.n_loops, self.mid_coefficient)
+        self.__weighted_metrics["NB"] = (self.n_branches, self.mid_coefficient)
+        self.__weighted_metrics["NV"] = (self.n_declarations, self.mid_coefficient)
+        self.__weighted_metrics["NR"] = (self.n_results, self.mid_coefficient)
+        self.__weighted_metrics["NC"] = (self.n_external_calls, self.mid_coefficient)
+        self.__weighted_metrics["NY1"] = (self.n_operators, self.low_coefficient)
+        self.__weighted_metrics["NY2"] = (self.n_operands, self.low_coefficient)
+        self.__weighted_metrics["N1"] = (self.sum_operators, self.low_coefficient)
+        self.__weighted_metrics["N2"] = (self.sum_operands, self.low_coefficient)
+        self.__weighted_metrics["NY"] = (self.vocabulary, self.low_coefficient)
+        self.__weighted_metrics["N"] = (self.program_length, self.low_coefficient)
+        self.__weighted_metrics["NHAT"] = (self.calculated_length, self.no_coefficient)
+        self.__weighted_metrics["V"] = (self.volume, self.no_coefficient)
+        self.__weighted_metrics["D"] = (self.difficulty, self.no_coefficient)
+        self.__weighted_metrics["E"] = (self.effort, self.no_coefficient)
+        self.__weighted_metrics["T"] = (self.time_required_to_program, self.no_coefficient)
+        self.__weighted_metrics["B"] = (self.n_bugs, self.high_coefficient)
 
         # Reset WSM
         self.__weighted_metrics_sum = None
@@ -456,7 +456,7 @@ class Scope:
         return self.__testability_factor
 
     ###############################
-    # Utils
+    # Coefficients
     ###############################
 
     @property

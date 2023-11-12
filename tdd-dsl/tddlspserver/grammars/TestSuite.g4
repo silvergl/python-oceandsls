@@ -38,7 +38,7 @@ test_case               : 'test' name=ID ':' NEWLINE
                           modules=use_modules                   /** ends on newline */
                           vars=test_vars                        /** ends on newline */
                           assertions+=test_assertion            /** ends on newline */
-                          (assertions+=test_assertion)+         /** ends on newline */
+                          (assertions+=test_assertion)*         /** ends on newline */
                         ;
 
 test_flag               : 'overwrite' ':' overwrite_flag (',' overwrite_flag)* NEWLINE

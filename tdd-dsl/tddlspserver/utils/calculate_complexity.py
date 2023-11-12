@@ -442,10 +442,10 @@ class Scope:
 
     @property
     def testability_factor(self) -> float:
-        """TF = 1/(1 + a CC + b LOC + c  Branches + d Loops + e Variables + f Calls)"""
+        """TF = 1/(1 + a CC + b LOC + c  Branches + d Loops + e Variables + f Calls + g Bugs)"""
         if self.__testability_factor is None:
 
-            factors = ["CC", "LOC", "NB", "NL", "NV", "NC"]
+            factors = ["CC", "LOC", "NB", "NL", "NV", "NC","B"]
             factorWSM: float = 0
             for factor in factors:
                 metric: tuple = self.weighted_metrics[factor]

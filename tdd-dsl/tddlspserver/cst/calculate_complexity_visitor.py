@@ -51,6 +51,11 @@ class CalculateComplexityVisitor(TestSuiteVisitor, Generic[T]):
     def defaultResult(self) -> SymbolTable:
         return self._symbol_table
 
+    # Visit a parse tree produced by TestSuiteParser#test_suite.
+    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
+        self.visitChildren(ctx)
+        return self.defaultResult()
+
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
         return self.with_scope(ctx, TestCaseSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())

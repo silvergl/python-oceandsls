@@ -58,6 +58,11 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         # Return the symboltable by default
         return self._symbol_table
 
+    # Visit a parse tree produced by TestSuiteParser#test_suite.
+    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
+        self.visitChildren(ctx)
+        return self.defaultResult()
+
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
         # Extract symbols from path, scope and variables

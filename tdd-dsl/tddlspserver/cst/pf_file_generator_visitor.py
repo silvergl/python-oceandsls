@@ -93,8 +93,8 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         template = self.environment.get_template(self.file_templates[ctx.getRuleIndex()])
         # Render template
         name = ctx.name.text
-        scope = self.visit(ctx.modules)
-        vars_ = self.visit(ctx.vars_)
+        scope = self.visit(ctx.modules) if ctx.modules else None
+        vars_ = self.visit(ctx.vars_) if ctx.vars_ else None
         self.test_path = self.visit(ctx.src_path())
         assertions = []
         for assertion in ctx.assertions:

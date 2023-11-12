@@ -96,10 +96,11 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         # Load Jinja2 template
         template = self.environment.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        module_symbols = self.visit(ctx.modules)
+        module_symbols = self.visit(ctx.modules) if ctx.modules else None
 
         # Get operations defined in variables
-        self.visit(ctx.vars_)
+        if ctx.vars_:
+            self.visit(ctx.vars_)
 
         # Get operations defined in assertions
         for assertion in ctx.assertions:

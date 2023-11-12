@@ -27,17 +27,17 @@ import Keyword, Typing, Reference, PhysicalUnits, CommonLexerRules;
 
 /** test_suite ; top-level rule; begin parsing here */
 test_suite              : 'suite' name=ID ':' NEWLINE
-                          cases+=test_case              /** ends on newline */
+                          (cases+=test_case)?           /** ends on newline */
                           (cases+=test_case)*           /** ends on newline */
                         ;
 
 /** test case ends on newline */
 test_case               : 'test' name=ID ':' NEWLINE
                           (test_flags=test_flag)?               /** ends on newline */
-                          'srcpath' ':' srcpath=src_path        /** ends on newline */
-                          modules=use_modules                   /** ends on newline */
-                          vars=test_vars                        /** ends on newline */
-                          assertions+=test_assertion            /** ends on newline */
+                          ()'srcpath' ':' srcpath=src_path      /** ends on newline */
+                          (modules=use_modules)?                /** ends on newline */
+                          (vars=test_vars)?                     /** ends on newline */
+                          (assertions+=test_assertion)?         /** ends on newline */
                           (assertions+=test_assertion)*         /** ends on newline */
                         ;
 

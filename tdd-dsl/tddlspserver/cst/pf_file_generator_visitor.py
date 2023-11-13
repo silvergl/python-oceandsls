@@ -108,7 +108,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
 
         # Write pf file
         abs_path: str = os.path.join(os.getcwd(), self.test_path, self.test_folder, f"{name}.{self.file_suffix}")
-        file_attr = self.files.get(abs_path)
+        file_attr = self.files.get(abs_path) # TODO None
         self.files[abs_path] = write_file(abs_path, content, file_attr, insert=not self.overwrite)
 
         # Update test case symbol

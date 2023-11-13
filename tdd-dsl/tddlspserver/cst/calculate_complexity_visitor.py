@@ -24,11 +24,11 @@ from typing import Callable, Generic
 # antlr4
 from antlr4.tree.Tree import ParseTree
 
-from utils.calculate_complexity import calculate_metrics
 # user relative imports
 from ..fxca.util.fxtran_utils import get_files, write_decorate_src_xml
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
+from ..utils.calculate_complexity import calculate_metrics
 from ..symboltable.symbol_table import MetricSymbol, SymbolTable, PathSymbol, SymbolTableOptions, P, T, TestCaseSymbol
 
 

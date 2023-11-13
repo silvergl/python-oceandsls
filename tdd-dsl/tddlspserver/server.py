@@ -64,7 +64,7 @@ class TDDLSPServer(LanguageServer):
     sort_metric : str
 
     # Debug flag
-    debug = False
+    debug = True
 
     def __init__(self, *args):
         super().__init__(*args)

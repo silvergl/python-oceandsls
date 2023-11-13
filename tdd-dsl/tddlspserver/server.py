@@ -256,6 +256,9 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     if not completion_list.items:
         # VSCode empty list workaround
         completion_list.items.append(CompletionItem(label=""))
+    if tdd_server.debug:
+        for entry in completion_list.items:
+            print(f"{entry}")
     # Return completion candidates labels
     return completion_list
 

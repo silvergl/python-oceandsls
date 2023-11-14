@@ -25,29 +25,19 @@ grammar PhysicalUnits;
 /** imports include all rules, imported rules are overwritten by existing rules */
 import CommonLexerRules;
 
-/** parser rules start with lowercase letters */
-unitSpec        : units+=composedUnit ( '*' units+=composedUnit)*
-                ;
-
-composedUnit    : numerator=basicUnit (
-                      ('/' denominator=basicUnit)
-                    | ('**' exponent=INT)
-                  )
-                | unit=basicUnit
-                ;
-
-basicUnit       : type=siUnit                           # siUnitType
-                | type=customUnit                       # customUnitType
-                | '(' type=unitSpec ')'                 # composedUnitType
-                ;
+/** arithmetic expression for value calculation */
+unitSpec             : '(' type=unitSpec ')'                            # parensUnit    /** Parenthesized expression */
+                        | left=unitSpec op=('*' | '/') right=unitSpec   # mulDivUnit    /** Multiplication, Division have precedence */
+                        | type=unitSpec op='**' exponent=INT            # expUnit    /** Addition, Subtraction have not precedence */
+                        | type=siUnit                                   # stdUnit
+                        | type=customUnit                               # cstUnit
+                        ;
 
 siUnit          : (prefix=unitPrefix)? type=siType
                 ;
 
 customUnit      : name=STRING
                 ;
-
-
 
 /** SI prefixes */
 unitPrefix      : value = 'noP' # noP
@@ -78,14 +68,14 @@ unitPrefix      : value = 'noP' # noP
                 ;
 
 /** SI Unit symbols */
-siType          : value    = 's'    # second
-                | value     = 'm'   # metre
-                | value      = 'g'  # gram
-                | value    = 'A'    # ampere
-                | value    = 'K'    # kelvin
-                | value = 'mol'     # mole
-                | value   = 'cd'    # candela
-                | value    = 'Pa'   # pascal
-                | value     = 'J'   # joule
-                | value       = 't' # ton
+siType          : value = 's'   # second
+                | value = 'm'   # metre
+                | value = 'g'   # gram
+                | value = 'A'   # ampere
+                | value = 'K'   # kelvin
+                | value = 'mol' # mole
+                | value = 'cd'  # candela
+                | value = 'Pa'  # pascal
+                | value = 'J'   # joule
+                | value = 't'   # ton
                 ;

@@ -49,7 +49,7 @@ class Scope:
     src: str = field(default="")
     sort_metric: str = field(default="")
 
-    debug: bool = field(default=True)
+    debug: bool = field(default=False)
 
     routine_types: Set = field(default_factory=lambda: {"function-stmt", "subroutine-stmt"})
     module_types: Set = field(default_factory=lambda: {"module-stmt"})

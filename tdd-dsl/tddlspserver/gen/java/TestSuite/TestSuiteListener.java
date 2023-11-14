@@ -570,61 +570,65 @@ public interface TestSuiteListener extends ParseTreeListener {
 	 */
 	void exitVarRef(TestSuiteParser.VarRefContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TestSuiteParser#unitSpec}.
+	 * Enter a parse tree produced by the {@code parensUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void enterUnitSpec(TestSuiteParser.UnitSpecContext ctx);
+	void enterParensUnit(TestSuiteParser.ParensUnitContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TestSuiteParser#unitSpec}.
+	 * Exit a parse tree produced by the {@code parensUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void exitUnitSpec(TestSuiteParser.UnitSpecContext ctx);
+	void exitParensUnit(TestSuiteParser.ParensUnitContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TestSuiteParser#composedUnit}.
+	 * Enter a parse tree produced by the {@code mulDivUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void enterComposedUnit(TestSuiteParser.ComposedUnitContext ctx);
+	void enterMulDivUnit(TestSuiteParser.MulDivUnitContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TestSuiteParser#composedUnit}.
+	 * Exit a parse tree produced by the {@code mulDivUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void exitComposedUnit(TestSuiteParser.ComposedUnitContext ctx);
+	void exitMulDivUnit(TestSuiteParser.MulDivUnitContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code siUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Enter a parse tree produced by the {@code cstUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void enterSiUnitType(TestSuiteParser.SiUnitTypeContext ctx);
+	void enterCstUnit(TestSuiteParser.CstUnitContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code siUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Exit a parse tree produced by the {@code cstUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void exitSiUnitType(TestSuiteParser.SiUnitTypeContext ctx);
+	void exitCstUnit(TestSuiteParser.CstUnitContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code customUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Enter a parse tree produced by the {@code expUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void enterCustomUnitType(TestSuiteParser.CustomUnitTypeContext ctx);
+	void enterExpUnit(TestSuiteParser.ExpUnitContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code customUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Exit a parse tree produced by the {@code expUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void exitCustomUnitType(TestSuiteParser.CustomUnitTypeContext ctx);
+	void exitExpUnit(TestSuiteParser.ExpUnitContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code composedUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Enter a parse tree produced by the {@code stdUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void enterComposedUnitType(TestSuiteParser.ComposedUnitTypeContext ctx);
+	void enterStdUnit(TestSuiteParser.StdUnitContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code composedUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Exit a parse tree produced by the {@code stdUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 */
-	void exitComposedUnitType(TestSuiteParser.ComposedUnitTypeContext ctx);
+	void exitStdUnit(TestSuiteParser.StdUnitContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TestSuiteParser#siUnit}.
 	 * @param ctx the parse tree

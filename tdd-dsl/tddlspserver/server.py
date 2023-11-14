@@ -49,6 +49,7 @@ from .gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from .symboltable.symbol_table import MetricSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, Symbol, VariableSymbol
 from .utils.compute_token_index import CaretPosition, TokenPosition, compute_token_position
 from .utils.suggest_variables import suggest_symbols
+from .utils.tdd_errors_strategy import TDDErrorStrategy
 
 
 class TDDLSPServer(LanguageServer):
@@ -64,7 +65,7 @@ class TDDLSPServer(LanguageServer):
     sort_metric : str
 
     # Debug flag
-    debug = True
+    debug = False
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -87,6 +88,8 @@ class TDDLSPServer(LanguageServer):
         # Set error listener for diagnostics
         self.parser.removeErrorListeners()
         self.parser.addErrorListener(self.error_listener)
+
+        self.parser._errHandler=TDDErrorStrategy()
 
         # Attributes of generated files
         self.files: dict[str, Tuple[float, str, str]] = {}

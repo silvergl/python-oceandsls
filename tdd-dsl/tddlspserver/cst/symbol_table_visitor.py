@@ -54,14 +54,14 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     def test_path(self) -> str:
         return self._test_path
 
-    def defaultResult(self) -> SymbolTable:
-        # Return the symboltable by default
-        return self._symbol_table
+    # def defaultResult(self) -> SymbolTable:
+    #     # Return the symboltable by default
+    #     return self._symbol_table
 
     # Visit a parse tree produced by TestSuiteParser#test_suite.
     def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
         self.visitChildren(ctx)
-        return self.defaultResult()
+        return self.symbol_table
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
@@ -78,7 +78,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     def visitVarDeclaration(self, ctx: TestSuiteParser.VarDeclarationContext):
         name = ctx.name.text
         # Map variable type to symboltable type
-        var_type = get_fundamental_type(self.visit(ctx.type_)) # TODO None
+        var_type = get_fundamental_type(self.visit(ctx.type_))  if ctx.type_ else None
         keys = []
         for key in ctx.keys:
             keys.append(key.keyword.text)
@@ -151,7 +151,8 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     def visitEnumType(self, ctx: TestSuiteParser.EnumTypeContext):
         enums: List[str] = []
         for enum in ctx.values:
-            enums.append(self.visit(enum))
+            if isinstance(enum, str):
+                enums.append(self.visit(enum))
         return "(" + ", ".join(enums) + ")"
 
     # Visit a parse tree produced by TestSuiteParser#enum.

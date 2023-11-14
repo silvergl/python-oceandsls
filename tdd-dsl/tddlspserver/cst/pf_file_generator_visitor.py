@@ -86,6 +86,11 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
             self.file_templates[i] = f"{rule}_template.txt"
             i += 1
 
+    # Visit a parse tree produced by TestSuiteParser#test_suite.
+    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
+        self.visitChildren(ctx)
+        return self.files
+
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext) -> dict[str, Tuple[float, str, str]]:
 

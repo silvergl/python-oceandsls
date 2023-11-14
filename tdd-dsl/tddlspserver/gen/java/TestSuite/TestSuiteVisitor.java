@@ -342,38 +342,40 @@ public interface TestSuiteVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarRef(TestSuiteParser.VarRefContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#unitSpec}.
+	 * Visit a parse tree produced by the {@code parensUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitUnitSpec(TestSuiteParser.UnitSpecContext ctx);
+	T visitParensUnit(TestSuiteParser.ParensUnitContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TestSuiteParser#composedUnit}.
+	 * Visit a parse tree produced by the {@code mulDivUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitComposedUnit(TestSuiteParser.ComposedUnitContext ctx);
+	T visitMulDivUnit(TestSuiteParser.MulDivUnitContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code siUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Visit a parse tree produced by the {@code cstUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSiUnitType(TestSuiteParser.SiUnitTypeContext ctx);
+	T visitCstUnit(TestSuiteParser.CstUnitContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code customUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Visit a parse tree produced by the {@code expUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCustomUnitType(TestSuiteParser.CustomUnitTypeContext ctx);
+	T visitExpUnit(TestSuiteParser.ExpUnitContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code composedUnitType}
-	 * labeled alternative in {@link TestSuiteParser#basicUnit}.
+	 * Visit a parse tree produced by the {@code stdUnit}
+	 * labeled alternative in {@link TestSuiteParser#unitSpec}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitComposedUnitType(TestSuiteParser.ComposedUnitTypeContext ctx);
+	T visitStdUnit(TestSuiteParser.StdUnitContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TestSuiteParser#siUnit}.
 	 * @param ctx the parse tree

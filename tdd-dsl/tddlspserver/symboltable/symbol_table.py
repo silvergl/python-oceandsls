@@ -612,10 +612,11 @@ class ScopedSymbol(Symbol):
             for child in self.children():
                 if child == symbol or (len(symbol.name) > 0 and child.name == symbol.name) and type(child) == type(symbol):
                     name = symbol.name
+                    scope = self.name
                     if len(name) == 0:
                         name = "<anonymous>"
 
-                    raise DuplicateSymbolError({"message": "Attempt to add duplicate symbol \"%s\"" % name})
+                    raise DuplicateSymbolError({f"message": "Attempt to add duplicate symbol \"{name}\" to \"{scope}\""})
 
         self.children().append(symbol)
         symbol.set_parent(self)

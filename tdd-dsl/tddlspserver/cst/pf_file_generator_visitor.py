@@ -34,7 +34,6 @@ from ..utils.suggest_variables import get_scope
 class PFFileGeneratorVisitor(TestSuiteVisitor):
     file_templates: Dict[int, str]
     template_path: str
-    test_path: str
     test_folder: str
     test_file_predicate: str
     environment: Environment
@@ -51,7 +50,7 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         """
         pfUnit test file generator. Builds template file dictionary from TestSuiteParser.ruleNames.
 
-        Write/merge pFUnit-file to :test_path:/:test_folder:/:filename:.pf
+        Write/merge pFUnit-file to :work_path:/:test_folder:/:filename:.pf
 
         :param rel_file_path: rel path to source file
         :param template_path: absolute filepath for jinja templates
@@ -61,13 +60,15 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         super().__init__()
 
         self.overwrite = False
+        self.overwrite_files: List[str] = []
         self.files: dict[str, Tuple[float, str, str]] = files
 
         self.symbol_table = symbol_table
 
         self.template_path = template_path
-        self.test_path = work_path
         self.rel_file_path = rel_file_path
+        self.work_path = work_path
+        self.cwd = work_path
         # TODO add test directory option
         self.test_folder = test_folder
         self.file_suffix = file_suffix
@@ -100,7 +101,6 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         name = ctx.name.text
         scope = self.visit(ctx.modules) if ctx.modules else None
         vars_ = self.visit(ctx.vars_) if ctx.vars_ else None
-        self.test_path = self.visit(ctx.src_path())
         assertions = []
         for assertion in ctx.assertions:
             assertions.append(self.visit(assertion))
@@ -110,10 +110,17 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
         self.overwrite = False
         if ctx.test_flags:
             self.visit(ctx.test_flags)
-
+        # Get user path
+        self.visit(ctx.src_path())
         # Write pf file
-        abs_path: str = os.path.join(os.getcwd(), self.test_path, self.test_folder, f"{name}.{self.file_suffix}")
+        abs_path: str = os.path.join(self.work_path, self.test_folder, f"{name}.{self.file_suffix}")
         file_attr = self.files.get(abs_path) # TODO None
+        if self.overwrite:
+            # Merge all files that should overwrite other files
+            if abs_path in self.overwrite_files:
+                self.overwrite = False
+            else:
+                self.overwrite_files.append(abs_path)
         self.files[abs_path] = write_file(abs_path, content, file_attr, insert=not self.overwrite)
 
         # Update test case symbol
@@ -128,9 +135,10 @@ class PFFileGeneratorVisitor(TestSuiteVisitor):
     # Visit a parse tree produced by TestSuiteParser#src_path.
     def visitSrc_path(self, ctx: TestSuiteParser.Src_pathContext):
         # Strip string terminals
+        user_path: str = ctx.path.text.strip("\'")
         # TODO document
         # If the given path is an absolute path, then self.testPath is ignored and the joining is only the given path
-        return os.path.join(self.test_path, ctx.path.text.strip("\'"))
+        self.work_path = os.path.join(self.cwd, user_path)
 
     # Get rendered list of used modules
     def visitUse_modules(self, ctx: TestSuiteParser.Use_modulesContext):

@@ -61,10 +61,11 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         """
         super().__init__()
         self.overwrite = False
+        self.overwrite_files: List[str] = []
         self.files: dict[str, Tuple[float, str, str]] = files
         self.template_path = template_path
-        self.work_path = work_path
         self.rel_file_path = rel_file_path
+        self.work_path = work_path
         self.cwd = work_path
         self.file_suffix = file_suffix
         # Load Jinja2 templates
@@ -139,6 +140,19 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             self.overwrite = False
             if ctx.test_flags:
                 self.visit(ctx.test_flags)
+
+            if self.overwrite:
+                # Merge all files that should overwrite other files
+
+                # Set module file
+                module_name = module_symbols[0].name
+                module_file = ".".join([module_name, self.file_suffix])
+                abs_path: str = os.path.join(self.work_path, module_file)
+
+                if abs_path in self.overwrite_files:
+                    self.overwrite = False
+                else:
+                    self.overwrite_files.append(abs_path)
 
             if module_symbols[0].file and not self.overwrite:
                 # Module exists

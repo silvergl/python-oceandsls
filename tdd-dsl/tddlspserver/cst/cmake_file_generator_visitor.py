@@ -18,7 +18,7 @@ __author__ = "sgu"
 
 import os
 # util
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 # jinja2
 from jinja2 import Environment, FileSystemLoader
@@ -51,6 +51,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         super().__init__()
 
         self.overwrite = False
+        self.overwrite_files: List[str] = []
         self.files: dict[str, Tuple[float, str, str]] = files
 
         self.symbol_table = symbol_table
@@ -58,7 +59,7 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.template_path = template_path
 
         # Load Jinja2 templates
-        self.template_env = Environment(loader=FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=False)
+        self.template_env = Environment(loader=FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=True)
 
         self.work_path = work_path
         self.cwd = work_path
@@ -196,6 +197,14 @@ class CMakeFileGeneratorVisitor(TestSuiteVisitor):
         self.overwrite = False
         if ctx.test_flags:
             self.visit(ctx.test_flags)
+
+        if self.overwrite:
+            # Merge all files that should overwrite other files
+
+            if abs_path in self.overwrite_files:
+                self.overwrite = False
+            else:
+                self.overwrite_files.append(abs_path)
 
         # Check if file exists and need to be merged
         if os.path.exists(abs_path) and not self.overwrite:

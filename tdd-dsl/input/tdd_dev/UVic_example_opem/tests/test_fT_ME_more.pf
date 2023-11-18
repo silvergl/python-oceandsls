@@ -5,10 +5,8 @@ SUBROUTINE test_fT_ME_more()
 
  integer, PARAMETER :: dp = KIND ( 0D0 )
 
- real ( dp ) :: xIntercept
+ real ( dp ) :: xIntercept = 283D0 / 19D0
 
- xIntercept = 283D0 / 19D0 + fT_ME
-
- ! auto-generated, src: tdd-dsl/input/test_fT_ME.tdd, 36:4-42:52
+ ! auto-generated, src: tdd-dsl/input/test_fT_ME_multi.tdd, 36:4-42:52
  @assertEqual( 0D0, foo ( xIntercept ), message='fails x-Intercept at 14.89D0', tolerance=1D-12)
 END SUBROUTINE test_fT_ME_more

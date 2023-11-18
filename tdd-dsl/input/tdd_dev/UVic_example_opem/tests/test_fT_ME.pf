@@ -1,8 +1,7 @@
 @test
 SUBROUTINE test_fT_ME()
  use cfo_example
- use additional_use_0
- use additional_use_1
+ use add
  use funit
 
  integer, PARAMETER :: dp = KIND ( 0D0 )
@@ -10,9 +9,10 @@ SUBROUTINE test_fT_ME()
  real ( dp ) :: xIntercept = 283D0 / 19D0
  real ( dp ) :: yIntercept = - ( 283D0 / 520D0 )
 
- ! auto-generated, src: tdd-dsl/input/test_fT_ME.tdd, 13:4-20:8
+ ! auto-generated, src: tdd-dsl/input/test_fT_ME_multi.tdd, 12:4-19:8
  ! asserts x-Intercept
  @assertEqual( 0D0, fT_ME ( xIntercept ), message='fails x-Intercept at 14.89D0', tolerance=1D-12)
- ! auto-generated, src: tdd-dsl/input/test_fT_ME.tdd, 21:4-27:54
+ ! auto-generated, src: tdd-dsl/input/test_fT_ME_multi.tdd, 20:4-27:8
+ ! asserts y-Intercept
  @assertEqual( yIntercept, fT_ME ( 0D0 ), message='fails y-Intercept at -54.42D-2', tolerance=1D-12)
 END SUBROUTINE test_fT_ME

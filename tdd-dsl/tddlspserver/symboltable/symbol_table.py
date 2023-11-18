@@ -592,7 +592,8 @@ class ScopedSymbol(Symbol):
     def include_names(self) -> List[str]:
         include_names: List[str] = []
         for include in self._include_scopes:
-            include_names.append(include.name)
+            if include.name:
+                include_names.append(include.name)
 
         return include_names
 
@@ -1173,12 +1174,12 @@ class TestCaseSymbol(ScopedSymbol):
 
     @property
     def include_files(self) -> List[str]:
-        include_names: List[str] = []
+        include_files: List[str] = []
         for include in self._include_scopes:
             if include.file:
-                include_names.append(include.file)
+                include_files.append(include.file)
 
-        return include_names
+        return include_files
 
     @property
     def test_name(self) -> str:

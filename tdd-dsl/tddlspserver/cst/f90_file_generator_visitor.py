@@ -172,6 +172,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 # Set module file
                 module_name = module_symbols[0].name
                 module_file = ".".join([module_name, self.file_suffix])
+                module_symbols[0].file = module_file
 
                 # Render template with new operations
                 content = template.render(name=module_name, opsNames=ops_names, ops=ops_impl)

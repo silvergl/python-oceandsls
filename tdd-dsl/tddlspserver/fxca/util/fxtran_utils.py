@@ -200,7 +200,7 @@ def filter_xml(
 
                 # Add type, name and arguments to returning scopes
                 # Check public availability
-                scope_id = ".".join([current_scope, scope_name])
+                scope_id = ".".join([current_scope, scope_name]) if current_scope else scope_name
                 if pub_element.is_public(scope_id) and scope_name not in module_names:
                     scopes.append([stmt_name, scope_name, argument_names, result_id, current_scope, is_generated_scope])
 

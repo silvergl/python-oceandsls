@@ -121,15 +121,17 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             scope = get_scope(ctx, self.symbol_table)
             routine_symbols = scope.get_symbols_of_type_and_name_sync(RoutineSymbol, key, False)
 
+            # TODO check rewrite of once generated routines or delete if from complete rewrite
             # Check if operation was added before
-            add_ops: bool = False
-            for routine_symbol in routine_symbols:
-                if routine_symbol.is_generated:
-                    add_ops = True
-                    break
+            # add_ops: bool = False
+            # for routine_symbol in routine_symbols:
+            #     if routine_symbol.is_generated:
+            #         add_ops = True
+            #         break
 
             # If operations does not exist or was added before, add to newly generated ops
-            if not routine_symbols or add_ops:
+            #if not routine_symbols or add_ops:
+            if not routine_symbols:
                 ops_names.append(key)
                 ops_impl.append(value_list[3])
 

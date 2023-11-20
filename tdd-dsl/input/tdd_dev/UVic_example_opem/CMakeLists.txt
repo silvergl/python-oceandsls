@@ -16,16 +16,13 @@ find_package(PFUNIT REQUIRED)
 # system under test source files
 add_library(test_fT_ME_sut
   cfo_example.f90
-  )
-add_library(test_fT_ME_more_sut
-  additional_use_3.f90
+  additional_use_0.f90
+  additional_use_1.f90
   )
 
 target_include_directories(test_fT_ME_sut PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(test_fT_ME_more_sut PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-set_target_properties (test_fT_ME_sut test_fT_ME_more_sut PROPERTIES
+set_target_properties (test_fT_ME_sut PROPERTIES
   Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-add_subdirectory(tests)
 add_subdirectory(tests)

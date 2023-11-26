@@ -1,3 +1,0 @@
-suite test_suite :
-test test_fT_ME :
-    srcpath : '/home/sgu/Documents/doc/oceandsl/Project/UVic/uvic-model/uvic-run-1/code'

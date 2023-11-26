@@ -27,20 +27,21 @@ import {
     ServerOptions,
 } from "vscode-languageclient/node";
 
+const CONF_LANGUAGE_ID = "oceandsl_conf";
+const DCL_LANGUAGE_ID = "oceandsl_dcl";
+
 let client: LanguageClient;
 
 function getClientOptions(): LanguageClientOptions {
     return {
-        // Register the server for plain text documents
-        //  documentSelector: [{ scheme: 'file', language: 'plaintext' }],
-        // Register the server for oceandsl_dcl as defined in package.json
+        // Register the server for conf and dcl language as defined in package.json
         documentSelector: [
-            { scheme: "file", language: "oceandsl_conf" },
-            { scheme: "untitled", language: "oceandsl_conf" },
-            { scheme: "file", language: "oceandsl_dcl" },
-            { scheme: "untitled", language: "oceandsl_dcl" },
+            { scheme: "file", language: CONF_LANGUAGE_ID },
+            { scheme: "untitled", language: CONF_LANGUAGE_ID },
+            { scheme: "file", language: DCL_LANGUAGE_ID },
+            { scheme: "untitled", language: DCL_LANGUAGE_ID },
         ],
-        outputChannelName: "[pygls] ODslLanguageServer",
+        outputChannelName: "[pygls] ODslCPLanguageServer",
         synchronize: {
             // Notify the server about file changes to '.clientrc files contain in the workspace
             fileEvents: workspace.createFileSystemWatcher("**/*.*"),

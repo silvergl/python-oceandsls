@@ -25,12 +25,8 @@ from typing import List, ParamSpec, Type
 from antlr4 import ParserRuleContext
 
 # user relative imports
-from ..symboltable.symbol_table import MetricSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, SymbolTable, Symbol, ScopedSymbol, VariableSymbol
+from ..symboltable.symbol_table import SymbolTable, Symbol, ScopedSymbol, VariableSymbol
 from .compute_token_index import TokenPosition
-
-from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
-Top_levelContext = TestSuiteParser.Test_suiteContext
-del TestSuiteParser
 
 P = ParamSpec("P")
 
@@ -103,12 +99,6 @@ def suggest_symbols(symbol_table: SymbolTable, position: TokenPosition, symbol_t
 
         text: str = position.text
 
-        # TODO deprecated if not in preferred rule
-        # variable = position.context
-        # while not isinstance( variable, Top_levelContext ) and variable.parentCtx is not None:
-        #     variable = variable.parentCtx
-        #
-        # return filterSymbols( position.text if variable is not None else "", symbols, symbolType )
     else:
         symbols = run_async(symbol_table.get_nested_symbols_of_type, symbol_type)
         text = ""
@@ -117,25 +107,9 @@ def suggest_symbols(symbol_table: SymbolTable, position: TokenPosition, symbol_t
 
 def filter_symbols(text: str, symbols: List[Symbol], symbol_type: Type = VariableSymbol) -> List[str]:
     match symbol_type:
-        case symbol_type if issubclass(symbol_type, PathSymbol):
-            candidates = list(map(lambda s: s.value, symbols))
-
-            return candidates
-
-        case symbol_type if issubclass(symbol_type, MetricSymbol):
-            scopes: List = list(map(lambda s: s.value, symbols))
-            # TODO recommendation order: False - low first, high last; True - high first, low last
-            scopes.sort(reverse=False)
-            candidates: List[str] = list(map(lambda scope: str(scope), scopes))
-
-            return candidates
-
-        case symbol_type if any(map(lambda sType: issubclass(symbol_type, sType), [VariableSymbol, ModuleSymbol, RoutineSymbol])):
+        case _:
             candidates = list(map(lambda s: s.name, symbols))
             if len(text.strip()) == 0:
                 return candidates
             else:
                 return list(filter(lambda c: c.lower().startswith(text), candidates))
-
-        case _:
-            return []

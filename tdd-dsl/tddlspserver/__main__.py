@@ -33,19 +33,19 @@ def add_arguments(parser):
     parser.epilog = "TDD-DSL Language Server"
 
     parser.add_argument(
-        "--tcp", action="store_true",
+        "--tcp", dest="tcp", action="store_true",
         help="Use TCP server"
     )
     parser.add_argument(
-        "--ws", action="store_true",
+        "--ws", dest="ws", action="store_true",
         help="Use WebSocket server"
     )
     parser.add_argument(
-        "--host", default="127.0.0.1",
+        "--host", dest="host", default="127.0.0.1",
         help="Bind to this address"
     )
     parser.add_argument(
-        "--port", type=int, default=2087,
+        "--port", dest="port", type=int, default=2087,
         help="Bind to this port"
     )
     parser.add_argument(

@@ -27,16 +27,16 @@ import {
     ServerOptions,
 } from "vscode-languageclient/node";
 
+const BGC_LANGUAGE_ID = "oceandsl_bgc";
+
 let client: LanguageClient;
 
 function getClientOptions(): LanguageClientOptions {
     return {
-        // Register the server for plain text documents
-        //  documentSelector: [{ scheme: 'file', language: 'plaintext' }],
-        // Register the server for oceandsl_bgc as defined in package.json
+        // Register the server for bgc language as defined in package.json
         documentSelector: [
-            { scheme: "file", language: "oceandsl_bgc" },
-            { scheme: "untitled", language: "oceandsl_bgc" },
+            { scheme: "file", language: BGC_LANGUAGE_ID },
+            { scheme: "untitled", language: BGC_LANGUAGE_ID },
         ],
         outputChannelName: "[pygls] ODslBGCLanguageServer",
         synchronize: {

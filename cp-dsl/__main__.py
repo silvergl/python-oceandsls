@@ -17,11 +17,11 @@ import argparse
 import os
 
 #relative imports
-from .confLSPServer.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
-from .confLSPServer.gen.python.Configuration.ConfigurationParser import ConfigurationParser
-from .confLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
-from .confLSPServer.utils.calc import DeclarationCalculator, ConfigurationCalculator
-from .confLSPServer.fileWriter.CodeGenerator import UvicCodeGenerator, mitGcmCodeGenerator
+from .conflspserver.gen.python.Configuration.ConfigurationLexer import ConfigurationLexer
+from .conflspserver.gen.python.Configuration.ConfigurationParser import ConfigurationParser
+from .conflspserver.cst.symbol_table_visitor import SymbolTableVisitor
+from .conflspserver.utils.calc import DeclarationCalculator, ConfigurationCalculator
+from .conflspserver.filewriter.code_generator import UvicCodeGenerator, mitGcmCodeGenerator
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(

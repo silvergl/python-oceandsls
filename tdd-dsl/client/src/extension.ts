@@ -27,16 +27,16 @@ import {
     ServerOptions,
 } from "vscode-languageclient/node";
 
+const TDD_LANGUAGE_ID = "oceandsl_tdd";
+
 let client: LanguageClient;
 
 function getClientOptions(): LanguageClientOptions {
     return {
-        // Register the server for plain text documents
-        //  documentSelector: [{ scheme: 'file', language: 'plaintext' }],
-        // Register the server for oceandsl_tdd as defined in package.json
+        // Register the server for tdd language as defined in package.json
         documentSelector: [
-            { scheme: "file", language: "oceandsl_tdd" },
-            { scheme: "untitled", language: "oceandsl_tdd" },
+            { scheme: "file", language: TDD_LANGUAGE_ID },
+            { scheme: "untitled", language: TDD_LANGUAGE_ID },
         ],
         outputChannelName: "[pygls] ODslTDDLanguageServer",
         synchronize: {

@@ -13,18 +13,11 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:oceandsl",
-    "onLanguage:oceandsl_tdd",
-    "onLanguage:oceandsl_bgc"
+    "onLanguage:oceandsl_conf",
+    "onLanguage:oceandsl_dcl"
   ],
   "contributes": {
     "languages": [
-      {
-        "id": "oceandsl",
-        "extensions": [
-          ".odsl"
-        ]
-      },
       {
         "id": "oceandsl_conf",
         "extensions": [
@@ -36,25 +29,9 @@
         "extensions": [
           ".dcl"
         ]
-      },
-      {
-        "id": "oceandsl_tdd",
-        "extensions": [
-          ".tdd"
-        ]
-      },
-      {
-        "id": "oceandsl_bgc",
-        "extensions": [
-          ".bgc"
-        ]
       }
     ],
     "commands": [
-      {
-        "command": "progress",
-        "title": "Start the progress"
-      },
       {
         "command": "registerCompletions",
         "title": "Register completions"

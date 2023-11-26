@@ -18,10 +18,10 @@ __author__ = 'stu90642'
 
 from os import getcwd
 from antlr4 import *
-from ..bgcLSPServer.gen.python.BgcDsl.BgcDslLexer import BgcDslLexer
-from ..bgcLSPServer.gen.python.BgcDsl.BgcDslParser import BgcDslParser
-from ..bgcLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
-from ..bgcLSPServer.symbolTable.SymbolTable import ScopedSymbol, SymbolTable, P, T, VariableSymbol, Symbol, RoutineSymbol, SymbolTableOptions
+from ..bgclspserver.gen.python.BgcDsl.BgcDslLexer import BgcDslLexer
+from ..bgclspserver.gen.python.BgcDsl.BgcDslParser import BgcDslParser
+from ..bgclspserver.cst.symbol_table_visitor import SymbolTableVisitor
+from ..bgclspserver.symbolTable.symbol_table import ScopedSymbol, SymbolTable, P, T, VariableSymbol, Symbol, RoutineSymbol, SymbolTableOptions
 import unittest
 
 def main():

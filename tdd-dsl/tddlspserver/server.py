@@ -24,6 +24,7 @@ from typing import List, Optional, Tuple
 # antlr4
 from antlr4 import CommonTokenStream, InputStream, Token
 from antlr4.IntervalSet import IntervalSet
+
 # pygls
 from lsprotocol.types import (
     CompletionItem, CompletionList, CompletionOptions, CompletionParams, Diagnostic, DidChangeTextDocumentParams, DidCloseTextDocumentParams,
@@ -36,8 +37,9 @@ from pygls.workspace import Document
 
 # antlr4-c3
 from codeCompletionCore.CodeCompletionCore import CandidatesCollection, CodeCompletionCore
-from .cst.calculate_complexity_visitor import CalculateComplexityVisitor
+
 # user relative imports
+from .cst.calculate_complexity_visitor import CalculateComplexityVisitor
 from .cst.cmake_file_generator_visitor import CMakeFileGeneratorVisitor
 from .cst.f90_file_generator_visitor import F90FileGeneratorVisitor
 from .cst.diagnostic_listener import DiagnosticListener

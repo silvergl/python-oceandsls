@@ -17,9 +17,9 @@ __author__ = "stu90642"
 #  limitations under the License.
 
 from antlr4 import *
-from ..bgcLSPServer.gen.python.BgcDsl.BgcDslLexer import BgcDslLexer
-from ..bgcLSPServer.gen.python.BgcDsl.BgcDslParser import BgcDslParser
-from ..bgcLSPServer.cst.SymbolTableVisitor import SymbolTableVisitor
+from ..bgclspserver.gen.python.BgcDsl.BgcDslLexer import BgcDslLexer
+from ..bgclspserver.gen.python.BgcDsl.BgcDslParser import BgcDslParser
+from ..bgclspserver.cst.symbol_table_visitor import SymbolTableVisitor
 from SymbolTable_copy import ScopedSymbol, SymbolTable, P, T, VariableSymbol, Symbol, RoutineSymbol, SymbolTableOptions
 import unittest
 

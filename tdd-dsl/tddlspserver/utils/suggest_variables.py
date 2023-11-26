@@ -84,9 +84,11 @@ def get_scope(context: ParserRuleContext, symbolTable: SymbolTable):
 def get_all_symbols_of_type(scope: ScopedSymbol, symbol_type: type):
     symbols: List[Symbol] = run_async(scope.get_symbols_of_type, symbol_type, False)
     parent = scope.parent()
+    broken_chain: bool = False
     while parent is not None and not isinstance(parent, ScopedSymbol):
         parent = parent.parent()
-    if parent is not None:
+        broken_chain = True
+    if parent is not None and broken_chain:
         symbols.extend(get_all_symbols_of_type(parent, symbol_type))
     return symbols
 

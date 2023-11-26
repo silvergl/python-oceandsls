@@ -135,6 +135,32 @@ CONTAINS
     plus2 = n + 2
   end subroutine plus_two
 
+  ! Loop with return type
+  integer function loop_sum(start, end, step) result(sum)
+    implicit none
+    integer, intent(in) :: start, end, step
+    integer :: i
+
+    sum = 0
+
+    do
+      sum = sum + 1
+      if( 4 < sum .AND. start < end) exit
+    end do 
+
+    do while( sum < 10 .AND. start < end)
+      sum = sum + 1
+    end do
+
+    do i = start, end, step
+      if (30 < sum) then
+        sum = 0
+      else
+        sum = get_sum2(sum, 1)
+      end if
+    end do
+  end function loop_sum
+
   !---------------------------------------------
   !---------------------------------------------
   !---------------------------------------------

@@ -49,6 +49,7 @@ from .gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from .symboltable.symbol_table import MetricSymbol, ModuleSymbol, PathSymbol, RoutineSymbol, Symbol, VariableSymbol
 from .utils.compute_token_index import CaretPosition, TokenPosition, compute_token_position
 from .utils.suggest_variables import suggest_symbols
+from .utils.tdd_errors_strategy import TDDErrorStrategy
 
 
 class TDDLSPServer(LanguageServer):
@@ -60,6 +61,11 @@ class TDDLSPServer(LanguageServer):
 
     top_level_context = TestSuiteParser.Test_suiteContext
     parseTree: top_level_context
+    # Recommendation metric
+    sort_metric : str
+
+    # Debug flag
+    debug = False
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -83,14 +89,16 @@ class TDDLSPServer(LanguageServer):
         self.parser.removeErrorListeners()
         self.parser.addErrorListener(self.error_listener)
 
+        self.parser._errHandler=TDDErrorStrategy()
+
         # Attributes of generated files
         self.files: dict[str, Tuple[float, str, str]] = {}
 
-        # Set Metric sort
-        self.sort_metric = "Halstead Complexity"
-
         # Fxtran system file path
         self.fxtran_path = "fxtran"
+
+        # Number of SuT to return
+        self.show_n_metrics = 2
 
 
 tdd_server = TDDLSPServer("pygls-odsl-tdd-prototype", "v0.8")
@@ -234,15 +242,26 @@ def completions(params: Optional[CompletionParams] = None) -> CompletionList:
     # TODO modules, type check, asserts, functions, subroutines
 
     # Add tokens to completion candidates
+    # Strip ' from terminals
+    stripped_literal_names: list = stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'")
+    symbolic_names: list = tdd_server.parser.symbolicNames
     for key, valueList in candidates.tokens.items():
-        completion_list.items.append(
-            CompletionItem(
-                label=IntervalSet.elementName(
-                    IntervalSet, stripTerminals(elements=tdd_server.parser.literalNames, terminal="\'"), tdd_server.parser.symbolicNames, key
-                )
-            )
-        )
+        label = IntervalSet.elementName(IntervalSet, stripped_literal_names, symbolic_names, key)
+        # Replace newline with os.newline token
+        if label == "NEWLINE":
+            label = os.linesep
+        # Remove symbolic names or unknown tokens from completions
+        if label == "<UNKNOWN>" or label in symbolic_names:
+            label = None
+        if label:
+            completion_list.items.append(CompletionItem(label=label))
 
+    if not completion_list.items:
+        # VSCode empty list workaround
+        completion_list.items.append(CompletionItem(label=""))
+    if tdd_server.debug:
+        for entry in completion_list.items:
+            print(f"{entry}")
     # Return completion candidates labels
     return completion_list
 
@@ -372,10 +391,17 @@ def recommend_SUT(server: TDDLSPServer, *args):
 
     metric_list: List[str] = suggest_symbols(symbol_table, position=None, symbol_type=MetricSymbol)
 
-    for metric in metric_list:
+    for metric in metric_list[:tdd_server.show_n_metrics]:
         server.show_message(metric)
 
+    if tdd_server.debug:
+        debug_file_write(os.path.join(os.getcwd(),tdd_server.sort_metric) , "\n".join(metric_list))
+
     server.show_message(f"Recommend SuT by {tdd_server.sort_metric}...")
+
+def debug_file_write( file_path : str = None, content : str = None ):
+    with open(file_path, mode="w", encoding="utf-8") as f:
+        f.write(content)
 
 
 @tdd_server.command(TDDLSPServer.CMD_REGISTER_COMPLETIONS)

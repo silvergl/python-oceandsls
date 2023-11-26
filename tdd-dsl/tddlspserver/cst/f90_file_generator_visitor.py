@@ -61,10 +61,11 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         """
         super().__init__()
         self.overwrite = False
+        self.overwrite_files: List[str] = []
         self.files: dict[str, Tuple[float, str, str]] = files
         self.template_path = template_path
-        self.work_path = work_path
         self.rel_file_path = rel_file_path
+        self.work_path = work_path
         self.cwd = work_path
         self.file_suffix = file_suffix
         # Load Jinja2 templates
@@ -87,19 +88,27 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
         # Initialize dictionary to track operations of assertions
         self.ops = {}
 
+        self.last_op_id = None
+
     @property
     def symbol_table(self) -> SymbolTable:
         return self._symbol_table
+
+    # Visit a parse tree produced by TestSuiteParser#test_suite.
+    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
+        self.visitChildren(ctx)
+        return self.files
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext) -> dict[str, Tuple[float, str, str]]:
         # Load Jinja2 template
         template = self.environment.get_template(self.file_templates[ctx.getRuleIndex()])
 
-        module_symbols = self.visit(ctx.modules)
+        module_symbols = self.visit(ctx.modules) if ctx.modules else None
 
         # Get operations defined in variables
-        self.visit(ctx.vars_)
+        if ctx.vars_:
+            self.visit(ctx.vars_)
 
         # Get operations defined in assertions
         for assertion in ctx.assertions:
@@ -112,15 +121,17 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             scope = get_scope(ctx, self.symbol_table)
             routine_symbols = scope.get_symbols_of_type_and_name_sync(RoutineSymbol, key, False)
 
+            # TODO check rewrite of once generated routines or delete if from complete rewrite
             # Check if operation was added before
-            add_ops: bool = False
-            for routine_symbol in routine_symbols:
-                if routine_symbol.is_generated:
-                    add_ops = True
-                    break
+            # add_ops: bool = False
+            # for routine_symbol in routine_symbols:
+            #     if routine_symbol.is_generated:
+            #         add_ops = True
+            #         break
 
             # If operations does not exist or was added before, add to newly generated ops
-            if not routine_symbols or add_ops:
+            #if not routine_symbols or add_ops:
+            if not routine_symbols:
                 ops_names.append(key)
                 ops_impl.append(value_list[3])
 
@@ -131,6 +142,19 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
             self.overwrite = False
             if ctx.test_flags:
                 self.visit(ctx.test_flags)
+
+            if self.overwrite:
+                # Merge all files that should overwrite other files
+
+                # Set module file
+                module_name = module_symbols[0].name
+                module_file = ".".join([module_name, self.file_suffix])
+                abs_path: str = os.path.join(self.work_path, module_file)
+
+                if abs_path in self.overwrite_files:
+                    self.overwrite = False
+                else:
+                    self.overwrite_files.append(abs_path)
 
             if module_symbols[0].file and not self.overwrite:
                 # Module exists
@@ -150,6 +174,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
                 # Set module file
                 module_name = module_symbols[0].name
                 module_file = ".".join([module_name, self.file_suffix])
+                module_symbols[0].file = module_file
 
                 # Render template with new operations
                 content = template.render(name=module_name, opsNames=ops_names, ops=ops_impl)
@@ -393,7 +418,7 @@ class F90FileGeneratorVisitor(TestSuiteVisitor):
 
         # extract types from function references
         # https://web.chem.ox.ac.uk/fortran/arithmetic.html
-        match (left_type.lower() if left_type else None, right_type.lower() if right_type else None):
+        match (left_type, right_type):
             case [FundamentalType.real_type, _]:
                 # if any of the operands are real then result of the operation will be real
                 expr_type: str = FundamentalType.real_type

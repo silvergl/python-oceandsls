@@ -24,11 +24,11 @@ from typing import Callable, Generic
 # antlr4
 from antlr4.tree.Tree import ParseTree
 
-from utils.calculate_complexity import calculate_metrics
 # user relative imports
 from ..fxca.util.fxtran_utils import get_files, write_decorate_src_xml
 from ..gen.python.TestSuite.TestSuiteParser import TestSuiteParser
 from ..gen.python.TestSuite.TestSuiteVisitor import TestSuiteVisitor
+from ..utils.calculate_complexity import calculate_metrics
 from ..symboltable.symbol_table import MetricSymbol, SymbolTable, PathSymbol, SymbolTableOptions, P, T, TestCaseSymbol
 
 
@@ -42,13 +42,16 @@ class CalculateComplexityVisitor(TestSuiteVisitor, Generic[T]):
         self.fxtran_path = fxtran_path
         self._symbol_table = SymbolTable(name, SymbolTableOptions(False))
         self._scope = None
-        self._test_path = test_work_path
+        self._test_work_path = test_work_path
+        self._test_path = ""
 
     @property
-    def test_path(self) -> str:
-        return self._test_path
+    def work_path(self) -> str:
+        return self._test_work_path
 
-    def defaultResult(self) -> SymbolTable:
+    # Visit a parse tree produced by TestSuiteParser#test_suite.
+    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
+        self.visitChildren(ctx)
         return self._symbol_table
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
@@ -64,7 +67,7 @@ class CalculateComplexityVisitor(TestSuiteVisitor, Generic[T]):
         # TODO document
         # Update source directory
         # If the given path is an absolute path, then self._testPath is ignored and the joining is only the given path
-        self._test_path: str = os.path.join(self._test_path, user_path)
+        self._test_path: str = os.path.join(self._test_work_path, user_path)
 
         # TODO hc
         xml_path = os.path.join(self._test_path, "tmp")

@@ -259,28 +259,28 @@ class TestSuiteVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#unitSpec.
-    def visitUnitSpec(self, ctx:TestSuiteParser.UnitSpecContext):
+    # Visit a parse tree produced by TestSuiteParser#parensUnit.
+    def visitParensUnit(self, ctx:TestSuiteParser.ParensUnitContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#composedUnit.
-    def visitComposedUnit(self, ctx:TestSuiteParser.ComposedUnitContext):
+    # Visit a parse tree produced by TestSuiteParser#mulDivUnit.
+    def visitMulDivUnit(self, ctx:TestSuiteParser.MulDivUnitContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#siUnitType.
-    def visitSiUnitType(self, ctx:TestSuiteParser.SiUnitTypeContext):
+    # Visit a parse tree produced by TestSuiteParser#cstUnit.
+    def visitCstUnit(self, ctx:TestSuiteParser.CstUnitContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#customUnitType.
-    def visitCustomUnitType(self, ctx:TestSuiteParser.CustomUnitTypeContext):
+    # Visit a parse tree produced by TestSuiteParser#expUnit.
+    def visitExpUnit(self, ctx:TestSuiteParser.ExpUnitContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TestSuiteParser#composedUnitType.
-    def visitComposedUnitType(self, ctx:TestSuiteParser.ComposedUnitTypeContext):
+    # Visit a parse tree produced by TestSuiteParser#stdUnit.
+    def visitStdUnit(self, ctx:TestSuiteParser.StdUnitContext):
         return self.visitChildren(ctx)
 
 

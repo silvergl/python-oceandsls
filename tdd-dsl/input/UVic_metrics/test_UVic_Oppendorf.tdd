@@ -1,0 +1,4 @@
+suite test_suite :
+test test_fT_ME :
+    srcpath : '/home/sgu/Documents/uvic-model/uvic-run-1/code'
+    

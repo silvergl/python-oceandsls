@@ -72,6 +72,14 @@ class Scope:
     __operands: Dict[str, int] = field(default_factory=lambda: {})
     __operators: Dict[str, int] = field(default_factory=lambda: {})
 
+    # Metrics
+    __weighted_metrics: Dict[str, tuple] = field(default_factory=lambda: {})  # Union[tuple[int,float], tuple[float,float] ]
+    __weighted_metrics_sum: Optional[float] = field(default=None)
+    __testability_index: Optional[float] = field(default=None)
+    __normalized_testability_score: Optional[float] = field(default=None)
+    __aggregated_testability_score: Optional[float] = field(default=None)
+    __testability_factor: Optional[float] = field(default=None)
+
     # Set of operators pairs
     __operator_pairs: Set = field(default_factory=lambda: {"()", "{}", "<>", "[]"})
 
@@ -291,14 +299,14 @@ class Scope:
     @property
     def cyclomatic_complexity(self) -> int | None:
         """
-        Cyclomatic complexity function for structures with only one entry point and one exit point.
-        Number of predicate variables involved plus decision points ("if" statements and loops) plus one : CC
+        Cyclomatic complexity (CC) function for structures with only one entry point and one exit point.
+        Number of predicate variables involved in decision points ("if" statements and loops) plus one
         :return: CC
         """
         # Check structure
         if self.is_routine or self.is_module:
             # Simple structure
-            return self.n_conditionals + self.n_loops + self.n_branches + 1
+            return self.n_conditionals + 1
         else:
             # Unsupported structure
             return None
@@ -344,6 +352,139 @@ class Scope:
         return self.sort_metric
 
     ###############################
+    # Combining measurements
+    ###############################
+
+    def set_weighted_metrics(self):
+        self.__weighted_metrics["CC"] = (self.cyclomatic_complexity, self.high_coefficient) # incl conditionals
+        self.__weighted_metrics["LOC"] = (self.loc, self.mid_coefficient)
+        self.__weighted_metrics["DEPTH"] = (self.depth_of_nesting, self.high_coefficient)
+        self.__weighted_metrics["NP"] = (self.n_arguments, self.mid_coefficient)
+        self.__weighted_metrics["NL"] = (self.n_loops, self.mid_coefficient)
+        self.__weighted_metrics["NB"] = (self.n_branches, self.mid_coefficient)
+        self.__weighted_metrics["NV"] = (self.n_declarations, self.mid_coefficient)
+        self.__weighted_metrics["NR"] = (self.n_results, self.mid_coefficient)
+        self.__weighted_metrics["NC"] = (self.n_external_calls, self.mid_coefficient)
+        self.__weighted_metrics["NY1"] = (self.n_operators, self.low_coefficient)
+        self.__weighted_metrics["NY2"] = (self.n_operands, self.low_coefficient)
+        self.__weighted_metrics["N1"] = (self.sum_operators, self.low_coefficient)
+        self.__weighted_metrics["N2"] = (self.sum_operands, self.low_coefficient)
+        self.__weighted_metrics["NY"] = (self.vocabulary, self.low_coefficient)
+        self.__weighted_metrics["N"] = (self.program_length, self.low_coefficient)
+        self.__weighted_metrics["NHAT"] = (self.calculated_length, self.no_coefficient)
+        self.__weighted_metrics["V"] = (self.volume, self.no_coefficient)
+        self.__weighted_metrics["D"] = (self.difficulty, self.no_coefficient)
+        self.__weighted_metrics["E"] = (self.effort, self.no_coefficient)
+        self.__weighted_metrics["T"] = (self.time_required_to_program, self.no_coefficient)
+        self.__weighted_metrics["B"] = (self.n_bugs, self.high_coefficient)
+
+        # Reset WSM
+        self.__weighted_metrics_sum = None
+        self.__testability_factor = None
+
+    @property
+    def weighted_metrics(self) -> dict[str, tuple]:
+        """WSM = a * A ..."""
+        if not self.__weighted_metrics:
+            self.set_weighted_metrics()
+
+        return self.__weighted_metrics
+
+    @property
+    def weighted_metrics_sum(self) -> float:
+        """WSM = a * A ..."""
+        if self.__weighted_metrics_sum is None:
+            metrics = self.weighted_metrics.values()
+            self.__weighted_metrics_sum = 0.0
+            for metric in metrics:
+                self.__weighted_metrics_sum += metric[0] * metric[1]
+
+        return self.__weighted_metrics_sum
+
+    @property
+    def testability_index(self) -> float:
+        """TI = 1/ (1 + WSM) ... """
+        if self.__weighted_metrics_sum is None or self.__testability_index is None:
+            self.__testability_index = 1 / (1 + self.weighted_metrics_sum)
+
+        return self.__testability_index
+
+    @property
+    def normalized_testability_score(self) -> float:
+        """NTS = (WSM - min(WM)) / (max(WM) - min(WM))"""
+        if self.__weighted_metrics_sum is None or self.__normalized_testability_score is None:
+            minWSM: float = 0.0
+            maxWSM: float = 0.0
+            for metric in self.weighted_metrics.values():
+                weighted_metric: float = metric[0] * metric[1]
+                minWSM = weighted_metric if weighted_metric < minWSM else minWSM
+                maxWSM = weighted_metric if maxWSM < weighted_metric else maxWSM
+
+            self.__normalized_testability_score = (self.weighted_metrics_sum - minWSM) / (maxWSM - minWSM)
+
+        return self.__normalized_testability_score
+
+    @property
+    def aggregated_testability_score(self) -> float:
+        """ATS = 1 / n sum(A ...)"""
+        if self.__weighted_metrics_sum is None or self.__aggregated_testability_score is None:
+            sumMetrics: float = 0.0
+            n: int = 0
+
+            for metric in self.weighted_metrics.values():
+                if metric[1] > 0:
+                    sumMetrics += metric[0]
+                    n += 1
+
+            self.__aggregated_testability_score = 1 / n * sumMetrics
+
+        return self.__aggregated_testability_score
+
+    @property
+    def testability_factor(self) -> float:
+        """TF = 1/(1 + a CC + b LOC + c  Branches + d Loops + e Variables + f Calls + g Bugs)"""
+        if self.__testability_factor is None:
+
+            numeratorFactors = ["B"]
+            numeratorWSM: float = 0
+            for factor in numeratorFactors:
+                metric: tuple = self.weighted_metrics[factor]
+                numeratorWSM += metric[0] * metric[1]
+            denominatorFactors = ["CC", "LOC", "NB", "NL", "NV", "NC"]
+            denominatorWSM:float = 0
+            for factor in denominatorFactors:
+                metric: tuple = self.weighted_metrics[factor]
+                denominatorWSM += metric[0] * metric[1]
+
+            self.__testability_factor = 1 * numeratorWSM / (1 + denominatorWSM)
+
+        return self.__testability_factor
+
+    ###############################
+    # Coefficients
+    ###############################
+
+    @property
+    def no_coefficient(self) -> float:
+        """0.02-0.04"""
+        return 0.00
+
+    @property
+    def low_coefficient(self) -> float:
+        """0.02-0.04"""
+        return 0.03
+
+    @property
+    def mid_coefficient(self) -> float:
+        """0.05-0.09"""
+        return 0.07
+
+    @property
+    def high_coefficient(self) -> float:
+        """0.1-0.15"""
+        return 0.12
+
+    ###############################
     # Utils
     ###############################
 
@@ -377,7 +518,7 @@ class Scope:
         """ toString method """
 
         if not self.debug:
-            return (f"Scope: {self.name}\n"
+            return (f"ID: {self.name}\n"
                     f"Source: {self.src}\n"
                     )
         else:
@@ -409,6 +550,12 @@ class Scope:
                     f"Number of delivered bugs: {self.n_bugs}\n"
                     # f"Distinct Operators: {self.operators}\n"
                     # f"Distinct Operands: {self.operands}\n"
+                    f"Testability Index:\n"
+                    f"Weighted Metrics Sum: {self.weighted_metrics_sum}\n"
+                    f"Testability Index: {self.testability_index}\n"
+                    f"Normalized Testability Score: {self.normalized_testability_score}\n"
+                    f"Aggregated Testability Score: {self.aggregated_testability_score}\n"
+                    f"Testability Factor: {self.testability_factor}\n"
                     )
 
     ###############################
@@ -426,11 +573,9 @@ class Scope:
         match self.get_sort_metric:
             case "Cyclomatic Complexity":
                 return self.cyclomatic_complexity
-            case "Halstead Complexity":
-                return self.difficulty
             case "Depth of Nesting":
                 return self.depth_of_nesting
-            case "Lines of Code (LOC)":
+            case "Lines of Code":
                 return self.loc
             case "LOC":
                 return self.loc
@@ -482,6 +627,16 @@ class Scope:
                 return self.time_required_to_program
             case "Number of delivered bugs":
                 return self.n_bugs
+            case "Weighted Metrics Sum":
+                return self.weighted_metrics_sum
+            case "Testability Index":
+                return self.testability_index
+            case "Normalized Testability Score":
+                return self.normalized_testability_score
+            case "Aggregated Testability Score":
+                return self.aggregated_testability_score
+            case "Testability Factor":
+                return self.testability_factor
 
 
 # Set the namespace as Fxtran for XPath expressions
@@ -495,6 +650,7 @@ external_paren_tag = "parens-R"
 parameter_tag: str = "arg-N"
 result_tag: str = "result-spec"
 name_element_tag: str = "named-E"
+operand_element_tag: str = "op-E"
 operand_tags: Set = {name_tag, literal_tag}
 operator_tags: Set = {code_tag}
 
@@ -534,7 +690,7 @@ def calculate_metrics(xml_path: str = None, src: str = None, sort_metric=None) -
     root = tree.getroot()
 
     # Filters
-    conditionals_elements: Set = {"condition-E"}
+    conditional_elements: Set = {"condition-E", "test-E", "do-V" }
     loop_elements: Set = {"do-stmt"}
     branch_elements: Set = {"if-then-stmt", "else-stmt"}
     branch_end_elements: Set = {"end-if-stmt"}
@@ -622,8 +778,19 @@ def calculate_metrics(xml_path: str = None, src: str = None, sort_metric=None) -
                 add_operators_to(current_scope, element)
 
             # Extract conditional statements
-            if element.tag.endswith(tuple(conditionals_elements)):
-                current_scope.conditionals.append(element)
+            if element.tag.endswith(tuple(conditional_elements)):
+
+                # Check if operand elements exist
+                operand_elements : List[ET.Element] = element.findall(path=f"{search_global}{operand_element_tag}", namespaces=ns)
+                if operand_elements:
+                    # Add only leaf operand elements
+                    for operand_element in operand_elements:
+                        sub_operand_elements : List[ET.Element] = operand_element.findall(path=f"{search_global}{operand_element_tag}", namespaces=ns)
+                        if not sub_operand_elements:
+                            current_scope.conditionals.append(operand_element)
+                else:
+                    # Add one element if no operand is found
+                    current_scope.conditionals.append(element)
 
             # Extract loop statements
             elif element.tag.endswith(tuple(loop_elements)):

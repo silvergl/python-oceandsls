@@ -44,24 +44,30 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         # TODO scope marker
         # self._scope = self._symbolTable.addNewSymbolOfType( ScopedSymbol, None )
         self._scope = None
-        self._test_path = test_work_path
+        self._test_work_path = test_work_path
+        self._test_path = ""
 
     @property
     def symbol_table(self) -> SymbolTable:
         return self._symbol_table
 
     @property
-    def test_path(self) -> str:
-        return self._test_path
+    def work_path(self) -> str:
+        return self._test_work_path
 
-    def defaultResult(self) -> SymbolTable:
-        # Return the symboltable by default
-        return self._symbol_table
+    # def defaultResult(self) -> SymbolTable:
+    #     # Return the symboltable by default
+    #     return self._symbol_table
+
+    # Visit a parse tree produced by TestSuiteParser#test_suite.
+    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
+        self.visitChildren(ctx)
+        return self.symbol_table
 
     # Visit a parse tree produced by TestSuiteParser#test_case.
     def visitTest_case(self, ctx: TestSuiteParser.Test_caseContext):
         # Extract symbols from path, scope and variables
-        return self.with_scope(ctx, False, TestCaseSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
+        return self.with_scope(ctx, TestCaseSymbol, lambda: self.visitChildren(ctx), ctx.ID().getText())
 
     # Visit a parse tree produced by TestSuiteParser#test_var.
     def visitTest_var(self, ctx: TestSuiteParser.Test_varContext):
@@ -73,7 +79,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     def visitVarDeclaration(self, ctx: TestSuiteParser.VarDeclarationContext):
         name = ctx.name.text
         # Map variable type to symboltable type
-        var_type = get_fundamental_type(self.visit(ctx.type_))
+        var_type = get_fundamental_type(self.visit(ctx.type_))  if ctx.type_ else None
         keys = []
         for key in ctx.keys:
             keys.append(key.keyword.text)
@@ -146,7 +152,8 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
     def visitEnumType(self, ctx: TestSuiteParser.EnumTypeContext):
         enums: List[str] = []
         for enum in ctx.values:
-            enums.append(self.visit(enum))
+            if isinstance(enum, str):
+                enums.append(self.visit(enum))
         return "(" + ", ".join(enums) + ")"
 
     # Visit a parse tree produced by TestSuiteParser#enum.
@@ -187,7 +194,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         # TODO document
         # Update source directory
         # If the given path is an absolute path, then self._testPath is ignored and the joining is only the given path
-        self._test_path: str = os.path.join(self._test_path, user_path)
+        self._test_path: str = os.path.join(self._test_work_path, user_path)
 
     # Get rendered list of used modules
     def visitUse_modules(self, ctx: TestSuiteParser.Use_modulesContext):
@@ -212,29 +219,36 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
 
             # Add scopes
             for scope_type, scope_name, scope_args, return_type, parent_scopes, is_generated in xml_elements[1]:
-                scope_sym: ScopedSymbol
 
-                # Get scope from symboltable, add the scope if it does not exist
-                if parent_scopes:
-                    # Top level symbols are omitted as only filtered modules are in the current test case
-                    # Resolve scope
-                    parent_scopes: List[str] = parent_scopes.split(".")
-                    scope_sym = self._scope
-                    for scope in parent_scopes:
-                        scope_sym = scope_sym.resolve_sync(scope)
-                else:
-                    # Add unknown top level symbols for content assist without include
-                    scope_sym = self._scope.parent()
+                # Top level symbols are omitted as only filtered modules are in the current test case
+                # Resolve scope
+                parent_scopes: List[str] = parent_scopes.split(".") if parent_scopes else []
+                scope_sym: ScopedSymbol = self._scope
+                for scope in parent_scopes:
+                    scope_sym = scope_sym.resolve_sync(scope)
+
+                # scope_sym: ScopedSymbol
+                # # Get scope from symboltable, add the scope if it does not exist
+                # if parent_scopes:
+                #     # Top level symbols are omitted as only filtered modules are in the current test case
+                #     # Resolve scope
+                #     parent_scopes: List[str] = parent_scopes.split(".")
+                #     scope_sym = self._scope
+                #     for scope in parent_scopes:
+                #         scope_sym = scope_sym.resolve_sync(scope)
+                # else:
+                #     # Add unknown top level symbols for content assist without include
+                #     scope_sym = self._scope.parent()
 
                 match scope_type:
                     case "module":
                         # Insert module with current scope name
-                        self._symbol_table.add_new_symbol_of_type(ModuleSymbol, scope_sym, scope_name)
+                        self._symbol_table.add_new_symbol_of_type(ModuleSymbol, scope_sym, scope_name, None, self._scope)
                     case "subroutine":
                         current_scope = self._scope
                         self._scope = scope_sym
                         # Insert Subroutine symbol with current scope name
-                        self.with_scope(ctx, False, RoutineSymbol, lambda: list(map(lambda arg: self.addRoutineParams(arg), scope_args)), scope_name)
+                        self.with_scope(None, RoutineSymbol, lambda: list(map(lambda arg: self.addRoutineParams(arg), scope_args)), scope_name)
                         self._scope = current_scope
                     case "function":
                         current_scope = self._scope
@@ -242,11 +256,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
                         return_type = get_fundamental_type(return_type)
                         self._scope = scope_sym
                         # Insert Function symbol with scope name, parameters and return type
-                        self.with_scope(
-                            ctx, False, FunctionSymbol, lambda: list(
-                                map(lambda arg: self.addRoutineParams(arg), scope_args)
-                            ), scope_name, return_type, is_generated
-                        )
+                        self.with_scope(None, FunctionSymbol, lambda: list( map(lambda arg: self.addRoutineParams(arg), scope_args)), scope_name, return_type, is_generated)
                         self._scope = current_scope
                     case _:
                         # TODO Types?
@@ -276,20 +286,13 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
 
     # Visit a parse tree produced by TestSuiteParser#test_module.
     def visitTest_module(self, ctx: TestSuiteParser.Test_moduleContext):
-        # Add module to symboltable
-        self.with_scope(ctx, True, ModuleSymbol, lambda: self.visitChildren(ctx), ctx.name.text)
-
-        # Add module to included modules of testcase
-        module_symbol = self._symbol_table.resolve_sync(ctx.name.text)
-        self._scope.add_include(module_symbol)
-
-        # Return module symbol
-        return module_symbol
+        # Add module to symboltable and return module symbol to included modules of testcase
+        return self.with_scope(ctx, ModuleSymbol, lambda: self._scope, ctx.name.text, None, self._scope)
 
     def addRoutineParams(self, paramName: str = None):
         self._symbol_table.add_new_symbol_of_type(ParameterSymbol, self._scope, paramName)
 
-    def with_scope(self, tree: ParseTree, sibling: bool, t: type, action: Callable, *my_args: P.args or None, **my_kwargs: P.kwargs or None) -> T:
+    def with_scope(self, tree: ParseTree, t: type, action: Callable, *my_args: P.args or None, **my_kwargs: P.kwargs or None) -> T:
         """
         Add a scoped symbol to the symboltable and recursively add all symbols inside this scope the symboltable
         :param tree: Context of the scoped symbol
@@ -301,10 +304,7 @@ class SymbolTableVisitor(TestSuiteVisitor, Generic[T]):
         :return: Current scope
         """
         # Add scoped symbol to symboltable
-        if sibling:
-            scope = self._symbol_table.add_new_symbol_of_type(t, self._scope.parent(), *my_args, **my_kwargs)
-        else:
-            scope = self._symbol_table.add_new_symbol_of_type(t, self._scope, *my_args, **my_kwargs)
+        scope = self._symbol_table.add_new_symbol_of_type(t, self._scope, *my_args, **my_kwargs)
         scope.context = tree
         # Update Scope to the new symbol and save the old scope (mihgt be changed if scope is inserted above current scope)
         current_scope = self._scope

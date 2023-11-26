@@ -45,7 +45,9 @@ class SystemFileVisitor(TestSuiteVisitor, Generic[T]):
     def test_path(self) -> str:
         return self._test_path
 
-    def defaultResult(self) -> SymbolTable:
+    # Visit a parse tree produced by TestSuiteParser#test_suite.
+    def visitTest_suite(self, ctx:TestSuiteParser.Test_suiteContext):
+        self.visitChildren(ctx)
         return self._symbol_table
 
     # Visit a parse tree produced by TestSuiteParser#test_case.

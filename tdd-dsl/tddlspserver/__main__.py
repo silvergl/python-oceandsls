@@ -54,8 +54,8 @@ def add_arguments(parser):
     )
 
     parser.add_argument(
-        "-m", "--metric", dest="metric", default="Halstead Complexity",
-        help="Metric to sort SuT recommendations, e.g. Halstead Complexity"
+        "-m", "--metric", dest="metric", default="Testability Factor",
+        help="Metric to sort SuT recommendations, e.g. Testability Factor"
     )
 
 

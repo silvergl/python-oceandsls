@@ -19,17 +19,17 @@ jobs:
       with:
         python-version: '3.10'
     - name: "Installs dependencies"
-        shell: bash
-        run: |
+      shell: bash
+      run: |
           cd example-dsl/
           python3 -m pip install --upgrade pip
           python3 -m pip install setuptools wheel twine
     - name: "Builds and uploads to PyPI"
-         shell: bash
-         env:
+      shell: bash
+      env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
-         run: |
+      run: |
              cd example-dsl/
              python3 setup.py sdist bdist_wheel
              python3 -m twine upload -u "$TWINE_USERNAME" -p "TWINE_PASSWORD" dist/*

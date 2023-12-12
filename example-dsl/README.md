@@ -1,4 +1,4 @@
-# exampleDSL for reference
+# exampleDSL for references
 
 ## Optional: check python packages
 - update package manager tools

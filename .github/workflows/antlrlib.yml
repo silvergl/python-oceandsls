@@ -32,5 +32,5 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
       run: |
              cd antlrlib/
-             python3 setup.py sdist bdist_wheel
+             python3 -m build
              python3 -m twine upload -u "$TWINE_USERNAME" -p "TWINE_PASSWORD" dist/*

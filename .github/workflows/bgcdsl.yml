@@ -24,6 +24,7 @@ jobs:
       run: |
           cd bgc-dsl/
           python3 -m pip install --upgrade pip
+          python3 -m pip install build
           python3 -m pip install setuptools wheel twine
     - name: "Builds and uploads to PyPI"
       shell: bash

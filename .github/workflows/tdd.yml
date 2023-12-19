@@ -33,5 +33,5 @@ jobs:
       run: |
              cd tdd-dsl/
              python3 -m build
-             python3 -m twine upload -u "$TWINE_USERNAME" -p "TWINE_PASSWORD" dist/*
+             python3 -m twine upload -u "$TWINE_USERNAME" -p "$TWINE_PASSWORD" dist/*
         

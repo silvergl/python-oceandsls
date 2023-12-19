@@ -9,7 +9,7 @@ exclude = ["input","client","node_modules"]
 name = "BGC-Language-Server"
 version = "0.40.0"
 authors = [
-    { name="TODO", email="TODO" },
+    { name="sgu", email="sgu@informatik.uni-kiel.de" },
 ]
 description = "A program for a language server based on the bgc ocean-dsl."
 readme = "README.md"
